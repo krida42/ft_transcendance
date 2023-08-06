@@ -23,7 +23,7 @@ jobs:
 
       - name: Set working directory
         run: cd ft_transcendance/data/server
-        working-directory: /data/server
+        working-directory: ${{ github.workspace }}
 
       - name: Install dependencies and run tests
         run: |

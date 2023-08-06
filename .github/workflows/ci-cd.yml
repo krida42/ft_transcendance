@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          path: ft_transcendance
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -19,8 +21,8 @@ jobs:
           node-version: 14
 
       - name: Set working directory
-        run: cd ./data/server/
-        working-directory: ${{ github.workspace }}
+        run: cd ft_transcendance/data/server/
+        working-directory: ${{ github.workspace }}/ft_transcendance
 
       - name: Install dependencies and run tests
         run: |

@@ -21,8 +21,9 @@ jobs:
           node-version: 14
 
       - name: Set working directory
-        run: cd ft_transcendance/data/server
-        working-directory: ${{ github.workspace }}ft_transcendance/data/server
+        # run: cd ft_transcendance/data/server
+        run: echo ${{ github.workspace }}
+        # working-directory: ${{ github.workspace }}ft_transcendance/data/server
 
       - name: Install dependencies and run tests
         run: |

@@ -22,7 +22,7 @@ jobs:
 
       - name: Set working directory
         run: cd data/server
-        working-directory: ${{ github.workspace }}
+        working-directory: ${{ github.workspace }}/data/server
 
       - name: Install dependencies and run tests
         run: |

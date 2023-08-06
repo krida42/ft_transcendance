@@ -20,11 +20,8 @@ jobs:
         with:
           node-version: 14
 
-      - name: Set working directory
-        run: cd ft_transcendance
-        working-directory: /data/server
-
       - name: Install dependencies and run tests
+        working-directory: ./data/server
         run: |
           npm install
           npm test

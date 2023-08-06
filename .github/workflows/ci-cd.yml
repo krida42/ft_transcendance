@@ -18,14 +18,13 @@ jobs:
         with:
           node-version: 14
 
-      - name: Install dependencies
-        run: npm install
+      - name: Set working directory
+        run: cd ./data/server/
+        working-directory: ${{ github.workspace }}
 
-      - name: Run tests
-        run: npm test
-
-      - name: Build app
-        run: npm run build
-
-      - name: Start server
-        run: npm start
+      - name: Install dependencies and run tests
+        run: |
+          npm install
+          npm test
+          npm run build
+          npm start

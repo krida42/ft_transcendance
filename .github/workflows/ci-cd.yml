@@ -1,4 +1,4 @@
-name: CI/CD for NestJS
+name: CI/CD for serveur ft_transcendance
 
 on:
   push:
@@ -11,22 +11,22 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          path: ft_transcendance
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14
 
-      - name: Set working directory for server
-        run: cd ft_transcendance/data/server
-        working-directory: ${{ github.workspace }}/ft_transcendance/data/server
+      - name: Set working directory
+        run:
+        working-directory: ${{ github.workspace }}/data/server
 
-      - name: Install server dependencies
-        run: npm install
-
-      - name: Build server
-        run: npm run build
-
-      - name: Start server
-        run: npm start
+      - name: Install dependencies and run tests
+        run: |
+          npm install
+          npm test
+          npm run build
+          npm start

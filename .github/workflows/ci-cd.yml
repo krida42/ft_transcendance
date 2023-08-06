@@ -23,7 +23,7 @@ jobs:
 
       - name: Set working directory
         run: pwd
-        working-directory: ${{ github.workspace }}/data/server
+        working-directory: /data/server
 
       - name: Install dependencies and run tests
         run: |

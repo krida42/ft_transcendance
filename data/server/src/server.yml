@@ -1,0 +1,40 @@
+openapi: 3.0.0
+info:
+  title: My server Pong Game API
+  version: 1.0.0
+paths:
+  /ping:
+    get:
+      summary: Check API status
+      responses:
+        '200':
+          description: OK
+
+  /health:
+    get:
+      summary: Check API health
+      responses:
+        '200':
+          description: OK
+
+  /docs:
+    get:
+      summary: API Documentation
+      responses:
+        '200':
+          description: Redirect to documentation
+
+# References to modules
+components:
+  schemas:
+    # Your global data schemas can be defined here
+
+  securitySchemes:
+    # Define your security schemes here (e.g., JWT)
+
+  # References to schemas and common elements used in modules
+  $ref: 'user-module.yaml#/components'
+  
+  # If you have other modules, you can reference them here too
+  # $ref: 'game-module.yaml#/components'
+  # $ref: 'friends-module.yaml#/components'

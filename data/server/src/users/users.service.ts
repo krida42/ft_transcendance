@@ -3,11 +3,18 @@ https://docs.nestjs.com/providers#services
 */
 
 import { Injectable } from '@nestjs/common';
-import { UsersDTO } from './dto/users.dto';
+import { InjectModel } from '@nestjs/sequelize';
+import { UserDTO } from './dto/users.dto';
+import { User } from 'db/models/user';
 
 @Injectable()
 export class UsersService {
-  users: UsersDTO[] = [
+  constructor(
+    @InjectModel(User)
+    private usersModel: typeof User,
+  ) {}
+
+  users: UserDTO[] = [
     {
       id: 1,
       username: 'user1',
@@ -15,7 +22,7 @@ export class UsersService {
     },
   ];
 
-  findAll(): UsersDTO[] {
+  findAll(): UserDTO[] {
     return this.users;
   }
 }

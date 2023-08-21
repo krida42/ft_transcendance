@@ -1,7 +1,7 @@
 import { Column, Model, Table } from 'sequelize-typescript';
 
 @Table
-export class Users extends Model {
+export class User extends Model {
   @Column
   firstName: string;
 
@@ -16,4 +16,7 @@ export class Users extends Model {
 
   @Column({ defaultValue: false })
   isActive: boolean;
+
+  @Column
+  boubliboulga1: string;
 }

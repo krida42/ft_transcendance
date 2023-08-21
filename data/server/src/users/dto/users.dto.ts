@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'; // Importez ceci si vous utilisez Swagger pour la documentation
-import { Users } from '../users.model';
+import { User } from 'db/models/user';
 
-export class UsersDTO {
+export class UserDTO {
   @ApiProperty()
   id: number;
 
@@ -17,7 +17,7 @@ export class UsersDTO {
     this.email = email;
   }
 
-  static fromEntity(entity: Users): UsersDTO {
-    return new UsersDTO(entity.id, entity.username, entity.email);
+  static fromEntity(entity: User): UserDTO {
+    return new UserDTO(entity.id, entity.username, entity.email);
   }
 }

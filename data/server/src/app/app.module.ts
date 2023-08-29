@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
     SequelizeModule.forRoot({
       dialect: 'postgres',
-      host: 'localhost',
+      host: 'localhost', //localhost pour local ou postgres pour docker
       port: 5432,
       username: 'postgres',
       password: 'mdp',
@@ -16,6 +17,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
       autoLoadModels: true,
       logging: false,
     }),
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

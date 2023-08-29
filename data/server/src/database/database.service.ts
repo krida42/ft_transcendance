@@ -4,7 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable } from '@nestjs/common';
 
-// @Injectable()
+@Injectable()
 export class DatabaseService {
   getHell(): string {
     return 'Hell World!';

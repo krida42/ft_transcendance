@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 
 import { DEVELOPMENT, TEST, SEQUELIZE } from './database.constant';
-// import { User } from 'models/user.model';
+const { User } = require('../../db/models/user');
 const { DatabaseConfig } = require('./config');
 
 export const databaseProviders = [
@@ -20,8 +20,15 @@ export const databaseProviders = [
           config = DatabaseConfig.development;
       }
       const sequelize = new Sequelize(config);
-      // sequelize.addModels([User]); // Vous devrez ajouter vos modèles ici
-      await sequelize.sync(); // Cela synchronisera les modèles avec la base de données
+      sequelize.addModels([User]); // Vous devrez ajouter vos modèles ici
+      (async () => {
+        try {
+          await sequelize.authenticate();
+          console.log("Database connection setup successfully!");
+        } catch (error) {
+          console.log("Unable to connect to the database", error);
+        }
+      })();
       console.log(config);
       return sequelize;
     },

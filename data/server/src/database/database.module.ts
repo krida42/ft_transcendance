@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { databaseProviders } from './database.providers'; // Assurez-vous que le chemin d'importation est correct
+import { databaseProviders } from './database.providers';
 import { Sequelize } from 'sequelize';
 
 @Module({

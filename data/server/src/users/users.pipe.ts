@@ -2,11 +2,11 @@
 https://docs.nestjs.com/pipes
 */
 
-import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
+import { PipeTransform, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UsersPipe implements PipeTransform {
-  transform(value: any, metadata: ArgumentMetadata) {
+  transform(value: any) {
     return value;
   }
 }

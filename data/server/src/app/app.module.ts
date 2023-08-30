@@ -10,7 +10,11 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot(),
     SequelizeModule.forRoot({
-      dialect: process.env.DB_DIALECT as 'mysql' | 'postgres' | 'sqlite' | 'mariadb',
+      dialect: process.env.DB_DIALECT as
+        | 'mysql'
+        | 'postgres'
+        | 'sqlite'
+        | 'mariadb',
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT),
       username: process.env.DB_USER,
@@ -23,8 +27,7 @@ import { ConfigModule } from '@nestjs/config';
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [
-    PasswordService, AppService],
+  providers: [PasswordService, AppService],
   exports: [SequelizeModule], // pour que les autres modules puissent utiliser SequelizeModule
 })
-export class AppModule { }
+export class AppModule {}

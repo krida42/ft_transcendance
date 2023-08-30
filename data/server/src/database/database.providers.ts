@@ -24,9 +24,9 @@ export const databaseProviders = [
       (async () => {
         try {
           await sequelize.authenticate();
-          console.log("Database connection setup successfully!");
+          console.log('Database connection setup successfully!');
         } catch (error) {
-          console.log("Unable to connect to the database", error);
+          console.log('Unable to connect to the database', error);
         }
       })();
       console.log(config);

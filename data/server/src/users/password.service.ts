@@ -9,7 +9,10 @@ export class PasswordService {
     return hashedPassword;
   }
 
-  async comparePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+  async comparePassword(
+    plainPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
     const isMatch = await compare(plainPassword, hashedPassword);
     return isMatch;
   }

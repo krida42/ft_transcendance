@@ -23,15 +23,15 @@ services:
     networks:
       mynet:
         ipv4_address: '172.18.0.43'
-  server:
-    build: requirements/server
-    ports:
-      - "4244:4244"
-    volumes:
-      - ./data/server:/app
-    networks:
-      mynet:
-        ipv4_address: '172.18.0.42'
+  # server:
+  #   build: requirements/server
+  #   ports:
+  #     - "4244:4244"
+  #   volumes:
+  #     - ./data/server:/app
+  #   networks:
+  #     mynet:
+  #       ipv4_address: '172.18.0.42'
   redis:
     image: redis:7-bookworm
     ports:

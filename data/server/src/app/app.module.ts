@@ -8,7 +8,9 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: '../../.env',
+    }),
     SequelizeModule.forRoot({
       dialect: process.env.DB_DIALECT as
         | 'mysql'

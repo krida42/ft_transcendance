@@ -1,18 +1,21 @@
+import { PasswordService } from './../users/password.service';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from 'src/users/users.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     SequelizeModule.forRoot({
-      dialect: 'postgres',
-      host: 'localhost', //localhost pour local ou postgres pour docker
-      port: 5432,
-      username: 'postgres',
-      password: 'mdp',
-      database: 'database_development',
+      dialect: process.env.DB_DIALECT as 'mysql' | 'postgres' | 'sqlite' | 'mariadb',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT),
+      username: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
       synchronize: true,
       autoLoadModels: true,
       logging: false,
@@ -20,7 +23,8 @@ import { UsersModule } from 'src/users/users.module';
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    PasswordService, AppService],
   exports: [SequelizeModule], // pour que les autres modules puissent utiliser SequelizeModule
 })
-export class AppModule {}
+export class AppModule { }

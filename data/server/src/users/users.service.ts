@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'db/models/user';
 import { CreateUserDto } from './dto/createUser.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { PasswordService } from './password.service';
 
 @Injectable()
 export class UsersService {
@@ -11,15 +12,22 @@ export class UsersService {
     private usersModel: typeof User,
   ) {}
 
+  responseUser(user: User){
+    const { public_id, pseudo, email, } = user;
+    return { public_id, pseudo, email, };
+  }
+  
   async createUser(createUserDto : CreateUserDto){
+    const hashedPassword = await PasswordService.hashPassword(createUserDto.password);
+    createUserDto.password = hashedPassword;
     const user = await this.usersModel.create({
-      public_id: uuidv4(), // Par exemple
+      public_id: uuidv4(),
       ...createUserDto,
       createdAt: new Date(),
       updatedAt: new Date()
     });
     console.log("User created:", JSON.stringify(user, null, 2));
-    return user;
+    return this.responseUser(user);
   }
 
   private attributesToRetrieve = ['public_id', 'email', 'pseudo', 'createdAt', 'updatedAt'];

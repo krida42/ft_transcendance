@@ -10,19 +10,19 @@ services:
     networks:
       - mynet
 
-  postgres:
-    build: requirements/db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=trevor
-      - POSTGRES_PASSWORD=toto
-      - POSTGRES_DB=transcendance
-    networks:
-      mynet:
-        ipv4_address: '172.18.0.43'
+  # postgres:
+  #   build: requirements/db
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_USER=trevor
+  #     - POSTGRES_PASSWORD=toto
+  #     - POSTGRES_DB=transcendance
+  #   networks:
+  #     mynet:
+  #       ipv4_address: '172.18.0.43'
   # server:
   #   build: requirements/server
   #   ports:
@@ -32,15 +32,15 @@ services:
   #   networks:
   #     mynet:
   #       ipv4_address: '172.18.0.42'
-  redis:
-    image: redis:7-bookworm
-    ports:
-      - "6666:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      mynet:
-        ipv4_address: '172.18.0.44'
+  # redis:
+  #   image: redis:7-bookworm
+  #   ports:
+  #     - "6666:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     mynet:
+  #       ipv4_address: '172.18.0.44'
 
 networks:
   mynet:

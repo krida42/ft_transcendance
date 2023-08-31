@@ -1,11 +1,12 @@
 <template>
   <div class="about">
-    <h1 class="underline font-bold">This is an about page</h1>
+    <h1 class="underline font-bold bg-blue-grey">This is</h1>
+    <h1 class="underline font-bold cuicui">This is second</h1>
   </div>
 </template>
 
 <style lang="scss" scoped>
-div {
-  background-color: $background-primary;
+.cuicui {
+  background-color: pink;
 }
 </style>

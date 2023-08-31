@@ -1,10 +1,12 @@
 <template>
   <div class="login">
     <h1>Pong</h1>
-    <div class="flex items-center flex-col justify-around">
+    <div
+      class="pong-screen w-[20rem] flex items-center flex-col justify-around rounded"
+    >
       <p>Please sign in with 42 to continue</p>
       <button class="border-[3px] border-white">Sign in</button>
-      <img class="w-[77px]" src="../assets/svg/42_logo.svg" />
+      <img src="../assets/svg/42_logo.svg" />
     </div>
   </div>
 </template>
@@ -13,11 +15,19 @@
 
 <style lang="scss" scoped>
 .login {
-  background-color: $background-primary;
-  color: black;
+  color: white;
   font-size: 2rem;
   font-family: "VT323", monospace;
   text-transform: uppercase;
+}
+
+.pong-screen {
+  margin: auto;
+  background-color: black;
+}
+
+img {
+  width: 10rem;
 }
 </style>
 

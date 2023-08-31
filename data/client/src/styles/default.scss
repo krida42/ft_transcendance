@@ -3,3 +3,12 @@ h1 {
   color: black;
   font-family: "Baumans", cursive;
 }
+
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: $blue-light;
+}

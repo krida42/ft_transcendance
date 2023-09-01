@@ -5,27 +5,32 @@ export class UpdateUserDto {
   @ApiProperty({
     description: 'The name of the user',
     example: 'John Doe',
-    required: true,
+    required: false,
   })
-  @ApiProperty()
   @IsOptional()
   @Length(3, 20)
-  pseudo: string;
+  pseudo?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false
+  })
   @IsOptional()
   @Length(3, 20)
-  password: string;
+  password?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false
+  })
   @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    required: false
+  })
   @IsOptional()
   @Length(3, 20)
-  display_name: string;
+  display_name?: string;
 
   constructor(
     pseudo: string,

@@ -6,6 +6,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from 'src/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 
+
 @Module({
   imports: [
     ConfigModule.forRoot({

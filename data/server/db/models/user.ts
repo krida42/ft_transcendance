@@ -72,4 +72,5 @@ export class User extends Model {
     }
   )
   public readonly updatedAt: Date;
+  
 }

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "paths": {"class-transformer": ["node_modules/class-transformer"]},
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,

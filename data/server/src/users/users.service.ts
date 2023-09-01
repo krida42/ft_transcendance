@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'db/models/user';
 import { CreateUserDto } from './dto/createUser.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { UniqueConstraintError } from 'sequelize';
+import { isUUID } from 'class-validator';
+import { UpdateUserDto } from './dto/updateUser.dto';
 import { PasswordService } from './password.service';
 
 @Injectable()
@@ -17,38 +20,12 @@ export class UsersService {
     return { public_id, pseudo, email };
   }
 
-  async createUser(createUserDto: CreateUserDto) {
-    const hashedPassword = await PasswordService.hashPassword(
-      createUserDto.password,
-    );
-    createUserDto.password = hashedPassword;
-    const user = await this.usersModel.create({
-      public_id: uuidv4(),
-      ...createUserDto,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    console.log('User created:', JSON.stringify(user, null, 2));
-    return this.responseUser(user);
-  }
-
   private attributesToRetrieve = [
     'public_id',
-    'email',
     'pseudo',
-    'createdAt',
-    'updatedAt',
+    'email',
   ];
-
-  async findOne(id: string) {
-    const public_id = id;
-    const user = await User.findOne({
-      where: { public_id },
-      attributes: this.attributesToRetrieve,
-    });
-    return user;
-  }
-
+  
   async findAll() {
     const users = await User.findAll({
       attributes: this.attributesToRetrieve,
@@ -57,4 +34,88 @@ export class UsersService {
     console.log('All users:', JSON.stringify(users, null, 2));
     return users;
   }
+
+  async findOne(id: uuidv4) {
+    const public_id = id;
+    if (!isUUID(public_id)) 
+      throw new BadRequestException('Invalid id');
+    const user = await User.findOne({
+      where: { public_id },
+      attributes: this.attributesToRetrieve,
+    });
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    return user;
+  }
+
+  async findByPseudo(pseudo: string) {
+    const user = await User.findOne({
+      where: { pseudo },
+      attributes: this.attributesToRetrieve,
+    });
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    return user;
+  }
+
+  private handleUniqueConstraintError(error: any) {
+    if (error instanceof UniqueConstraintError) {
+      const fieldNotUnique = Object.keys(error.fields)[0];
+      throw new HttpException(`${fieldNotUnique} already exists.`, HttpStatus.CONFLICT);
+    }
+    console.log(error);
+    throw new Error(error);
+  }
+  
+  async createUser(createUserDto: CreateUserDto) {
+    try {
+      createUserDto.password = await PasswordService.hashPassword(createUserDto.password);
+      const user = await this.usersModel.create({
+        public_id: uuidv4(),
+        ...createUserDto,
+      });
+      return this.responseUser(user);
+    } catch (error) {
+      this.handleUniqueConstraintError(error);
+    }
+  }
+  
+  async updateUser(id: uuidv4, updateUserDto: UpdateUserDto) {
+    if (!isUUID(id)) 
+      throw new BadRequestException('Invalid id');
+    if (updateUserDto.password !== undefined)
+      updateUserDto.password = await PasswordService.hashPassword(updateUserDto.password);
+    try {
+      const user = await this.usersModel.update(
+        { ...updateUserDto },
+        { where: { public_id: id } },
+        );
+      if (user[0] === 0) {
+        throw new BadRequestException('User not found');
+      }
+      const UpdatedUser = await this.usersModel.findOne({
+        where: { public_id: id },
+        attributes: this.attributesToRetrieve,
+      });
+      return ({ message: user , user: this.responseUser(UpdatedUser) });
+    } catch (error) {
+      this.handleUniqueConstraintError(error);
+    }
+  }
+
+  async deleteUser(id: uuidv4) {
+    if (!isUUID(id)) 
+      throw new BadRequestException('Invalid id');
+    const user = await User.destroy({
+      where: { public_id: id },
+    });
+    if (user === 0) {
+      throw new BadRequestException('User not found');
+    }
+    return user;
+  }
 }
+
+

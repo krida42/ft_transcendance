@@ -1,12 +1,17 @@
 <template>
-  <div class="login">
+  <div class="login text-white uppercase">
     <h1>Pong</h1>
     <div
-      class="pong-screen w-[20rem] flex items-center flex-col justify-around rounded"
+      class="pong-screen w-[38rem] h-[26rem] m-auto rounded-[53px] bg-black flex items-center flex-col justify-center"
     >
-      <p>Please sign in with 42 to continue</p>
-      <button class="border-[3px] border-white">Sign in</button>
-      <img src="../assets/svg/42_logo.svg" />
+      <p class="leading-none">
+        Please sign in with <br />
+        42 to continue
+      </p>
+      <button class="py-0 px-[1rem] border-2 border-white uppercase">
+        Sign in
+      </button>
+      <img class="w-[4rem]" src="../assets/svg/42_logo.svg" />
     </div>
   </div>
 </template>
@@ -15,19 +20,27 @@
 
 <style lang="scss" scoped>
 .login {
-  color: white;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-family: "VT323", monospace;
-  text-transform: uppercase;
 }
 
-.pong-screen {
-  margin: auto;
-  background-color: black;
+.pong-screen > * {
+  margin: 1.5rem;
 }
 
-img {
-  width: 10rem;
+button:hover {
+  background-color: white;
+  color: black;
+}
+
+@media (max-width: 42rem) {
+  .pong-screen {
+    width: 90vw;
+    height: 70vw;
+  }
+  .pong-screen > * {
+    margin: 3vw;
+  }
 }
 </style>
 

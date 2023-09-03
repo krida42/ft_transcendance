@@ -44,6 +44,7 @@
     "rxjs": "^7.8.1",
     "sequelize": "^6.32.1",
     "sequelize-typescript": "^2.1.5",
+    "swagger-themes": "^1.2.30",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'db/models/user';
 import { CreateUserDto } from './dto/createUser.dto';
@@ -7,7 +7,7 @@ import { UniqueConstraintError } from 'sequelize';
 import { isUUID } from 'class-validator';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { PasswordService } from './password.service';
-
+import { UniqueConstraintException, InvalidUUIDException, UserNotFoundException } from 'src/exceptions';
 @Injectable()
 export class UsersService {
   constructor(
@@ -38,13 +38,13 @@ export class UsersService {
   async findOne(id: uuidv4) {
     const public_id = id;
     if (!isUUID(public_id)) 
-      throw new BadRequestException('Invalid id');
+      throw new InvalidUUIDException();
     const user = await User.findOne({
       where: { public_id },
       attributes: this.attributesToRetrieve,
     });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new UserNotFoundException();
     }
     return user;
   }
@@ -55,7 +55,7 @@ export class UsersService {
       attributes: this.attributesToRetrieve,
     });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new UserNotFoundException();
     }
     return user;
   }
@@ -63,7 +63,7 @@ export class UsersService {
   private handleUniqueConstraintError(error: any) {
     if (error instanceof UniqueConstraintError) {
       const fieldNotUnique = Object.keys(error.fields)[0];
-      throw new HttpException(`${fieldNotUnique} already exists.`, HttpStatus.CONFLICT);
+      throw new UniqueConstraintException(fieldNotUnique);
     }
     console.log(error);
     throw new Error(error);
@@ -84,7 +84,7 @@ export class UsersService {
   
   async updateUser(id: uuidv4, updateUserDto: UpdateUserDto) {
     if (!isUUID(id)) 
-      throw new BadRequestException('Invalid id');
+      throw new InvalidUUIDException();
     if (updateUserDto.password !== undefined)
       updateUserDto.password = await PasswordService.hashPassword(updateUserDto.password);
     try {
@@ -93,7 +93,7 @@ export class UsersService {
         { where: { public_id: id } },
         );
       if (user[0] === 0) {
-        throw new BadRequestException('User not found');
+        throw new UserNotFoundException();
       }
       const UpdatedUser = await this.usersModel.findOne({
         where: { public_id: id },
@@ -107,12 +107,12 @@ export class UsersService {
 
   async deleteUser(id: uuidv4) {
     if (!isUUID(id)) 
-      throw new BadRequestException('Invalid id');
+      throw new InvalidUUIDException();
     const user = await User.destroy({
       where: { public_id: id },
     });
     if (user === 0) {
-      throw new BadRequestException('User not found');
+      throw new UserNotFoundException();
     }
     return user;
   }

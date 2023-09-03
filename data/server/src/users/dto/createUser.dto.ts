@@ -5,7 +5,6 @@ export class CreateUserDto{
   @IsNotEmpty()
   @Length(3, 20)
   @ApiProperty({
-    description: 'The name of the user',
     example: 'John Doe',
     required: true,
   })
@@ -13,17 +12,26 @@ export class CreateUserDto{
 
   @IsNotEmpty()
   @Length(3, 20)
-  @ApiProperty()
+  @ApiProperty({
+    example: 'PASSword',
+    required: true,
+  })
   password: string;
 
   @IsNotEmpty()
   @IsEmail()
-  @ApiProperty()
+  @ApiProperty({
+    example: 'JohnnyJohnnyDoe@gmail.com',
+    required: true,
+  })
   email: string;
 
   @IsNotEmpty()
   @Length(3, 20)
-  @ApiProperty()
+  @ApiProperty({
+    example: 'THE John Doe',
+    required: true,
+  })
   display_name: string;
 
   constructor(
@@ -37,6 +45,7 @@ export class CreateUserDto{
     this.email = email;
     this.display_name = display_name;
   }
+  
   static clone(source: CreateUserDto): CreateUserDto {
     const copy = new CreateUserDto(
       source.pseudo,

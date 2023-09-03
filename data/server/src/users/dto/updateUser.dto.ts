@@ -3,8 +3,7 @@ import { Length, IsEmail, IsOptional } from 'class-validator';
 
 export class UpdateUserDto {
   @ApiProperty({
-    description: 'The name of the user',
-    example: 'John Doe',
+    example: 'Johnette Doe',
     required: false,
   })
   @IsOptional()
@@ -12,13 +11,15 @@ export class UpdateUserDto {
   pseudo?: string;
 
   @ApiProperty({
-    required: false
+    example: 'passWORD',
+    required: false,
   })
   @IsOptional()
   @Length(3, 20)
   password?: string;
 
   @ApiProperty({
+    example: 'JohnetteJohnetteDoe@gmail.com',
     required: false
   })
   @IsOptional()
@@ -26,6 +27,7 @@ export class UpdateUserDto {
   email?: string;
 
   @ApiProperty({
+    example: 'THE Johnette Doe',
     required: false
   })
   @IsOptional()

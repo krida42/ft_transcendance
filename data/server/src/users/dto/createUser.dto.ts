@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'; // Importez ceci si vous utilisez Swagger pour la documentation
 import { IsNotEmpty, Length, IsEmail, IsOptional } from 'class-validator';
 
-export class CreateUserDto{
+export class CreateUserDto {
   @IsNotEmpty()
   @Length(3, 20)
   @ApiProperty({
@@ -45,7 +45,7 @@ export class CreateUserDto{
     this.email = email;
     this.display_name = display_name;
   }
-  
+
   static clone(source: CreateUserDto): CreateUserDto {
     const copy = new CreateUserDto(
       source.pseudo,

@@ -20,7 +20,7 @@ export class UpdateUserDto {
 
   @ApiProperty({
     example: 'JohnetteJohnetteDoe@gmail.com',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsEmail()
@@ -28,7 +28,7 @@ export class UpdateUserDto {
 
   @ApiProperty({
     example: 'THE Johnette Doe',
-    required: false
+    required: false,
   })
   @IsOptional()
   @Length(3, 20)

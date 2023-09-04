@@ -14,6 +14,6 @@ export class InvalidUUIDException extends HttpException {
 
 export class UserNotFoundException extends HttpException {
   constructor() {
-	super('User not found', HttpStatus.NOT_FOUND);
+    super('User not found', HttpStatus.NOT_FOUND);
   }
 }

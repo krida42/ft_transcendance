@@ -15,17 +15,17 @@ async function bootstrap() {
     .setVersion('1.0')
     // .addBearerAuth() authentification token for swagger use with ApiBearerAuth()
     .build();
-  
+
   const document = SwaggerModule.createDocument(app, config);
   const theme = new SwaggerTheme('v3');
   const options = {
     explorer: true,
-    customCss: theme.getBuffer('dark')
+    customCss: theme.getBuffer('dark'),
   };
   SwaggerModule.setup('api', app, document, options);
 
   app.useGlobalPipes(new ValidationPipe());
-  
+
   await app.listen(3001);
 }
 bootstrap();

@@ -35,9 +35,7 @@ import { HttpModule } from '@nestjs/axios';
     HttpModule,
   ],
   controllers: [AppController],
-  providers: [
-    TokenService,
-    AuthService, PasswordService, AppService],
+  providers: [TokenService, AuthService, PasswordService, AppService],
   exports: [SequelizeModule], // pour que les autres modules puissent utiliser SequelizeModule
 })
-export class AppModule { }
+export class AppModule {}

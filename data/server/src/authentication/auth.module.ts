@@ -8,9 +8,10 @@ import { FortyTwoStrategy } from './strategy/42.strategy';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports:[UsersModule,
-  PassportModule.register({ defaultStrategy: 'jwt' }),
-  HttpModule,
+  imports: [
+    UsersModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    HttpModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, TokenService, FortyTwoStrategy],

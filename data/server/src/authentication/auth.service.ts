@@ -12,13 +12,13 @@ export class AuthService {
       const response = await lastValueFrom(
         this.httpService.get('https://api.intra.42.fr/v2/users', {
           headers: { Authorization: `Bearer ${accessToken}` },
-        })
+        }),
       );
       const user = response.data;
       console.log(user.data);
       return user;
     } catch (error) {
-      console.error('Erreur lors de la demande à l\'API 42:', error);
+      console.error("Erreur lors de la demande à l'API 42:", error);
       throw error;
     }
   }

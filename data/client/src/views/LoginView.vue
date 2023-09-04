@@ -1,6 +1,6 @@
 <template>
   <div class="login text-white uppercase">
-    <h1>Pong</h1>
+    <h1 class="pb-[1rem]">Pong</h1>
     <div
       class="pong-screen w-[38rem] h-[26rem] m-auto rounded-[53px] bg-black flex items-center flex-col justify-center"
     >
@@ -24,8 +24,8 @@
   font-family: "VT323", monospace;
 }
 
-.pong-screen > * {
-  margin: 1.5rem;
+.pong-screen {
+  gap: 2.5rem;
 }
 
 button:hover {
@@ -38,8 +38,8 @@ button:hover {
     width: 90vw;
     height: 70vw;
   }
-  .pong-screen > * {
-    margin: 3vw;
+  .pong-screen {
+    gap: 6vw;
   }
 }
 </style>

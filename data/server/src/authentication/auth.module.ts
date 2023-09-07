@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { TokenService } from './token.service';
 import { UsersModule } from 'src/users/users.module';
 import { PassportModule } from '@nestjs/passport';
-import { FortyTwoStrategy } from './strategy/42.strategy';
+// import { FortyTwoStrategy } from './strategy/42.strategy';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
@@ -14,6 +14,6 @@ import { HttpModule } from '@nestjs/axios';
     HttpModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, TokenService, FortyTwoStrategy],
+  providers: [AuthService, TokenService],
 })
 export class AuthModule {}

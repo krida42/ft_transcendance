@@ -3,9 +3,10 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerTheme } from 'swagger-themes';
+import * as session from 'express-session';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule); 
 
   const config = new DocumentBuilder()
     .setTitle('ft_transcendence API')
@@ -23,6 +24,21 @@ async function bootstrap() {
     customCss: theme.getBuffer('dark'),
   };
   SwaggerModule.setup('api', app, document, options);
+
+
+  // Configuration du middleware express-session
+  app.use(
+    session({
+      secret: 'your-secret-key',
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
+
+  // Configuration du middleware passport
+  // const passport = require('passport');
+  // app.use(passport.initialize());
+  // app.use(passport.session());
 
   app.useGlobalPipes(new ValidationPipe());
 

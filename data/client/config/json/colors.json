@@ -6,5 +6,6 @@
   "green": "#92C83C",
   "green-light": "#ADD56C",
   "white": "#FFFFFF",
-  "black": "#000000"
+  "black": "#000000",
+  "green-bg": "#D8F3DC"
 }

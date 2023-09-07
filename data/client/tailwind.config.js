@@ -13,8 +13,10 @@ module.exports = {
     //   green: "#92C83C",
     //   "green-light": "#ADD56C",
     // },
-    colors: colorsJSON,
-    extend: {},
+    // colors: colorsJSON,
+    extend: {
+      colors: colorsJSON,
+    },
   },
   plugins: [],
 

@@ -4,10 +4,7 @@
     <div
       class="arcade min-h-[45rem] relative flex items-center flex-col justify-top"
     >
-      <div id="a1" class="a_border a_left absolute"></div>
-      <div id="a2" class="a_border a_left absolute"></div>
-      <div id="a3" class="a_border a_left absolute"></div>
-      <div class="a_border a_left_end absolute"></div>
+      <div class="arcade_border border_l absolute"></div>
       <h1>Pong</h1>
       <div
         class="pong_screen w-[85%] h-[40%] sm:w-[56%] sm:h-[40%] rounded-[40px] bg-black flex justify-between"
@@ -25,13 +22,8 @@
           class="h-[15%] w-[1.5%] bg-white mr-[2.5rem] mb-[2.5rem] self-end"
         ></div>
       </div>
-      <div
-        class="line w-[70%] h-[7px] absolute bottom-[27%] bg-[#74c69d]"
-      ></div>
-      <div id="a1" class="a_border a_right absolute"></div>
-      <div id="a2" class="a_border a_right absolute"></div>
-      <div id="a3" class="a_border a_right absolute"></div>
-      <div class="a_border a_right_end absolute"></div>
+      <div class="line w-[70%] h-[7px] absolute bg-[#74c69d]"></div>
+      <div class="arcade_border border_r absolute"></div>
     </div>
     <div class="right"></div>
   </div>
@@ -46,7 +38,6 @@ import {
 } from "@vueuse/core";
 import { ref, onMounted } from "vue";
 // App.vue > script
-const border_space = 28;
 const { x: mouseX, y: mouseY } = useMouse();
 const { width, height } = useWindowSize();
 const leftPad = ref<HTMLElement | null>(null);
@@ -56,64 +47,102 @@ const leftPadPosition = ref<DOMRect | undefined>(undefined);
 
 <style lang="scss" scoped>
 .home {
-  grid-template-columns: 1fr 50rem 1fr;
+  grid-template-columns: 1fr minmax(40vw, 50rem) 1fr;
 }
 .arcade {
+  --border-ratio: 70%;
   background-color: #40916c;
+  z-index: -2;
 }
-.a_border {
+
+.arcade::before,
+.arcade::after {
+  content: "";
+  position: absolute;
   height: 100%;
-  width: 66px;
+  width: 3rem;
   mask-size: 100% 100%;
+  background-color: $green-bg;
 }
 
-.a_left {
-  mask-image: url("../assets/svg/arcade_line_l.svg");
-}
-.a_right {
-  mask-image: url("../assets/svg/arcade_line_r.svg");
-}
-.a_left_end {
-  mask-image: url("../assets/svg/arcade_triangle_l.svg");
-  background-color: #d8f3dc;
-  width: 36px;
-  left: 0;
-}
-.a_right_end {
+.arcade::after {
+  right: 0;
+  z-index: -1;
   mask-image: url("../assets/svg/arcade_triangle_r.svg");
-  background-color: #d8f3dc;
-  width: 36px;
-  right: 0;
 }
 
-#a1 {
-  background-color: #74c69d;
-}
-#a2 {
-  background-color: #95d5b2;
-}
-#a3 {
-  background-color: #b7e4c7;
-}
-#a1.a_right {
-  right: 62px;
-}
-#a2.a_right {
-  right: 31px;
-}
-#a3.a_right {
-  right: 0;
-}
-
-#a1.a_left {
-  left: 62px;
-}
-
-#a2.a_left {
-  left: 31px;
-}
-#a3.a_left {
+.arcade::before {
   left: 0;
+  mask-image: url("../assets/svg/arcade_triangle_l.svg");
+}
+
+.line {
+  top: var(--border-ratio);
+}
+.arcade_border {
+  height: 100%;
+  width: 6.5rem;
+  --gradient: linear-gradient(
+    to right,
+    #b7e4c7 33%,
+    #95d5b2 33%,
+    #95d5b2 66%,
+    #74c69d 66%,
+    #74c69d 100%
+  );
+  --border-angle-top: 6.1deg;
+  --border-angle-bot: -14deg;
+}
+
+.border_l {
+  left: 0;
+}
+
+.border_l::before {
+  content: "";
+  position: absolute;
+  height: var(--border-ratio);
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: var(--gradient);
+  transform: skew(var(--border-angle-top));
+}
+
+.border_l::after {
+  content: "";
+  position: absolute;
+  height: calc(100% - var(--border-ratio));
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  background: var(--gradient);
+  transform: skew(var(--border-angle-bot));
+}
+.border_r {
+  right: 0;
+}
+
+.border_r::before {
+  content: "";
+  position: absolute;
+  background: var(--gradient);
+  width: 100%;
+  height: var(--border-ratio);
+  top: 0;
+  right: 0;
+  transform: skew(calc(-1 * var(--border-angle-top))) rotate(0.5turn);
+}
+
+.border_r::after {
+  content: "";
+  position: absolute;
+  height: calc(100% - var(--border-ratio));
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  background: var(--gradient);
+  transform: skew(calc(-1 * var(--border-angle-bot))) rotate(0.5turn);
 }
 .middle_line {
   border: none;
@@ -124,6 +153,10 @@ const leftPadPosition = ref<DOMRect | undefined>(undefined);
   .home {
     grid-template-columns: 0 1fr 0;
   }
+  .arcade_border {
+    display: none;
+  }
+
   .arcade::before,
   .arcade::after {
     display: none;

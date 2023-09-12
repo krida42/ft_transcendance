@@ -38,7 +38,7 @@
           }"
         ></div>
       </div>
-      <div class="line w-[70%] h-[7px] absolute bg-[#74c69d]"></div>
+      <div class="line w-[75%] h-[7px] absolute bg-[#74c69d]"></div>
       <div class="arcade_border border_r right-0 absolute"></div>
     </div>
     <div class="right"></div>

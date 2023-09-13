@@ -54,7 +54,7 @@ import {
 } from "@vueuse/core";
 import { ref, onMounted } from "vue";
 // App.vue > script
-const { x: mouseX, y: mouseY } = useMouse();
+const { y: mouseY } = useMouse();
 const { width, height } = useWindowSize();
 const pongScreen = ref<HTMLElement | null>(null);
 const pongScreenPos = ref<DOMRect | undefined>(undefined);

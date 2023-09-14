@@ -4,11 +4,9 @@ import { AppModule } from './app/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerTheme } from 'swagger-themes';
 import * as session from 'express-session';
-import * as cookieSession from 'cookie-session';
-import { NestExpressApplication } from "@nestjs/platform-express"
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create(AppModule); 
 
   const config = new DocumentBuilder()
     .setTitle('ft_transcendence API')
@@ -27,27 +25,16 @@ async function bootstrap() {
   };
   SwaggerModule.setup('api', app, document, options);
 
+
   // Configuration du middleware express-session
-  // app.use(
-  //   session({
-  //     secret: 'your-secret-key',
-  //     resave: false,
-  //     saveUninitialized: false,
-  //   }),
-  // );
+  app.use(
+    session({
+      secret: 'your-secret-key',
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
 
-  app.set('trust proxy', 1) // trust first proxy
-
-  // Configuration du middleware cookie-session
-  app.use(cookieSession({
-    name: 'session',
-    keys: ['key1', 'key2'],
-  
-    // Cookie Options
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }))
-
-  
   // Configuration du middleware passport
   // const passport = require('passport');
   // app.use(passport.initialize());

@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseUUIDPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -46,7 +45,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return the user.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBadRequestResponse({ description: 'User not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
+  findOne(@Param('id') id: string): Promise<User> {
     return this.usersService.findOne(id);
   }
 
@@ -81,7 +80,7 @@ export class UsersController {
     format: 'uuid',
     description: 'UUIDv4 of the user',
   })
-  async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateUser(id, updateUserDto);
   }
 
@@ -93,7 +92,7 @@ export class UsersController {
     format: 'uuid',
     description: 'UUIDv4 of the user',
   })
-  async deleteUser(@Param('id', ParseUUIDPipe) id: string): Promise<number> {
+  async deleteUser(@Param('id') id: string): Promise<number> {
     return this.usersService.deleteUser(id);
   }
 }

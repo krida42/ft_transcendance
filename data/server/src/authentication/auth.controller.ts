@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Controller, Get, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -44,7 +39,7 @@ export class AuthController {
   @Get('logout')
   async logout(@Res() res) {
     // console.log(req.session);
-    
+
     res.redirect('/');
   }
 

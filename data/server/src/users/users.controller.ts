@@ -81,7 +81,10 @@ export class UsersController {
     format: 'uuid',
     description: 'UUIDv4 of the user',
   })
-  async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     return this.usersService.updateUser(id, updateUserDto);
   }
 

@@ -1,11 +1,11 @@
-import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app/app.module';
-import { ValidationPipe } from '@nestjs/common';
-import { SwaggerTheme } from 'swagger-themes';
-import * as session from 'express-session';
 import * as cookieSession from 'cookie-session';
-import { NestExpressApplication } from "@nestjs/platform-express"
+import * as session from 'express-session';
+import { AppModule } from './app/app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { NestFactory } from '@nestjs/core';
+import { SwaggerTheme } from 'swagger-themes';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -36,18 +36,19 @@ async function bootstrap() {
   //   }),
   // );
 
-  app.set('trust proxy', 1) // trust first proxy
+  app.set('trust proxy', 1); // trust first proxy for cookie-session mais pas sur que ce soit utile
 
-  // Configuration du middleware cookie-session
-  app.use(cookieSession({
-    name: 'session',
-    keys: ['key1', 'key2'],
-  
-    // Cookie Options
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }))
+  // Configuration du middleware cookie-session non utilisé pour l instant
+  app.use(
+    cookieSession({
+      name: 'session',
+      keys: ['key1', 'key2'],
 
-  
+      // Cookie Options
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    }),
+  );
+
   // Configuration du middleware passport
   // const passport = require('passport');
   // app.use(passport.initialize());

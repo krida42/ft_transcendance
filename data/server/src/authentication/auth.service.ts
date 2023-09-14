@@ -1,6 +1,6 @@
+import axios from 'axios';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Req } from '@nestjs/common';
-import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -8,7 +8,8 @@ export class AuthService {
 
   async getAuthorizationUrl(): Promise<string> {
     const clientId = '?client_id=' + process.env.FORTY_TWO_UID;
-    const redirectUri ='&redirect_uri=' + encodeURIComponent(process.env.CALLBACK_URL);
+    const redirectUri =
+      '&redirect_uri=' + encodeURIComponent(process.env.CALLBACK_URL);
     const responseType = '&response_type=code';
     const scope = '&scope=public';
     const state = '&state=some-random-string-of-your-choice';
@@ -55,7 +56,7 @@ export class AuthService {
     }
   }
 
-  async getUsersFrom42(accessToken:string, id:number): Promise<any> {
+  async getUsersFrom42(accessToken: string, id: number): Promise<any> {
     try {
       // Effectuez la demande GET pour obtenir les informations de l'utilisateur ID
       // const response = await axios.get(`https://api.intra.42.fr/v2/users?filter[id]=${id}`, {

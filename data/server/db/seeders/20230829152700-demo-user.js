@@ -4,19 +4,29 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('Users', [{
-      public_id: '201bebda-4681-11ee-be56-0242ac120002',
-      pseudo: 'JohnDoe',
-      password: 'password',
-      email: 'johnDoe@gmail.com',
-      display_name: 'John Doe'
+      fortyTwo_id: 1,
+      email: "vbarbier@gmail.com",
+      login: "vbarbier",
+      pseudo: "Vincent Barbier",
+      image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/vbarbier.jpg",
+      phone: "0631565656",
     },
   {
-    public_id: '201bebda-4681-11ee-be56-0242ac120003',
-    pseudo: 'JaneDoe',
-    password: 'password2',
-    email: 'janeDoe@gmail.com',
-    display_name: 'Jane Doe'
-  }],
+    fortyTwo_id: 2,
+    email: "sloquet@gmail.com",
+    login: "sloquet",
+    pseudo: "Sylvain Loquet",
+    image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/sloquet.jpg",
+    phone: "0622222222"
+  },
+  {
+    fortyTwo_id: 3,
+    email: "skhali",
+    login: "skhali",
+    pseudo: "Sofiane Khali",
+    image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/skhali.jpg",
+    phone: "0611111111"
+  },],
     );
   },
   down: (queryInterface, Sequelize) => {

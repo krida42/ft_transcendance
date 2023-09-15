@@ -20,11 +20,11 @@ export class UsersService {
   ) {}
 
   responseUser(user: User) {
-    const { public_id, pseudo, email } = user;
-    return { public_id, pseudo, email };
+    const { public_id, email, login, pseudo, image_link, phone } = user;
+    return { public_id, email, login, pseudo, image_link, phone };
   }
 
-  private attributesToRetrieve = ['public_id', 'pseudo', 'email'];
+  private attributesToRetrieve = ['public_id', 'email', 'login', 'pseudo', 'image_link', 'phone'];
 
   async findAll() {
     const users = await User.findAll({
@@ -42,9 +42,8 @@ export class UsersService {
       where: { public_id },
       attributes: this.attributesToRetrieve,
     });
-    if (!user) {
+    if (!user)
       throw new UserNotFoundException();
-    }
     return user;
   }
 
@@ -53,9 +52,8 @@ export class UsersService {
       where: { pseudo },
       attributes: this.attributesToRetrieve,
     });
-    if (!user) {
+    if (!user)
       throw new UserNotFoundException();
-    }
     return user;
   }
 
@@ -70,9 +68,6 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto) {
     try {
-      createUserDto.password = await PasswordService.hashPassword(
-        createUserDto.password,
-      );
       const user = await this.usersModel.create({
         public_id: uuidv4(),
         ...createUserDto,
@@ -85,10 +80,6 @@ export class UsersService {
 
   async updateUser(id: uuidv4, updateUserDto: UpdateUserDto) {
     if (!isUUID(id)) throw new InvalidUUIDException();
-    if (updateUserDto.password !== undefined)
-      updateUserDto.password = await PasswordService.hashPassword(
-        updateUserDto.password,
-      );
     try {
       const user = await this.usersModel.update(
         { ...updateUserDto },

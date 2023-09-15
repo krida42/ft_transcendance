@@ -1,22 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger'; // Importez ceci si vous utilisez Swagger pour la documentation
-import { IsNotEmpty, Length, IsEmail, IsOptional } from 'class-validator';
+import { IsNotEmpty, Length, IsEmail, IsOptional, isPhoneNumber } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
-  @Length(3, 20)
   @ApiProperty({
-    example: 'John Doe',
+    example: 95263,
     required: true,
   })
-  pseudo: string;
-
-  @IsNotEmpty()
-  @Length(3, 20)
-  @ApiProperty({
-    example: 'PASSword',
-    required: true,
-  })
-  password: string;
+  fortyTwo_id: number;
 
   @IsNotEmpty()
   @IsEmail()
@@ -27,31 +18,58 @@ export class CreateUserDto {
   email: string;
 
   @IsNotEmpty()
-  @Length(3, 20)
   @ApiProperty({
-    example: 'THE John Doe',
+    example: 'JDoe',
     required: true,
   })
-  display_name: string;
+  login: string;
+
+  @IsNotEmpty()
+  @Length(3, 20)
+  @ApiProperty({
+    example: 'John Doe',
+    required: true,
+  })
+  pseudo: string;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/JohnDoe.jpg',
+    required: true,
+  })
+  image_link: string;
+
+  @IsOptional()
+  @ApiProperty({
+    example: '0634441413',
+    required: false,
+  })
+  phone?: string;
 
   constructor(
-    pseudo: string,
-    password: string,
+    fortyTwo_id: number,
     email: string,
-    display_name: string,
+    login: string,
+    pseudo: string,
+    image_link: string,
+    phone?: string,
   ) {
-    this.pseudo = pseudo;
-    this.password = password;
+    this.fortyTwo_id = fortyTwo_id;
     this.email = email;
-    this.display_name = display_name;
+    this.login = login;
+    this.pseudo = pseudo;
+    this.image_link = image_link;
+    this.phone = phone;
   }
 
   static clone(source: CreateUserDto): CreateUserDto {
     const copy = new CreateUserDto(
-      source.pseudo,
-      source.password,
+      source.fortyTwo_id,
       source.email,
-      source.display_name,
+      source.login,
+      source.pseudo,
+      source.image_link,
+      source.phone,
     );
     return copy;
   }

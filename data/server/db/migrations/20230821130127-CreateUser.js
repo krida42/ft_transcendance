@@ -14,14 +14,10 @@ module.exports = {
         unique: true,
         defaultValue: Sequelize.literal('uuid_generate_v4()'),
       },
-      pseudo: {
-        type: Sequelize.STRING,
+      fortyTwo_id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         unique: true,
-      },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false,
       },
       email: {
         type: Sequelize.STRING,
@@ -29,9 +25,23 @@ module.exports = {
         unique: true,
         validate: { isEmail: true },
       },
-      display_name: {
+      login: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
+      },
+      pseudo: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      image_link: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      phone: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,

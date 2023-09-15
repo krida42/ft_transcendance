@@ -1,18 +1,18 @@
 <template>
-  <div class="home grid">
+  <div class="home grid h-[100vh]">
     <div class="left"></div>
     <div
       class="arcade min-h-[45rem] relative flex items-center flex-col justify-top"
     >
-      <div class="arcade_border border_l left-0 absolute"></div>
+      <div class="arcade_border border_l"></div>
       <h1>Pong</h1>
       <div
         ref="pongScreen"
-        class="pong_screen w-[85%] h-[40%] sm:w-[56%] sm:h-[40%] rounded-[40px] bg-black flex justify-between drop-shadow-lg"
+        class="pong_screen w-[85%] h-[40%] sm:w-[60%] sm:h-[40%] rounded-[40px] bg-black flex justify-between drop-shadow-lg"
       >
         <div
           ref="pad"
-          class="h-[15%] w-[1.5%] bg-white ml-[2.5rem] mt-[30px]"
+          class="right_pad h-[15%] w-[1.5%] bg-white ml-[2.5rem] mt-[30px]"
           v-bind="{
             style: {
               transform: `translateY(${leftPadTranslate}px)`,
@@ -30,7 +30,7 @@
           }"
         ></div>
         <div
-          class="h-[15%] w-[1.5%] bg-white mr-[2.5rem] mb-[30px] self-end"
+          class="left_pad h-[15%] w-[1.5%] bg-white mr-[2.5rem] mb-[30px] self-end"
           v-bind="{
             style: {
               transform: `translateY(${rightPadTranslate}px)`,
@@ -38,22 +38,35 @@
           }"
         ></div>
       </div>
-      <div class="line w-[75%] h-[7px] absolute bg-[#74c69d]"></div>
-      <div class="arcade_border border_r right-0 absolute"></div>
+      <div class="line w-[80%] h-[7px] absolute bg-[#74c69d]"></div>
+      <div class="arcade_border border_r"></div>
+      <div class="pong_buttons w-[65%] absolute top-[76%] flex justify-between">
+        <PongButton
+          :angle="90"
+          @mouseover="hovering = true"
+          @mouseleave="hovering = false"
+          :hovering="hovering"
+          >Play with friends</PongButton
+        >
+        <PongButton :angle="-90">Play random game</PongButton>
+      </div>
     </div>
     <div class="right"></div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import PongButton from "@/components/PongButton.vue";
 import {
   useMouse,
   useWindowSize,
   debouncedWatch,
   throttledWatch,
 } from "@vueuse/core";
+
 import { ref, onMounted } from "vue";
 // App.vue > script
+const hovering = ref(false);
 const { y: mouseY } = useMouse();
 const { width, height } = useWindowSize();
 const pongScreen = ref<HTMLElement | null>(null);
@@ -107,34 +120,12 @@ throttledWatch(
 
 <style lang="scss" scoped>
 .home {
-  grid-template-columns: 1fr minmax(40vw, 52rem) 1fr;
+  grid-template-columns: 1fr minmax(40vw, 45rem) 1fr;
 }
 
 .arcade {
   --border-ratio: 70%;
   background-color: #40916c;
-  z-index: -2;
-}
-
-.arcade::before,
-.arcade::after {
-  content: "";
-  position: absolute;
-  height: 100%;
-  width: 6rem;
-  mask-size: 100% 100%;
-  background-color: $green-bg;
-}
-
-.arcade::after {
-  right: 0;
-  z-index: -1;
-  mask-image: url("../assets/svg/arcade_triangle_r.svg");
-}
-
-.arcade::before {
-  left: 0;
-  mask-image: url("../assets/svg/arcade_triangle_l.svg");
 }
 
 .line {
@@ -142,6 +133,7 @@ throttledWatch(
 }
 
 .arcade_border {
+  position: absolute;
   height: 100%;
   width: 6rem;
   --gradient: linear-gradient(
@@ -156,12 +148,15 @@ throttledWatch(
   --border-angle-bot: -14deg;
 }
 
+.border_l {
+  left: 0;
+  transform: translateX(-95px);
+}
 .border_l::before,
 .border_l::after {
   content: "";
   position: absolute;
   width: 100%;
-  left: 0;
   background: var(--gradient);
 }
 
@@ -177,13 +172,15 @@ throttledWatch(
   transform: skew(var(--border-angle-bot));
 }
 
+.border_r {
+  right: 0;
+}
 .border_r::before,
 .border_r::after {
   content: "";
   position: absolute;
   background: var(--gradient);
   width: 100%;
-  right: 0;
 }
 
 .border_r::before {
@@ -208,6 +205,10 @@ throttledWatch(
     grid-template-columns: 0 1fr 0;
   }
 
+  .pong_buttons {
+    top: 70%;
+    width: 80%;
+  }
   .arcade_border {
     display: none;
   }

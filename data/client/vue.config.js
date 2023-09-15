@@ -2,6 +2,9 @@ const { defineConfig } = require("@vue/cli-service");
 const WebpackShellPluginNext = require("webpack-shell-plugin-next");
 
 module.exports = defineConfig({
+  // devServer: {
+  //   proxy: "http://localhost:10533"
+  // },
   transpileDependencies: true,
   css: {
     loaderOptions: {

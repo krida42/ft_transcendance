@@ -11,6 +11,8 @@ h1 {
   box-sizing: border-box;
 }
 
-body {
+html, body {
   background-color: $green-bg;
+  height: 100vh;
+  width: 100vw;
 }

@@ -1,11 +1,9 @@
 {
-  "blue": "#54A0CF",
+  "blue-my": "#54A0CF",
   "blue-light": "#CAE1EE",
   "blue-grey": "#536F8E",
-  "yellow": "#E3D03D",
-  "green": "#92C83C",
+  "yellow-my": "#E3D03D",
+  "green-my": "#92C83C",
   "green-light": "#ADD56C",
-  "white": "#FFFFFF",
-  "black": "#000000",
   "green-bg": "#D8F3DC"
 }

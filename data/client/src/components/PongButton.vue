@@ -28,7 +28,7 @@ const cssProps = computed(() => {
 }
 .pong-button:hover {
   //background-color: #74c69d;
-  background-color: $yellow;
+  background-color: $yellow-my;
   transform: rotate(var(--angle));
   transition: transform 0.5s;
 }

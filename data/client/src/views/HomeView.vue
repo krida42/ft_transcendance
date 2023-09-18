@@ -1,15 +1,10 @@
 <template>
   <div class="home grid h-[100vh]">
     <div class="left"></div>
-    <div
-      class="arcade min-h-[45rem] relative flex items-center flex-col justify-top"
-    >
+    <div class="arcade">
       <div class="arcade_border border_l"></div>
       <h1>Pong</h1>
-      <div
-        ref="pongScreen"
-        class="pong_screen w-[85%] h-[40%] sm:w-[60%] sm:h-[40%] rounded-[40px] bg-black flex justify-between drop-shadow-lg"
-      >
+      <div ref="pongScreen" class="pong_screen">
         <div
           ref="pad"
           class="right_pad h-[15%] w-[1.5%] bg-white ml-[2.5rem] mt-[30px]"
@@ -19,7 +14,7 @@
             },
           }"
         ></div>
-        <hr class="middle_line h-[80%] self-center" />
+        <hr class="middle_line" />
         <div
           ref="ball"
           class="pong_ball h-[0.5rem] w-[0.5rem] bg-white absolute top-[50px] left-[60px]"
@@ -38,16 +33,10 @@
           }"
         ></div>
       </div>
-      <div class="line w-[80%] h-[7px] absolute bg-[#74c69d]"></div>
+      <div class="line"></div>
       <div class="arcade_border border_r"></div>
       <div class="pong_buttons w-[65%] absolute top-[76%] flex justify-between">
-        <PongButton
-          :angle="90"
-          @mouseover="hovering = true"
-          @mouseleave="hovering = false"
-          :hovering="hovering"
-          >Play with friends</PongButton
-        >
+        <PongButton :angle="90">Play with friends</PongButton>
         <PongButton :angle="-90">Play random game</PongButton>
       </div>
     </div>
@@ -120,22 +109,43 @@ throttledWatch(
 
 <style lang="scss" scoped>
 .home {
-  grid-template-columns: 1fr minmax(40vw, 45rem) 1fr;
+  grid-template-columns: 1fr minmax(40vw, 50rem) 1fr;
 }
 
 .arcade {
   --border-ratio: 70%;
   background-color: #40916c;
+  min-height: 45rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: top;
+  gap: 1rem;
+}
+
+.pong_screen {
+  width: 60%;
+  height: 40%;
+  border-radius: 40px;
+  background-color: black;
+  display: flex;
+  justify-content: space-between;
+  filter: drop-shadow(5px 10px 10px rgb(0 0 0 / 0.3));
 }
 
 .line {
+  width: 80%;
+  height: 7px;
+  position: absolute;
+  background-color: #74c69d;
   top: var(--border-ratio);
 }
 
 .arcade_border {
   position: absolute;
   height: 100%;
-  width: 6rem;
+  width: 7rem;
   --gradient: linear-gradient(
     to right,
     #b7e4c7 33%,
@@ -198,16 +208,13 @@ throttledWatch(
 .middle_line {
   border: none;
   border-left: 3px dotted white;
+  height: 80%;
+  align-self: center;
 }
 
 @media (max-width: 640px) {
   .home {
     grid-template-columns: 0 1fr 0;
-  }
-
-  .pong_buttons {
-    top: 70%;
-    width: 80%;
   }
   .arcade_border {
     display: none;

@@ -10,7 +10,7 @@ export class AuthService {
 
     constructor(private readonly jwtService: JwtService) {}
 
-    async createInitialJwtToken(user: any): Promise<string> {
+    async generateJwtToken(user: any): Promise<string> {
       const payload = {
         id: user.userId,
         username: user.username,
@@ -21,12 +21,11 @@ export class AuthService {
       return this.jwtService.sign(payload);
     }
   
-    async login(user: any): Promise<any> {
+    async login(user: any) {
+      const payload = { username: user.username, sub: user._id };
       return {
-        access_token: this.jwtService.sign({
-          user: user, sub: 1
-        })
-      }
-    }
+          access_token: this.jwtService.sign(payload),
+      };
+  }
 
   }

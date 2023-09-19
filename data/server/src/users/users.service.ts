@@ -12,6 +12,9 @@ import {
   InvalidUUIDException,
   UserNotFoundException,
 } from 'src/exceptions';
+import { plainToClass } from 'class-transformer';
+import { ResponseUserDto } from './dto/reponseUser.dto';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -19,9 +22,11 @@ export class UsersService {
     private usersModel: typeof User,
   ) {}
 
-  responseUser(user: User) {
-    const { public_id, email, login, pseudo, image_link, phone } = user;
-    return { public_id, email, login, pseudo, image_link, phone };
+  async responseUser(user: User) {
+    const userDto = plainToClass(ResponseUserDto, user, {
+      excludeExtraneousValues: true,
+    });
+    return userDto;
   }
 
   private attributesToRetrieve = ['public_id', 'email', 'login', 'pseudo', 'image_link', 'phone'];
@@ -79,17 +84,16 @@ export class UsersService {
     return createUserDto;
   }
 
-  async findOrCreate(userData: any) {
+  async findOrCreate(userData: any): Promise<ResponseUserDto> {
     const user = await this.findByLogin(userData.login);
     if (!user)
     {
       const createUserDto = await this.userDataToCreateUserDto(userData);
-      console.log('create :', createUserDto.login)
       return this.createUser(createUserDto);
     }
     else
-      console.log('find :', userData.login)
-    return user;
+      console.log('find :', user.dataValues)
+    return await this.responseUser(user);
   }
 
   private handleUniqueConstraintError(error: any) {
@@ -101,13 +105,15 @@ export class UsersService {
     throw new Error(error);
   }
 
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto): Promise<ResponseUserDto> {
     try {
       const user = await this.usersModel.create({
         public_id: uuidv4(),
         ...createUserDto,
       });
-      return this.responseUser(user);
+      const responseUser = await this.responseUser(user);
+      console.log('create :', responseUser)
+      return responseUser;
     } catch (error) {
       this.handleUniqueConstraintError(error);
     }
@@ -133,7 +139,7 @@ export class UsersService {
     }
   }
 
-  async deleteUser(id: uuidv4) {
+  async deleteUser(id: uuidv4): Promise<number> {
     if (!isUUID(id)) throw new InvalidUUIDException();
     const user = await User.destroy({
       where: { public_id: id },

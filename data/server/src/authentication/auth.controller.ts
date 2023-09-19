@@ -5,23 +5,28 @@ import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/createUser.dto';
 
-@UseGuards(AuthGuard('42'))
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     private  AuthService: AuthService, 
     private UsersService: UsersService) {}
-
+    
+  @UseGuards(AuthGuard('42'))
   @Get('42')
-  async fortyTwoLogin(@Req() req) {
+  async fortyTwoLogin(@Req() req, @Res() res) {
+    const jwt = await this.AuthService.login(req.user);
+    console.log(jwt);
+    res.set('Authorization', jwt.access_token);
   }
   
+  @UseGuards(AuthGuard('42'))
   @Get('callback')
   @ApiTags('callback')
   async callback(@Req() req, @Res() res) {
     try {
       await this.UsersService.findOrCreate(req.user._json);
+
       res.redirect('/');
     } catch (error) {
       console.error(
@@ -36,17 +41,18 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @ApiTags('test')
   @ApiParam({ name: 'token' })
-  async data(@Req() req) {
-    console.log(req.user);
-    return 'success';
+  async data(@Req() req, @Res() res) {
+    console.log(req);
+    res.json('success');
   }
 
-  @Get('logout')
-  async logout(@Res() res) {
-    // console.log(req.session);
-
+  @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
+  async logout(@Req() req, @Res() res) {
+    req.logout();
     res.redirect('/');
   }
+
 
   @Get('error')
   async error(@Res() res) {

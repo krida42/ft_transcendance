@@ -2,7 +2,7 @@
   <div class="login text-white uppercase">
     <h1 class="pb-[1rem]">Pong</h1>
     <div
-      class="pong-screen w-[38rem] h-[26rem] m-auto rounded-[53px] bg-black flex items-center flex-col justify-center"
+      class="auth-screen w-[38rem] h-[26rem] m-auto rounded-[53px] bg-black flex items-center flex-col justify-center"
     >
       <p class="leading-none">
         Please sign in with <br />
@@ -69,7 +69,7 @@ useEventListener(auth_button, "click", () => {
   font-family: "VT323", monospace;
 }
 
-.pong-screen {
+.auth-screen {
   gap: 2.5rem;
 }
 
@@ -79,11 +79,11 @@ button:hover {
 }
 
 @media (max-width: 42rem) {
-  .pong-screen {
+  .auth-screen {
     width: 90vw;
     height: 70vw;
   }
-  .pong-screen {
+  .auth-screen {
     gap: 6vw;
   }
 }

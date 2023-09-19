@@ -1,0 +1,22 @@
+.pong-screen {
+	width: 65%;
+	height: 40%;
+	border-radius: 40px;
+	background-color: black;
+	filter: drop-shadow(5px 10px 10px rgb(0 0 0 / 0.3));
+	color: white;
+	font-family: "VT323";
+}
+
+@media (max-height: 780px) {
+	.pong-screen {
+	  width: 60%;
+	}
+  }
+  
+  @media (max-width: 640px) {
+	.pong-screen {
+	  width: 85%;
+	  height: 45%;
+	}
+  }

@@ -1,11 +1,10 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import HomeView from "../views/HomeView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "home",
-    component: HomeView,
+    redirect: "/main/home",
   },
   {
     path: "/about",
@@ -21,6 +20,23 @@ const routes: Array<RouteRecordRaw> = [
     name: "login",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/LoginView.vue"),
+  },
+  {
+    path: "/main",
+    name: "main",
+    component: () => import("../views/MainView.vue"),
+    children: [
+      {
+        path: "home",
+        name: "home",
+        component: () => import("../views/PongScreen/HomeView.vue"),
+      },
+      {
+        path: "friend-add",
+        name: "friendAdd",
+        component: () => import("../views/PongScreen/FriendAddView.vue"),
+      },
+    ],
   },
 ];
 

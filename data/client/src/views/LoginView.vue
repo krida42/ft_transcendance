@@ -8,7 +8,10 @@
         Please sign in with <br />
         42 to continue
       </p>
-      <button class="py-0 px-[1rem] border-2 border-white uppercase">
+      <button
+        ref="auth_button"
+        class="py-0 px-[1rem] border-2 border-white uppercase"
+      >
         Sign in
       </button>
       <img class="w-[4rem]" src="../assets/svg/42_logo.svg" />
@@ -16,7 +19,24 @@
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { ref } from "vue";
+import { useEventListener } from "@vueuse/core";
+import axios from "axios";
+
+const auth_button = ref<HTMLElement | null>(null);
+useEventListener(auth_button, "click", () => {
+  console.log("click");
+  axios
+    .get("http://localhost:3001/auth/42")
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+</script>
 
 <style lang="scss" scoped>
 .login {

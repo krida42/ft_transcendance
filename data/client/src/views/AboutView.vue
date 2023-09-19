@@ -28,7 +28,7 @@
 
 <script lang="ts" setup>
 import { Icon } from "@vicons/utils";
-import { User, Apple } from "@vicons/tabler";
+import { User } from "@vicons/tabler";
 import ChatBtnList from "@/components/ChatBtnList.vue";
 import ChatBtn from "@/components/ChatBtn.vue";
 // import MyIcon from "@/components/MyIcon.vue";

@@ -46,8 +46,6 @@ debouncedWatch(
 );
 
 useEventListener(gravity_button, "mousemove", (e) => {
-  console.log(e.clientX, e.clientY);
-  console.log(buttonPos.value);
   if (buttonPos.value) {
     const h = buttonPos.value.width / 2;
     const x = e.clientX - buttonPos.value.left - h;

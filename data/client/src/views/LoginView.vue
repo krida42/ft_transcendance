@@ -24,18 +24,41 @@ import { ref } from "vue";
 import { useEventListener } from "@vueuse/core";
 import axios from "axios";
 
+async function getAuthorizationUrl(): Promise<string> {
+  const clientId = "?client_id=" + process.env.VUE_APP_FORTY_TWO_UID;
+  const redirectUri =
+    "&redirect_uri=" + encodeURIComponent(process.env.VUE_APP_CALLBACK_URL);
+  const responseType = "&response_type=code";
+  const scope = "&scope=public";
+  const state = "&state=some-random-string-of-your-choice";
+
+  const authorizationURL = `${process.env.VUE_APP_FORTY_TWO_AUTH_URL}${clientId}${redirectUri}${responseType}${scope}${state}`;
+  return authorizationURL;
+}
+
+// console.log("env var: ", import.meta.env.VITE_API_URL")
+console.log("env var: ", process.env);
+
 const auth_button = ref<HTMLElement | null>(null);
 useEventListener(auth_button, "click", () => {
   console.log("click");
   axios.defaults.withCredentials = true;
-  axios
-    .get("http://localhost:3001/auth/42")
+  // axios
+  //   .get("http://localhost:3001/auth/42")
+  //   .then((res) => {
+  //     window.location.href = res.data;
+  //     console.log(res);
+  //   })
+  //   .catch((err) => {
+  //     console.log("my error: ", err.message);
+  //   });
+  getAuthorizationUrl()
     .then((res) => {
-      window.location.href = res.data;
+      window.location.href = res;
       console.log(res);
     })
     .catch((err) => {
-      console.log(err);
+      console.log("my error: ", err.message);
     });
 });
 </script>

@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
-import { CreateUserDto } from 'src/users/dto/createUser.dto';
+
 
 @ApiTags('auth')
 @Controller('auth')
@@ -14,10 +14,7 @@ export class AuthController {
     
   @UseGuards(AuthGuard('42'))
   @Get('42')
-  async fortyTwoLogin(@Req() req, @Res() res) {
-    const jwt = await this.AuthService.login(req.user);
-    console.log(jwt);
-    res.set('Authorization', jwt.access_token);
+  async fortyTwoLogin(@Res() res) {
   }
   
   @UseGuards(AuthGuard('42'))
@@ -26,7 +23,9 @@ export class AuthController {
   async callback(@Req() req, @Res() res) {
     try {
       await this.UsersService.findOrCreate(req.user._json);
-
+      const jwt = await this.AuthService.login(req.user);
+      console.log(jwt);
+      res.set('Authorization', jwt.access_token);
       res.redirect('/');
     } catch (error) {
       console.error(

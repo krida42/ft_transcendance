@@ -27,9 +27,11 @@ import axios from "axios";
 const auth_button = ref<HTMLElement | null>(null);
 useEventListener(auth_button, "click", () => {
   console.log("click");
+  axios.defaults.withCredentials = true;
   axios
     .get("http://localhost:3001/auth/42")
     .then((res) => {
+      window.location.href = res.data;
       console.log(res);
     })
     .catch((err) => {

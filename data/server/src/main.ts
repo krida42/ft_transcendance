@@ -28,31 +28,31 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document, options);
 
   // Configuration du middleware express-session
-  // app.use(
-  //   session({
-  //     secret: 'your-secret-key',
-  //     resave: false,
-  //     saveUninitialized: false,
-  //   }),
-  // );
-
-  app.set('trust proxy', 1); // trust first proxy for cookie-session mais pas sur que ce soit utile
-
-  // Configuration du middleware cookie-session non utilisé pour l instant
   app.use(
-    cookieSession({
-      name: 'session',
-      keys: ['key1', 'key2'],
-
-      // Cookie Options
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
     }),
   );
 
+  // app.set('trust proxy', 1); // trust first proxy for cookie-session mais pas sur que ce soit utile
+
+  // Configuration du middleware cookie-session non utilisé pour l instant
+  // app.use(
+  //   cookieSession({
+  //     name: 'session',
+  //     keys: ['key1', 'key2'],
+
+  //     // Cookie Options
+  //     maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  //   }),
+  // );
+
   // Configuration du middleware passport
-  // const passport = require('passport');
-  // app.use(passport.initialize());
-  // app.use(passport.session());
+  var passport = require('passport');
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   app.useGlobalPipes(new ValidationPipe());
 

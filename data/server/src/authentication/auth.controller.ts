@@ -1,31 +1,27 @@
-import { Controller, Get, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { UsersService } from 'src/users/users.service';
+import { CreateUserDto } from 'src/users/dto/createUser.dto';
 
+@UseGuards(AuthGuard('42'))
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private  AuthService: AuthService, 
+    private UsersService: UsersService) {}
 
-  @Get()
-  async redirectToFortyTwo(@Req() req, @Res() res) {
-    try {
-      // Rediriger l'utilisateur vers l'URL d'autorisation
-      // res.render('login');
-      const authorizationURL = await this.authService.getAuthorizationUrl();
-      return res.redirect(authorizationURL);
-    } catch (error) {
-      console.error("Erreur lors de la redirection vers l'API 42:", error);
-      throw error;
-    }
+  @Get('42')
+  async fortyTwoLogin(@Req() req) {
   }
-
+  
   @Get('callback')
-  async FortyTwoCallback(@Req() req, @Res() res) {
+  @ApiTags('callback')
+  async callback(@Req() req, @Res() res) {
     try {
-      const accessToken = await this.authService.getAccessToken(req);
-      const users = await this.authService.getUsersFrom42(accessToken, 95263);
-
+      await this.UsersService.findOrCreate(req.user._json);
       res.redirect('/');
     } catch (error) {
       console.error(
@@ -34,6 +30,15 @@ export class AuthController {
       );
       res.redirect('/error');
     }
+  }
+
+  @Get('test')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiTags('test')
+  @ApiParam({ name: 'token' })
+  async data(@Req() req) {
+    console.log(req.user);
+    return 'success';
   }
 
   @Get('logout')

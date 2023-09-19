@@ -5,26 +5,26 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('Users', [{
       fortyTwo_id: 1,
-      email: "vbarbier@gmail.com",
-      login: "vbarbier",
-      pseudo: "Vincent Barbier",
-      image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/vbarbier.jpg",
+      email: "vvbarbier@gmail.com",
+      login: "vvbarbier",
+      pseudo: "Vvincent Barbier",
+      image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/vvbarbier.jpg",
       phone: "0631565656",
     },
   {
     fortyTwo_id: 2,
-    email: "sloquet@gmail.com",
-    login: "sloquet",
-    pseudo: "Sylvain Loquet",
-    image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/sloquet.jpg",
+    email: "ssloquet@gmail.com",
+    login: "ssloquet",
+    pseudo: "Ssylvain Loquet",
+    image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/ssloquet.jpg",
     phone: "0622222222"
   },
   {
     fortyTwo_id: 3,
-    email: "skhali",
-    login: "skhali",
-    pseudo: "Sofiane Khali",
-    image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/skhali.jpg",
+    email: "sskhali",
+    login: "sskhali",
+    pseudo: "Ssofiane Khali",
+    image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/sskhali.jpg",
     phone: "0611111111"
   },],
     );

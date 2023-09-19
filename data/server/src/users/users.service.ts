@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UniqueConstraintError } from 'sequelize';
 import { isUUID } from 'class-validator';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { PasswordService } from './password.service';
+
 import {
   UniqueConstraintException,
   InvalidUUIDException,
@@ -54,6 +54,41 @@ export class UsersService {
     });
     if (!user)
       throw new UserNotFoundException();
+    return user;
+  }
+
+  async findByLogin(login: string) {
+    const user = await User.findOne({
+      where: { login },
+      attributes: this.attributesToRetrieve,
+    }); 
+    return user;
+  }
+
+  async userDataToCreateUserDto(userData: any): Promise<CreateUserDto> {
+    if (userData.phone === 'hidden')
+      userData.phone = null;
+    const createUserDto = new CreateUserDto(
+      userData.id,
+      userData.email,
+      userData.login,
+      userData.login,
+      userData.image.link,
+      userData.phone
+    );
+    return createUserDto;
+  }
+
+  async findOrCreate(userData: any) {
+    const user = await this.findByLogin(userData.login);
+    if (!user)
+    {
+      const createUserDto = await this.userDataToCreateUserDto(userData);
+      console.log('create :', createUserDto.login)
+      return this.createUser(createUserDto);
+    }
+    else
+      console.log('find :', userData.login)
     return user;
   }
 

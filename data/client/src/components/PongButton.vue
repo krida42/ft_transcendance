@@ -5,10 +5,10 @@
   >
     <p class="title text-black text-xl uppercase w-[10rem]"><slot></slot></p>
     <button
-      class="pong-button bg-[#3D5F86] w-[3.5rem] h-[3.5rem] rounded-[10rem] self-center drop-shadow-lg"
+      class="pong-button bg-blue-button w-[3.5rem] h-[3.5rem] rounded-[10rem] self-center drop-shadow-lg"
     >
       <div
-        class="button-top-indicator w-[0.2rem] h-[1rem] bg-white mx-auto mb-[1.5rem]"
+        class="button-top-indicator w-[0.2rem] h-[1rem] bg-white hover:bg-black mx-auto mb-[1.5rem]"
       ></div>
     </button>
   </div>
@@ -27,9 +27,15 @@ const cssProps = computed(() => {
   font-family: "Baumans", cursive;
 }
 .pong-button:hover {
-  //background-color: #74c69d;
-  background-color: $yellow-my;
+  background-color: $yellow-hover;
   transform: rotate(var(--angle));
   transition: transform 0.5s;
+}
+
+@media (max-width: 640px) {
+  .title {
+    width: 8rem;
+    font-size: 1rem;
+  }
 }
 </style>

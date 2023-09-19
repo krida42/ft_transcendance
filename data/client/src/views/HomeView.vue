@@ -1,6 +1,8 @@
 <template>
-  <div class="home grid h-[100vh]">
-    <div class="left"></div>
+  <div class="home">
+    <div class="left">
+      <MenuButton class="left-[2rem] top-[2rem]" svgName="pong-logo.svg" />
+    </div>
     <div class="arcade">
       <div class="arcade_border border_l"></div>
       <h1>Pong</h1>
@@ -35,27 +37,31 @@
       </div>
       <div class="line"></div>
       <div class="arcade_border border_r"></div>
-      <div class="pong_buttons w-[65%] absolute top-[76%] flex justify-between">
+      <div
+        class="pong_buttons w-[65%] absolute top-[76%] flex justify-center gap-[35%]"
+      >
         <PongButton :angle="90">Play with friends</PongButton>
         <PongButton :angle="-90">Play random game</PongButton>
       </div>
     </div>
-    <div class="right"></div>
+    <div class="right">
+      <MenuButton class="right-[2rem] top-[2rem]" svgName="profile.svg" />
+      <MenuButton class="right-[2rem] bottom-[2rem]" svgName="message.svg" />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import PongButton from "@/components/PongButton.vue";
+import MenuButton from "@/components/MenuButton.vue";
 import {
   useMouse,
   useWindowSize,
   debouncedWatch,
   throttledWatch,
 } from "@vueuse/core";
-
 import { ref, onMounted } from "vue";
 // App.vue > script
-const hovering = ref(false);
 const { y: mouseY } = useMouse();
 const { width, height } = useWindowSize();
 const pongScreen = ref<HTMLElement | null>(null);
@@ -109,13 +115,16 @@ throttledWatch(
 
 <style lang="scss" scoped>
 .home {
+  display: grid;
   grid-template-columns: 1fr minmax(40vw, 50rem) 1fr;
+  height: 100vh;
 }
 
 .arcade {
   --border-ratio: 70%;
-  background-color: #40916c;
+  background-color: $green-dark;
   min-height: 45rem;
+  max-height: 60rem;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -125,7 +134,7 @@ throttledWatch(
 }
 
 .pong_screen {
-  width: 60%;
+  width: 65%;
   height: 40%;
   border-radius: 40px;
   background-color: black;
@@ -138,7 +147,7 @@ throttledWatch(
   width: 80%;
   height: 7px;
   position: absolute;
-  background-color: #74c69d;
+  background-color: $green-my;
   top: var(--border-ratio);
 }
 
@@ -160,7 +169,7 @@ throttledWatch(
 
 .border_l {
   left: 0;
-  transform: translateX(-95px);
+  transform: translateX(-110px);
 }
 .border_l::before,
 .border_l::after {
@@ -212,9 +221,25 @@ throttledWatch(
   align-self: center;
 }
 
+// @media (min-height: 900px) {
+//   .home {
+//     grid-template-rows: 1vh 1fr 1vh;
+//     grid-template-columns: 1fr minmax(40vw, 50rem) 1fr;
+//   }
+//   .arcade {
+//     grid-row-start: 2;
+//     grid-column-start: 2;
+//   }
+// }
+
 @media (max-width: 640px) {
   .home {
     grid-template-columns: 0 1fr 0;
+  }
+
+  .pong_screen {
+    width: 85%;
+    height: 45%;
   }
   .arcade_border {
     display: none;

@@ -8,7 +8,7 @@
       class="pong-button bg-blue-button w-[3.5rem] h-[3.5rem] rounded-[10rem] self-center drop-shadow-lg"
     >
       <div
-        class="button-top-indicator w-[0.2rem] h-[1rem] bg-white hover:bg-black mx-auto mb-[1.5rem]"
+        class="button-top-indicator w-[0.2rem] h-[1rem] bg-white mx-auto mb-[1.5rem]"
       ></div>
     </button>
   </div>
@@ -26,10 +26,13 @@ const cssProps = computed(() => {
 .title {
   font-family: "Baumans", cursive;
 }
+
+.pong-button {
+  transition: all 0.3s ease-in;
+}
 .pong-button:hover {
   background-color: $yellow-hover;
   transform: rotate(var(--angle));
-  transition: transform 0.5s;
 }
 
 @media (max-width: 640px) {

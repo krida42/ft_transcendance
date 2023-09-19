@@ -1,21 +1,65 @@
 <template>
-  <button
-    class="button-menu w-[3.5rem] h-[3.5rem] z-10 bg-green-light rounded-full absolute drop-shadow-md"
+  <div
+    ref="gravity_button"
+    class="absolute grid place-items-center w-[150px] aspect-square rounded-[50%]"
   >
-    <img
-      class="m-auto w-[2rem]"
-      :src="require(`@/assets/svg/${svgName}`)"
-      alt="menu_button"
-    />
-  </button>
+    <button
+      class="button-menu w-[64px] aspect-square z-10 bg-green-light rounded-[50%] drop-shadow-md"
+      v-bind="{
+        style: {
+          transform: `translate(${tx}px, ${ty}px)`,
+        },
+      }"
+    >
+      <img
+        class="m-auto w-[2rem]"
+        :src="require(`@/assets/svg/${svgName}`)"
+        alt="menu_button"
+      />
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps } from "vue";
+import { useEventListener } from "@vueuse/core";
+import { ref, onMounted } from "vue";
+
 defineProps({ svgName: String });
+
+const gravity_button = ref<HTMLElement | null>(null);
+const buttonPos = ref<DOMRect | undefined>(undefined);
+const tx = ref<number>(0);
+const ty = ref<number>(0);
+
+onMounted(() => {
+  buttonPos.value = gravity_button?.value?.getBoundingClientRect();
+});
+
+useEventListener(gravity_button, "mousemove", (e) => {
+  console.log(e.clientX, e.clientY);
+  if (buttonPos.value) {
+    const h = buttonPos.value.width / 2;
+    const x = e.clientX - buttonPos.value.left - h;
+    const y = e.clientY - buttonPos.value.top - h;
+    const r1 = Math.sqrt(x * x + y * y);
+    const r2 = (1 - r1 / h) * r1;
+    const angle = Math.atan2(y, x);
+    tx.value = Math.round(Math.cos(angle) * r2 * 100) / 100;
+    ty.value = Math.round(Math.sin(angle) * r2 * 100) / 100;
+  }
+});
+
+useEventListener(gravity_button, "mouseleave", () => {
+  tx.value = 0;
+  ty.value = 0;
+});
 </script>
 
 <style lang="scss" scoped>
+.menu-button {
+  transition: all 0.3s ease-out;
+}
 .button-menu:hover {
   background-color: $yellow-hover;
 }

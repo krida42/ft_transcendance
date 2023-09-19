@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div class="left">
-      <MenuButton class="left-[2rem] top-[2rem]" svgName="pong-logo.svg" />
+      <MenuButton class="left-0 top-0" svgName="pong-logo.svg" />
     </div>
     <div class="arcade">
       <div class="arcade_border border_l"></div>
@@ -45,8 +45,8 @@
       </div>
     </div>
     <div class="right">
-      <MenuButton class="right-[2rem] top-[2rem]" svgName="profile.svg" />
-      <MenuButton class="right-[2rem] bottom-[2rem]" svgName="message.svg" />
+      <MenuButton class="right-0 top-0" svgName="profile.svg" />
+      <MenuButton class="right-0 bottom-0" svgName="message.svg" />
     </div>
   </div>
 </template>
@@ -84,7 +84,7 @@ debouncedWatch(
     padPos.value = pad?.value?.getBoundingClientRect();
     ballPos.value = ball?.value?.getBoundingClientRect();
   },
-  { debounce: 200 }
+  { debounce: 100 }
 );
 const leftPadTranslate = ref<number>(0);
 const rightPadTranslate = ref<number>(0);
@@ -130,7 +130,7 @@ throttledWatch(
   flex-direction: column;
   align-items: center;
   justify-content: top;
-  gap: 1rem;
+  gap: 1%;
 }
 
 .pong_screen {
@@ -231,6 +231,12 @@ throttledWatch(
 //     grid-column-start: 2;
 //   }
 // }
+
+@media (max-height: 780px) {
+  .pong_screen {
+    width: 60%;
+  }
+}
 
 @media (max-width: 640px) {
   .home {

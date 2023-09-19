@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div class="left">
-      <MenuButton class="left-0 top-0" svgName="pong-logo.svg" />
+      <MenuButton svgName="pong-logo.svg" />
     </div>
     <div class="arcade">
       <div class="arcade_border border_l"></div>
@@ -44,9 +44,9 @@
         <PongButton :angle="-90">Play random game</PongButton>
       </div>
     </div>
-    <div class="right">
-      <MenuButton class="right-0 top-0" svgName="profile.svg" />
-      <MenuButton class="right-0 bottom-0" svgName="message.svg" />
+    <div class="flex flex-col items-end justify-between">
+      <MenuButton svgName="profile.svg" />
+      <MenuButton svgName="message.svg" />
     </div>
   </div>
 </template>
@@ -95,18 +95,24 @@ throttledWatch(
   [mouseY],
   ([y]) => {
     if (pongScreenPos.value && padPos.value && ballPos.value) {
+      const padPosHCorrected = padPos.value.height - window.scrollY;
+      const pongScreenPosHCorrected =
+        pongScreenPos.value.height - window.scrollY;
+      const pongScreenPosWCorrected =
+        pongScreenPos.value.width - window.scrollY;
+      const ballPosHCorrected = ballPos.value.height - window.scrollY;
+      const ballPosWCorrected = ballPos.value.width - window.scrollY;
+
       leftPadTranslate.value =
-        (y / height.value) *
-        (pongScreenPos.value.height - padPos.value.height - 60);
+        (y / height.value) * (pongScreenPosHCorrected - padPosHCorrected - 60);
       rightPadTranslate.value =
-        -(y / height.value) *
-        (pongScreenPos.value.height - padPos.value.height - 60);
+        -(y / height.value) * (pongScreenPosHCorrected - padPosHCorrected - 60);
       ballTranslateX.value =
         (y / height.value) *
-        (pongScreenPos.value.width - ballPos.value.width - 120);
+        (pongScreenPosWCorrected - ballPosWCorrected - 120);
       ballTranslateY.value =
         (y / height.value) *
-        (pongScreenPos.value.height - ballPos.value.height - 120);
+        (pongScreenPosHCorrected - ballPosHCorrected - 120);
     }
   },
   { throttle: 1000 / 60 } //60fps

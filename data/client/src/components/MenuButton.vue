@@ -1,7 +1,7 @@
 <template>
   <div
     ref="gravity_button"
-    class="absolute grid place-items-center w-[150px] aspect-square rounded-[50%]"
+    class="grid place-items-center w-[150px] aspect-square rounded-[50%]"
   >
     <button
       class="button-menu w-[64px] aspect-square z-10 bg-green-light rounded-[50%] drop-shadow-md"
@@ -22,11 +22,12 @@
 
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { useEventListener } from "@vueuse/core";
+import { useEventListener, useWindowSize, debouncedWatch } from "@vueuse/core";
 import { ref, onMounted } from "vue";
 
 defineProps({ svgName: String });
 
+const { width, height } = useWindowSize();
 const gravity_button = ref<HTMLElement | null>(null);
 const buttonPos = ref<DOMRect | undefined>(undefined);
 const tx = ref<number>(0);
@@ -36,12 +37,21 @@ onMounted(() => {
   buttonPos.value = gravity_button?.value?.getBoundingClientRect();
 });
 
+debouncedWatch(
+  [width, height],
+  () => {
+    buttonPos.value = gravity_button?.value?.getBoundingClientRect();
+  },
+  { debounce: 200 }
+);
+
 useEventListener(gravity_button, "mousemove", (e) => {
   console.log(e.clientX, e.clientY);
+  console.log(buttonPos.value);
   if (buttonPos.value) {
     const h = buttonPos.value.width / 2;
     const x = e.clientX - buttonPos.value.left - h;
-    const y = e.clientY - buttonPos.value.top - h;
+    const y = e.clientY - (buttonPos.value.top - window.scrollY) - h;
     const r1 = Math.sqrt(x * x + y * y);
     const r2 = (1 - r1 / h) * r1;
     const angle = Math.atan2(y, x);

@@ -6,14 +6,15 @@
     <Icon class="rounded-full bg-black" size="50">
       <User />
     </Icon>
-    <ChatBtnList>
-      <!-- <ChatBtn start status="online">hey</ChatBtn>
+    <ChatMsg />
+    <!-- <ChatBtnList> -->
+    <!-- <ChatBtn start status="online">hey</ChatBtn>
       <ChatBtn status="offline">hey</ChatBtn>
       <ChatBtn status="online">heddy</ChatBtn>
       <ChatBtn end>hey</ChatBtn> -->
-      <ChatBtn start status="online">hey</ChatBtn>
-      <ChatBtn end status="online">Coucou toi comment ca va</ChatBtn>
-    </ChatBtnList>
+    <!-- <ChatBtn start status="online">hey</ChatBtn> -->
+    <!-- <ChatBtn end status="online">Coucou toi comment ca va</ChatBtn> -->
+    <!-- </ChatBtnList> -->
     <!-- <MyIcon>
       <Apple />
     </MyIcon> -->
@@ -31,5 +32,6 @@ import { Icon } from "@vicons/utils";
 import { User } from "@vicons/tabler";
 import ChatBtnList from "@/components/ChatBtnList.vue";
 import ChatBtn from "@/components/ChatBtn.vue";
+import ChatMsg from "@/components/ChatMsg.vue";
 // import MyIcon from "@/components/MyIcon.vue";
 </script>

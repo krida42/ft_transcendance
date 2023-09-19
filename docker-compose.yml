@@ -1,14 +1,14 @@
-version: '3.9'
+version: "3.9"
 
 services:
-#   client:
-#     build: requirements/client
-#     ports:
-#       - "8080:8080"
-#     volumes:
-#       - ./data/client:/app
-#     networks:
-#       - mynet
+  client:
+    build: requirements/client
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/client:/app
+    networks:
+      - mynet
 
   postgres:
     build: requirements/db
@@ -48,7 +48,7 @@ networks:
   mynet:
     ipam:
       config:
-        - subnet: '172.18.0.0/16'
+        - subnet: "172.18.0.0/16"
 
 volumes:
   postgres_data:

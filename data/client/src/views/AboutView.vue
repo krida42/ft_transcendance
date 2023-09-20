@@ -30,8 +30,6 @@
 <script lang="ts" setup>
 import { Icon } from "@vicons/utils";
 import { User } from "@vicons/tabler";
-import ChatBtnList from "@/components/ChatBtnList.vue";
-import ChatBtn from "@/components/ChatBtn.vue";
 import ChatMsg from "@/components/ChatMsg.vue";
 // import MyIcon from "@/components/MyIcon.vue";
 </script>

@@ -6,6 +6,19 @@
 	filter: drop-shadow(5px 10px 10px rgb(0 0 0 / 0.3));
 	color: white;
 	font-family: "VT323";
+	font-size: 1.7rem;
+	text-transform: uppercase;
+}
+
+.pong-screen-button {
+	padding: 0 1rem 0 1rem;
+	border: 2px solid white;
+	text-transform: uppercase;
+}
+
+.pong-screen-button:hover {
+	background-color: white;
+	color: black;
 }
 
 @media (max-height: 780px) {

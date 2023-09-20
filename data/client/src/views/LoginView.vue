@@ -8,12 +8,7 @@
         Please sign in with <br />
         42 to continue
       </p>
-      <button
-        ref="auth_button"
-        class="py-0 px-[1rem] border-2 border-white uppercase"
-      >
-        Sign in
-      </button>
+      <button ref="auth_button" class="pong-screen-button">Sign in</button>
       <img class="w-[4rem]" src="../assets/svg/42_logo.svg" />
     </div>
   </div>
@@ -71,11 +66,6 @@ useEventListener(auth_button, "click", () => {
 
 .auth-screen {
   gap: 2.5rem;
-}
-
-button:hover {
-  background-color: white;
-  color: black;
 }
 
 @media (max-width: 42rem) {

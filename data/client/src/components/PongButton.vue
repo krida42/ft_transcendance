@@ -6,6 +6,7 @@
     <p class="title text-black text-xl uppercase w-[10rem]"><slot></slot></p>
     <button
       class="pong-button bg-blue-button w-[3.5rem] h-[3.5rem] rounded-[10rem] self-center drop-shadow-lg"
+      @click="$emit('click')"
     >
       <div
         class="button-top-indicator w-[0.2rem] h-[1rem] bg-white mx-auto mb-[1.5rem]"

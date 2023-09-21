@@ -1,8 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger'; // Importez ceci si vous utilisez Swagger pour la documentation
-import { IsNotEmpty, Length, IsEmail, IsOptional, isPhoneNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  Length,
+  IsEmail,
+  IsOptional,
+  isPhoneNumber,
+} from 'class-validator';
 
 export class UpdateUserDto {
-  
   @IsOptional()
   @IsEmail()
   @ApiProperty({
@@ -21,7 +26,8 @@ export class UpdateUserDto {
 
   @IsOptional()
   @ApiProperty({
-    example: 'https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/JohnetteDoe.jpg',
+    example:
+      'https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/JohnetteDoe.jpg',
     required: false,
   })
   image_link: string;

@@ -7,6 +7,9 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -20,6 +23,8 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { UsersService } from './users.service';
 import { User } from 'db/models/user';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { v4 as uuidv4 } from 'uuid';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -31,12 +36,13 @@ export class UsersController {
   @ApiOperation({ summary: 'Find all users' })
   @ApiResponse({ status: 200, description: 'Return all users.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  findAll(@Query('bool') bool: string): Promise<User[]> {
+    if (bool)
+      return this.usersService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Find one user' })
+  @ApiOperation({ summary: 'Find one user by id' })
   @ApiParam({
     name: 'id',
     type: 'string',
@@ -46,7 +52,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return the user.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBadRequestResponse({ description: 'User not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
+  findOne(@Param('id', ParseUUIDPipe) id: uuidv4): Promise<User> {
     return this.usersService.findOne(id);
   }
 
@@ -99,4 +105,18 @@ export class UsersController {
   async deleteUser(@Param('id', ParseUUIDPipe) id: string): Promise<number> {
     return this.usersService.deleteUser(id);
   }
+
+  
+  @Get('roles/test')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiTags('test')
+  async test(@Req() req) {
+    try {
+      console.log('test');
+    } catch (error) {
+      console.log(error);
+    }
+    return 'test';
+  }
+
 }

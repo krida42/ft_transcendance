@@ -4,28 +4,28 @@ import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
 
-
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
-    private  AuthService: AuthService, 
-    private UsersService: UsersService) {}
-    
+    private AuthService: AuthService,
+    private UsersService: UsersService,
+  ) {}
+
   @UseGuards(AuthGuard('42'))
   @Get('42')
-  async fortyTwoLogin(@Res() res) {
-  }
-  
+  async fortyTwoLogin(@Res() res) {}
+
   @UseGuards(AuthGuard('42'))
   @Get('callback')
   @ApiTags('callback')
   async callback(@Req() req, @Res() res) {
     try {
-      await this.UsersService.findOrCreate(req.user._json);
-      const jwt = await this.AuthService.login(req.user);
-      console.log(jwt);
+      const user = await this.UsersService.findOrCreate(req.user._json);
+      const jwt = await this.AuthService.login(user);
       res.set('Authorization', jwt.access_token);
+      console.log(jwt);
+
       res.redirect('/');
     } catch (error) {
       console.error(
@@ -47,11 +47,10 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
+  @ApiParam({ name: 'token' })
   async logout(@Req() req, @Res() res) {
-    req.logout();
     res.redirect('/');
   }
-
 
   @Get('error')
   async error(@Res() res) {

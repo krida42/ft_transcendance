@@ -2,7 +2,7 @@ import { Transform, Expose } from 'class-transformer';
 // A completer avec ApiProperty
 export class ResponseUserDto {
   @Expose({ name: 'public_id' })
-  publicId: string;
+  public_id: string;
 
   @Expose()
   email: string;
@@ -14,7 +14,7 @@ export class ResponseUserDto {
   pseudo: string;
 
   @Expose({ name: 'image_link' })
-  imageLink: string;
+  image_link: string;
 
   @Expose()
   phone: string | null;

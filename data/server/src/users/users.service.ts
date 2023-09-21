@@ -29,7 +29,14 @@ export class UsersService {
     return userDto;
   }
 
-  private attributesToRetrieve = ['public_id', 'email', 'login', 'pseudo', 'image_link', 'phone'];
+  private attributesToRetrieve = [
+    'public_id',
+    'email',
+    'login',
+    'pseudo',
+    'image_link',
+    'phone',
+  ];
 
   async findAll() {
     const users = await User.findAll({
@@ -47,8 +54,7 @@ export class UsersService {
       where: { public_id },
       attributes: this.attributesToRetrieve,
     });
-    if (!user)
-      throw new UserNotFoundException();
+    if (!user) throw new UserNotFoundException();
     return user;
   }
 
@@ -57,8 +63,7 @@ export class UsersService {
       where: { pseudo },
       attributes: this.attributesToRetrieve,
     });
-    if (!user)
-      throw new UserNotFoundException();
+    if (!user) throw new UserNotFoundException();
     return user;
   }
 
@@ -66,33 +71,29 @@ export class UsersService {
     const user = await User.findOne({
       where: { login },
       attributes: this.attributesToRetrieve,
-    }); 
+    });
     return user;
   }
 
   async userDataToCreateUserDto(userData: any): Promise<CreateUserDto> {
-    if (userData.phone === 'hidden')
-      userData.phone = null;
+    if (userData.phone === 'hidden') userData.phone = null;
     const createUserDto = new CreateUserDto(
       userData.id,
       userData.email,
       userData.login,
       userData.login,
       userData.image.link,
-      userData.phone
+      userData.phone,
     );
     return createUserDto;
   }
 
   async findOrCreate(userData: any): Promise<ResponseUserDto> {
     const user = await this.findByLogin(userData.login);
-    if (!user)
-    {
+    if (!user) {
       const createUserDto = await this.userDataToCreateUserDto(userData);
       return this.createUser(createUserDto);
-    }
-    else
-      console.log('find :', user.dataValues)
+    } else console.log('find :', user.dataValues);
     return await this.responseUser(user);
   }
 
@@ -112,7 +113,7 @@ export class UsersService {
         ...createUserDto,
       });
       const responseUser = await this.responseUser(user);
-      console.log('create :', responseUser)
+      console.log('create :', responseUser);
       return responseUser;
     } catch (error) {
       this.handleUniqueConstraintError(error);

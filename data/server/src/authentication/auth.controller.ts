@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
+import { DeveloperGuard } from 'src/users/dev.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -37,11 +38,11 @@ export class AuthController {
   }
 
   @Get('test')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), DeveloperGuard)
   @ApiTags('test')
   @ApiParam({ name: 'token' })
   async data(@Req() req, @Res() res) {
-    console.log(req);
+    console.log(req.user);
     res.json('success');
   }
 

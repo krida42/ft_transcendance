@@ -7,10 +7,22 @@
       </Icon>
     </div>
     <div class="main">
-      <MsgItem />
+      <MsgItem
+        direction="in"
+        content="Salut je m'appel Adrien j'aime les gros chibre"
+        pseudo="Adrien"
+        :date="new Date()"
+        avatar="https://cdn.intra.42.fr/users/95f9dafeb1e78d2374207ab32c186d31/kisikaya.jpg"
+      />
+      <MsgItem
+        direction="out"
+        content="je sais surtut celui de Mathieu"
+        pseudo="Timothee"
+        :date="new Date()"
+      />
     </div>
     <div class="footer">
-      <input class="bg-gray-100" placeholder="Envoyer un message" type="text" />
+      <input class="bg-gray-100" placeholder="Send a message..." type="text" />
     </div>
   </div>
 </template>
@@ -62,6 +74,8 @@
 
 .main {
   display: flex;
+  flex-direction: column;
+  padding-inline: 0.5rem;
 }
 
 .footer {
@@ -69,9 +83,9 @@
   input {
     width: 95%;
     border-radius: 12px;
-    padding-block: 0.2rem;
+    padding-block: 0.3rem;
     // padding-left: 0.4rem;
-    padding-inline: 0.8rem;
+    padding-inline: 1.2rem;
   }
 }
 </style>
@@ -91,7 +105,7 @@ let positions = {
 
 let draggableContainer = ref<HTMLDivElement>();
 
-function dragMouseDown(event: any) {
+function dragMouseDown(event: MouseEvent) {
   event.preventDefault();
   // get the mouse cursor position at startup:
   positions.clientX = event.clientX;
@@ -99,17 +113,19 @@ function dragMouseDown(event: any) {
   document.onmousemove = elementDrag;
   document.onmouseup = closeDragElement;
 }
-function elementDrag(event: any) {
+function elementDrag(event: MouseEvent) {
   event.preventDefault();
   positions.movementY = positions.clientY - event.clientY;
   positions.movementX = positions.clientX - event.clientX;
   positions.clientX = event.clientX;
   positions.clientY = event.clientY;
+
+  if (!draggableContainer.value) return;
   // set the element's new position:
-  draggableContainer.value!.style.top =
-    draggableContainer.value!.offsetTop - positions.movementY + "px";
-  draggableContainer.value!.style.left =
-    draggableContainer.value!.offsetLeft - positions.movementX + "px";
+  draggableContainer.value.style.top =
+    draggableContainer.value.offsetTop - positions.movementY + "px";
+  draggableContainer.value.style.left =
+    draggableContainer.value.offsetLeft - positions.movementX + "px";
 }
 function closeDragElement() {
   document.onmouseup = null;

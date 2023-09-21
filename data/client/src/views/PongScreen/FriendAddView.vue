@@ -1,15 +1,15 @@
 <template>
-  <div class="pong-screen flex flex-col justify-top p-[5rem]">
+  <div class="pong-screen flex flex-col justify-center p-[1rem]">
     <p class="leading-tight">
       Type someone's login to send them a friend request
     </p>
-    <div class="form-wrapper flex justify-end">
+    <div class="form-wrapper flex justify-center my-[2.5rem] mx-auto">
       <form @submit.prevent="sendLoginInput">
         <input
           v-model="login"
           placeholder="login..."
           type="text"
-          class="bg-black border-[0.2rem] border-[#828287] px-2 my-[2.5rem] mr-[1rem]"
+          class="bg-black border-[0.2rem] border-[#828287] ml-[3rem] mr-[1rem]"
         />
       </form>
       <img
@@ -22,7 +22,10 @@
         "
       />
     </div>
-    <p :class="isValidlLogin ? 'text-green-my' : 'text-[#DA6C5D]'">
+    <p
+      :class="isValidlLogin ? 'text-green-my' : 'text-[#DA6C5D]'"
+      class="h-[0.5rem]"
+    >
       {{ loginMessage }}
     </p>
   </div>

@@ -1,3 +1,4 @@
+import { FriendsModule } from './../friends/friends.module';
 import { AuthService } from 'src/authentication/auth.service';
 import { PasswordService } from './../users/password.service';
 import { Module } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    FriendsModule,
     ConfigModule.forRoot({
       envFilePath: '../../.env',
     }),
@@ -38,4 +40,4 @@ import { JwtService } from '@nestjs/jwt';
   providers: [AuthService, JwtService, PasswordService, AppService],
   exports: [SequelizeModule], // pour que les autres modules puissent utiliser SequelizeModule
 })
-export class AppModule {}
+export class AppModule { }

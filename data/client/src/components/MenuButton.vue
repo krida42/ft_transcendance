@@ -10,6 +10,7 @@
           transform: `translate(${tx}px, ${ty}px)`,
         },
       }"
+      @click="$emit('click')"
     >
       <img
         class="m-auto w-[2rem]"

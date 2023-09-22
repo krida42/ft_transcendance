@@ -22,6 +22,12 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "about" */ "../views/LoginView.vue"),
   },
   {
+    path: "/dev",
+    name: "dev",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/DevView.vue"),
+  },
+  {
     path: "/main",
     name: "main",
     component: () => import("../views/MainView.vue"),
@@ -30,6 +36,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "home",
         name: "home",
         component: () => import("../views/PongScreen/HomeView.vue"),
+      },
+      {
+        path: "friendless",
+        name: "friendless",
+        component: () => import("../views/PongScreen/FriendlessView.vue"),
       },
       {
         path: "friend-add",

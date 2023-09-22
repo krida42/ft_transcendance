@@ -1,7 +1,10 @@
 <template>
   <div class="home">
     <div class="left">
-      <MenuButton svgName="pong-logo.svg" />
+      <MenuButton
+        svgName="pong-logo.svg"
+        @click="() => $router.push('/main/home')"
+      />
     </div>
     <div class="arcade">
       <div class="arcade_border border_l"></div>
@@ -12,11 +15,13 @@
       <div
         class="pong_buttons w-[65%] absolute top-[76%] flex justify-center gap-[35%]"
       >
-        <PongButton :angle="90">Play with friends</PongButton>
+        <PongButton :angle="90" @click="() => $router.push('/main/friendless')"
+          >Play with friends</PongButton
+        >
         <PongButton :angle="-90">Play random game</PongButton>
       </div>
     </div>
-    <div class="flex flex-col items-end justify-between">
+    <div class="right flex flex-col items-end justify-between">
       <MenuButton svgName="profile.svg" />
       <MenuButton svgName="message.svg" />
     </div>

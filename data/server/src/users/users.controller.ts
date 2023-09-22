@@ -37,7 +37,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return all users.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   findAll(@Query('bool') bool: string): Promise<User[]> {
-    if (bool)
+    if (bool === "true")
       return this.usersService.findAll();
   }
 

@@ -113,6 +113,8 @@ export class UsersService {
     try {
       if (isDev(createUserDto.login))
         createUserDto.roles = ['admin', 'dev'];
+      else
+        createUserDto.roles = ['user'];
       const user = await this.usersModel.create({
         public_id: uuidv4(),
         ...createUserDto,

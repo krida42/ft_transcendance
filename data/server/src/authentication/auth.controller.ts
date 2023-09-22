@@ -24,7 +24,8 @@ export class AuthController {
     try {
       const user = await this.UsersService.findOrCreate(req.user._json);
       const jwt = await this.AuthService.login(user);
-      res.set('Authorization', jwt.access_token);
+      // res.set('Authorization', jwt.access_token);
+      res.cookie('access_token', jwt.access_token, { httpOnly: true });
       console.log(jwt);
 
       res.redirect('/');

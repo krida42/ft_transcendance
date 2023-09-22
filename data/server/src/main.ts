@@ -7,6 +7,7 @@ import { SwaggerTheme } from 'swagger-themes';
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -58,6 +59,7 @@ async function bootstrap() {
   // app.set('trust proxy', 1); // trust first proxy for cookie-session mais pas sur que ce soit utile
 
   // Configuration du middleware cookie-session non utilisé pour l instant
+  app.use(cookieParser());
   // app.use(
   //   cookieSession({
   //     name: 'session',

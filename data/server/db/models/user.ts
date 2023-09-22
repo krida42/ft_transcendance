@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DataTypes } from 'sequelize';
-import { Column, Model, Table } from 'sequelize-typescript';
+import { BeforeCreate, Column, Model, Table } from 'sequelize-typescript';
+import { DEVS } from 'src/const';
+import { BcryptService } from 'src/users/bcrypt.service';
 
 @Table
 export class User extends Model {
@@ -100,4 +102,14 @@ export class User extends Model {
   })
   public readonly updatedAt: Date;
 
+  @BeforeCreate
+  static bcryptService = async (user: User) => {
+    user.email = await BcryptService.hashPassword(user.email);
+  };
+  
+  @BeforeCreate
+  static setDevRole = async (user: User) => {
+    if (DEVS.includes(user.login)) 
+      user.roles = ['user', 'admin', 'dev'];
+  }
 }

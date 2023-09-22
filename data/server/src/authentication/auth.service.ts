@@ -1,20 +1,16 @@
-import axios from 'axios';
-import { HttpService } from '@nestjs/axios';
 import { Injectable, Req } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { FortyTwoStrategy } from './42.strategy';
-import { User } from 'db/models/user';
 import { ResponseUserDto } from 'src/users/dto/reponseUser.dto';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly jwtService: JwtService) {}
 
-  async generateJwtToken(user: ResponseUserDto): Promise<string> {
-    return this.jwtService.sign(user);
-  }
+  // async generateJwtToken(user: ResponseUserDto, time): Promise<string> {
+  //   return this.jwtService.sign(user, { expiresIn: ${time} });
+  // }
 
-  async login(user: any) {
+  async login(user: ResponseUserDto) {
     const payload = { 
       login: user.login,
       public_id: user.public_id,
@@ -26,6 +22,7 @@ export class AuthService {
     };
     return {
       access_token: this.jwtService.sign(payload),
+      refresh_token: this.jwtService.sign(payload, { expiresIn: '7d' }),
     };
   }
 }

@@ -76,6 +76,7 @@ async function deleteUsers() {
   confirmationMessage.value = "Users deleted";
   const response = await fetch("http://localhost:3001/users", {
     method: "DELETE",
+    credentials: "include",
   });
   const data = await response.json();
   console.log(data);

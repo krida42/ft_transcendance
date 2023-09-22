@@ -15,8 +15,6 @@ import {
 import { plainToClass } from 'class-transformer';
 import { ResponseUserDto } from './dto/reponseUser.dto';
 import { isDev } from './dev.guard';
-import { hash } from 'bcrypt';
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -112,14 +110,8 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto): Promise<ResponseUserDto> {
     try {
-      if (isDev(createUserDto.login))
-        createUserDto.roles = ['admin', 'dev'];
-      else
-        createUserDto.roles = ['user'];
-      const hashEmail = await hash(createUserDto.email, 10);
       const user = await this.usersModel.create({
         public_id: uuidv4(),
-        email: hashEmail,
         ...createUserDto,
       });
       const responseUser = await this.responseUser(user);
@@ -140,8 +132,6 @@ export class UsersService {
       if (user[0] === 0) {
         throw new UserNotFoundException();
       }
-      if (updateUserDto.email)
-        updateUserDto.email = await hash(updateUserDto.email, 10);
       const UpdatedUser = await this.usersModel.findOne({
         where: { public_id: id },
         attributes: this.attributesToRetrieve,

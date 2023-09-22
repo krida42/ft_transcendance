@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -24,11 +24,10 @@ export class AuthController {
     try {
       const user = await this.UsersService.findOrCreate(req.user._json);
       const jwt = await this.AuthService.login(user);
-      // res.set('Authorization', jwt.access_token);
       res.cookie('access_token', jwt.access_token, { httpOnly: true });
-      console.log(jwt);
+      //refresh_token: jwt.refresh_token add to user
 
-      res.redirect('/');
+      return res.send('Authentification réussie !');
     } catch (error) {
       console.error(
         "Erreur lors de l'échange du code contre un jeton ou lors de la demande a l'API 42:",
@@ -44,6 +43,7 @@ export class AuthController {
   @ApiParam({ name: 'token' })
   async data(@Req() req, @Res() res) {
     console.log(req.user);
+    console.log(req.cookies);
     res.json('success');
   }
 
@@ -51,6 +51,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @ApiParam({ name: 'token' })
   async logout(@Req() req, @Res() res) {
+    res.clearCookie('access_token');
     res.redirect('/');
   }
 

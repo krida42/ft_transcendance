@@ -116,6 +116,7 @@ export class UsersController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async deleteAllUsers(): Promise<number> {
+    console.log('delete all users');
     return this.usersService.deleteAllUsers();
   }
 }

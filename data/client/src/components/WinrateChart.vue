@@ -13,8 +13,11 @@
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .winrate-chart {
+  --width: 160px;
+  --height: 160px;
+
   font-family: "Baumans", cursive;
   line-height: 1.7rem;
   display: flex;
@@ -22,41 +25,41 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  width: 300px;
-  height: 400px;
+  width: var(--width);
+  height: var(--height);
 }
 
 .camembert {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: var(--width);
+  height: var(--height);
 }
 
 .camembert svg {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: var(--width);
+  height: var(--height);
 }
 
 .camembert svg circle {
-  width: 150px;
-  height: 150px;
+  width: var(--width);
+  height: var(--height);
   fill: none;
-  stroke-width: 10;
+  stroke-width: 14;
   stroke: #000;
-  transform: translate(5px, 5px);
+  transform: translate(7px, 7px);
   stroke-dasharray: 440;
   stroke-dashoffset: 440;
   /* stroke-linecap: round; */
 }
 
 .camembert svg circle:nth-child(1) {
-  stroke: #da6c5d;
+  stroke: $red-my;
   stroke-dashoffset: 0;
 }
 
 .camembert svg circle:nth-child(2) {
-  stroke: #74c69d;
+  stroke: $green-my;
   stroke-dashoffset: calc(440 - (440 * var(--winrate)) / 100);
 }
 .number {
@@ -69,7 +72,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  transform: translate(0.2rem, 0.8rem);
+  transform: translate(0, 0.6rem);
 }
 
 .winrate {

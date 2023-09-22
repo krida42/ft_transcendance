@@ -6,6 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerTheme } from 'swagger-themes';
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -39,12 +40,12 @@ async function bootstrap() {
   //   next();
   // });
   //OU
-  // const corsOptions: CorsOptions = {
-  //   origin: 'http://localhost:8080', // Remplacez par l'URL de votre front-end
-  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  //   credentials: true, // Permet d'inclure les cookies dans la requête (si nécessaire)
-  // };
-  // app.enableCors(corsOptions);
+  const corsOptions: CorsOptions = {
+    origin: 'http://localhost:8080', // Remplacez par l'URL de votre front-end
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Permet d'inclure les cookies dans la requête (si nécessaire)
+  };
+  app.enableCors(corsOptions);
 
   // Configuration du middleware express-session
   app.use(

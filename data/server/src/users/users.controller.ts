@@ -23,8 +23,9 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { UsersService } from './users.service';
 import { User } from 'db/models/user';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { v4 as uuidv4 } from 'uuid';
+import { DeveloperGuard } from './dev.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -37,7 +38,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return all users.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   findAll(@Query('bool') bool: string): Promise<User[]> {
-    if (bool)
+    if (bool === 'true')
       return this.usersService.findAll();
   }
 
@@ -104,5 +105,17 @@ export class UsersController {
   })
   async deleteUser(@Param('id', ParseUUIDPipe) id: string): Promise<number> {
     return this.usersService.deleteUser(id);
+  }
+
+  @Delete()
+  @UseGuards(AuthGuard('jwt'), DeveloperGuard)
+  @ApiOperation({ summary: 'Delete all users' })
+  @ApiResponse({
+    status: 200,
+    description: 'All users have been successfully deleted.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  async deleteAllUsers(): Promise<number> {
+    return this.usersService.deleteAllUsers();
   }
 }

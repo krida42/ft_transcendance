@@ -18,4 +18,7 @@ export class ResponseUserDto {
 
   @Expose()
   phone: string | null;
+
+  @Expose()
+  roles: string[];
 }

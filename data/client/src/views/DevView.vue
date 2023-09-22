@@ -74,10 +74,10 @@ function deleteConfirmation() {
 async function deleteUsers() {
   showConfirmation.value = false;
   confirmationMessage.value = "Users deleted";
-  // const response = await fetch("http://localhost:3000/api/users", {
-  //   method: "DELETE",
-  // });
-  // const data = await response.json();
-  // console.log(data);
+  const response = await fetch("http://localhost:3001/users", {
+    method: "DELETE",
+  });
+  const data = await response.json();
+  console.log(data);
 }
 </script>

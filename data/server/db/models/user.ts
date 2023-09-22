@@ -77,6 +77,15 @@ export class User extends Model {
 
   @ApiProperty()
   @Column({
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: false,
+    field: 'roles',
+    defaultValue: ['user'],
+  })
+  public roles: string[];
+
+  @ApiProperty()
+  @Column({
     type: DataTypes.DATE,
     allowNull: false,
     field: 'createdAt', 

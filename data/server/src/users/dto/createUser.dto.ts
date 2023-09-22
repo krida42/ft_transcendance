@@ -6,6 +6,7 @@ import {
   IsOptional,
   isPhoneNumber,
 } from 'class-validator';
+import { Is } from 'sequelize-typescript';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -53,6 +54,13 @@ export class CreateUserDto {
   })
   phone?: string;
 
+  @IsOptional()
+  @ApiProperty({
+    example: 'user',
+    required: false,
+  })
+  roles?: string[];
+
   constructor(
     fortyTwo_id: number,
     email: string,
@@ -60,6 +68,7 @@ export class CreateUserDto {
     pseudo: string,
     image_link: string,
     phone?: string,
+    roles?: string[],
   ) {
     this.fortyTwo_id = fortyTwo_id;
     this.email = email;
@@ -67,6 +76,7 @@ export class CreateUserDto {
     this.pseudo = pseudo;
     this.image_link = image_link;
     this.phone = phone;
+    this.roles = roles;
   }
 
   static clone(source: CreateUserDto): CreateUserDto {
@@ -77,6 +87,7 @@ export class CreateUserDto {
       source.pseudo,
       source.image_link,
       source.phone,
+      source.roles,
     );
     return copy;
   }

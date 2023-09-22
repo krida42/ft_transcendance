@@ -2,7 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
 const devs = ["vbarbier", "sloquet", "skhali", "mvue", "kisikaya"];
-function isdev(login: string): boolean {
+export function isDev(login: string): boolean {
   for (let i = 0; i < devs.length; i++) {
     if (login === devs[i])
       return true;
@@ -18,8 +18,8 @@ export class DeveloperGuard implements CanActivate {
     const user = request.user;
     const login = user.payload.login;
     console.log("DeveloperGuard: " + login);
-    console.log("Is dev: " + isdev(login));
-    if (user && isdev(login)) {
+    console.log("Is dev: " + isDev(login));
+    if (user && isDev(login)) {
       return true;
     }
     return false;

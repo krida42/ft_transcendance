@@ -14,6 +14,7 @@ import {
 } from 'src/exceptions';
 import { plainToClass } from 'class-transformer';
 import { ResponseUserDto } from './dto/reponseUser.dto';
+import { isDev } from './dev.guard';
 
 @Injectable()
 export class UsersService {
@@ -36,6 +37,7 @@ export class UsersService {
     'pseudo',
     'image_link',
     'phone',
+    'roles',
   ];
 
   async findAll() {
@@ -84,6 +86,7 @@ export class UsersService {
       userData.login,
       userData.image.link,
       userData.phone,
+      userData.roles,
     );
     return createUserDto;
   }
@@ -108,6 +111,8 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto): Promise<ResponseUserDto> {
     try {
+      if (isDev(createUserDto.login))
+        createUserDto.roles = ['admin', 'dev'];
       const user = await this.usersModel.create({
         public_id: uuidv4(),
         ...createUserDto,
@@ -149,5 +154,13 @@ export class UsersService {
       throw new UserNotFoundException();
     }
     return user;
+  }
+
+  async deleteAllUsers(): Promise<number> {
+    const users = await User.destroy({
+      where: {},
+    });
+    console.log(`${users} users deleted`);
+    return users;
   }
 }

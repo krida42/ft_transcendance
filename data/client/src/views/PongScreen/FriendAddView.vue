@@ -25,7 +25,7 @@
       />
     </div>
     <p
-      :class="isValidlLogin ? 'text-green-my' : 'text-[#DA6C5D]'"
+      :class="isValidlLogin ? 'text-green-my' : 'text-red-my'"
       class="h-[0.5rem]"
     >
       {{ loginMessage }}

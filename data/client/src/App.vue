@@ -2,7 +2,8 @@
   <nav>
     <router-link to="/main/home">Home</router-link> |
     <router-link to="/about">About</router-link> |
-    <router-link to="/login">Login</router-link>
+    <router-link to="/login">Login</router-link> |
+    <router-link to="/profile">Profile</router-link>
   </nav>
   <router-view />
 </template>
@@ -17,7 +18,7 @@
 }
 
 nav {
-  position: fixed;
+  position: absolute;
   left: 40%;
   padding: 30px;
   z-index: 100;

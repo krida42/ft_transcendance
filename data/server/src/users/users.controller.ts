@@ -105,18 +105,4 @@ export class UsersController {
   async deleteUser(@Param('id', ParseUUIDPipe) id: string): Promise<number> {
     return this.usersService.deleteUser(id);
   }
-
-  
-  @Get('roles/test')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiTags('test')
-  async test(@Req() req) {
-    try {
-      console.log('test');
-    } catch (error) {
-      console.log(error);
-    }
-    return 'test';
-  }
-
 }

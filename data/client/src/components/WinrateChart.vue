@@ -50,7 +50,7 @@
   transform: translate(7px, 7px);
   stroke-dasharray: 440;
   stroke-dashoffset: 440;
-  /* stroke-linecap: round; */
+  //   stroke-linecap: round;
 }
 
 .camembert svg circle:nth-child(1) {
@@ -60,8 +60,17 @@
 
 .camembert svg circle:nth-child(2) {
   stroke: $green-my;
-  stroke-dashoffset: calc(440 - (440 * var(--winrate)) / 100);
+  stroke-dashoffset: 440;
+  animation: dash 2s linear forwards;
 }
+//;
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: var(--pieEndPos);
+  }
+}
+
 .number {
   position: absolute;
   top: 0;
@@ -94,9 +103,15 @@
 import { defineProps, computed } from "vue";
 
 const props = defineProps({
-  winrate: Number,
+  winrate: {
+    type: Number,
+    required: true,
+  },
 });
 const cssProps = computed(() => {
-  return { "--winrate": props.winrate };
+  return {
+    "--winrate": props.winrate,
+    "--pieEndPos": Math.round(440 - (440 * props.winrate) / 100),
+  };
 });
 </script>

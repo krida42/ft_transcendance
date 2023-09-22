@@ -47,13 +47,13 @@ async function bootstrap() {
   // app.enableCors(corsOptions);
 
   // Configuration du middleware express-session
-  // app.use(
-  //   session({
-  //     secret: process.env.SESSION_SECRET,
-  //     resave: false,
-  //     saveUninitialized: false,
-  //   }),
-  // );
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
   // app.set('trust proxy', 1); // trust first proxy for cookie-session mais pas sur que ce soit utile
 
   // Configuration du middleware cookie-session non utilisé pour l instant

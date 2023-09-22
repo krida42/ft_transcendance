@@ -1,5 +1,5 @@
 import { AuthService } from 'src/authentication/auth.service';
-import { PasswordService } from './../users/password.service';
+
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from 'src/authentication/auth.module';
 import { HttpModule } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
+import { BcryptService } from 'src/users/bcrypt.service';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { JwtService } from '@nestjs/jwt';
     HttpModule,
   ],
   controllers: [AppController],
-  providers: [AuthService, JwtService, PasswordService, AppService],
+  providers: [AuthService, JwtService, BcryptService, AppService],
   exports: [SequelizeModule], // pour que les autres modules puissent utiliser SequelizeModule
 })
 export class AppModule {}

@@ -1,9 +1,8 @@
 import { Controller, Get, Post, Req, Res, UseGuards, HttpStatus } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService, userToPayload } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
-import { DeveloperGuard } from 'src/users/dev.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -24,9 +23,9 @@ export class AuthController {
     try {
       const user = await this.UsersService.findOrCreate(req.user._json);
       const jwt = await this.AuthService.login(user);
-      res.cookie('access_token', jwt.access_token, { httpOnly: true });
-      //refresh_token: jwt.refresh_token add to user
+      await this.UsersService.updateUser(user.public_id, {refreshToken: jwt.refreshToken});
 
+      res.cookie('access_token', jwt.access_token, { httpOnly: true });
       return res.send('Authentification réussie !');
     } catch (error) {
       console.error(
@@ -38,21 +37,30 @@ export class AuthController {
   }
 
   @Get('test')
-  @UseGuards(AuthGuard('jwt'), DeveloperGuard)
+  @UseGuards(AuthGuard('jwt'))
   @ApiTags('test')
   @ApiParam({ name: 'token' })
   async data(@Req() req, @Res() res) {
-    console.log(req.user);
-    console.log(req.cookies);
+    console.log('req.user:', req.user);
+    console.log('req.cookies', req.cookies);
     res.json('success');
   }
+
 
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
   @ApiParam({ name: 'token' })
   async logout(@Req() req, @Res() res) {
+    this.AuthService.logout(req.user.payload);
     res.clearCookie('access_token');
-    res.redirect('/');
+  }
+
+  @Post('refresh')
+  @UseGuards(AuthGuard('jwt-refresh'))
+  async refresh(@Req() req, @Res() res) {
+    const jwt = await this.AuthService.refresh(req.user);
+    res.cookie('access_token', jwt.access_token, { httpOnly: true });
+    res.status(HttpStatus.OK).json({ message: 'Refresh réussi' });
   }
 
   @Get('error')

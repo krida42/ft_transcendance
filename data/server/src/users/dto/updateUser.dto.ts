@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'; // Importez ceci si vous utilisez Swagger pour la documentation
+
 import {
   IsNotEmpty,
   Length,
@@ -14,7 +15,7 @@ export class UpdateUserDto {
     example: 'JohnetteDoe@gmail.com',
     required: false,
   })
-  email: string;
+  email?: string;
 
   @IsOptional()
   @Length(3, 20)
@@ -22,7 +23,7 @@ export class UpdateUserDto {
     example: 'Johnette Doe',
     required: false,
   })
-  pseudo: string;
+  pseudo?: string;
 
   @IsOptional()
   @ApiProperty({
@@ -30,7 +31,7 @@ export class UpdateUserDto {
       'https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/JohnetteDoe.jpg',
     required: false,
   })
-  image_link: string;
+  image_link?: string;
 
   @IsOptional()
   @ApiProperty({
@@ -39,15 +40,24 @@ export class UpdateUserDto {
   })
   phone?: string;
 
+  @IsOptional()
+  @ApiProperty({
+    example: 'odjqwpdpfjef@E2oerkp',
+    required: false,
+  })
+  refreshToken?: string;
+
   constructor(
     email?: string,
     pseudo?: string,
     image_link?: string,
     phone?: string,
+    refreshToken?: string,
   ) {
     this.email = email;
     this.pseudo = pseudo;
     this.image_link = image_link;
     this.phone = phone;
+    this.refreshToken = refreshToken;
   }
 }

@@ -5,8 +5,10 @@
       <button @click="deleteConfirmation" class="button-style dev-button">
         Delete all users
       </button>
-      <button class="button-style dev-button">Dev</button>
-      <button class="button-style dev-button">Dev</button>
+      <button @click="refreshToken" class="button-style dev-button">
+        Refresh token
+      </button>
+      <button @click="logout" class="button-style dev-button">Logout</button>
       <button class="button-style dev-button">Dev</button>
     </div>
     <div
@@ -76,6 +78,29 @@ async function deleteUsers() {
   confirmationMessage.value = "Users deleted";
   const response = await fetch("http://localhost:3001/users", {
     method: "DELETE",
+    credentials: "include",
+  });
+  const data = await response.json();
+  console.log(data);
+}
+
+// function refreshConfirmation() {
+//   confirmationMessage.value = "";
+//   showConfirmation.value = true;
+// }
+
+async function refreshToken() {
+  const response = await fetch("http://localhost:3001/auth/refresh", {
+    method: "POST",
+    credentials: "include",
+  });
+  const data = await response.json();
+  console.log(data);
+}
+
+async function logout() {
+  const response = await fetch("http://localhost:3001/auth/logout", {
+    method: "POST",
     credentials: "include",
   });
   const data = await response.json();

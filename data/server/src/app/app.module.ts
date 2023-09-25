@@ -9,7 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from 'src/authentication/auth.module';
 import { HttpModule } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
-import { BcryptService } from 'src/users/bcrypt.service';
+import { BcryptService } from 'src/tools/bcrypt.service';
 
 @Module({
   imports: [
@@ -39,4 +39,5 @@ import { BcryptService } from 'src/users/bcrypt.service';
   providers: [AuthService, JwtService, BcryptService, AppService],
   exports: [SequelizeModule], // pour que les autres modules puissent utiliser SequelizeModule
 })
-export class AppModule {}
+export class AppModule {
+}

@@ -54,7 +54,7 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBadRequestResponse({ description: 'User not found' })
   findOne(@Param('id', ParseUUIDPipe) id: uuidv4): Promise<User> {
-    return this.usersService.findOne(id);
+    return this.usersService.findById(id);
   }
 
   @Get('pseudo/:pseudo')

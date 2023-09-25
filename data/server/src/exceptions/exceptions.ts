@@ -17,3 +17,15 @@ export class UserNotFoundException extends HttpException {
     super('User not found', HttpStatus.NOT_FOUND);
   }
 }
+
+export class InvalidTokenException extends HttpException {
+  constructor() {
+    super('Invalid token', HttpStatus.UNAUTHORIZED);
+  }
+}
+
+export class ExpiredTokenException extends HttpException {
+  constructor() {
+    super('Expired token', HttpStatus.UNAUTHORIZED);
+  }
+}

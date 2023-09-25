@@ -8,6 +8,9 @@ import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import * as cookieParser from 'cookie-parser';
+import { CustomExceptionFilter } from './exceptions/exceptions.middleware';
+import { RefreshMiddleware } from './authentication/refresh.middleware';
+import { AuthService } from './authentication/auth.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -75,7 +78,8 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe(),);
+  app.useGlobalFilters(new CustomExceptionFilter());
 
   await app.listen(3001);
 }

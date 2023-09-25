@@ -11,10 +11,17 @@ import {
   UniqueConstraintException,
   InvalidUUIDException,
   UserNotFoundException,
-} from 'src/exceptions';
+} from 'src/exceptions/exceptions';
 import { plainToClass } from 'class-transformer';
 import { ResponseUserDto } from './dto/reponseUser.dto';
-import { isDev } from './dev.guard';
+
+
+export async function responseUser(user: User) {
+  const userDto = plainToClass(ResponseUserDto, user, {
+    excludeExtraneousValues: true,
+  });
+  return userDto;
+}
 @Injectable()
 export class UsersService {
   constructor(
@@ -22,12 +29,6 @@ export class UsersService {
     private usersModel: typeof User,
   ) {}
 
-  async responseUser(user: User) {
-    const userDto = plainToClass(ResponseUserDto, user, {
-      excludeExtraneousValues: true,
-    });
-    return userDto;
-  }
 
   private attributesToRetrieve = [
     'public_id',
@@ -41,14 +42,14 @@ export class UsersService {
 
   async findAll() {
     const users = await User.findAll({
-      attributes: this.attributesToRetrieve,
+      // attributes: this.attributesToRetrieve,
     });
     console.log(users.every((user) => user instanceof User)); // true
     console.log('All users:', JSON.stringify(users, null, 2));
     return users;
   }
 
-  async findOne(id: uuidv4) {
+  async findById(id: uuidv4) {
     const public_id = id;
     if (!isUUID(public_id)) throw new InvalidUUIDException();
     const user = await User.findOne({
@@ -96,7 +97,7 @@ export class UsersService {
       const createUserDto = await this.userDataToCreateUserDto(userData);
       return this.createUser(createUserDto);
     } else console.log('find :', user.dataValues);
-    return await this.responseUser(user);
+    return await responseUser(user);
   }
 
   private handleUniqueConstraintError(error: any) {
@@ -114,9 +115,9 @@ export class UsersService {
         public_id: uuidv4(),
         ...createUserDto,
       });
-      const responseUser = await this.responseUser(user);
+      const resUser = await responseUser(user);
       console.log('create :', responseUser);
-      return responseUser;
+      return resUser;
     } catch (error) {
       this.handleUniqueConstraintError(error);
     }
@@ -125,6 +126,8 @@ export class UsersService {
   async updateUser(id: uuidv4, updateUserDto: UpdateUserDto) {
     if (!isUUID(id)) throw new InvalidUUIDException();
     try {
+      console.log('update :', updateUserDto);
+      console.log('id :', id);
       const user = await this.usersModel.update(
         { ...updateUserDto },
         { where: { public_id: id } },
@@ -136,7 +139,7 @@ export class UsersService {
         where: { public_id: id },
         attributes: this.attributesToRetrieve,
       });
-      return { message: user, user: this.responseUser(UpdatedUser) };
+      return { message: user, user: responseUser(UpdatedUser) };
     } catch (error) {
       this.handleUniqueConstraintError(error);
     }

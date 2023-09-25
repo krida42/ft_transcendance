@@ -1,12 +1,14 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from 'src/users/users.module';
 import { PassportModule } from '@nestjs/passport';
-import { FortyTwoStrategy } from './42.strategy';
+import { FortyTwoStrategy } from './strategy/42.strategy';
 import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './strategy/jwt.strategy';
+import { RefreshJwtStrategy } from './strategy/refreshToken.strategy';
+import { RefreshMiddleware } from './refresh.middleware';
 
 @Module({
   imports: [
@@ -19,7 +21,11 @@ import { JwtStrategy } from './jwt.strategy';
     HttpModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, FortyTwoStrategy],
+  providers: [AuthService, JwtStrategy, RefreshJwtStrategy, FortyTwoStrategy],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RefreshMiddleware).forRoutes('*');
+  }
+}

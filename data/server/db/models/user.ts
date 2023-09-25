@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DataTypes } from 'sequelize';
-import { BeforeCreate, Column, Model, Table } from 'sequelize-typescript';
+import { AfterCreate, BeforeCreate, Column, Model, Table } from 'sequelize-typescript';
 import { DEVS } from 'src/const';
-import { BcryptService } from 'src/users/bcrypt.service';
+import { BcryptService } from 'src/tools/bcrypt.service';
 
 @Table
 export class User extends Model {
@@ -88,6 +88,14 @@ export class User extends Model {
 
   @ApiProperty()
   @Column({
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'refreshToken',
+  })
+  public refreshToken: string;
+
+  @ApiProperty()
+  @Column({
     type: DataTypes.DATE,
     allowNull: false,
     field: 'createdAt', 
@@ -102,7 +110,7 @@ export class User extends Model {
   })
   public readonly updatedAt: Date;
 
-  @BeforeCreate
+  @AfterCreate
   static bcryptService = async (user: User) => {
     user.email = await BcryptService.hashPassword(user.email);
   };
@@ -111,5 +119,5 @@ export class User extends Model {
   static setDevRole = async (user: User) => {
     if (DEVS.includes(user.login)) 
       user.roles = ['user', 'admin', 'dev'];
-  }
+  };
 }

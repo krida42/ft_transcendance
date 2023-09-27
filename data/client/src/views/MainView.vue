@@ -26,6 +26,8 @@
 <script lang="ts" setup>
 import PongButton from "@/components/PongButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
+import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
+import ChatMsgItem from "@/components/Chat/ChatMsgItem.vue";
 </script>
 
 <style lang="scss" scoped>

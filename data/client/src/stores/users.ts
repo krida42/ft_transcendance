@@ -1,37 +1,36 @@
 import { defineStore } from "pinia";
 import { useMainStore } from "./main";
+import userApi from "../api/user";
+import user from "../api/user";
 
 export const useUsersStore = defineStore({
   id: "users",
   state: (): {
-    friends: Friend[];
+    users: Map<Id, User>;
   } => ({
-    friends: [],
+    users: new Map<Id, User>(),
   }),
   getters: {
-    users(state) {
-      const me = this.me;
-      const user: User = {
-        id: me.id,
-        pseudo: me.pseudo,
-        displayName: me.displayName,
-      };
-      return state.friends.concat(user);
-    },
     getUserNameById(state) {
       return (id: string) => {
-        const user = this.users.find((user) => user.id === id);
+        const user = this.users.get(id);
         return user?.displayName || "Unknown";
       };
     },
-    me: (state) => {
+    currentUser: (state) => {
       const mainStore = useMainStore();
-      return mainStore.userInfo;
+      return {
+        id: mainStore.userInfo.id,
+        pseudo: mainStore.userInfo.pseudo,
+        displayName: mainStore.userInfo.displayName,
+      };
     },
   },
   actions: {
-    setFriends(friends: Friend[]) {
-      this.friends = friends;
+    refreshUser(userId: string) {
+      userApi.fetchUser(userId).then((user) => {
+        this.users.set(user.id, user);
+      });
     },
   },
 });

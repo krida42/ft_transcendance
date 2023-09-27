@@ -4,6 +4,7 @@ type User = {
   id: Id;
   pseudo: string;
   displayName: string;
+  avatar: string;
 };
 
 type Friend = User;
@@ -15,11 +16,16 @@ type Message = {
   userId: Id;
   userPseudo?: string;
   userDisplayName?: string;
-  direction: "in" | "out";
+  userAvatar?: string;
 };
 
 type Chat = {
   id: Id;
   name: string;
-  messages: Message[];
+  messages: Map<Id, Message>;
 };
+
+enum ChatType {
+  Channel = "channel",
+  Direct = "direct",
+}

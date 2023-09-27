@@ -6,7 +6,7 @@
     <Icon class="rounded-full bg-black" size="50">
       <User />
     </Icon>
-    <ChatMsg />
+    <!-- <ChatMsgList /> -->
     <!-- <ChatBtnList> -->
     <!-- <ChatBtn start status="online">hey</ChatBtn>
       <ChatBtn status="offline">hey</ChatBtn>
@@ -18,6 +18,8 @@
     <!-- <MyIcon>
       <Apple />
     </MyIcon> -->
+
+    <ChatMsgList :messages="currentChatMsgsArray" title="Marine" />
   </div>
 </template>
 
@@ -28,8 +30,31 @@
 </style>
 
 <script lang="ts" setup>
+import { watch } from "vue";
 import { Icon } from "@vicons/utils";
 import { User } from "@vicons/tabler";
-import ChatMsg from "@/components/ChatMsg.vue";
+import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
+import ChatMsgItem from "@/components/Chat/ChatMsgItem.vue";
+
+import { useUsersStore } from "@/stores/users";
+
 // import MyIcon from "@/components/MyIcon.vue";
+
+import { useChatStore } from "@/stores/chat";
+import { storeToRefs } from "pinia";
+
+const chatStore = useChatStore();
+
+let { openedChatId } = storeToRefs(chatStore);
+let { currentChatMsgsArray } = storeToRefs(chatStore);
+
+const usersStore = useUsersStore();
+
+usersStore.refreshUser("marine");
+usersStore.refreshUser("kevin");
+usersStore.refreshUser("vincent");
+
+watch(currentChatMsgsArray, (newVal) => {
+  console.log("currentchatmshsubs", newVal);
+});
 </script>

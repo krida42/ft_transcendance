@@ -2,9 +2,11 @@ import axios from "axios";
 
 const host = process.env.VUE_APP_API_URL;
 
-function fetchMsgs(
+console.log("host: ", host);
+
+async function fetchMsgs(
   { channelId, userId }: { channelId?: string; userId?: string },
-  beforeMessageId: string
+  beforeMessageId: string | null
 ) {
   let url: string;
   if (channelId && !userId) url = `${host}/channels/${channelId}/messages`;
@@ -16,22 +18,26 @@ function fetchMsgs(
     .then((res) => res.data);
 }
 
-function fetchChannelMsgs(channelId: string, beforeMessageId: string) {
-  return fetchMsgs({ channelId: channelId }, beforeMessageId);
-}
+export default {
+  async fetchChannelMsgs(channelId: string, beforeMessageId: string | null) {
+    return fetchMsgs({ channelId: channelId }, beforeMessageId);
+  },
 
-function fetchDirectMsgs(userId: string, beforeMessageId: string) {
-  return fetchMsgs({ userId: userId }, beforeMessageId);
-}
+  async fetchDirectMsgs(userId: string, beforeMessageId: string | null) {
+    return fetchMsgs({ userId: userId }, beforeMessageId);
+  },
 
-function postMessageToChannel(channelId: string, message: string) {
-  return axios
-    .post(`${host}/channels/${channelId}/messages`, { message })
-    .then((res) => res.data);
-}
+  async postMessageToChannel(channelId: string, message: string) {
+    const res = await axios.post(`${host}/channels/${channelId}/messages`, {
+      message,
+    });
+    return res.data;
+  },
 
-function postMessageToUser(userId: string, message: string) {
-  return axios
-    .post(`${host}/users/${userId}/messages`, { message })
-    .then((res) => res.data);
-}
+  async postMessageToUser(userId: string, message: string) {
+    const res = await axios.post(`${host}/users/${userId}/messages`, {
+      message,
+    });
+    return res.data;
+  },
+};

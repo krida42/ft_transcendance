@@ -20,43 +20,6 @@ export const useChatStore = defineStore({
     currentChat(state) {
       return state.chats.get(state.openedChatId);
     },
-
-    currentChatMessagesSubstituted(state): Chat | undefined {
-      const usersStore = useUsersStore();
-      const currentChat = this.currentChat as Chat | undefined;
-      if (!currentChat) {
-        return undefined;
-      }
-      const substitutedMessages = new Map<Id, Message>();
-
-      currentChat.messages.forEach((message) => {
-        // const user = usersStore.users.find(
-        //   (user) => user.id === message.userId
-        // );
-        const user = usersStore.users.get(message.userId);
-        substitutedMessages.set(message.msgId, {
-          ...message,
-          userPseudo: user?.pseudo,
-          userDisplayName: user?.displayName,
-          userAvatar: user?.avatar,
-        });
-      });
-      return {
-        ...currentChat,
-        messages: substitutedMessages,
-      };
-    },
-    // currentChatMsgsSubstSorted(state): Message[] | undefined {
-    //   const currentChat = this.currentChatMessagesSubstituted;
-    //   if (!currentChat) return undefined;
-    //   const msgs = Array.from(currentChat.messages.values());
-    //   return msgs.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-    // },
-    currentChatMsgsArray(state): Message[] {
-      const chat = this.currentChatMessagesSubstituted;
-      if (!chat) return [];
-      return Array.from(chat.messages.values());
-    },
   },
   actions: {
     createChatIfNotExist(id: Id, name: string) {

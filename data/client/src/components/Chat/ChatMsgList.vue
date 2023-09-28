@@ -8,7 +8,7 @@
     </div>
     <div class="main">
       <ChatMsgItem
-        v-for="msg in currentChatSortedBeautified"
+        v-for="msg in currentChatTreated"
         :key="msg.msgId"
         :content="msg.content"
         :pseudo="msg.userPseudo"
@@ -112,7 +112,7 @@
 
 <script lang="ts" setup>
 import { Icon } from "@vicons/utils";
-import { X } from "@vicons/tabler";
+import { Message, X } from "@vicons/tabler";
 import { ref, defineProps, computed } from "vue";
 import { storeToRefs } from "pinia";
 import ChatMsgItem from "./ChatMsgItem.vue";
@@ -130,40 +130,18 @@ let props = defineProps({
 
 import { useUsersStore } from "@/stores/users";
 import { useChatStore } from "@/stores/chat";
+import { MessageTransformer } from "@/utils/messageTransformer";
 
 const usersStore = useUsersStore();
 const chatStore = useChatStore();
 
-let { currentChatMsgsArray } = storeToRefs(chatStore);
+let { currentChat } = storeToRefs(chatStore);
 
-const currentChatSorted = computed(() => {
-  return [...currentChatMsgsArray.value].sort(
-    (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+const currentChatTreated = computed(() => {
+  return MessageTransformer.treatMessages(
+    currentChat.value?.messages,
+    usersStore.users
   );
-});
-
-const currentChatSortedBeautified = computed(() => {
-  let i = -1;
-  let beautyfiedArr = [];
-  while (++i < currentChatSorted.value.length) {
-    let msg = currentChatSorted.value[i];
-    let nextMsg = currentChatSorted.value[i + 1];
-
-    if (nextMsg && msg.userId === nextMsg.userId) {
-      beautyfiedArr.push({
-        ...msg,
-        userAvatar: undefined,
-        userPseudo: undefined,
-        createdAt: undefined,
-      });
-    } else {
-      beautyfiedArr.push({
-        ...msg,
-      });
-    }
-  }
-  console.log("beautyfiedArr", beautyfiedArr);
-  return beautyfiedArr;
 });
 
 let positions = {

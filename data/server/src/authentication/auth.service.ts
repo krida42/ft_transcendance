@@ -37,9 +37,7 @@ export class AuthService {
   }
 
   async logout(user: ResponseUserDto) {
-    console.log('user:', user)
-    console.log('user public:', user.public_id)
-    await this.UsersService.updateUser(user.public_id, {refreshToken: null})
-    return { message: 'Déconnexion réussie' };
+    console.log('Deconnexion of: ', user.login);
+    await this.UsersService.updateUser(user.public_id, {refreshToken: null});
   }
 }

@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly AuthService: AuthService) {
     super({
       jwtFromRequest: cookieExtractor,
-      ignoreExpiration: true, // A changer en false en prod
+      ignoreExpiration: false, // A changer en false en prod
       secretOrKey: process.env.JWT_SECRET,
     });
   }

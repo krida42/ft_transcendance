@@ -9,8 +9,7 @@ import * as session from 'express-session';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import * as cookieParser from 'cookie-parser';
 import { CustomExceptionFilter } from './exceptions/exceptions.middleware';
-import { RefreshMiddleware } from './authentication/refresh.middleware';
-import { AuthService } from './authentication/auth.service';
+
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

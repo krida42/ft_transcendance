@@ -99,6 +99,7 @@ async function refreshToken() {
 }
 
 async function logout() {
+  // Si les cookies sont vide alors on est déjà déconnecté et on ne peut pas se déconnecter
   const response = await fetch("http://localhost:3001/auth/logout", {
     method: "POST",
     credentials: "include",

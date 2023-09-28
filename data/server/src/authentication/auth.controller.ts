@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Req, Res, UseGuards, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards, HttpStatus, Render } from '@nestjs/common';
 import { AuthService, userToPayload } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
+import { ClearCookies } from '@nestjsplus/cookies';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -48,11 +49,12 @@ export class AuthController {
 
 
   @Post('logout')
+  @ClearCookies('access_token')
+  @Render('clear')
   @UseGuards(AuthGuard('jwt'))
   @ApiParam({ name: 'token' })
   async logout(@Req() req, @Res() res) {
     this.AuthService.logout(req.user.payload);
-    res.clearCookie('access_token');
   }
 
   @Post('refresh')
@@ -60,7 +62,6 @@ export class AuthController {
   async refresh(@Req() req, @Res() res) {
     const jwt = await this.AuthService.refresh(req.user);
     res.cookie('access_token', jwt.access_token, { httpOnly: true });
-    res.status(HttpStatus.OK).json({ message: 'Refresh réussi' });
   }
 
   @Get('error')

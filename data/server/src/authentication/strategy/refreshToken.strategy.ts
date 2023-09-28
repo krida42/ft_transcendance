@@ -16,7 +16,6 @@ export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
   }
 
   async validate(payload: any) {
-    console.log('user:');
     try{
       const user = await User.findOne({
         where: { public_id: payload.public_id },
@@ -25,15 +24,20 @@ export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
         throw new UserNotFoundException(); 
       if (user.refreshToken)
       {
+        console.log('test2:');
+        console.log('user.refreshToken:', user.refreshToken);
         jwt.verify(user.refreshToken, process.env.JWT_SECRET as string);
+        console.log('test3:');
         return payload;
       }
       else
         throw new InvalidTokenException();
     }
     catch (error){
-      if (error instanceof jwt.TokenExpiredError)
+      if (error instanceof jwt.TokenExpiredError){
+        console.error('Refresh token expiredwedwewe');
         throw new ExpiredTokenException();
+      }
       else
         console.error('Error during validation token:', error);
     }

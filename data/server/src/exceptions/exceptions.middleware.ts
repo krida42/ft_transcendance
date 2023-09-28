@@ -10,7 +10,7 @@ export class CustomExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     
     if (exception instanceof InvalidTokenException || exception instanceof ExpiredTokenException) {
-      response.redirect('/auth/42');
+      response.redirect('http://localhost:8080/');
     } else {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'Internal server error',

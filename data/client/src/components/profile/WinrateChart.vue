@@ -50,7 +50,7 @@
   transform: translate(7px, 7px);
   stroke-dasharray: 440;
   stroke-dashoffset: 440;
-  //   stroke-linecap: round;
+  //stroke-linecap: round;
 }
 
 .camembert svg circle:nth-child(1) {
@@ -61,9 +61,8 @@
 .camembert svg circle:nth-child(2) {
   stroke: $green-my;
   stroke-dashoffset: 440;
-  animation: dash 2s linear forwards;
+  animation: dash 2s ease-out forwards;
 }
-//;
 
 @keyframes dash {
   to {
@@ -110,7 +109,6 @@ const props = defineProps({
 });
 const cssProps = computed(() => {
   return {
-    "--winrate": props.winrate,
     "--pieEndPos": Math.round(440 - (440 * props.winrate) / 100),
   };
 });

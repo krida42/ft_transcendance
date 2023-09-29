@@ -23,3 +23,12 @@ type Chat = {
   name: string;
   messages: Message[];
 };
+
+type Match = {
+  id: Id;
+  opponent: User;
+  scoreMe: number;
+  scoreOp: number;
+  duration: number;
+  date: Date;
+};

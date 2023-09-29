@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <PongButton :angle="90"></PongButton>
+    <ArcadeButton :angle="90"></ArcadeButton>
     <h1 class="underline font-bold bg-blue-grey">This is</h1>
     <h1 class="underline font-bold cuicui">This is second</h1>
     <Icon class="rounded-full bg-black" size="50">

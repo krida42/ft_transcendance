@@ -15,21 +15,26 @@
       <div
         class="pong_buttons w-[65%] absolute top-[76%] flex justify-center gap-[35%]"
       >
-        <PongButton :angle="90" @click="() => $router.push('/main/friendless')"
-          >Play with friends</PongButton
+        <ArcadeButton
+          :angle="90"
+          @click="() => $router.push('/main/friendless')"
+          >Play with friends</ArcadeButton
         >
-        <PongButton :angle="-90">Play random game</PongButton>
+        <ArcadeButton :angle="-90">Play random game</ArcadeButton>
       </div>
     </div>
     <div class="right flex flex-col items-end justify-between">
-      <MenuButton svgName="profile.svg" />
+      <MenuButton
+        svgName="profile.svg"
+        @click="() => $router.push('/profile')"
+      />
       <MenuButton svgName="message.svg" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import PongButton from "@/components/PongButton.vue";
+import ArcadeButton from "@/components/ArcadeButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
 </script>
 

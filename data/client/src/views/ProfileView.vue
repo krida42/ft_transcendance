@@ -17,11 +17,12 @@
       />
     </div>
     <div class="match-history">
-      <ul>
+      <h2 class="match-history-title">Match history</h2>
+      <ul class="match-history-list">
         <MatchHistoryItem
           v-for="item in matchHistory"
           :key="item.id"
-          :result="item.result"
+          :nameOp="item.nameOp"
           :scoreMe="item.scoreMe"
           :scoreOp="item.scoreOp"
           :duration="item.duration"
@@ -101,6 +102,7 @@ html {
   background-color: $green-dark;
   font-family: "Baumans", cursive;
   text-transform: uppercase;
+  color: black;
 
   display: grid;
   grid-gap: var(--bento-gap);
@@ -154,9 +156,11 @@ html {
   justify-content: center;
   border-radius: 30px;
 }
+
 .menu-button {
   grid-area: menu-button;
 }
+
 .level {
   grid-area: level;
   background-color: $green-bg;
@@ -170,6 +174,27 @@ html {
 .match-history {
   grid-area: match-history;
   background-color: $green-my;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.match-history-title {
+  background-color: $yellow-hover;
+  width: calc(100% - 6vh);
+  padding: 1rem;
+  margin: 3vh 3vh 0 3vh;
+  border-radius: 20px;
+  font-size: 1.5rem;
+}
+
+.match-history-list {
+  background-color: $green-bg;
+  width: calc(100% - 6vh);
+  height: 100%;
+  margin-bottom: 3vh;
+  border-radius: 20px;
 }
 
 .rank {

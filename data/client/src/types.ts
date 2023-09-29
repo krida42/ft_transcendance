@@ -26,9 +26,9 @@ type Chat = {
 
 type Match = {
   id: Id;
-  opponent: User;
   scoreMe: number;
   scoreOp: number;
+  nameOp: string;
   duration: number;
   date: Date;
 };

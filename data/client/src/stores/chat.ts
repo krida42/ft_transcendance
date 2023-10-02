@@ -38,21 +38,53 @@ export const useChatStore = defineStore({
     addMessageToStore(chatId: Id, message: Message) {
       this.createChatIfNotExist(chatId, "someone");
       const chat = this.chats.get(chatId);
+      // if (!chat) throw new Error("chat not found");
       chat?.messages.set(message.msgId, message);
       console.log("pushing message to chat: ", message);
     },
-    refreshChat(chatId: Id, chatType: ChatType) {
+    updateMsgAck(
+      chatId: Id,
+      ack: boolean,
+      localMsgId: Id,
+      remoteMsgId: Id | null
+    ) {
+      const chat = this.chats.get(chatId);
+      if (!chat) throw new Error("chat not found");
+      const msg = chat.messages.get(localMsgId);
+      if (!msg) throw new Error("message not found");
+      msg.ack = ack;
+      if (remoteMsgId) msg.msgId = remoteMsgId;
+    },
+    refreshChat(chatId: Id, chatType: ChatType, beforeMessageId: Id | null) {
       const fetchFn =
         chatType === ChatType.Direct
           ? messageApi.fetchDirectMsgs
           : messageApi.fetchChannelMsgs;
 
-      fetchFn(chatId, null).then((resMsgs) => {
+      fetchFn(chatId, beforeMessageId).then((resMsgs) => {
         resMsgs.forEach((message: any) => {
           message.createdAt = new Date(Number(message.createdAt));
           this.addMessageToStore(chatId, message);
         });
       });
+    },
+    sendMessage(chatId: Id, chatType: ChatType, content: string) {
+      const postFn =
+        chatType === ChatType.Direct
+          ? messageApi.postDirectMsg
+          : messageApi.postChannelMsg;
+      const localMsg: Message = {
+        msgId: "local" + Math.floor(Math.random() * 1000000),
+        content,
+        createdAt: new Date(),
+        userId: useUsersStore().currentUser.id,
+        ack: false,
+      };
+      postFn(chatId, content).then((resMsg) => {
+        resMsg.createdAt = new Date(Number(resMsg.createdAt));
+        this.addMessageToStore(chatId, { ...resMsg, ack: true });
+      });
+      this.addMessageToStore(chatId, localMsg);
     },
   },
 });

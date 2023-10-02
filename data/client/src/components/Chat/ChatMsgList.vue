@@ -96,6 +96,7 @@
   flex-direction: column;
   padding-inline: 0.5rem;
   padding-block: 0.5rem;
+  overflow-y: scroll;
 }
 
 .footer {
@@ -120,7 +121,7 @@ import ChatMsgItem from "./ChatMsgItem.vue";
 let props = defineProps({
   messages: {
     type: Array,
-    required: true,
+    required: false,
   },
   title: {
     type: String,
@@ -189,9 +190,14 @@ enum ChatType {
 
 function sendMessage() {
   console.log(inputMessage.value, "hey");
-  if (inputMessage.value === "r") {
+  if (inputMessage.value === "/r") {
     console.log("refreshing");
-    chatStore.refreshChat("1", ChatType.Direct);
+    chatStore.refreshChat("1", ChatType.Direct, null);
+  } else if (inputMessage.value === "/ra4") {
+    console.log("refreshing");
+    chatStore.refreshChat("1", ChatType.Direct, "a4");
+  } else {
+    chatStore.sendMessage("1", ChatType.Direct, inputMessage.value);
   }
   inputMessage.value = "";
 }

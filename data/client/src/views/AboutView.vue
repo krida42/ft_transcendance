@@ -46,15 +46,10 @@ import { storeToRefs } from "pinia";
 const chatStore = useChatStore();
 
 let { openedChatId } = storeToRefs(chatStore);
-let { currentChatMsgsArray } = storeToRefs(chatStore);
 
 const usersStore = useUsersStore();
 
 usersStore.refreshUser("marine");
 usersStore.refreshUser("kevin");
 usersStore.refreshUser("vincent");
-
-watch(currentChatMsgsArray, (newVal) => {
-  console.log("currentchatmshsubs", newVal);
-});
 </script>

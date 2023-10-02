@@ -27,17 +27,19 @@ export default {
     return fetchMsgs({ userId: userId }, beforeMessageId);
   },
 
-  async postMessageToChannel(channelId: string, message: string) {
-    const res = await axios.post(`${host}/channels/${channelId}/messages`, {
-      message,
-    });
-    return res.data;
+  async postChannelMsg(channelId: string, message: string) {
+    return axios
+      .post(`${host}/channels/${channelId}/messages`, {
+        content: message,
+      })
+      .then((res) => res.data);
   },
 
-  async postMessageToUser(userId: string, message: string) {
-    const res = await axios.post(`${host}/users/${userId}/messages`, {
-      message,
-    });
-    return res.data;
+  async postDirectMsg(userId: string, message: string) {
+    return axios
+      .post(`${host}/users/${userId}/messages`, {
+        content: message,
+      })
+      .then((res) => res.data);
   },
 };

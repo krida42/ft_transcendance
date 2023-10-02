@@ -17,6 +17,7 @@ type Message = {
   userPseudo?: string;
   userDisplayName?: string;
   userAvatar?: string;
+  ack?: boolean;
 };
 
 type Chat = {

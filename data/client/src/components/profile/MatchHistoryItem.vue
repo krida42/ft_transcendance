@@ -1,16 +1,77 @@
 <template>
-  <li class="w-[100%] flex justify-evenly">
-    <p :class="isWin ? 'text-green-dark' : 'text-red-my'" class="text-[1.2rem]">
+  <li class="match-item">
+    <p :class="isWin ? 'text-green-dark' : 'text-red-my'" class="text-[1.4rem]">
       {{ result }}
     </p>
-    <p>{{ scoreMe }}<span> / </span>{{ scoreOp }}</p>
-    <p>{{ nameOp }}</p>
-    <p class="lowercase">{{ matchDurationString }}</p>
-    <p>{{ dateToString(date) }}</p>
+    <p class="score text-[1.4rem]">
+      {{ scoreMe }}<span> / </span>{{ scoreOp }}
+    </p>
+    <p class="username text-[0.9rem] normal-case font-bold">{{ nameOp }}</p>
+    <p class="time w-[100%] flex justify-center items-center gap-[0.5rem]">
+      <span class="duration text-[0.9rem]">{{ matchDurationString }}</span>
+      <span class="date text-[0.7rem]">{{ dateToString(date) }}</span>
+    </p>
   </li>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.match-item {
+  width: 100%;
+  position: relative;
+  display: grid;
+  grid-template-columns: 25% 15% 35% 25%;
+  padding: 0.5rem 1rem;
+}
+
+.match-item::after {
+  --width-after: 90%;
+
+  content: "";
+  position: absolute;
+  left: calc((100% - var(--width-after)) / 2);
+  bottom: 0;
+  width: var(--width-after);
+  border-bottom: 1px solid #828287;
+}
+
+.match-item > * {
+  justify-self: center;
+  align-self: center;
+}
+
+.time,
+.username {
+  font-family: "Roboto", sans-serif;
+}
+
+@media (max-width: 1200px) {
+  .match-item {
+    grid-template-columns: 25% 20% 40% 15%;
+  }
+  .date {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .match-item {
+    grid-template-columns: 33% 33% 34%;
+  }
+  .duration {
+    display: none;
+  }
+}
+
+@media (max-width: 1000px) {
+  .match-item {
+    grid-template-columns: 25% 15% 35% 25%;
+  }
+  .duration,
+  .date {
+    display: block;
+  }
+}
+</style>
 
 <script lang="ts" setup>
 import { defineProps } from "vue";
@@ -40,7 +101,7 @@ function timeToString(time: time) {
   const mString = m < 10 ? (m === 0 ? `` : `0${m}:`) : `${m}:`;
   const sString = s < 10 ? `0${s}` : `${s}`;
 
-  return `${hString}${mString}${sString}s`;
+  return `${hString}${mString}${sString}'`;
 }
 
 function dateToString(date: string) {

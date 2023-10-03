@@ -7,7 +7,7 @@
       <form @submit.prevent="sendLoginInput">
         <input
           v-model="login"
-          placeholder="login..."
+          placeholder=" login..."
           type="text"
           minlength="3"
           maxlength="20"

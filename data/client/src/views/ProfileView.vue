@@ -46,7 +46,6 @@
 
 <script setup lang="ts">
 import WinrateChart from "@/components/profile/WinrateChart.vue";
-import MatchHistory from "@/components/profile/MatchHistory.vue";
 import MatchHistoryItem from "@/components/profile/MatchHistoryItem.vue";
 import MenuButton from "@/components/MenuButton.vue";
 import axios from "axios";
@@ -59,9 +58,7 @@ const displayWinrate = ref<boolean>(false);
 const matchHistory = ref<Match[]>([]);
 async function getWinrate() {
   axios
-    .get(
-      "https://977e7a59-9583-467f-acb7-89bdfca620fe.mock.pstmn.io/users/1/winrate"
-    )
+    .get("http://127.0.0.1:3658/m1/391362-0-default/users/1/winrate")
     .then((res) => {
       winrate.value = res.data.winrate;
       displayWinrate.value = true;
@@ -71,11 +68,9 @@ async function getWinrate() {
 
 async function getMatchHistory() {
   axios
-    .get(
-      "https://977e7a59-9583-467f-acb7-89bdfca620fe.mock.pstmn.io/users/1/match-history"
-    )
+    .get("http://127.0.0.1:3658/m1/391362-0-default/users/1/match-history")
     .then((res) => {
-      matchHistory.value = res.data.matchHistory;
+      matchHistory.value = res.data;
       console.log(matchHistory.value);
     })
     .catch((err) => console.log(err));
@@ -106,7 +101,7 @@ html {
 
   display: grid;
   grid-gap: var(--bento-gap);
-  grid-template-columns: 1fr 2fr 2fr 3fr;
+  grid-template-columns: 1fr 2fr 2fr 4fr;
   grid-template-rows: 1fr 1fr 2fr 2fr;
   grid-template-areas:
     "menu-button  level        winrate match-history"
@@ -115,7 +110,7 @@ html {
     "achievements achievements buttons match-history";
 }
 
-@media (max-width: 850px) {
+@media (max-width: 1000px) {
   .profile {
     min-height: 550px;
     height: 200vh;
@@ -195,6 +190,7 @@ html {
   height: 100%;
   margin-bottom: 3vh;
   border-radius: 20px;
+  overflow: scroll;
 }
 
 .rank {

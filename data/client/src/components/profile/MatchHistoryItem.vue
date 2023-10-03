@@ -1,6 +1,9 @@
 <template>
   <li class="match-item">
-    <p :class="isWin ? 'text-green-dark' : 'text-red-my'" class="text-[1.4rem]">
+    <p
+      :class="isWin ? 'text-green-dark' : 'text-red-my'"
+      class="result text-[1.4rem]"
+    >
       {{ result }}
     </p>
     <p class="score text-[1.4rem]">
@@ -69,6 +72,21 @@
   .duration,
   .date {
     display: block;
+  }
+}
+
+@media (max-width: 500px) {
+  .match-item {
+    grid-template-columns: 25% 25% 50%;
+  }
+  .username,
+  .score,
+  .result {
+    font-size: 1rem;
+  }
+  .duration,
+  .date {
+    display: none;
   }
 }
 </style>

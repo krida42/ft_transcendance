@@ -133,7 +133,7 @@ html {
     grid-template-columns: 1fr 2fr;
     grid-template-rows:
       minmax(150px, 21vh) minmax(300px, 46vh) minmax(150px, 21vh)
-      minmax(180px, 23vh) minmax(400px, 50vh) minmax(150px, 15vh) minmax(500px, 100vh);
+      minmax(180px, 23vh) minmax(400px, 50vh) minmax(150px, 15vh) minmax(600px, 100vh);
     grid-template-areas:
       "menu-button  level"
       "name         name"

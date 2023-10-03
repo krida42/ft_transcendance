@@ -20,11 +20,12 @@
       'self-end': isMe,
       'mb-3': pseudo,
       'mb-1': !pseudo,
+      'opacity-30': ack === false,
     }"
   >
     <div
-      v-if="avatar"
-      class="avatar bd-redd"
+      v-if="avatar && !isMe"
+      class="avatar bd-redd shrink-0"
       :class="{
         'mr-1': !isMe && avatar,
         'ml-1 ': isMe && avatar,
@@ -45,6 +46,7 @@
       :class="{
         'rounded-ee-xl': !isMe || !avatar,
         'rounded-es-xl': isMe || !avatar,
+        'rounded-xl': isMe,
         'bg-blue-light': !isMe,
         'bg-green-light': isMe,
       }"
@@ -54,8 +56,8 @@
         <span
           class="date text-xs bd-redd"
           :class="{
-            'ml-3': !isMe,
-            'mr-3': isMe,
+            'ml-3': true,
+            // 'mr-3': isMe,
           }"
           >{{
             date?.toLocaleTimeString("en-UK", {
@@ -66,7 +68,12 @@
         >
       </div>
       <div class="main">
-        <p class="text bd-redd text-start break-all whitespace-pre-line">
+        <p
+          class="text bd-redd break-all whitespace-pre-line"
+          :class="{
+            'text-start': true,
+          }"
+        >
           {{ props.content }}
         </p>
       </div>
@@ -87,5 +94,6 @@ const props = defineProps({
   isMe: Boolean,
   pseudo: String,
   avatar: String,
+  ack: Boolean,
 });
 </script>

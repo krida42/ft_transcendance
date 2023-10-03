@@ -13,7 +13,7 @@ export const useChatStore = defineStore({
     openedChatId: Id;
     chats: Map<Id, Chat>;
   } => ({
-    openedChatId: "1",
+    openedChatId: "marine",
     chats: new Map<Id, Chat>(),
   }),
   getters: {
@@ -54,6 +54,9 @@ export const useChatStore = defineStore({
       if (!msg) throw new Error("message not found");
       msg.ack = ack;
       if (remoteMsgId) msg.msgId = remoteMsgId;
+      else return;
+      chat.messages.set(remoteMsgId, msg);
+      chat.messages.delete(localMsgId);
     },
     refreshChat(chatId: Id, chatType: ChatType, beforeMessageId: Id | null) {
       const fetchFn =
@@ -80,11 +83,11 @@ export const useChatStore = defineStore({
         userId: useUsersStore().currentUser.id,
         ack: false,
       };
+      this.addMessageToStore(chatId, localMsg);
       postFn(chatId, content).then((resMsg) => {
         resMsg.createdAt = new Date(Number(resMsg.createdAt));
-        this.addMessageToStore(chatId, { ...resMsg, ack: true });
+        this.updateMsgAck(chatId, true, localMsg.msgId, resMsg.remoteMsgId);
       });
-      this.addMessageToStore(chatId, localMsg);
     },
   },
 });

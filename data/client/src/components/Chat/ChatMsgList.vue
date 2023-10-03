@@ -6,7 +6,7 @@
         <X class="bdd-cyan" />
       </Icon>
     </div>
-    <div class="main">
+    <div class="main" ref="main">
       <ChatMsgItem
         v-for="msg in currentChatTreated"
         :key="msg.msgId"
@@ -15,6 +15,7 @@
         :avatar="msg.userAvatar"
         :date="msg.createdAt"
         :is-me="msg.userId === usersStore.currentUser?.id"
+        :ack="msg.ack"
       />
       <!-- <slot> </slot> -->
       <!-- <ChatMsgItem content="Salut je suis un message" />
@@ -192,13 +193,23 @@ function sendMessage() {
   console.log(inputMessage.value, "hey");
   if (inputMessage.value === "/r") {
     console.log("refreshing");
-    chatStore.refreshChat("1", ChatType.Direct, null);
+    chatStore.refreshChat("marine", ChatType.Direct, null);
   } else if (inputMessage.value === "/ra4") {
     console.log("refreshing");
-    chatStore.refreshChat("1", ChatType.Direct, "a4");
+    chatStore.refreshChat("marine", ChatType.Direct, "a4");
   } else {
-    chatStore.sendMessage("1", ChatType.Direct, inputMessage.value);
+    chatStore.sendMessage("marine", ChatType.Direct, inputMessage.value);
   }
   inputMessage.value = "";
+  setTimeout(() => {
+    scrollToBottom();
+  }, 1);
+}
+
+let main = ref<HTMLDivElement>();
+
+function scrollToBottom() {
+  if (!main.value) return;
+  main.value.scrollTop = main.value.scrollHeight;
 }
 </script>

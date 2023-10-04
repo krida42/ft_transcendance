@@ -65,6 +65,9 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
+import { useCookie } from "vue-cookie";
+
+
 const showConfirmation = ref(false);
 const confirmationMessage = ref("");
 
@@ -89,13 +92,27 @@ async function deleteUsers() {
 //   showConfirmation.value = true;
 // }
 
+function delete_cookie(name: string) {
+  useCookie.$cookie.delete(name);
+}
+
+function created_cookie(name: string, keyValue: string) {
+  useCookie.$cookie.set(name, keyValue, 1);
+}
+
 async function refreshToken() {
-  const response = await fetch("http://localhost:3001/auth/refresh", {
-    method: "POST",
-    credentials: "include",
-  });
-  const data = await response.json();
-  console.log(data);
+  try {
+    created_cookie("accessssss_token", "useCookie.$cookie.get(tmp_token)");
+    delete_cookie("access_token");
+    const response = await fetch("http://localhost:3001/auth/refresh", {
+      method: "POST",
+      credentials: "include",
+    });
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function logout() {
@@ -104,6 +121,7 @@ async function logout() {
     method: "POST",
     credentials: "include",
   });
+  delete_cookie("access_token");
   const data = await response.json();
   console.log(data);
 }

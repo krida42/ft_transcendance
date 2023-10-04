@@ -2,6 +2,8 @@ version: "3.9"
 
 services:
   client:
+    container_name: client
+    image: client
     build: requirements/client
     ports:
       - "8080:8080"
@@ -11,6 +13,7 @@ services:
       - mynet
 
   postgres:
+    container_name: postgres
     build: requirements/db
     ports:
       - "5432:5432"
@@ -23,7 +26,10 @@ services:
     networks:
       mynet:
         ipv4_address: '172.18.0.43'
+
   server:
+    container_name: server
+    image: server
     build: requirements/server
     ports:
       - "3001:3001"

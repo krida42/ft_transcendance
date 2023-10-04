@@ -10,6 +10,9 @@ export class CustomExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     
     if (exception instanceof InvalidTokenException || exception instanceof ExpiredTokenException) {
+      //logout the user
+      console.log('logout the user');
+      response.clearCookie('access_token');
       response.redirect('http://localhost:8080/');
     } else {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

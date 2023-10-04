@@ -2,7 +2,9 @@ import { Injectable, Req, Res } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ResponseUserDto } from 'src/users/dto/reponseUser.dto';
 import { UsersService } from '../users/users.service';
-import * as jwt from 'jsonwebtoken';
+import { access } from 'fs';
+import { cookieExtractor } from './strategy/jwt.strategy';
+
 
 export function userToPayload(user: ResponseUserDto) {
   const payload = {
@@ -21,11 +23,11 @@ export class AuthService {
   constructor(private readonly jwtService: JwtService,
     private readonly UsersService: UsersService) {}
 
-  async login(user: ResponseUserDto) {
+  async login(user: ResponseUserDto): Promise<{ access_token: string, refreshToken: string }> {
     const payload = userToPayload(user);
     return {
       access_token: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, { expiresIn: '120' }),
+      refreshToken: this.jwtService.sign(payload, { expiresIn: '120s' }),
     };
   }
 

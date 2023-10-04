@@ -4,6 +4,7 @@ import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
 import { ClearCookies } from '@nestjsplus/cookies';
+import * as jwtq from 'jsonwebtoken';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -24,6 +25,8 @@ export class AuthController {
     try {
       const user = await this.UsersService.findOrCreate(req.user._json);
       const jwt = await this.AuthService.login(user);
+      console.log('jwt.accesstoken start:', jwt.access_token);
+      jwtq.verify(jwt.refreshToken, process.env.JWT_SECRET);
       await this.UsersService.updateUser(user.public_id, {refreshToken: jwt.refreshToken});
 
       res.cookie('access_token', jwt.access_token, { httpOnly: true });
@@ -50,18 +53,22 @@ export class AuthController {
 
   @Post('logout')
   @ClearCookies('access_token')
-  @Render('clear')
   @UseGuards(AuthGuard('jwt'))
   @ApiParam({ name: 'token' })
   async logout(@Req() req, @Res() res) {
+    res.clearCookie('access_token');
     this.AuthService.logout(req.user.payload);
   }
 
   @Post('refresh')
+  @ClearCookies('access_token')
   @UseGuards(AuthGuard('jwt-refresh'))
   async refresh(@Req() req, @Res() res) {
     const jwt = await this.AuthService.refresh(req.user);
-    res.cookie('access_token', jwt.access_token, { httpOnly: true });
+    console.log('jwt.accesstoken refresh:', jwt.access_token);
+    res.clearCookie('access_token');
+    res.cookie('tmp_token', jwt.access_token, { httpOnly: true });
+    console.log('req cookie', req.cookies);
   }
 
   @Get('error')

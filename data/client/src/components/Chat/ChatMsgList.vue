@@ -1,22 +1,24 @@
 <template>
   <div class="chat bg-blue-grey bg-opacity-80" ref="draggableContainer">
     <div class="header bg-blue-light" @mousedown="dragMouseDown">
-      <span class="title">{{ title }}</span>
+      <span class="title">{{ currentChat?.name }}</span>
       <Icon size="20" class="dbd-red">
         <X class="bdd-cyan" />
       </Icon>
     </div>
     <div class="main" ref="main">
-      <ChatMsgItem
-        v-for="msg in currentChatTreated"
-        :key="msg.msgId"
-        :content="msg.content"
-        :pseudo="msg.userPseudo"
-        :avatar="msg.userAvatar"
-        :date="msg.createdAt"
-        :is-me="msg.userId === usersStore.currentUser?.id"
-        :ack="msg.ack"
-      />
+      <transition-group name="msg-item">
+        <ChatMsgItem
+          v-for="msg in currentChatTreated"
+          :key="msg.msgId"
+          :content="msg.content"
+          :pseudo="msg.userPseudo"
+          :avatar="msg.userAvatar"
+          :date="msg.createdAt"
+          :is-me="msg.userId === usersStore.currentUser?.id"
+          :ack="msg.ack"
+        />
+      </transition-group>
       <!-- <slot> </slot> -->
       <!-- <ChatMsgItem content="Salut je suis un message" />
 
@@ -68,8 +70,18 @@
   // opacity: 0.8;
   // background-color: rgba(0, 0, 0, 1);
   // backdrop-filter: opacity(25);
-  box-shadow: 0px 0px 10px 8px rgba(255, 0, 0, 0.514);
-  // box-shadow: 4px 4px 9px 4px rgba(0, 0, 0, 0.3);
+  // box-shadow: 10px 10px 5px 5px rgba(5, 0, 0, 254);
+  // box-shadow: 0px 0px 10px 9px rgba(0, 0, 0, 0.3);
+  // box-shadow: 0 0 0 2px rgba(218, 102, 123, 1),
+  //     8px 8px 0 0 rgba(218, 102, 123, 1);
+  // box-shadow: 0px 9px 30px rgba(255, 149, 5, 0.3);
+  // box-shadow: -10px 10px 0px rgba(33, 33, 33, 1),
+  //   -20px 20px 0px rgba(33, 33, 33, 0.7), -30px 30px 0px rgba(33, 33, 33, 0.4),
+  //   -40px 40px 0px rgba(33, 33, 33, 0.1);
+  // box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12),
+    0 4px 4px rgba(0, 0, 0, 0.12), 0 8px 8px rgba(0, 0, 0, 0.12),
+    0 16px 16px rgba(0, 0, 0, 0.12);
   font-size: 0.9em;
 }
 .header {
@@ -96,8 +108,24 @@
   display: flex;
   flex-direction: column;
   padding-inline: 0.5rem;
-  padding-block: 0.5rem;
+  // padding-block: 0.2rem;
   overflow-y: scroll;
+  // scroll-behavior: revert;
+
+  .msg-item-enter-active {
+    transition: all 0.3s;
+  }
+  .msg-item-leave-active {
+    transition: all 0.3s;
+  }
+  .msg-item-enter-from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  .msg-item-leave-to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
 }
 
 .footer {
@@ -119,16 +147,7 @@ import { ref, defineProps, computed } from "vue";
 import { storeToRefs } from "pinia";
 import ChatMsgItem from "./ChatMsgItem.vue";
 
-let props = defineProps({
-  messages: {
-    type: Array,
-    required: false,
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-});
+// let props = defineProps({});
 
 import { useUsersStore } from "@/stores/users";
 import { useChatStore } from "@/stores/chat";
@@ -201,8 +220,9 @@ function sendMessage() {
     chatStore.sendMessage("marine", ChatType.Direct, inputMessage.value);
   }
   inputMessage.value = "";
+  // scrollToBottom();
   setTimeout(() => {
-    scrollToBottom();
+    // scrollToBottom();
   }, 1);
 }
 

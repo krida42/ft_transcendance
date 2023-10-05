@@ -19,7 +19,14 @@
       <Apple />
     </MyIcon> -->
 
-    <ChatMsgList :messages="currentChatMsgsArray" title="Marine" />
+    <ChatAccessList>
+      <ChatAccessItem
+        v-for="[, friend] in friendStore.friends"
+        :key="friend.id"
+        :title="friend.pseudo"
+      />
+    </ChatAccessList>
+    <ChatMsgList />
   </div>
 </template>
 
@@ -37,19 +44,25 @@ import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
 import ChatMsgItem from "@/components/Chat/ChatMsgItem.vue";
 
 import { useUsersStore } from "@/stores/users";
+import { useFriendStore } from "@/stores/friend";
 
 // import MyIcon from "@/components/MyIcon.vue";
 
 import { useChatStore } from "@/stores/chat";
 import { storeToRefs } from "pinia";
+import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
+import ChatAccessItem from "@/components/Chat/ChatAccessItem.vue";
 
 const chatStore = useChatStore();
 
 let { openedChatId } = storeToRefs(chatStore);
 
 const usersStore = useUsersStore();
+const friendStore = useFriendStore();
 
 usersStore.refreshUser("marine");
 usersStore.refreshUser("kevin");
 usersStore.refreshUser("vincent");
+
+friendStore.refreshFriendList();
 </script>

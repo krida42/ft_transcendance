@@ -38,7 +38,7 @@ export const useChatStore = defineStore({
     addMessageToStore(chatId: Id, message: Message) {
       this.createChatIfNotExist(chatId, "someone");
       const chat = this.chats.get(chatId);
-      // if (!chat) throw new Error("chat not found");
+      if (!chat) throw new Error("chat not found");
       chat?.messages.set(message.msgId, message);
       console.log("pushing message to chat: ", message);
     },

@@ -58,14 +58,14 @@
 
 @media (max-width: 1100px) {
   .match-item {
-    grid-template-columns: 33% 33% 34%;
+    grid-template-columns: 35% 20% 45%;
   }
   .duration {
     display: none;
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1050px) {
   .match-item {
     grid-template-columns: 25% 15% 35% 25%;
   }
@@ -75,11 +75,13 @@
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 680px) {
   .match-item {
-    grid-template-columns: 25% 25% 50%;
+    grid-template-columns: 33% 33% 34%;
   }
-  .username,
+  .username {
+    font-size: 0.9rem;
+  }
   .score,
   .result {
     font-size: 1rem;
@@ -123,6 +125,7 @@ function timeToString(time: time) {
 }
 
 function dateToString(date: string) {
+  if (!date) return "";
   const dateObject = new Date(date);
   const day = dateObject.getDate();
   const month = dateObject.getMonth() + 1;

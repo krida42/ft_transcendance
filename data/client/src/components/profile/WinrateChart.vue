@@ -50,7 +50,6 @@
   transform: translate(7px, 7px);
   stroke-dasharray: 440;
   stroke-dashoffset: 440;
-  //stroke-linecap: round;
 }
 
 .camembert svg circle:nth-child(1) {

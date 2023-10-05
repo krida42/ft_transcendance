@@ -6,8 +6,9 @@
       class="w-[100px]"
     />
     <div class="level">
-      <p>
-        level <span>{{ level }}</span>
+      <p class="flex gap-[1.8rem] items-center">
+        <span class="text-[2rem]">level</span>
+        <span class="text-[3.5rem]">{{ level }}</span>
       </p>
     </div>
     <div class="winrate">
@@ -29,15 +30,16 @@
           :date="item.date"
         />
       </ul>
-      <!-- <ul>
-        <li v-for="item in matchHistory" :key="item.id">
-          ID: {{ item.id }} | {{ item.scoreMe }}
-        </li>
-      </ul> -->
     </div>
     <div class="rank">{{ rank }}</div>
     <div class="achievements">achievements</div>
-    <div class="name">name</div>
+    <div class="name">
+      <img
+        :src="avatar"
+        class="w-[150px] aspect-square rounded-full break-normal"
+      />
+      <p class="text-[2.2rem]">{{ username }}</p>
+    </div>
     <div class="buttons">
       <button>Parameters</button><button>Logout</button>
     </div>
@@ -56,6 +58,9 @@ const level = 14;
 const winrate = ref<number>(0);
 const displayWinrate = ref<boolean>(false);
 const matchHistory = ref<Match[]>([]);
+const username = ref<string>("");
+const avatar = ref<string>("");
+
 async function getWinrate() {
   axios
     .get("http://127.0.0.1:3658/m1/391362-0-default/users/1/winrate")
@@ -71,7 +76,16 @@ async function getMatchHistory() {
     .get("http://127.0.0.1:3658/m1/391362-0-default/users/1/match-history")
     .then((res) => {
       matchHistory.value = res.data;
-      console.log(matchHistory.value);
+    })
+    .catch((err) => console.log(err));
+}
+
+async function getUserInfo() {
+  axios
+    .get("http://127.0.0.1:3658/m1/391362-0-default/users/1a")
+    .then((res) => {
+      username.value = res.data.pseudo;
+      avatar.value = res.data.avatar;
     })
     .catch((err) => console.log(err));
 }
@@ -79,6 +93,7 @@ async function getMatchHistory() {
 onBeforeMount(() => {
   getWinrate();
   getMatchHistory();
+  getUserInfo();
 });
 </script>
 
@@ -91,7 +106,7 @@ html {
 .profile {
   --bento-gap: 3vh;
 
-  min-height: 550px;
+  min-height: 700px;
   height: 100vh;
   padding: var(--bento-gap);
   background-color: $green-dark;
@@ -101,8 +116,8 @@ html {
 
   display: grid;
   grid-gap: var(--bento-gap);
-  grid-template-columns: 1fr 2fr 2fr 4fr;
-  grid-template-rows: 1fr 1fr 2fr 2fr;
+  grid-template-columns: 1fr 2fr minmax(250px, 2fr) 4fr;
+  grid-template-rows: 1fr 1fr 3fr 2fr;
   grid-template-areas:
     "menu-button  level        winrate match-history"
     "rank         rank         winrate match-history"
@@ -110,46 +125,15 @@ html {
     "achievements achievements buttons match-history";
 }
 
-@media (max-width: 1000px) {
-  .profile {
-    min-height: 550px;
-    height: 200vh;
-    grid-template-columns: 1fr 2fr 2fr;
-    grid-template-rows:
-      minmax(100px, 13vh) minmax(100px, 13vh) minmax(100px, 29vh)
-      minmax(100px, 30vh) minmax(500px, 100vh);
-    grid-template-areas:
-      "menu-button   level          winrate"
-      "rank          rank           winrate"
-      "achievements  achievements   name"
-      "achievements  achievements   buttons"
-      "match-history match-history  match-history";
-  }
-}
-
-@media (max-width: 600px) {
-  .profile {
-    height: 300vh;
-    grid-template-columns: 1fr 2fr;
-    grid-template-rows:
-      minmax(150px, 21vh) minmax(300px, 46vh) minmax(150px, 21vh)
-      minmax(180px, 23vh) minmax(400px, 50vh) minmax(150px, 15vh) minmax(600px, 100vh);
-    grid-template-areas:
-      "menu-button  level"
-      "name         name"
-      "rank         rank"
-      "winrate      winrate"
-      "achievements achievements"
-      "buttons      buttons"
-      "match-history match-history";
-  }
-}
-
 .profile > * {
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 30px;
+}
+
+.profile > *:not(:first-child) {
+  box-shadow: 1px 5px 4px -3px rgba(0, 0, 0, 0.5);
 }
 
 .menu-button {
@@ -177,16 +161,17 @@ html {
 
 .match-history-title {
   background-color: $yellow-hover;
-  width: calc(100% - 6vh);
+  width: calc(100% - 2 * var(--bento-gap));
   padding: 1rem;
   margin: 3vh 3vh 0 3vh;
   border-radius: 20px;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  box-shadow: 1px 5px 4px -3px rgba(0, 0, 0, 0.5);
 }
 
 .match-history-list {
   background-color: $green-bg;
-  width: calc(100% - 6vh);
+  width: calc(100% - 2 * var(--bento-gap));
   height: 100%;
   margin-bottom: 3vh;
   border-radius: 20px;
@@ -196,7 +181,7 @@ html {
 .rank {
   grid-area: rank;
   background-color: $yellow-hover;
-  font-size: 2.8rem;
+  font-size: 2.2rem;
 }
 
 .achievements {
@@ -207,6 +192,11 @@ html {
 .name {
   grid-area: name;
   background-color: black;
+  font-family: "VT323";
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .buttons {
@@ -214,12 +204,64 @@ html {
   background-color: $green-my;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: center;
+  gap: var(--bento-gap);
 }
 
 .buttons > * {
+  width: calc(100% - 2 * var(--bento-gap));
+  height: calc(50% - 1.5 * var(--bento-gap));
   font-size: 1.5rem;
   text-transform: uppercase;
   background-color: $green-bg;
+  border-radius: 20px;
+  box-shadow: 1px 5px 4px -3px rgba(0, 0, 0, 0.5);
+}
+
+.buttons > *:hover {
+  background-color: $yellow-hover;
+}
+
+@media (max-width: 1050px) {
+  .profile {
+    min-height: 550px;
+    height: 200vh;
+    grid-template-columns: 1fr 2fr minmax(250px, 2fr);
+    grid-template-rows:
+      minmax(100px, 13vh) minmax(100px, 13vh) minmax(250px, 29vh)
+      minmax(100px, 30vh) minmax(500px, 100vh);
+    grid-template-areas:
+      "menu-button   level          winrate"
+      "rank          rank           winrate"
+      "achievements  achievements   name"
+      "achievements  achievements   buttons"
+      "match-history match-history  match-history";
+  }
+}
+
+@media (max-width: 680px) {
+  .profile {
+    height: 300vh;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows:
+      minmax(150px, 21vh) minmax(300px, 46vh) minmax(150px, 21vh)
+      minmax(180px, 23vh) minmax(400px, 50vh) minmax(150px, 15vh) minmax(600px, 100vh);
+    grid-template-areas:
+      "menu-button  level"
+      "name         name"
+      "rank         rank"
+      "winrate      winrate"
+      "achievements achievements"
+      "buttons      buttons"
+      "match-history match-history";
+  }
+  .buttons {
+    flex-direction: row;
+  }
+
+  .buttons > * {
+    width: calc(50% - 1.5 * var(--bento-gap));
+    height: calc(100% - 2 * var(--bento-gap));
+  }
 }
 </style>

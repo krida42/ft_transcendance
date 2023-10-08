@@ -39,6 +39,7 @@
   position: relative;
   width: var(--width);
   height: var(--height);
+  transform: rotate(90deg);
 }
 
 .camembert svg circle {

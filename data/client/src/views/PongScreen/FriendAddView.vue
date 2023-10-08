@@ -11,7 +11,7 @@
           type="text"
           minlength="3"
           maxlength="20"
-          class="bg-black border-[0.2rem] border-[#828287] ml-[3rem] mr-[1rem]"
+          class="bg-black border-[0.2rem] border-[#828287] ml-[3rem] mr-[1rem] pl-[0.5rem]"
         />
       </form>
       <img

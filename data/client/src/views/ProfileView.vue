@@ -142,7 +142,7 @@ html {
 
 .level {
   grid-area: level;
-  background-color: $green-bg;
+  background-color: $green-medium;
 }
 
 .winrate {
@@ -160,7 +160,7 @@ html {
 }
 
 .match-history-title {
-  background-color: $yellow-hover;
+  background-color: $green-light;
   width: calc(100% - 2 * var(--bento-gap));
   padding: 1rem;
   margin: 3vh 3vh 0 3vh;
@@ -180,7 +180,7 @@ html {
 
 .rank {
   grid-area: rank;
-  background-color: $yellow-hover;
+  background-color: $green-bg;
   font-size: 2.2rem;
 }
 
@@ -213,13 +213,13 @@ html {
   height: calc(50% - 1.5 * var(--bento-gap));
   font-size: 1.5rem;
   text-transform: uppercase;
-  background-color: $green-bg;
+  background-color: $yellow-hover;
   border-radius: 20px;
   box-shadow: 1px 5px 4px -3px rgba(0, 0, 0, 0.5);
 }
 
 .buttons > *:hover {
-  background-color: $yellow-hover;
+  box-shadow: inset 3px 5px 4px -3px rgba(0, 0, 0, 0.5);
 }
 
 @media (max-width: 1050px) {

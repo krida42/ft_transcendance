@@ -14,7 +14,7 @@ export class DeveloperGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
     const roles = user.payload.roles;
-    console.log("Is dev: " + isDev(roles));
+    // console.log("Is dev: " + isDev(roles));
     if (user && isDev(roles))
       return true;
     return false;

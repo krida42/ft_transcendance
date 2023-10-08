@@ -1,6 +1,6 @@
 import { AuthService } from 'src/authentication/auth.service';
 
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -10,6 +10,9 @@ import { AuthModule } from 'src/authentication/auth.module';
 import { HttpModule } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from 'src/tools/bcrypt.service';
+import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
+import path from 'path';
+import { REQUEST } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -39,5 +42,13 @@ import { BcryptService } from 'src/tools/bcrypt.service';
   providers: [AuthService, JwtService, BcryptService, AppService],
   exports: [SequelizeModule], // pour que les autres modules puissent utiliser SequelizeModule
 })
-export class AppModule {
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+    .apply(RefreshMiddleware)
+    .exclude({
+        path: 'auth/logout', method: RequestMethod.POST
+    })
+    .forRoutes('*');
+  }
 }

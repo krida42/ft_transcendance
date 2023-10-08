@@ -1,9 +1,7 @@
-import { Injectable, Req, Res } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ResponseUserDto } from 'src/users/dto/reponseUser.dto';
 import { UsersService } from '../users/users.service';
-import { access } from 'fs';
-import { cookieExtractor } from './strategy/jwt.strategy';
 
 
 export function userToPayload(user: ResponseUserDto) {
@@ -26,20 +24,20 @@ export class AuthService {
   async login(user: ResponseUserDto): Promise<{ access_token: string, refreshToken: string }> {
     const payload = userToPayload(user);
     return {
-      access_token: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, { expiresIn: '120s' }),
+      access_token: this.jwtService.sign(payload, { expiresIn: process.env.ACCESS_EXP, secret: process.env.JWT_SECRET }),
+      refreshToken: this.jwtService.sign(payload, { expiresIn: process.env.REFRESH_EXP, secret: process.env.JWT_SECRET }),
     };
   }
 
-  async refresh(user: ResponseUserDto) {
+  async refresh(user: ResponseUserDto): Promise<{ access_token: string }> {
     const payload = userToPayload(user);
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: process.env.ACCESS_EXP, secret: process.env.JWT_SECRET }),
     };
   }
 
-  async logout(user: ResponseUserDto) {
+  async logout(user: ResponseUserDto): Promise<{ message: [number], user: ResponseUserDto }> {
     console.log('Deconnexion of: ', user.login);
-    await this.UsersService.updateUser(user.public_id, {refreshToken: null});
+    return await this.UsersService.updateUser(user.public_id, {refreshToken: null});
   }
 }

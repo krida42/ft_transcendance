@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -37,9 +36,14 @@ export class UsersController {
   @ApiOperation({ summary: 'Find all users' })
   @ApiResponse({ status: 200, description: 'Return all users.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  findAll(@Query('bool') bool: string): Promise<User[]> {
+  find(
+    @Query('bool') bool: string,
+    @Query('pseudo') pseudo: string 
+    ): Promise<User[] | User> {
     if (bool === 'true')
       return this.usersService.findAll();
+    else if (pseudo)
+      return this.usersService.findByPseudo(pseudo);
   }
 
   @Get(':id')
@@ -55,18 +59,6 @@ export class UsersController {
   @ApiBadRequestResponse({ description: 'User not found' })
   findOne(@Param('id', ParseUUIDPipe) id: uuidv4): Promise<User> {
     return this.usersService.findById(id);
-  }
-
-  @Get('pseudo/:pseudo')
-  @ApiOperation({ summary: 'Find user by pseudo' })
-  @ApiParam({
-    name: 'pseudo',
-    type: 'string',
-    description: 'Pseudo of the user',
-  })
-  @ApiBadRequestResponse({ description: 'User not found' })
-  findByPseudo(@Param('pseudo') pseudo: string): Promise<User> {
-    return this.usersService.findByPseudo(pseudo);
   }
 
   @Post()

@@ -1,10 +1,9 @@
 'use strict';
-const newRefreshTokenLimit = 1000;
-/** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.addColumn('Users', 'refreshToken', {
-      type: Sequelize.STRING(newRefreshTokenLimit),
+      type: Sequelize.BLOB('long'),
       allowNull: true,
       defaultValue: null
     });

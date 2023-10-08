@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DataTypes } from 'sequelize';
-import { AfterCreate, BeforeCreate, Column, Model, Table } from 'sequelize-typescript';
+import { AfterCreate, AfterFind, BeforeBulkUpdate, BeforeCreate, BeforeFind, BeforeUpdate, Column, Model, PrimaryKey, Table } from 'sequelize-typescript';
 import { DEVS } from 'src/const';
-import { BcryptService } from 'src/tools/bcrypt.service';
-
+import { CryptoService } from 'src/tools/crypto.service';
 @Table
 export class User extends Model {
+  @PrimaryKey
   @ApiProperty()
   @Column({
     type: DataTypes.INTEGER,
@@ -36,7 +36,7 @@ export class User extends Model {
   
   @ApiProperty()
   @Column({
-    type: DataTypes.STRING,
+    type: DataTypes.BLOB('tiny'),
     allowNull: false,
     unique: true,
     field: 'email', 
@@ -88,7 +88,7 @@ export class User extends Model {
 
   @ApiProperty()
   @Column({
-    type: DataTypes.STRING,
+    type: DataTypes.BLOB('tiny'),
     allowNull: true,
     field: 'refreshToken',
   })
@@ -110,10 +110,31 @@ export class User extends Model {
   })
   public readonly updatedAt: Date;
 
-  @AfterCreate
-  static bcryptService = async (user: User) => {
-    user.email = await BcryptService.hashPassword(user.email);
-  };
+  @BeforeCreate
+  @BeforeUpdate
+  static encryptText = async (user: any) => {
+    if (!user)
+      return;
+    if (user.email && typeof user.email === 'string')
+      user.email = await CryptoService.encrypt(user.email);
+    if (user.refreshToken && typeof user.refreshToken === 'string')
+      user.refreshToken = await CryptoService.encrypt(user.refreshToken);
+  }
+
+  @AfterFind
+  static async decryptText(user: User){
+    if (!user)
+      return;
+    if (user.email)
+      user.email =  await CryptoService.decrypt(Buffer.from(user.email));
+    if (user.refreshToken)
+      user.refreshToken = await CryptoService.decrypt(Buffer.from(user.refreshToken));
+  }
+
+  @BeforeCreate
+  static setDefaultRole = async (user: User) => {
+    user.roles = ['user'];
+  }
   
   @BeforeCreate
   static setDevRole = async (user: User) => {

@@ -5,10 +5,9 @@ import { AuthService } from '../auth.service';
 import { ExpiredTokenException, InvalidTokenException, UserNotFoundException } from "src/exceptions/exceptions";
 import { cookieExtractor } from "./jwt.strategy";
 import * as jwt from 'jsonwebtoken';
-import { ClearCookies } from "@nestjsplus/cookies";
-
+import { response } from "express";
 export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
-  constructor(private authService: AuthService) {
+  constructor(private readonly authService: AuthService) {
     super({
       jwtFromRequest: cookieExtractor,
       ignoreExpiration: false,
@@ -20,9 +19,10 @@ export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     try{
       const user = await User.findOne({
         where: { public_id: payload.public_id },
+        attributes: ['refreshToken'],
       });
       if (!user)
-        throw new UserNotFoundException(); 
+        throw new UserNotFoundException();
       if (user.refreshToken)
       {
         jwt.verify(user.refreshToken, process.env.JWT_SECRET as string);
@@ -33,7 +33,6 @@ export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     }
     catch (error){
       if (error instanceof jwt.TokenExpiredError){
-        this.authService.logout(payload);
         console.error('Refresh token expiredwedwewe: ', error.message);
         throw new ExpiredTokenException();
       }

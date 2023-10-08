@@ -14,6 +14,7 @@ services:
 
   postgres:
     container_name: postgres
+    image: postgres
     build: requirements/db
     ports:
       - "5432:5432"

@@ -16,7 +16,6 @@ import { RefreshMiddleware } from './refresh.middleware';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '60s' },
     }),
     HttpModule,
   ],
@@ -24,8 +23,4 @@ import { RefreshMiddleware } from './refresh.middleware';
   providers: [AuthService, JwtStrategy, RefreshJwtStrategy, FortyTwoStrategy],
   exports: [AuthService],
 })
-export class AuthModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RefreshMiddleware).forRoutes('*');
-  }
-}
+export class AuthModule {}

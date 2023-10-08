@@ -42,10 +42,9 @@ export class UsersService {
 
   async findAll() {
     const users = await User.findAll({
-      // attributes: this.attributesToRetrieve,
     });
-    console.log(users.every((user) => user instanceof User)); // true
-    console.log('All users:', JSON.stringify(users, null, 2));
+    // console.log(users.every((user) => user instanceof User));
+    // console.log('All users:', JSON.stringify(users, null, 2));
     return users;
   }
 
@@ -96,7 +95,9 @@ export class UsersService {
     if (!user) {
       const createUserDto = await this.userDataToCreateUserDto(userData);
       return this.createUser(createUserDto);
-    } else console.log('find :', user.dataValues);
+    } 
+    // else 
+      // console.log('find :', user.dataValues);
     return await responseUser(user);
   }
 
@@ -116,21 +117,21 @@ export class UsersService {
         ...createUserDto,
       });
       const resUser = await responseUser(user);
-      console.log('create :', responseUser);
+      // console.log('create :', responseUser);
       return resUser;
     } catch (error) {
       this.handleUniqueConstraintError(error);
     }
   }
 
-  async updateUser(id: uuidv4, updateUserDto: UpdateUserDto) {
-    if (!isUUID(id)) throw new InvalidUUIDException();
+  async updateUser(id: uuidv4, updateUserDto: UpdateUserDto): Promise<{ message: [number], user: ResponseUserDto }> {
+    if (!isUUID(id)) 
+      throw new InvalidUUIDException();
     try {
-      console.log('update :', updateUserDto);
-      console.log('id :', id);
       const user = await this.usersModel.update(
         { ...updateUserDto },
-        { where: { public_id: id } },
+        { where: { public_id: id },
+        individualHooks: true },
       );
       if (user[0] === 0) {
         throw new UserNotFoundException();
@@ -139,7 +140,7 @@ export class UsersService {
         where: { public_id: id },
         attributes: this.attributesToRetrieve,
       });
-      return { message: user, user: responseUser(UpdatedUser) };
+      return { message: user, user: await responseUser(UpdatedUser) };
     } catch (error) {
       this.handleUniqueConstraintError(error);
     }

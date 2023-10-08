@@ -1,4 +1,4 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus, Redirect } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import { Response } from 'express';
 import { InvalidTokenException, ExpiredTokenException } from './exceptions';
@@ -10,10 +10,9 @@ export class CustomExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     
     if (exception instanceof InvalidTokenException || exception instanceof ExpiredTokenException) {
-      //logout the user
-      console.log('logout the user');
+      console.log('Logout the user refresh token is invalid or expired');
       response.clearCookie('access_token');
-      response.redirect('http://localhost:8080/');
+      response.status(200).json({ message: 'Déconnexion réussie !' });
     } else {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: 'Internal server error',

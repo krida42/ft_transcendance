@@ -40,7 +40,7 @@ import { REQUEST } from '@nestjs/core';
   ],
   controllers: [AppController],
   providers: [AuthService, JwtService, BcryptService, AppService],
-  exports: [SequelizeModule], // pour que les autres modules puissent utiliser SequelizeModule
+  exports: [SequelizeModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

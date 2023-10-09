@@ -1,10 +1,9 @@
-import { Controller, Get, Post, Req, Res, UseGuards, HttpStatus, Render, Redirect } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards, HttpStatus, Render, Redirect, Header } from '@nestjs/common';
 import { AuthService, userToPayload } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
 import { ResponseUserDto } from 'src/users/dto/reponseUser.dto';
-import { GoogleOauthGuard } from './google.guard';
 
 
 @ApiTags('auth')
@@ -59,12 +58,18 @@ export class AuthController {
     res.json('success');
   }
 
+  // @UseGuards(AuthGuard('jwt'))
   @Post('logout')
-  @UseGuards(AuthGuard('jwt'))
+  // @Header('Access-Control-Allow-Origin', 'http://localhost:8080')
+  // @Redirect('http://localhost:8080/main/home', 301)
   @ApiParam({ name: 'token' })
-  async logout(@Req() req, @Res() res): Promise<{ message: [number], user: ResponseUserDto, res:Response }> {
+  async logout(@Req() req, @Res() res): Promise<{ message: [number], user: ResponseUserDto}> {
     res.clearCookie('access_token');
-    return await this.AuthService.logout(req.user.payload), res.status(200).json({ message: 'Déconnexion réussie !' });
+    res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+    console.log(res.getHeaders());
+    await this.AuthService.logout(req.user.payload)
+    // res.status(HttpStatus.OK).json({ message: [HttpStatus.OK], user: req.user.payload });
+    return res.redirect('http://localhost:8080/main/home');
   }
 
   //Utile ou pas?

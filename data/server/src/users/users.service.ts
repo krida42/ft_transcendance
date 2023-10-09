@@ -35,7 +35,7 @@ export class UsersService {
     'email',
     'login',
     'pseudo',
-    'image_link',
+    'avatar',
     'phone',
     'roles',
   ];
@@ -164,4 +164,5 @@ export class UsersService {
     console.log(`${users} users deleted`);
     return users;
   }
+
 }

@@ -65,9 +65,9 @@ export class User extends Model {
   @Column({
     type: DataTypes.STRING,
     allowNull: false,
-    field: 'image_link', 
+    field: 'avatar', 
   })
-  public image_link: string;
+  public avatar: string;
 
   @ApiProperty()
   @Column({
@@ -93,6 +93,15 @@ export class User extends Model {
     field: 'refreshToken',
   })
   public refreshToken: string;
+
+  @ApiProperty()
+  @Column({
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'twoFactorAuth',
+  })
+  public twoFactorAuth: boolean;
 
   @ApiProperty()
   @Column({

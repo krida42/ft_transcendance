@@ -8,7 +8,7 @@ module.exports = {
       email: "vvbarbier@gmail.com",
       login: "vvbarbier",
       pseudo: "Vvincent Barbier",
-      image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/vvbarbier.jpg",
+      avatar: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/vvbarbier.jpg",
       phone: "0631565656",
     },
   {
@@ -16,7 +16,7 @@ module.exports = {
     email: "ssloquet@gmail.com",
     login: "ssloquet",
     pseudo: "Ssylvain Loquet",
-    image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/ssloquet.jpg",
+    avatar: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/ssloquet.jpg",
     phone: "0622222222"
   },
   {
@@ -24,7 +24,7 @@ module.exports = {
     email: "sskhali",
     login: "sskhali",
     pseudo: "Ssofiane Khali",
-    image_link: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/sskhali.jpg",
+    avatar: "https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/sskhali.jpg",
     phone: "0611111111"
   },],
     );

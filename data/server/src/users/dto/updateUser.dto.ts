@@ -31,7 +31,7 @@ export class UpdateUserDto {
       'https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/JohnetteDoe.jpg',
     required: false,
   })
-  image_link?: string;
+  avatar?: string;
 
   @IsOptional()
   @ApiProperty({
@@ -47,17 +47,22 @@ export class UpdateUserDto {
   })
   refreshToken?: string;
 
+  @IsOptional()
+  twoFactorAuth?: boolean;
+
   constructor(
     email?: string,
     pseudo?: string,
-    image_link?: string,
+    avatar?: string,
     phone?: string,
     refreshToken?: string,
+    twoFactorAuth?: boolean,
   ) {
     this.email = email;
     this.pseudo = pseudo;
-    this.image_link = image_link;
+    this.avatar = avatar;
     this.phone = phone;
     this.refreshToken = refreshToken;
+    this.twoFactorAuth = twoFactorAuth;
   }
 }

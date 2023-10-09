@@ -13,8 +13,8 @@ export class ResponseUserDto {
   @Expose()
   pseudo: string;
 
-  @Expose({ name: 'image_link' })
-  image_link: string;
+  @Expose({ name: 'avatar' })
+  avatar: string;
 
   @Expose()
   phone: string | null;

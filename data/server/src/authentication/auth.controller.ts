@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Req, Res, UseGuards, HttpStatus, Render } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards, HttpStatus, Render, Redirect } from '@nestjs/common';
 import { AuthService, userToPayload } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
 import { ResponseUserDto } from 'src/users/dto/reponseUser.dto';
+import { GoogleOauthGuard } from './google.guard';
 
 
 @ApiTags('auth')
@@ -23,12 +24,8 @@ export class AuthController {
   @ApiTags('callback')
   async callback(@Req() req, @Res() res) {
     try {
-      const user = await this.UsersService.findOrCreate(req.user._json);
-      const jwt = await this.AuthService.login(user);
-      await this.UsersService.updateUser(user.public_id, {refreshToken: jwt.refreshToken});
-      res.cookie('access_token', jwt.access_token, { httpOnly: true });
-
-      return res.status(200).json({ message:'Authentification réussie !' });
+      await this.AuthService.signIn(req.user._json, res);
+      return res.redirect('http://localhost:8080/main/home');
     } catch (error) {
       console.error(
         "Erreur lors de l'échange du code contre un jeton ou lors de la demande a l'API 42:",
@@ -37,6 +34,20 @@ export class AuthController {
       res.redirect('/error');
     }
   }
+
+  @UseGuards(AuthGuard('jwt'), AuthGuard('google'))
+  @Get('google')
+  async googleLogin(@Res() res) {}
+
+  @UseGuards(AuthGuard('jwt'), AuthGuard('google'))
+  @Get('google/callback')
+  @ApiTags('callback')
+  async googleCallback(@Req() req, @Res() res) {
+    console.log('req.user:', req.user);
+    console.log('Google callback');
+    return res.redirect('http://localhost:8080/main/home');
+  }
+
 
   @Get('test')
   @UseGuards(AuthGuard('jwt'))

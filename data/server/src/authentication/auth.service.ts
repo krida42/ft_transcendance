@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Res, ResponseDecoratorOptions } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ResponseUserDto } from 'src/users/dto/reponseUser.dto';
 import { UsersService } from '../users/users.service';
+import { response } from 'express';
+import { Json } from 'sequelize/types/utils';
 
 
 export function userToPayload(user: ResponseUserDto) {
@@ -10,7 +12,7 @@ export function userToPayload(user: ResponseUserDto) {
     public_id: user.public_id,
     pseudo: user.pseudo,
     email: user.email,
-    image_link: user.image_link,
+    avatar: user.avatar,
     phone: user.phone,
     roles: user.roles,
   };
@@ -20,6 +22,14 @@ export function userToPayload(user: ResponseUserDto) {
 export class AuthService {
   constructor(private readonly jwtService: JwtService,
     private readonly UsersService: UsersService) {}
+
+  async signIn(json : Json, res: any): Promise< Response > {
+    const user = await this.UsersService.findOrCreate(json);
+    const jwt = await this.login(user);
+    await this.UsersService.updateUser(user.public_id, {refreshToken: jwt.refreshToken});
+    res.cookie('access_token', jwt.access_token, { httpOnly: true });
+    return res;
+  }
 
   async login(user: ResponseUserDto): Promise<{ access_token: string, refreshToken: string }> {
     const payload = userToPayload(user);

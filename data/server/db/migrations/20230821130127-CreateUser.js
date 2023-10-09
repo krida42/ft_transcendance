@@ -35,7 +35,7 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      image_link: {
+      avatar: {
         type: Sequelize.STRING,
         allowNull: false,
       },

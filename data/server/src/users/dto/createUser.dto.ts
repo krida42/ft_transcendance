@@ -45,7 +45,7 @@ export class CreateUserDto {
       'https://cdn.intra.42.fr/users/90ead009dcc97ea8918354daebea3576/JohnDoe.jpg',
     required: true,
   })
-  image_link: string;
+  avatar: string;
 
   @IsOptional()
   @ApiProperty({
@@ -66,7 +66,7 @@ export class CreateUserDto {
     email: string,
     login: string,
     pseudo: string,
-    image_link: string,
+    avatar: string,
     phone?: string,
     roles?: string[],
   ) {
@@ -74,7 +74,7 @@ export class CreateUserDto {
     this.email = email;
     this.login = login;
     this.pseudo = pseudo;
-    this.image_link = image_link;
+    this.avatar = avatar;
     this.phone = phone;
     this.roles = roles;
   }
@@ -85,7 +85,7 @@ export class CreateUserDto {
       source.email,
       source.login,
       source.pseudo,
-      source.image_link,
+      source.avatar,
       source.phone,
       source.roles,
     );

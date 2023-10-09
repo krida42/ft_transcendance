@@ -33,7 +33,7 @@ export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     }
     catch (error){
       if (error instanceof jwt.TokenExpiredError){
-        console.error('Refresh token expiredwedwewe: ', error.message);
+        console.error('Refresh token expired: ', error.message);
         throw new ExpiredTokenException();
       }
       else

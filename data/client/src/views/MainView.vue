@@ -15,9 +15,7 @@
       <div
         class="pong_buttons w-[65%] absolute top-[76%] flex justify-center gap-[35%]"
       >
-        <ArcadeButton
-          :angle="90"
-          @click="() => $router.push('/main/friendless')"
+        <ArcadeButton :angle="90" @pongClick="checkFriends(1)"
           >Play with friends</ArcadeButton
         >
         <ArcadeButton :angle="-90">Play random game</ArcadeButton>
@@ -36,6 +34,28 @@
 <script lang="ts" setup>
 import ArcadeButton from "@/components/ArcadeButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
+import axios from "axios";
+import { User } from "@/types";
+import router from "@/router/index";
+//@click="() => $router.push('/main/friendless')"
+
+async function getFriends(userId: number): Promise<User[]> {
+  const res = await axios
+    .get(
+      "http://127.0.0.1:3658/m1/391362-0-default/users/" + userId + "/friends"
+    )
+    .catch((err) => console.log(err));
+  return res?.data;
+}
+
+async function checkFriends(userId: number): Promise<void> {
+  const Friends: User[] = await getFriends(userId);
+  if (Friends.length === 0) {
+    router.push("/main/friendless");
+  } else {
+    router.push("/main/friend-invite");
+  }
+}
 </script>
 
 <style lang="scss" scoped>

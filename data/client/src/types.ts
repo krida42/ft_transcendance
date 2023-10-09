@@ -2,8 +2,13 @@ type Id = string;
 
 type User = {
   id: Id;
+  email?: string;
+  login?: string;
   pseudo: string;
   displayName: string;
+  image_link?: string;
+  phone?: string | null;
+  roles?: string[];
 };
 
 type Friend = User;

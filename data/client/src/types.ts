@@ -6,7 +6,7 @@ type User = {
   login?: string;
   pseudo: string;
   displayName: string;
-  image_link?: string;
+  avatar: string;
   phone?: string | null;
   roles?: string[];
 };
@@ -20,14 +20,20 @@ type Message = {
   userId: Id;
   userPseudo?: string;
   userDisplayName?: string;
-  direction: "in" | "out";
+  userAvatar?: string;
+  ack?: boolean;
 };
 
 type Chat = {
   id: Id;
   name: string;
-  messages: Message[];
+  messages: Map<Id, Message>;
 };
+
+enum ChatType {
+  Channel = "channel",
+  Direct = "direct",
+}
 
 type Match = {
   id: Id;

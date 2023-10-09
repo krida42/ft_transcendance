@@ -53,6 +53,8 @@ import MenuButton from "@/components/MenuButton.vue";
 import axios from "axios";
 import { onBeforeMount, ref } from "vue";
 import { Match, Id } from "@/types";
+
+const host = process.env.VUE_APP_API_URL;
 const rank = "beginner";
 const level = 14;
 const winrate = ref<number>(0);
@@ -63,9 +65,7 @@ const avatar = ref<string>("");
 
 async function getWinrate(userId: Id) {
   axios
-    .get(
-      "http://127.0.0.1:3658/m1/391362-0-default/users/" + userId + "/winrate"
-    )
+    .get(host + "/users/" + userId + "/winrate")
     .then((res) => {
       winrate.value = res.data.winrate;
       displayWinrate.value = true;
@@ -75,7 +75,7 @@ async function getWinrate(userId: Id) {
 
 async function getMatchHistory() {
   axios
-    .get("http://127.0.0.1:3658/m1/391362-0-default/users/1/match-history")
+    .get(host + "/users/1/match-history")
     .then((res) => {
       matchHistory.value = res.data;
     })
@@ -84,7 +84,7 @@ async function getMatchHistory() {
 
 async function getUserInfo() {
   axios
-    .get("http://127.0.0.1:3658/m1/391362-0-default/users/1a")
+    .get(host + "/users/1a")
     .then((res) => {
       username.value = res.data.pseudo;
       avatar.value = res.data.avatar;

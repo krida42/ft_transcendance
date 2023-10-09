@@ -37,13 +37,12 @@ import MenuButton from "@/components/MenuButton.vue";
 import axios from "axios";
 import { User } from "@/types";
 import router from "@/router/index";
-//@click="() => $router.push('/main/friendless')"
+
+const host = process.env.VUE_APP_API_URL;
 
 async function getFriends(userId: number): Promise<User[]> {
   const res = await axios
-    .get(
-      "http://127.0.0.1:3658/m1/391362-0-default/users/" + userId + "/friends"
-    )
+    .get(host + "/users/" + userId + "/friends")
     .catch((err) => console.log(err));
   return res?.data;
 }

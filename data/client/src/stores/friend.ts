@@ -13,7 +13,7 @@ export const useFriendStore = defineStore({
     getFriendNameById(state) {
       return (id: string) => {
         const friend = this.friends.get(id);
-        return friend?.displayName || "Unknown";
+        return friend?.pseudo || "Unknown";
       };
     },
     currentFriend: (state) => {
@@ -28,6 +28,7 @@ export const useFriendStore = defineStore({
       friendApi.fetchFriendList().then((friends) => {
         friends.forEach((friend: Friend) => {
           this.friendsMap.set(friend.id, friend);
+          console.log(friend);
         });
       });
     },

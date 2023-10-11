@@ -33,9 +33,10 @@ export class MessageTransformer {
       if (nextMsg && msg.userId === nextMsg.userId) {
         beautyfiedArr.push({
           ...msg,
-          userAvatar: undefined,
-          userPseudo: undefined,
-          createdAt: undefined,
+          // userAvatar: undefined,
+          // userPseudo: undefined,
+          // createdAt: undefined,
+          solo: true,
         });
       } else {
         beautyfiedArr.push({

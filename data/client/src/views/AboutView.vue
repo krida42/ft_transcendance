@@ -19,14 +19,8 @@
       <Apple />
     </MyIcon> -->
 
-    <ChatAccessList>
-      <ChatAccessItem
-        v-for="[, friend] in friendStore.friends"
-        :key="friend.id"
-        :title="friend.pseudo"
-      />
-    </ChatAccessList>
-    <ChatMsgList />
+    <ChatAccessList />
+    <ChatMsgList class="sticky top-10 left-[33%]" />
   </div>
 </template>
 
@@ -41,7 +35,6 @@ import { watch } from "vue";
 import { Icon } from "@vicons/utils";
 import { User } from "@vicons/tabler";
 import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
-import ChatMsgItem from "@/components/Chat/ChatMsgItem.vue";
 
 import { useUsersStore } from "@/stores/users";
 import { useFriendStore } from "@/stores/friend";
@@ -51,7 +44,6 @@ import { useFriendStore } from "@/stores/friend";
 import { useChatStore } from "@/stores/chat";
 import { storeToRefs } from "pinia";
 import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
-import ChatAccessItem from "@/components/Chat/ChatAccessItem.vue";
 
 const chatStore = useChatStore();
 

@@ -35,7 +35,7 @@
     </div>
     <div
       v-else-if="!avatar && !isMe"
-      class="w-[22px] bd-redd"
+      class="w-[22px] bd-redd shrink-0"
       :class="{
         'mr-1': !isMe,
         'ml-1 ': isMe,
@@ -51,7 +51,7 @@
         'bg-green-light': isMe,
       }"
     >
-      <div class="header flex justify-between">
+      <div class="header flex justify-between" v-if="!solo">
         <span class="pseudo bd-redd text-red-700">{{ props.pseudo }}</span>
         <span
           class="date text-xs bd-redd"
@@ -81,7 +81,48 @@
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+// @keyframes avatar-keyframes {
+//   0% {
+//     transform: scale(0);
+//   }
+//   100% {
+//     transform: scale(1);
+//   }
+// }
+
+// .avatar-anim-enter-active {
+//   animation: avatar-keyframes 4s; //ease-in-out;
+// }
+
+// .avatar-anim-leave-active {
+//   animation: avatar-keyframes 10s; //ease-in-out reverse;
+// }
+
+// .header-anim-enter-active {
+//   animation: header-keyframes 1s ease-in-out;
+// }
+
+// .header-anim-leave-active {
+//   animation: header-keyframes 0.2s reverse;
+// }
+
+// @keyframes header-keyframes {
+//   0% {
+//     // transform: scale(0);
+//     opacity: 0;
+//     font-size: 0px;
+//     height: 0px;
+//     padding: 0;
+//     margin: 0;
+//   }
+
+//   100% {
+//     height: 0;
+//     opacity: 0;
+//   }
+// }
+</style>
 
 <script lang="ts" setup>
 import { defineProps } from "vue";
@@ -95,5 +136,6 @@ const props = defineProps({
   pseudo: String,
   avatar: String,
   ack: Boolean,
+  solo: Boolean,
 });
 </script>

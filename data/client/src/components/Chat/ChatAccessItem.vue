@@ -25,8 +25,7 @@
     <!-- </div> -->
 
     <div
-      v-if="false"
-      class="status w-2 h-2 border-1 border-black rounded-full bg-red-700ee"
+      class="status w-2 h-2 border-1 border-black rounded-full bg-red-700"
       :class="{
         'bg-green-700': status === 'online',
         'bg-red-700': status === 'offline',
@@ -49,5 +48,6 @@ const props = defineProps({
   start: Boolean,
   end: Boolean,
   title: String,
+  chatId: String,
 });
 </script>

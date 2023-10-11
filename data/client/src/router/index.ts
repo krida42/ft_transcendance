@@ -54,9 +54,9 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/PongScreen/FriendAddView.vue"),
       },
       {
-        path: "friend-invite",
-        name: "friendInvite",
-        component: () => import("../views/PongScreen/FriendInviteView.vue"),
+        path: "friend-play",
+        name: "friendPlay",
+        component: () => import("../views/PongScreen/FriendPlayView.vue"),
       },
     ],
   },

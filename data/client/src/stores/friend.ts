@@ -3,9 +3,7 @@ import friendApi from "../api/friend";
 
 export const useFriendStore = defineStore({
   id: "friend",
-  state: (): {
-    friendsMap: Map<Id, Friend>;
-  } => ({
+  state: (): { friendsMap: Map<Id, Friend> } => ({
     friendsMap: new Map<Id, Friend>(),
   }),
   getters: {
@@ -24,11 +22,10 @@ export const useFriendStore = defineStore({
     },
   },
   actions: {
-    refreshFriendList() {
-      friendApi.fetchFriendList().then((friends) => {
+    async refreshFriendList(): Promise<void> {
+      return friendApi.fetchFriendList().then((friends) => {
         friends.forEach((friend: Friend) => {
           this.friendsMap.set(friend.id, friend);
-          console.log(friend);
         });
       });
     },

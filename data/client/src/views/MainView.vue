@@ -15,7 +15,7 @@
       <div
         class="pong_buttons w-[65%] absolute top-[76%] flex justify-center gap-[35%]"
       >
-        <ArcadeButton :angle="90" @pongClick="checkFriends(1)"
+        <ArcadeButton :angle="90" @pongClick="checkFriends()"
           >Play with friends</ArcadeButton
         >
         <ArcadeButton :angle="-90">Play random game</ArcadeButton>
@@ -32,27 +32,21 @@
 </template>
 
 <script lang="ts" setup>
+import { useFriendStore } from "@/stores/friend";
 import ArcadeButton from "@/components/ArcadeButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
-import axios from "axios";
-import { User } from "@/types";
 import router from "@/router/index";
+import { onMounted } from "vue";
 
-const host = process.env.VUE_APP_API_URL;
+const friendStore = useFriendStore();
 
-async function getFriends(userId: number): Promise<User[]> {
-  const res = await axios
-    .get(host + "/users/" + userId + "/friends")
-    .catch((err) => console.log(err));
-  return res?.data;
-}
-
-async function checkFriends(userId: number): Promise<void> {
-  const Friends: User[] = await getFriends(userId);
-  if (Friends.length === 0) {
+async function checkFriends() {
+  await friendStore.refreshFriendList();
+  console.log("la", friendStore.friendsMap.size);
+  if (friendStore.friends.size === 0) {
     router.push("/main/friendless");
   } else {
-    router.push("/main/friend-invite");
+    router.push("/main/friend-play");
   }
 }
 </script>

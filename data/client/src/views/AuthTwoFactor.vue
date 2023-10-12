@@ -15,20 +15,34 @@
 <script lang="ts" setup>
 import axios from "axios";
 
-const host = "localhost:3001/auth";
+const host = "http://localhost:3001/auth";
 
 async function postActivate2FA() {
-  const res = await axios.post(`${host}/2fa/turn-on`);
-  console.log(res);
+  const response = await fetch(`${host}/2fa/turn-on`, {
+    method: "POST",
+    credentials: "include",
+  });
+  //   const res = await axios
+  //     .post(`C`, { withCredentials: true })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  //console.log(res);
 }
 
 async function postDeactivate2FA() {
-  const res = await axios.post(`${host}/2fa/turn-off`);
-  console.log(res);
+  const response = await fetch(`${host}/2fa/turn-off`, {
+    method: "POST",
+    credentials: "include",
+  });
+  //console.log(res);
 }
 
 async function postAskForQRCode() {
-  const res = await axios.post(`${host}/2fa/authenticate`);
-  console.log(res);
+  const response = await fetch(`${host}/2fa/authenticate`, {
+    method: "POST",
+    credentials: "include",
+  });
+  //console.log(res);
 }
 </script>

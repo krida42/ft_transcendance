@@ -84,7 +84,7 @@ async function getMatchHistory() {
 
 async function getUserInfo() {
   axios
-    .get(host + "/users/1a")
+    .get(host + "/users/1")
     .then((res) => {
       username.value = res.data.pseudo;
       avatar.value = res.data.avatar;

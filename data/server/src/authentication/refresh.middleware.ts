@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import * as jwt from 'jsonwebtoken';
-import { ResponseUserDto } from 'src/users/dto/reponseUser.dto';
+import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()

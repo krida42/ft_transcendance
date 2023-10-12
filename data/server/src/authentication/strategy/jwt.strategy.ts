@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import * as request from 'supertest';
-import { AuthService } from '../auth.service';
+import { UsersService } from '../../users/users.service';
 
 export function cookieExtractor(req: request.Request){
   let jwt = null;
@@ -15,7 +15,7 @@ export function cookieExtractor(req: request.Request){
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly AuthService: AuthService) {
+  constructor(private readonly UsersService: UsersService) {
     super({
       jwtFromRequest: cookieExtractor,
       ignoreExpiration: false, // A changer en false en prod
@@ -24,6 +24,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-  	return { payload };
+    try {
+      if (payload) {
+        console.log('payload:', payload);
+        const user = await this.UsersService.findById(payload.public_id);
+        if (!user)
+          throw new Error('User not found');
+      return { payload };
+    }}catch(error){
+        console.error('Error validation token: ', error);
+        return null;
+    }
   }
 }

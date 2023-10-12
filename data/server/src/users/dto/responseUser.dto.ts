@@ -21,4 +21,7 @@ export class ResponseUserDto {
 
   @Expose()
   roles: string[];
+
+  @Expose()
+  twoFactorAuthenticated: boolean;
 }

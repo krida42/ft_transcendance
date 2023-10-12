@@ -6,14 +6,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { UniqueConstraintError } from 'sequelize';
 import { isUUID } from 'class-validator';
 import { UpdateUserDto } from './dto/updateUser.dto';
-
 import {
   UniqueConstraintException,
   InvalidUUIDException,
   UserNotFoundException,
 } from 'src/exceptions/exceptions';
 import { plainToClass } from 'class-transformer';
-import { ResponseUserDto } from './dto/reponseUser.dto';
+import { ResponseUserDto } from './dto/responseUser.dto';
 
 
 export async function responseUser(user: User) {
@@ -28,7 +27,6 @@ export class UsersService {
     @InjectModel(User)
     private usersModel: typeof User,
   ) {}
-
 
   private attributesToRetrieve = [
     'public_id',

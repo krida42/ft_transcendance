@@ -61,6 +61,8 @@ export class CreateUserDto {
   })
   roles?: string[];
 
+  twoFactorSecret?: boolean;
+
   constructor(
     fortyTwo_id: number,
     email: string,

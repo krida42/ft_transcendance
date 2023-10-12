@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Req, Res, UseGuards, HttpStatus, Render, Redirect, Header } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards, HttpStatus, Render, Redirect, Header, Body, UnauthorizedException, HttpCode } from '@nestjs/common';
 import { AuthService, userToPayload } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
-import { ResponseUserDto } from 'src/users/dto/reponseUser.dto';
+import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 
 
 @ApiTags('auth')
@@ -24,7 +24,6 @@ export class AuthController {
   async callback(@Req() req, @Res() res) {
     try {
       await this.AuthService.signIn(req.user._json, res);
-      return res.redirect('http://localhost:8080/main/home');
     } catch (error) {
       console.error(
         "Erreur lors de l'échange du code contre un jeton ou lors de la demande a l'API 42:",
@@ -47,29 +46,75 @@ export class AuthController {
     return res.redirect('http://localhost:8080/main/home');
   }
 
-
   @Get('test')
-  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @ApiTags('test')
   @ApiParam({ name: 'token' })
   async data(@Req() req, @Res() res) {
-    console.log('req.user:', req.user);
     console.log('req.cookies1', req.cookies.access_token);
     res.json('success');
   }
 
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @Post('logout')
-  // @Header('Access-Control-Allow-Origin', 'http://localhost:8080')
-  // @Redirect('http://localhost:8080/main/home', 301)
   @ApiParam({ name: 'token' })
-  async logout(@Req() req, @Res() res): Promise<{ message: [number], user: ResponseUserDto}> {
-    res.clearCookie('access_token');
-    res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
-    console.log(res.getHeaders());
+  async logout(@Req() req, @Res({passthrough: true }) res): Promise<{ message: [number], user: ResponseUserDto}> {
     await this.AuthService.logout(req.user.payload)
-    // res.status(HttpStatus.OK).json({ message: [HttpStatus.OK], user: req.user.payload });
-    return res.redirect('http://localhost:8080/main/home');
+    res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+    res.clearCookie('access_token');
+    // return res.redirect('http://localhost:8080/main/home');
+    return ;
+  }
+
+  // @UseGuards(AuthGuard('jwt'))
+  // @Post('2FA')
+  // async twoFactorAuthentication(@Req() req, @Res() res) {
+  //   const user = await this.UsersService.findUser(req.user.payload.public_id);
+  //   const secret = this.AuthService.generateTwoFactorAuthenticationSecret(user);
+  //   return res.status(HttpStatus.OK);
+  // }
+
+  @Post('2fa/turn-on')
+  @UseGuards(AuthGuard('jwt'))
+  async turnOnTwoFactorAuth(@Req() req, @Res() res, @Body() body) {
+    const isCodeValid =
+      this.AuthService.isTwoFactorAuthCodeValid(
+        body.twoFactorAuthenticationCode,
+        req.user,
+      );
+    if (!isCodeValid) {
+      throw new UnauthorizedException('Wrong authentication code');
+    }
+    await this.AuthService.setTwoFactorEnable(req.user.payload.public_id, true);
+  }
+
+  @Post('2fa/turn-off')
+  @UseGuards(AuthGuard('jwt'))
+  async turnOffTwoFactorAuth(@Req() req, @Res() res, @Body() body) {
+    const isCodeValid =
+      this.AuthService.isTwoFactorAuthCodeValid(
+        body.twoFactorAuthenticationCode,
+        req.user,
+      );
+    if (!isCodeValid) {
+      throw new UnauthorizedException('Wrong authentication code');
+    }
+    await this.AuthService.setTwoFactorEnable(req.user.payload.public_id, false);
+  }
+
+  @Post('2fa/authenticate')
+  @UseGuards(AuthGuard('jwt'))
+  async authenticate(@Req() req, @Res() res, @Body() body) {
+    const isCodeValid = this.AuthService.isTwoFactorAuthCodeValid(
+      body.twoFactorAuthenticationCode,
+      req.user,
+    );
+    if (!isCodeValid) {
+      throw new UnauthorizedException('Wrong authentication code');
+    }
+    const jwt = await this.AuthService.login2fa(req.user);
+    res.cookie('access_token', jwt.access_token, { httpOnly: true });
+    return res.status(200).json({ message:('2FA réussi !') });
   }
 
   //Utile ou pas?

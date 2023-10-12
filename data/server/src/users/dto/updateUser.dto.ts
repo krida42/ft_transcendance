@@ -7,6 +7,7 @@ import {
   IsOptional,
   isPhoneNumber,
 } from 'class-validator';
+import { Is } from 'sequelize-typescript';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -48,7 +49,10 @@ export class UpdateUserDto {
   refreshToken?: string;
 
   @IsOptional()
-  twoFactorAuth?: boolean;
+  twoFactorEnable?: boolean;
+
+  @IsOptional()
+  twoFactorSecret?: string;
 
   constructor(
     email?: string,
@@ -56,13 +60,15 @@ export class UpdateUserDto {
     avatar?: string,
     phone?: string,
     refreshToken?: string,
-    twoFactorAuth?: boolean,
+    twoFactorEnable?: boolean,
+    twoFactorSecret?: string,
   ) {
     this.email = email;
     this.pseudo = pseudo;
     this.avatar = avatar;
     this.phone = phone;
     this.refreshToken = refreshToken;
-    this.twoFactorAuth = twoFactorAuth;
+    this.twoFactorEnable = twoFactorEnable;
+    this.twoFactorSecret = twoFactorSecret;
   }
 }

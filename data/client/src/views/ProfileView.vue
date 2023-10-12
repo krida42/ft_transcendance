@@ -93,7 +93,7 @@ async function getUserInfo() {
 }
 
 onBeforeMount(() => {
-  getWinrate();
+  getWinrate(1);
   getMatchHistory();
   getUserInfo();
 });

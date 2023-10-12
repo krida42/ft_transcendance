@@ -99,9 +99,17 @@ export class User extends Model {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
-    field: 'twoFactorAuth',
+    field: 'twoFactorEnable',
   })
-  public twoFactorAuth: boolean;
+  public twoFactorEnable: boolean;
+
+  @ApiProperty()
+  @Column({
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'twoFactorSecret',
+  })
+  public twoFactorSecret: string;
 
   @ApiProperty()
   @Column({

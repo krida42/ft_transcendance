@@ -1,3 +1,6 @@
+import { ChannelModule } from './../channel/channel.module';
+import { ChannelService } from './../channel/channel.service';
+import { ChannelController } from './../channel/channel.controller';
 import { APP_FILTER } from '@nestjs/core';
 import { FriendsModule } from './../friends/friends.module';
 import { AuthService } from 'src/authentication/auth.service';
@@ -14,7 +17,6 @@ import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    FriendsModule,
     ConfigModule.forRoot({
       envFilePath: '../../.env',
     }),
@@ -34,6 +36,8 @@ import { JwtService } from '@nestjs/jwt';
       logging: false,
     }),
     UsersModule,
+    ChannelModule,
+    FriendsModule,
     AuthModule,
     HttpModule,
   ],

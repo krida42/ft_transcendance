@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectModel} from '@nestjs/sequelize';
+import { Op } from 'sequelize';
 import { Friends } from 'db/models/friends';
 import { RelationDto } from './dto/relation.dto';
 import {
@@ -11,6 +12,7 @@ import {
   RelationNotFoundException,
   AlreadyBlockedException,
 } from 'src/exceptions';
+
 
 enum FriendStatus {
   Pending = 'Pending',
@@ -26,8 +28,7 @@ export class FriendsService {
   ) {}
 
   async getAll(): Promise<Friends[]> {
-    const all = await Friends.findAll({
-    });
+    const all = await Friends.findAll({});
     console.log(all.every((relation) => relation instanceof Friends));
     console.log('All relations:', JSON.stringify(all, null, 2));
     return all;
@@ -88,6 +89,15 @@ export class FriendsService {
       throw new FriendAlreadyExistsException();
     }
 
+    const friendAlreadyExists2 = await this.friendExists(
+      relationDto.linkedlogin,
+      relationDto.login
+    );
+
+    if (friendAlreadyExists2) {
+      throw new FriendAlreadyExistsException();
+    }
+
     try {
       const newFriend = await this.friendsModel.create({
         login: relationDto.login,
@@ -121,6 +131,16 @@ export class FriendsService {
       throw new InvalidRelationException();
     }
 
+    try {
+      const mirrorRelation = await this.friendsModel.create({
+        login: relationDto.linkedlogin,
+        linkedlogin: relationDto.login,
+        status: FriendStatus.Active,
+      });
+    } catch (error) {
+      throw new Error('create mirrorRelation error: ' + error.message);
+    }
+
     pendingFriend.status = FriendStatus.Active;
     await pendingFriend.save();
     return 'La relation a été acceptée avec succès.';
@@ -133,6 +153,23 @@ export class FriendsService {
         linkedlogin: relationDto.linkedlogin,
       },
     });
+
+    if (existingFriend) {
+    // destroy la relation mirroir si elle existe et est active
+      if (existingFriend.status === FriendStatus.Active) {
+        const mirrorRelation = await this.friendsModel.findOne({
+          where: {
+            login: relationDto.linkedlogin,
+            linkedlogin: relationDto.login,
+            status: FriendStatus.Active
+          },
+        });
+
+        if (mirrorRelation) {
+          await mirrorRelation.destroy();
+        }
+      }
+    }
 
     // si la relation n'existe pas deja on la cree
     if (!existingFriend) {
@@ -172,7 +209,37 @@ export class FriendsService {
     }
     // on destroy la relation si elle existe
     await existingFriend.destroy();
+
+    // destroy la relation mirroir si elle existe et n'est pas 'Blocked'
+    const mirrorRelation = await this.friendsModel.findOne({
+      where: {
+        login: relationDto.linkedlogin,
+        linkedlogin: relationDto.login,
+      },
+    });
+
+    if (mirrorRelation && mirrorRelation.status != FriendStatus.Blocked) {
+      await mirrorRelation.destroy();
+    }
+
     return 'La relation a été supprimée avec succès.';
+  }
+
+  async hardDelete(login: string): Promise<string> {
+    try {
+      const deletedEntries = await Friends.destroy({
+        where: {
+          [Op.or]: [
+            { login: login },
+            { linkedlogin: login },
+          ],
+        },
+      });
+
+      return `Relations with ${login} deleted. ${deletedEntries} entries were deleted.`;
+    } catch (error) {
+      throw new Error(`Error during hardDelete: ${error.message}`);
+    }
   }
 
 }

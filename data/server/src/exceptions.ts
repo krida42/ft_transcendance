@@ -41,3 +41,15 @@ export class AlreadyBlockedException extends HttpException {
     super('User already blocked', HttpStatus.BAD_REQUEST);
   }
 }
+
+export class ChannelNotFoundException extends HttpException {
+  constructor() {
+    super('Channel not found', HttpStatus.NOT_FOUND);
+  }
+}
+
+export class ChannelAlreadyExistsException extends HttpException {
+  constructor() {
+    super('Channel already exists', HttpStatus.BAD_REQUEST);
+  }
+}

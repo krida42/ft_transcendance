@@ -2,26 +2,26 @@
 
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('Friends', {
+    await queryInterface.createTable('Message', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      login: {
+      channel: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: false,
       },
-      linkedlogin: {
+      owner: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: false,
       },
-      status: {
-        type: Sequelize.ENUM('Pending', 'Active', 'Blocked'),
+      content: {
+        type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: 'Pending',
+        unique: false,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -35,6 +35,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-     await queryInterface.dropTable('Friends');
+     await queryInterface.dropTable('Message');
   }
 };

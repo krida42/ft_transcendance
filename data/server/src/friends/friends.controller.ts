@@ -38,7 +38,7 @@ export class FriendsController {
   @ApiOperation({ summary: 'Accept a friend' })
   @ApiResponse({ status: 202, description: 'The friend has been accepted.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Patch('/accept')
+  @Post('/accept')
   async AcceptFriend(@Body() relationDto: RelationDto) {
     return this.friendsService.acceptFriend(relationDto);
   }
@@ -86,5 +86,13 @@ export class FriendsController {
   @Get('block-list/:login')
   async getBlockList(@Param('login') login: string) {
     return this.friendsService.getBlockList(login);
+  }
+
+  @ApiOperation({ summary: 'Delete all relations with login - DEBUG' })
+  @ApiResponse({ status: 200, description: 'delete all relations contains login' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Delete('/delete/:login')
+  async deleteAll(@Param('login') login: string) {
+    return this.friendsService.hardDelete(login);
   }
 }

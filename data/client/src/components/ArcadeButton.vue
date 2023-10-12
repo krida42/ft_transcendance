@@ -1,12 +1,9 @@
 <template>
-  <div
-    class="button-wrapper flex flex-col gap-[0.5rem] cursor-pointer"
-    :style="cssProps"
-  >
+  <div class="button-wrapper flex flex-col gap-[0.5rem]" :style="cssProps">
     <p class="title text-black text-xl uppercase w-[10rem]"><slot></slot></p>
     <button
       class="pong-button bg-blue-button w-[3.5rem] h-[3.5rem] rounded-[10rem] self-center drop-shadow-lg"
-      @click="$emit('click')"
+      @click="$emit('pongClick')"
     >
       <div
         class="button-top-indicator w-[0.2rem] h-[1rem] bg-white mx-auto mb-[1.5rem]"

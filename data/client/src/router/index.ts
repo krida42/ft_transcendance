@@ -22,6 +22,12 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "about" */ "../views/LoginView.vue"),
   },
   {
+    path: "/profile",
+    name: "profile",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/ProfileView.vue"),
+  },
+  {
     path: "/dev",
     name: "dev",
     component: () =>
@@ -46,6 +52,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "friend-add",
         name: "friendAdd",
         component: () => import("../views/PongScreen/FriendAddView.vue"),
+      },
+      {
+        path: "friend-play",
+        name: "friendPlay",
+        component: () => import("../views/PongScreen/FriendPlayView.vue"),
       },
     ],
   },

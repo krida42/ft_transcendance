@@ -13,7 +13,7 @@
       </Icon>
     </div>
     <div class="name bd-redd pt-1 w-[56%] truncate">
-      <slot></slot>
+      {{ title }}
     </div>
 
     <!-- <div class="chat-btn bd-blue" style="text-align: center"> -->
@@ -25,7 +25,8 @@
     <!-- </div> -->
 
     <div
-      class="status w-2 h-2 border-1 border-black rounded-full bg-red-700d"
+      v-if="false"
+      class="status w-2 h-2 border-1 border-black rounded-full bg-red-700ee"
       :class="{
         'bg-green-700': status === 'online',
         'bg-red-700': status === 'offline',
@@ -47,5 +48,6 @@ const props = defineProps({
   status: String,
   start: Boolean,
   end: Boolean,
+  title: String,
 });
 </script>

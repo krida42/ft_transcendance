@@ -3,13 +3,19 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable('Friends', {
-      public_id_user: {
-        type: Sequelize.UUID,
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      login: {
+        type: Sequelize.STRING,
         allowNull: false,
         unique: false,
       },
-      public_id_friend: {
-        type: Sequelize.UUID,
+      linkedlogin: {
+        type: Sequelize.STRING,
         allowNull: false,
         unique: false,
       },
@@ -17,6 +23,14 @@ module.exports = {
         type: Sequelize.ENUM('Pending', 'Active', 'Blocked'),
         allowNull: false,
         defaultValue: 'Pending',
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
   },

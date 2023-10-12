@@ -1,3 +1,4 @@
+import { APP_FILTER } from '@nestjs/core';
 import { FriendsModule } from './../friends/friends.module';
 import { AuthService } from 'src/authentication/auth.service';
 import { PasswordService } from './../users/password.service';

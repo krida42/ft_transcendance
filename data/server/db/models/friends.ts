@@ -4,26 +4,32 @@ import { Column, Model, Table } from 'sequelize-typescript';
 
 @Table
 export class Friends extends Model {
+  @ApiProperty()
+  @Column({
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    field: 'id', 
+  })
+  public id: number;
 
   @ApiProperty()
   @Column({
-    type: DataTypes.UUID,
+    type: DataTypes.STRING,
     allowNull: false,
     unique: false,
-    defaultValue: DataTypes.UUIDV4,
-    field: 'public_id_user', 
+    field: 'login', 
   })
-  public public_id_user: string;
+  public login: string;
 
   @ApiProperty()
   @Column({
-    type: DataTypes.UUID,
+    type: DataTypes.STRING,
     allowNull: false,
     unique: false,
-    defaultValue: DataTypes.UUIDV4,
-    field: 'public_id_friend', 
+    field: 'linkedlogin', 
   })
-  public public_id_friend: string;
+  public linkedlogin: string;
 
   @ApiProperty()
   @Column({
@@ -33,5 +39,21 @@ export class Friends extends Model {
     field: 'status',
   })
   public status: string;
+
+  @ApiProperty()
+  @Column({
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'createdAt', 
+  })
+  public readonly createdAt: Date;
+
+  @ApiProperty()
+  @Column({
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'updatedAt', 
+  })
+  public readonly updatedAt: Date;
 
 }

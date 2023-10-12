@@ -17,3 +17,27 @@ export class UserNotFoundException extends HttpException {
     super('User not found', HttpStatus.NOT_FOUND);
   }
 }
+
+export class InvalidRelationException extends HttpException {
+  constructor() {
+    super('Invalid friend request', HttpStatus.BAD_REQUEST);
+  }
+}
+
+export class FriendAlreadyExistsException extends HttpException {
+  constructor() {
+    super('Friend already registered', HttpStatus.BAD_REQUEST);
+  }
+}
+
+export class RelationNotFoundException extends HttpException {
+  constructor() {
+    super('Relation not found', HttpStatus.NOT_FOUND);
+  }
+}
+
+export class AlreadyBlockedException extends HttpException {
+  constructor() {
+    super('User already blocked', HttpStatus.BAD_REQUEST);
+  }
+}

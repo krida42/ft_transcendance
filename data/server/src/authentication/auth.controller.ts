@@ -46,19 +46,6 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthGuard('jwt'), AuthGuard('google'))
-  @Get('google')
-  async googleLogin(@Res() res) {}
-
-  @UseGuards(AuthGuard('jwt'), AuthGuard('google'))
-  @Get('google/callback')
-  @ApiTags('callback')
-  async googleCallback(@Req() req, @Res() res) {
-    console.log('req.user:', req.user);
-    console.log('Google callback');
-    return res.redirect('http://localhost:8080/main/home');
-  }
-
   @Get('test')
   @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @ApiTags('test')
@@ -114,8 +101,6 @@ export class AuthController {
   @Post('2fa/setup')
   @UseGuards(AuthGuard('jwt'))
   async setupTwoFactorAuth(@Req() req, @Res() res) {
-    console.log('2fa')
-    console.log('req.user:', req.user);
     const { secret, otpAuthUrl } = await this.AuthService.generateTwoFactorSecret(req.user);
     const qrCodeDataURL = await this.AuthService.generateQrCodeDataURL(otpAuthUrl);
     return res.status(200).json({ otpAuthUrl, qrCodeDataURL });
@@ -128,7 +113,6 @@ export class AuthController {
       body.twoFactorAuthCode,
       req.user,
     );
-    console.log('isCodeValid:', isCodeValid);
     if (!isCodeValid) {
       throw new UnauthorizedException('Wrong authentication code');
     }

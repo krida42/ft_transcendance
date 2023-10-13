@@ -11,7 +11,7 @@ import {
   FriendAlreadyExistsException,
   RelationNotFoundException,
   AlreadyBlockedException,
-} from 'src/exceptions';
+} from 'src/exceptions/exceptions1';
 
 
 enum FriendStatus {

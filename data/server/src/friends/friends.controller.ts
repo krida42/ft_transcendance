@@ -7,6 +7,8 @@ import {
   Delete,
   ParseUUIDPipe,
   Param,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 
 import { Friends } from 'db/models/friends';
@@ -21,6 +23,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'db/models/user';
 
 @ApiTags('friends')
 @Controller('friends')
@@ -30,8 +34,11 @@ export class FriendsController {
   @ApiOperation({ summary: 'Add a friend' })
   @ApiResponse({ status: 201, description: 'The friend has been created.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @UseGuards(AuthGuard('jwt'))
   @Post('/add')
-  async createFriend(@Body() relationDto: RelationDto) {
+  async createFriend(@Req() req, @Body() user: any) {
+    console.log(req.user);
+    const relationDto = new RelationDto(req.user.login, user.login);
     return this.friendsService.createFriend(relationDto);
   }
 

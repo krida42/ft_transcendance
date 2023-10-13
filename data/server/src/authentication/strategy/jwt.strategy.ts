@@ -27,8 +27,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         const user = await this.UsersService.findById(payload.public_id);
         if (!user) 
           throw new Error('User not found');
-        console.log('payload:', payload);
-        console.log('{payload}:', { payload });
         return payload;
       }
     } catch (error) {

@@ -15,4 +15,9 @@ export class RelationDto {
   })
   @IsNotEmpty()
   linkedlogin: string;
+
+  constructor(login: string, linkedlogin: string) {
+    this.login = login;
+    this.linkedlogin = linkedlogin;
+  }
 }

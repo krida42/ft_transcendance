@@ -10,7 +10,7 @@ import { inviteToChannelDto } from './dto/inviteToChannel.dto';
 import {
     ChannelNotFoundException,
     ChannelAlreadyExistsException,
-} from 'src/exceptions';
+} from 'src/exceptions/exceptions1';
 
 @Injectable()
 export class ChannelService {

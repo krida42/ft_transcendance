@@ -38,12 +38,10 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   find(
     @Query('bool') bool: string,
-    @Query('pseudo') pseudo: string 
-    ): Promise<User[] | User> {
-    if (bool === 'true')
-      return this.usersService.findAll();
-    else if (pseudo)
-      return this.usersService.findByPseudo(pseudo);
+    @Query('pseudo') pseudo: string,
+  ): Promise<User[] | User> {
+    if (bool === 'true') return this.usersService.findAll();
+    else if (pseudo) return this.usersService.findByPseudo(pseudo);
   }
 
   @Get(':id')

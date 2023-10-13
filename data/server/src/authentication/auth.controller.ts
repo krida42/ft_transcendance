@@ -60,7 +60,7 @@ export class AuthController {
   }
 
   @Get('test')
-  // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @ApiTags('test')
   @ApiParam({ name: 'token' })
   async data(@Req() req, @Res() res) {
@@ -94,15 +94,6 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   async turnOnTwoFactorAuth(@Req() req, @Res() res, @Body() body) {
     try {
-      // console.log('body:', body);
-      console.log('req.user:', req.user);
-      // const isCodeValid = this.AuthService.isTwoFactorAuthCodeValid(
-      //   body.twoFactorAuthenticationCode,
-      //   req.user,
-      // );
-      // if (!isCodeValid) {
-      //   throw new UnauthorizedException('Wrong authentication code');
-      // }
       await this.AuthService.setTwoFactorEnable(
         req.user.payload.public_id,
         true,
@@ -117,30 +108,33 @@ export class AuthController {
   @Post('2fa/turn-off')
   @UseGuards(AuthGuard('jwt'))
   async turnOffTwoFactorAuth(@Req() req, @Res() res, @Body() body) {
-    // const isCodeValid = this.AuthService.isTwoFactorAuthCodeValid(
-    //   body.twoFactorAuthenticationCode,
-    //   req.user,
-    // );
-    // if (!isCodeValid) {
-    //   throw new UnauthorizedException('Wrong authentication code');
-    // }
     await this.AuthService.setTwoFactorEnable(
       req.user.payload.public_id,
       false,
     );
   }
 
+  @Post('2fa/setup')
+  @UseGuards(AuthGuard('jwt'))
+  async setupTwoFactorAuth(@Req() req, @Res() res) {
+    console.log('2fa')
+    console.log('req.user:', req.user);
+    const { secret, otpAuthUrl } = await this.AuthService.generateTwoFactorSecret(req.user);
+    const qrCodeDataURL = await this.AuthService.generateQrCodeDataURL(otpAuthUrl);
+    return res.status(200).json({ otpAuthUrl, qrCodeDataURL });
+  }
+
   @Post('2fa/authenticate')
   @UseGuards(AuthGuard('jwt'))
   async authenticate(@Req() req, @Res() res, @Body() body) {
-    // const isCodeValid = this.AuthService.isTwoFactorAuthCodeValid(
-    //   body.twoFactorAuthenticationCode,
-    //   req.user,
-    // );
-    // if (!isCodeValid) {
-    //   throw new UnauthorizedException('Wrong authentication code');
-    // }
-    const jwt = await this.AuthService.login2fa(req.user);
+    const isCodeValid = this.AuthService.isTwoFactorAuthCodeValid(
+      body.twoFactorAuthCode,
+      req.user,
+    );
+    if (!isCodeValid) {
+      throw new UnauthorizedException('Wrong authentication code');
+    }
+    const jwt = await this.AuthService.login2fa(req.user.payload);
     res.cookie('access_token', jwt.access_token, { httpOnly: true });
     return res.status(200).json({ message: '2FA réussi !' });
   }

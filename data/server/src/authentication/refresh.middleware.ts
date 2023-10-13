@@ -16,8 +16,7 @@ export class RefreshMiddleware implements NestMiddleware {
         return next();
       }
       jwt.verify(accessToken, process.env.JWT_SECRET as string);
-    } 
-    catch (error) {
+    } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
         //Verifications a ajouter blacklist?
         const user = jwt.decode(req.cookies.access_token) as ResponseUserDto;
@@ -25,18 +24,18 @@ export class RefreshMiddleware implements NestMiddleware {
         const jwtAccess = await this.authService.refresh(user);
         res.cookie('access_token', jwtAccess.access_token, { httpOnly: true });
         req.cookies.access_token = jwtAccess.access_token;
-      }
-      else if (error.name === 'jwt malformed') {
-        if (!req.cookies.access_token)
-          return next();
+      } else if (error.name === 'jwt malformed') {
+        if (!req.cookies.access_token) return next();
         console.log('jwt malformed: ', req.cookies.access_token);
         res.clearCookie('access_token');
-      }
-      else {
-        console.error('Erreur lors du rafraîchissement automatique du jeton:', error);
+      } else {
+        console.error(
+          'Erreur lors du rafraîchissement automatique du jeton:',
+          error,
+        );
         return next();
       }
-     return next();
+      return next();
     }
     return next();
   }

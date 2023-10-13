@@ -32,13 +32,13 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const corsOptions: CorsOptions = {
-      origin: 'http://localhost:8080',
-      allowedHeaders: 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      credentials: true,
+    origin: 'http://localhost:8080',
+    allowedHeaders:
+      'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
   };
   app.enableCors(corsOptions);
-
 
   // Configuration du middleware express-session
   app.use(
@@ -50,14 +50,12 @@ async function bootstrap() {
   );
   // app.set('trust proxy', 1); // trust first proxy for cookie-session mais pas sur que ce soit utile
 
-
-
   // Configuration du middleware passport
   var passport = require('passport');
   app.use(passport.initialize());
   app.use(passport.session());
 
-  app.useGlobalPipes(new ValidationPipe(),);
+  app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new CustomExceptionFilter());
 
   await app.listen(3001);

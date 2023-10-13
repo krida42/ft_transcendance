@@ -8,7 +8,7 @@ import { HttpModule } from '@nestjs/axios';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { RefreshJwtStrategy } from './strategy/refreshToken.strategy';
-import { GoogleStrategy } from './strategy/google.strategy';
+import { Jwt2faStrategy } from './strategy/2fa.strategy';
 
 @Module({
   imports: [
@@ -20,7 +20,13 @@ import { GoogleStrategy } from './strategy/google.strategy';
     HttpModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RefreshJwtStrategy, FortyTwoStrategy, GoogleStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    RefreshJwtStrategy,
+    FortyTwoStrategy,
+    Jwt2faStrategy,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

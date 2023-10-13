@@ -1,1 +1,7 @@
-export const DEVS: string[] = ["vbarbier", "sloquet", "skhali", "mvue", "kisikaya"];
+export const DEVS: string[] = [
+  'vbarbier',
+  'sloquet',
+  'skhali',
+  'mvue',
+  'kisikaya',
+];

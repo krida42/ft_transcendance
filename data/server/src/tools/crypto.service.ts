@@ -8,27 +8,24 @@ const password = process.env.PASSWORD;
 const iv = process.env.IV_LENGTH;
 @Injectable()
 export class CryptoService {
-	// Chiffrement avec le module crypto de Node.js
-	static async encrypt(text: string) {
-		const key = (await promisify(scrypt)(password, 'salt', 32)) as Buffer;
-		const cipher = createCipheriv(algorithm, key, iv);
+  // Chiffrement avec le module crypto de Node.js
+  static async encrypt(text: string) {
+    const key = (await promisify(scrypt)(password, 'salt', 32)) as Buffer;
+    const cipher = createCipheriv(algorithm, key, iv);
 
-		const encryptedText = Buffer.concat([
-		cipher.update(text),
-		cipher.final(),
-		]);
-		return encryptedText;
-	}
+    const encryptedText = Buffer.concat([cipher.update(text), cipher.final()]);
+    return encryptedText;
+  }
 
-	// Déchiffrement avec le module crypto de Node.js
-	static async decrypt(encryptedData: Buffer) {
-		const key = (await promisify(scrypt)(password, 'salt', 32)) as Buffer;
-		const decipher = crypto.createDecipheriv(algorithm, key, iv);
+  // Déchiffrement avec le module crypto de Node.js
+  static async decrypt(encryptedData: Buffer) {
+    const key = (await promisify(scrypt)(password, 'salt', 32)) as Buffer;
+    const decipher = crypto.createDecipheriv(algorithm, key, iv);
 
-		const decryptedText = Buffer.concat([
-		decipher.update(encryptedData),
-		decipher.final(),
-		]);
-		return decryptedText.toString();
-	}
+    const decryptedText = Buffer.concat([
+      decipher.update(encryptedData),
+      decipher.final(),
+    ]);
+    return decryptedText.toString();
+  }
 }

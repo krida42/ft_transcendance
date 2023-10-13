@@ -1,6 +1,11 @@
 import { AuthService } from 'src/authentication/auth.service';
 
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -45,10 +50,11 @@ import { REQUEST } from '@nestjs/core';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-    .apply(RefreshMiddleware)
-    .exclude({
-        path: 'auth/logout', method: RequestMethod.POST
-    })
-    .forRoutes('*');
+      .apply(RefreshMiddleware)
+      .exclude({
+        path: 'auth/logout',
+        method: RequestMethod.POST,
+      })
+      .forRoutes('*');
   }
 }

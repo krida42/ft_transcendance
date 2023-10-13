@@ -2,8 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
 export function isDev(roles: Array<string>): boolean {
-  if (roles.includes('dev')) 
-    return true;
+  if (roles.includes('dev')) return true;
   return false;
 }
 @Injectable()
@@ -15,8 +14,7 @@ export class DeveloperGuard implements CanActivate {
     const user = request.user;
     const roles = user.payload.roles;
     // console.log("Is dev: " + isDev(roles));
-    if (user && isDev(roles))
-      return true;
+    if (user && isDev(roles)) return true;
     return false;
   }
 }

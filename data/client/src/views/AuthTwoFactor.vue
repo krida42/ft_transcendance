@@ -1,33 +1,58 @@
 <template>
-  <div class="auth-two-factor flex justify-center gap-[4rem]">
+  <!-- <qrcode-vue
+    :value="otpAuthUrl"
+    :level="level"
+    :render-as="renderAs"
+    class="w-[300px]"
+  /> -->
+  <img :src="qrCodeURL" alt="QR Code" class="w-[300px]" />
+  <div class="auth-two-factor flex justify-center gap-[2rem]">
     <button @click="postActivate2FA">Activate 2FA</button>
     <button @click="postDeactivate2FA">Deactivate 2FA</button>
-    <button @click="postAskForQRCode">Ask for QR code</button>
+    <button @click="setupQRCode">Setup 2FA</button>
   </div>
+  <form @submit.prevent="postAskForQRCode">
+    <input
+      v-model="input"
+      placeholder="username..."
+      type="text"
+      minlength="3"
+      maxlength="15"
+      class="bg-black text-[1.5rem] border-2 border-[#828287] ml-[3rem] mr-[1rem] pl-[0.5rem]"
+    />
+  </form>
+  <!-- Utilisation du composant qrcode.vue pour afficher le code QR -->
+  <!-- <qrcode-vue :value="qrCodeURL" class="w-[300px]" /> -->
 </template>
 
-<style lang="scss" scoped>
-.auth-two-factor > * {
-  background-color: $green-medium;
-}
-</style>
-
 <script lang="ts" setup>
-import axios from "axios";
+import { ref } from "vue";
 
 const host = "http://localhost:3001/auth";
+const qrCodeURL = ref("");
+const otpAuthUrl = ref("");
+const input = ref("");
+
+async function setupQRCode() {
+  const response = await fetch(`${host}/2fa/setup`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    qrCodeURL.value = data.qrCodeDataURL;
+    otpAuthUrl.value = data.otpAuthUrl;
+  } else {
+    // Gérer les erreurs si nécessaire
+  }
+}
 
 async function postActivate2FA() {
   const response = await fetch(`${host}/2fa/turn-on`, {
     method: "POST",
     credentials: "include",
   });
-  //   const res = await axios
-  //     .post(`C`, { withCredentials: true })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  //console.log(res);
 }
 
 async function postDeactivate2FA() {
@@ -35,14 +60,25 @@ async function postDeactivate2FA() {
     method: "POST",
     credentials: "include",
   });
-  //console.log(res);
 }
 
 async function postAskForQRCode() {
   const response = await fetch(`${host}/2fa/authenticate`, {
     method: "POST",
     credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      twoFactorAuthCode: input.value,
+    }),
   });
-  //console.log(res);
+  console.log(response);
 }
 </script>
+
+<style lang="scss" scoped>
+.auth-two-factor > * {
+  background-color: $green-medium;
+}
+</style>

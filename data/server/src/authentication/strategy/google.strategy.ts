@@ -5,9 +5,7 @@ import { UsersService } from '../../users/users.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor(
-	private readonly UsersService: UsersService,
-  ) {
+  constructor(private readonly UsersService: UsersService) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_SECRET,
@@ -23,7 +21,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback,
   ): Promise<any> {
     const { id, name, emails, photos } = profile;
-	console.log('profile= ', profile);
+    console.log('profile= ', profile);
     const user = {
       provider: 'google',
       providerId: id,
@@ -31,7 +29,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       name: `${name.givenName} ${name.familyName}`,
       picture: photos[0].value,
     };
-	console.log('user= ', user);
+    console.log('user= ', user);
     done(null, user);
   }
 }

@@ -5,7 +5,7 @@
     :render-as="renderAs"
     class="w-[300px]"
   /> -->
-  <img :src="qrCodeURL" alt="QR Code" class="w-[300px]" />
+  <img :src="qrCodeURL" alt="" class="w-[300px]" />
   <div class="auth-two-factor flex justify-center gap-[2rem]">
     <button @click="postActivate2FA">Activate 2FA</button>
     <button @click="postDeactivate2FA">Deactivate 2FA</button>

@@ -35,14 +35,21 @@ export class AuthService {
       refreshToken: jwt.refreshToken,
     });
     res.cookie('access_token', jwt.access_token, { httpOnly: true });
+    return (await this.redirectSignIn(user, res));
+  }
+
+  async redirectSignIn(user: ResponseUserDto, res: any): Promise<Response> {
     if (await this.isTwoFactorEnable(user.public_id))
-      return res.redirect('http://localhost:8080/main/2fa');
+    {
+      if (await this.hasTwoFactorSecret(user.public_id))
+        return res.redirect('http://localhost:8080/auth-2FA');
+      else
+        return res.redirect('http://localhost:8080/auth-2FA/setup');
+    }
     return res.redirect('http://localhost:8080/main/home');
   }
 
-  async login(
-    user: ResponseUserDto,
-  ): Promise<{ access_token: string; refreshToken: string }> {
+  async login(user: ResponseUserDto): Promise<{ access_token: string; refreshToken: string }> {
     user.twoFactorAuthenticated = false;
     const payload = {
       ...userToPayload(user),
@@ -95,10 +102,7 @@ export class AuthService {
     });
   }
 
-  async setTwoFactorEnable(
-    public_id: uuidv4,
-    bool: boolean,
-  ): Promise<{ message: [number], user: ResponseUserDto }> {  
+  async setTwoFactorEnable(public_id: uuidv4, bool: boolean): Promise<{ message: [number], user: ResponseUserDto }> {  
     return await this.UsersService.updateUser(public_id, {
       twoFactorEnable: bool,
     });
@@ -108,27 +112,31 @@ export class AuthService {
     return (await this.UsersService.findById(public_id)).twoFactorEnable;
   }
 
-  async generateTwoFactorSecret(user: any) {
+  async hasTwoFactorSecret(public_id: uuidv4): Promise<boolean> {
+    return (await this.UsersService.findById(public_id)).twoFactorSecret !== null;
+  }
+
+  async generateTwoFactorSecret(user: ResponseUserDto) {
     const secret = authenticator.generateSecret();
     const otpAuthUrl = authenticator.keyuri(
-      user.payload.login,
+      user.login,
       process.env.APP_NAME,
       secret,
     );
-    await this.setTwoFactorSecret(secret, user.payload.public_id);
+    await this.setTwoFactorSecret(secret, user.public_id);
     return {
       secret,
       otpAuthUrl,
     };
   }
 
-  async isTwoFactorAuthCodeValid(twoFactorAuthCode: string, payload: any) {
-    console.log(payload.payload.public_id);
-    const user = await User.findOne({
-      where: { public_id: payload.payload.public_id },
+  async isTwoFactorAuthCodeValid(twoFactorAuthCode: string, resUser: ResponseUserDto) {
+    console.log(resUser.public_id);
+    const dbUser = await User.findOne({
+      where: { public_id: resUser.public_id },
       attributes: ['twoFactorSecret'],
     });
-    const secret = user.twoFactorSecret;
+    const secret = dbUser.twoFactorSecret;
     console.log('user.twoFactorSecret:', secret);
 
     return authenticator.verify({

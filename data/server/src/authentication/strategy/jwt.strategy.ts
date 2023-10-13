@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly UsersService: UsersService) {
     super({
       jwtFromRequest: cookieExtractor,
-      ignoreExpiration: false, // A changer en false en prod
+      ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
     });
   }
@@ -24,10 +24,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     try {
       if (payload) {
-        console.log('payload:', payload);
         const user = await this.UsersService.findById(payload.public_id);
-        if (!user) throw new Error('User not found');
-        return { payload };
+        if (!user) 
+          throw new Error('User not found');
+        console.log('payload:', payload);
+        console.log('{payload}:', { payload });
+        return payload;
       }
     } catch (error) {
       console.error('Error validation token: ', error);

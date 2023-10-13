@@ -13,7 +13,7 @@ import {
   UnauthorizedException,
   HttpCode,
 } from '@nestjs/common';
-import { AuthService, userToPayload } from './auth.service';
+import { AuthService } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
@@ -64,18 +64,15 @@ export class AuthController {
   @ApiTags('test')
   @ApiParam({ name: 'token' })
   async data(@Req() req, @Res() res) {
-    console.log('req.cookies1', req.cookies.access_token);
+    console.log('Passe les systemes d authentification', req.user.login);
     res.json('success');
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')
   @ApiParam({ name: 'token' })
-  async logout(
-    @Req() req,
-    @Res({ passthrough: true }) res,
-  ): Promise<{ message: [number]; user: ResponseUserDto }> {
-    await this.AuthService.logout(req.user.payload);
+  async logout(@Req() req, @Res({ passthrough: true }) res): Promise<{ message: [number]; user: ResponseUserDto }> {
+    await this.AuthService.logout(req.user);
     res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
     res.clearCookie('access_token');
     // return res.redirect('http://localhost:8080/main/home');
@@ -85,7 +82,7 @@ export class AuthController {
   // @UseGuards(AuthGuard('jwt'))
   // @Post('2FA')
   // async twoFactorAuthentication(@Req() req, @Res() res) {
-  //   const user = await this.UsersService.findUser(req.user.payload.public_id);
+  //   const user = await this.UsersService.findUser(req.user.public_id);
   //   const secret = this.AuthService.generateTwoFactorAuthenticationSecret(user);
   //   return res.status(HttpStatus.OK);
   // }
@@ -95,7 +92,7 @@ export class AuthController {
   async turnOnTwoFactorAuth(@Req() req, @Res() res, @Body() body) {
     try {
       await this.AuthService.setTwoFactorEnable(
-        req.user.payload.public_id,
+        req.user.public_id,
         true,
       );
       return res.status(200).json({ message: '2FA enabled !' });
@@ -109,7 +106,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   async turnOffTwoFactorAuth(@Req() req, @Res() res, @Body() body) {
     await this.AuthService.setTwoFactorEnable(
-      req.user.payload.public_id,
+      req.user.public_id,
       false,
     );
   }
@@ -127,14 +124,15 @@ export class AuthController {
   @Post('2fa/authenticate')
   @UseGuards(AuthGuard('jwt'))
   async authenticate(@Req() req, @Res() res, @Body() body) {
-    const isCodeValid = this.AuthService.isTwoFactorAuthCodeValid(
+    const isCodeValid = await this.AuthService.isTwoFactorAuthCodeValid(
       body.twoFactorAuthCode,
       req.user,
     );
+    console.log('isCodeValid:', isCodeValid);
     if (!isCodeValid) {
       throw new UnauthorizedException('Wrong authentication code');
     }
-    const jwt = await this.AuthService.login2fa(req.user.payload);
+    const jwt = await this.AuthService.login2fa(req.user);
     res.cookie('access_token', jwt.access_token, { httpOnly: true });
     return res.status(200).json({ message: '2FA réussi !' });
   }

@@ -35,6 +35,7 @@ export class UsersService {
     'avatar',
     'phone',
     'roles',
+    'twoFactorEnable',
   ];
 
   async findAll() {

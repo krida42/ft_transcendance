@@ -22,12 +22,15 @@ type Message = {
   userDisplayName?: string;
   userAvatar?: string;
   ack?: boolean;
+  vueTrackId?: Id;
+  solo?: boolean;
 };
 
 type Chat = {
   id: Id;
   name: string;
   messages: Map<Id, Message>;
+  chatType: ChatType;
 };
 
 enum ChatType {

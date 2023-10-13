@@ -26,7 +26,9 @@
         svgName="profile.svg"
         @click="() => $router.push('/profile')"
       />
-      <MenuButton svgName="message.svg" />
+      <router-link to="/about">
+        <MenuButton svgName="message.svg" />
+      </router-link>
     </div>
   </div>
 </template>

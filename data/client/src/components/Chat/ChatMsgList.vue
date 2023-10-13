@@ -6,34 +6,40 @@
         <X class="bdd-cyan" />
       </Icon>
     </div>
-    <div class="main" ref="main">
-      <transition-group name="msg-item">
+    <div class="main" ref="main" @scroll="handleScroll">
+      <transition-group name="msg-item-animation" v-if="true">
         <ChatMsgItem
           v-for="msg in currentChatTreated"
-          :key="msg.msgId"
+          :key="msg.vueTrackId || msg.msgId"
           :content="msg.content"
           :pseudo="msg.userPseudo"
           :avatar="msg.userAvatar"
           :date="msg.createdAt"
           :is-me="msg.userId === usersStore.currentUser?.id"
           :ack="msg.ack"
+          :solo="msg.solo"
         />
       </transition-group>
-      <!-- <slot> </slot> -->
-      <!-- <ChatMsgItem content="Salut je suis un message" />
 
-      <ChatMsgItem
-        content="Salut je suis un message"
-        pseudo="Adrien"
-        :date="new Date()"
-        avatar="https://cdn.intra.42.fr/users/95f9dafeb1e78d2374207ab32c186d31/kisikaya.jpg"
-      />
-      <ChatMsgItem
-        isMe
-        content="je sais surtut celui de Mathieu"
-        :date="new Date()"
-        pseudo="Timothee"
-      /> -->
+      <!-- <transition-groupe name="msg2-item" v-else>
+        <div
+          class="mg-item-ctn bd-blue"
+          v-for="msg in currentChatTreated"
+          :key="msg.vueTrackId || msg.msgId"
+        >
+          <ChatMsgItem
+            :content="msg.content"
+            :pseudo="msg.userPseudo"
+            :avatar="msg.userAvatar"
+            :date="msg.createdAt"
+            :is-me="msg.userId === usersStore.currentUser?.id"
+            :ack="msg.ack"
+            :class="{
+              'ml-auto': msg.userId === usersStore.currentUser?.id,
+            }"
+          />
+        </div>
+      </transition-groupe> -->
     </div>
     <div class="footer">
       <input
@@ -110,7 +116,8 @@
   padding-inline: 0.5rem;
   // padding-block: 0.2rem;
   overflow-y: scroll;
-  // scroll-behavior: revert;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 
   .msg-item-enter-active {
     transition: all 0.3s;
@@ -125,6 +132,20 @@
   .msg-item-leave-to {
     opacity: 0;
     transform: translateY(100%);
+  }
+
+  .msg-item-animation-enter-active {
+    animation: shade-in-move 0.3s;
+  }
+
+  @keyframes shade-in-move {
+    0% {
+      transform: translateY(50%);
+    }
+
+    100% {
+      transform: translateY(0%);
+    }
   }
 }
 
@@ -208,7 +229,7 @@ enum ChatType {
   Channel = "channel",
 }
 
-function sendMessage() {
+async function sendMessage() {
   console.log(inputMessage.value, "hey");
   if (inputMessage.value === "/r") {
     console.log("refreshing");
@@ -216,14 +237,17 @@ function sendMessage() {
   } else if (inputMessage.value === "/ra4") {
     console.log("refreshing");
     chatStore.refreshChat("marine", ChatType.Direct, "a4");
+  } else if (inputMessage.value === "/s") {
+    console.log("refreshing randome");
+    chatStore.refreshChat("someone", ChatType.Direct, null);
   } else {
-    chatStore.sendMessage("marine", ChatType.Direct, inputMessage.value);
+    chatStore
+      .sendMessage(chatStore.openedChatId, ChatType.Direct, inputMessage.value)
+      .then(() => {
+        scrollToBottom();
+      });
   }
   inputMessage.value = "";
-  // scrollToBottom();
-  setTimeout(() => {
-    // scrollToBottom();
-  }, 1);
 }
 
 let main = ref<HTMLDivElement>();
@@ -231,5 +255,23 @@ let main = ref<HTMLDivElement>();
 function scrollToBottom() {
   if (!main.value) return;
   main.value.scrollTop = main.value.scrollHeight;
+  // requestAnimationFrame(() => {
+  //   main.value!.scrollTop = main.value!.scrollHeight;
+  // });
+}
+
+function handleScroll(event: Event) {
+  if (!main.value) return;
+  if (main.value.scrollTop === 0) {
+    console.log("scrolling to top");
+
+    // const previousHeight = main.value.scrollHeight;
+    // const previousScrollTop = main.value.scrollTop;
+
+    chatStore.loadMoreMessages();
+
+    // const heightDifference = main.value.scrollHeight - previousHeight;
+    // main.value.scrollTop = previousScrollTop + heightDifference;
+  }
 }
 </script>

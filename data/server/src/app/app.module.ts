@@ -1,6 +1,6 @@
-import { ChannelModule } from './../channel/channel.module';
-import { ChannelService } from './../channel/channel.service';
-import { ChannelController } from './../channel/channel.controller';
+import { ChannelsModule } from '../channels/channels.module';
+import { ChannelsService } from '../channels/channels.service';
+import { ChannelsController } from '../channels/channels.controller';
 import { APP_FILTER } from '@nestjs/core';
 import { FriendsModule } from './../friends/friends.module';
 import { AuthService } from 'src/authentication/auth.service';
@@ -45,7 +45,7 @@ import { REQUEST } from '@nestjs/core';
       logging: false,
     }),
     UsersModule,
-    ChannelModule,
+    ChannelsModule,
     FriendsModule,
     AuthModule,
     HttpModule,

@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 
 import { Friends } from 'db/models/friends';
-import { RelationDto } from './dto/relation.dto';
 import { FriendsService } from './friends.service';
 
 import {
@@ -26,80 +25,114 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'db/models/user';
 
-@ApiTags('friends')
-@Controller('friends')
+@ApiTags('friends v2 (jwt OFF)')
+@Controller('')
 export class FriendsController {
-  constructor(private readonly friendsService: FriendsService) {}
+  private login: string;  // TEMP
+  constructor(private readonly friendsService: FriendsService) {
+    this.login = 'test'; // TEMP
+  }
 
+  // @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Add a friend' })
-  @ApiResponse({ status: 201, description: 'The friend has been created.' })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @UseGuards(AuthGuard('jwt'))
-  @Post('/add')
-  async createFriend(@Req() req, @Body() user: any) {
-    console.log(req.user);
-    const relationDto = new RelationDto(req.user.login, user.login);
-    return this.friendsService.createFriend(relationDto);
+  @Post('/friends/:userId/add')
+  async createFriend(@Req() req, @Param('userId') userId: string) {
+    console.log('createFriend');
+    console.log(this.login+' : '+userId);
+    return this.friendsService.createFriend(this.login, userId);
   }
 
-  @ApiOperation({ summary: 'Accept a friend' })
-  @ApiResponse({ status: 202, description: 'The friend has been accepted.' })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Post('/accept')
-  async AcceptFriend(@Body() relationDto: RelationDto) {
-    return this.friendsService.acceptFriend(relationDto);
+  // @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: 'Accept a friend request' })
+  @Post('/friends/:userId/accept')
+  async acceptFriend(@Req() req, @Param('userId') userId: string) {
+    console.log('acceptFriend');
+    console.log(this.login+' : '+userId);
+    return this.friendsService.acceptFriend(this.login, userId);
   }
 
-  @ApiOperation({ summary: 'Block user' })
-  @ApiResponse({ status: 202, description: 'The user has been blocked.' })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Post('/block')
-  async blockFriend(@Body() relationDto: RelationDto) {
-    return this.friendsService.blockFriend(relationDto);
+  // @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: 'Decline a friend request' })
+  @Delete('/friends/:userId/decline')
+  async declineFriend(@Req() req, @Param('userId') userId: string) {
+    console.log('declineFriend');
+    console.log(this.login+' : '+userId);
+    return this.friendsService.declineFriend(this.login, userId);
   }
 
-  @ApiOperation({ summary: 'Delete friend or blocked user' })
-  @ApiResponse({ status: 202, description: 'The friend or blocked user has been deleted.' })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Delete('/delete')
-  async deleteFriend(@Body() relationDto: RelationDto) {
-    return this.friendsService.deleteFriend(relationDto);
+  @ApiOperation({ summary: 'Block someone' })
+  // @UseGuards(AuthGuard('jwt'))
+  @Post('/friends/:userId/block')
+  async blockFriend(@Req() req, @Param('userId') userId: string) {
+    console.log('blockFriend');
+    console.log(this.login+' : '+userId);
+    return this.friendsService.blockFriend(this.login, userId);
   }
 
-  @ApiOperation({ summary: 'Get all relations - DEBUG' })
-  @ApiResponse({ status: 200, description: 'get all relations' })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('/all')
+  @ApiOperation({ summary: 'Delete friend or unblock user' })
+  // @UseGuards(AuthGuard('jwt'))
+  @Delete('/friends/:userId/delete')
+  async deleteFriend(@Req() req, @Param('userId') userId: string) {
+    console.log('deleteFriend');
+    console.log(this.login+' : '+userId);
+    return this.friendsService.deleteFriend(this.login, userId);
+  }
+
+  @ApiOperation({ summary: 'Get friend requests you have sent' })
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('/friends-sent')
+  async getSentRequests(@Req() req) {
+    console.log('getSentRequests');
+    const list = this.friendsService.getSentRequests(this.login);
+    console.log(JSON.stringify(list, null, 2));
+    return list;
+  }
+
+  @ApiOperation({ summary: 'Get friend requests you have received' })
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('/friends-received')
+  async getReceivedRequests(@Req() req) {
+    console.log('getReceivedRequests');
+    const list = this.friendsService.getReceivedRequests(this.login);
+    console.log(JSON.stringify(list, null, 2));
+    return list;
+  }
+
+  @ApiOperation({ summary: 'Get your active friends list' })
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('/friends')
+  async getFriends(@Req() req) {
+    console.log('getFriends');
+    const list = this.friendsService.getFriends(this.login);
+    console.log(JSON.stringify(list, null, 2));
+    return list;
+  }
+
+  @ApiOperation({ summary: 'Get your blocked list' })
+  // @UseGuards(AuthGuard('jwt'))
+  @Get('/blocked')
+  async getBlocked(@Req() req) {
+    console.log('getBlocked');
+    const list = this.friendsService.getBlocked(this.login);
+    console.log(JSON.stringify(list, null, 2));
+    return list;
+  }
+
+  @ApiOperation({ summary: 'DEBUG - Get all relations' })
+  @Get('/friends-all')
   async getAll(): Promise<Friends[]> {
-    return this.friendsService.getAll();
+    console.log('getAll');
+    const list = this.friendsService.getAll();
+    console.log(JSON.stringify(list, null, 2));
+    return list;
   }
 
-  @ApiOperation({ summary: 'Get pending-list of login' })
-  @ApiResponse({ status: 200, description: 'get pending-list' })
-  @Get('pending-list/:login')
-  async getPendingList(@Param('login') login: string) {
-    return this.friendsService.getPendingList(login);
-  }
-
-  @ApiOperation({ summary: 'Get friend-list of login' })
-  @ApiResponse({ status: 200, description: 'get friend-list' })
-  @Get('friend-list/:login')
-  async getFriendList(@Param('login') login: string) {
-    return this.friendsService.getFriendList(login);
-  }
-
-  @ApiOperation({ summary: 'Get block-list of login' })
-  @ApiResponse({ status: 200, description: 'get blocked-list' })
-  @Get('block-list/:login')
-  async getBlockList(@Param('login') login: string) {
-    return this.friendsService.getBlockList(login);
-  }
-
-  @ApiOperation({ summary: 'Delete all relations with login - DEBUG' })
-  @ApiResponse({ status: 200, description: 'delete all relations contains login' })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Delete('/delete/:login')
-  async deleteAll(@Param('login') login: string) {
-    return this.friendsService.hardDelete(login);
+  @ApiOperation({ summary: 'DEBUG - Delete all relations with login' })
+  @Delete('/friends/:login/full-delete')
+  async hardDelete(@Param('login') login: string) {
+    console.log('hardDelete');
+    const list = this.friendsService.hardDelete(login);
+    console.log(list);
+    return list;
   }
 }

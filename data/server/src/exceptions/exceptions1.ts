@@ -18,9 +18,9 @@ export class UserNotFoundException extends HttpException {
   }
 }
 
-export class InvalidRelationException extends HttpException {
+export class ImpossibleRelationException extends HttpException {
   constructor() {
-    super('Invalid friend request', HttpStatus.BAD_REQUEST);
+    super('Impossible friend creation', HttpStatus.BAD_REQUEST);
   }
 }
 

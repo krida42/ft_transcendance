@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DataTypes } from 'sequelize';
-import { AfterCreate, AfterFind, BeforeBulkUpdate, BeforeCreate, BeforeFind, BeforeUpdate, Column, Model, PrimaryKey, Table } from 'sequelize-typescript';
+import { AfterCreate, AfterFind, BeforeBulkUpdate, BeforeCreate, BeforeFind, BeforeUpdate, Column, Model, PrimaryKey, Table, BelongsToMany } from 'sequelize-typescript';
 import { DEVS } from 'src/const';
 import { CryptoService } from 'src/tools/crypto.service';
+import { Channels } from 'db/models/channels';
 @Table
 export class User extends Model {
   @PrimaryKey
@@ -158,4 +159,9 @@ export class User extends Model {
     if (DEVS.includes(user.login)) 
       user.roles = ['user', 'admin', 'dev'];
   };
+
+  // sloquet 22:47 14/10
+  // @BelongsToMany(() => Channels, { through: 'UserChannels', foreignKey: 'userId' })
+  // channels: Channels[];
+
 }

@@ -2,17 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel} from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { Friends } from 'db/models/friends';
-import { RelationDto } from './dto/relation.dto';
 import {
   UniqueConstraintException,
   InvalidUUIDException,
   UserNotFoundException,
-  InvalidRelationException,
+  ImpossibleRelationException,
   FriendAlreadyExistsException,
   RelationNotFoundException,
   AlreadyBlockedException,
 } from 'src/exceptions/exceptions1';
 
+import { User } from 'db/models/user';
+import { UsersService } from '../users/users.service';
 
 enum FriendStatus {
   Pending = 'Pending',
@@ -25,83 +26,36 @@ export class FriendsService {
   constructor(
     @InjectModel(Friends)
     private readonly friendsModel: typeof Friends,
+
+    // private readonly usersService: UsersService,
   ) {}
 
-  async getAll(): Promise<Friends[]> {
-    const all = await Friends.findAll({});
-    console.log(all.every((relation) => relation instanceof Friends));
-    console.log('All relations:', JSON.stringify(all, null, 2));
-    return all;
-  }
+  async createFriend(login: string, linkedlogin: string): Promise<Friends> {
 
-  async getPendingList(login: string): Promise<Friends[]> {
-    const all = await Friends.findAll({
-       where: { 
-        login: login,
-        status: FriendStatus.Pending }
-    });
-    console.log(all.every((relation) => relation instanceof Friends));
-    console.log('Pending list:', JSON.stringify(all, null, 2));
-    return all;
-  }
+    // this.usersService.findByLogin()
 
-  async getFriendList(login: string): Promise<Friends[]> {
-    const all = await Friends.findAll({
-       where: { 
-        login: login,
-        status: FriendStatus.Active }
-    });
-    console.log(all.every((relation) => relation instanceof Friends));
-    console.log('Friend list:', JSON.stringify(all, null, 2));
-    return all;
-  }
-
-  async getBlockList(login: string): Promise<Friends[]> {
-    const all = await Friends.findAll({
-       where: { 
-        login: login,
-        status: FriendStatus.Blocked }
-    });
-    console.log(all.every((relation) => relation instanceof Friends));
-    console.log('Blocked list:', JSON.stringify(all, null, 2));
-    return all;
-  }
-
-  async friendExists(login: string, linkedlogin: string): Promise<boolean> {
-    const existingFriend = await this.friendsModel.findOne({
-      where: { login, linkedlogin },
-    });
-    return !!existingFriend; 
-  }
-
-  async createFriend(relationDto: RelationDto): Promise<Friends> {
-
-    if (relationDto.login === relationDto.linkedlogin) {
-      throw new InvalidRelationException();
+    if (login === linkedlogin) {
+      throw new ImpossibleRelationException();
     }
 
     const friendAlreadyExists = await this.friendExists(
-      relationDto.login,
-      relationDto.linkedlogin
+      login,
+      linkedlogin
     );
-
-    if (friendAlreadyExists) {
-      throw new FriendAlreadyExistsException();
-    }
 
     const friendAlreadyExists2 = await this.friendExists(
-      relationDto.linkedlogin,
-      relationDto.login
+      linkedlogin,
+      login
     );
 
-    if (friendAlreadyExists2) {
-      throw new FriendAlreadyExistsException();
+    if (friendAlreadyExists || friendAlreadyExists2) {
+      throw new ImpossibleRelationException();
     }
 
     try {
       const newFriend = await this.friendsModel.create({
-        login: relationDto.login,
-        linkedlogin: relationDto.linkedlogin,
+        login: login,
+        linkedlogin: linkedlogin,
         status: FriendStatus.Pending,
       });
       return newFriend;
@@ -110,12 +64,12 @@ export class FriendsService {
     }
   }
 
-  async acceptFriend(relationDto: RelationDto): Promise<string> {
+  async acceptFriend(login: string, linkedlogin: string): Promise<string> {
 
     const pendingFriend = await this.friendsModel.findOne({
       where: {
-        login: relationDto.login,
-        linkedlogin: relationDto.linkedlogin,
+        login: login,
+        linkedlogin: linkedlogin,
       },
     });
 
@@ -128,13 +82,13 @@ export class FriendsService {
     }
 
     if (pendingFriend.status === FriendStatus.Blocked) {
-      throw new InvalidRelationException();
+      throw new ImpossibleRelationException();
     }
 
     try {
       const mirrorRelation = await this.friendsModel.create({
-        login: relationDto.linkedlogin,
-        linkedlogin: relationDto.login,
+        login: linkedlogin,
+        linkedlogin: login,
         status: FriendStatus.Active,
       });
     } catch (error) {
@@ -143,14 +97,35 @@ export class FriendsService {
 
     pendingFriend.status = FriendStatus.Active;
     await pendingFriend.save();
-    return 'La relation a été acceptée avec succès.';
+    return 'Demande acceptée.';
   }
 
-  async blockFriend(relationDto: RelationDto) {
+  async declineFriend(login: string, linkedlogin: string): Promise<string> {
+    const pendingFriend = await this.friendsModel.findOne({
+      where: {
+        login: login,
+        linkedlogin: linkedlogin,
+      },
+    });
+
+    if (!pendingFriend) {
+      throw new RelationNotFoundException();
+    }
+    if (pendingFriend.status === FriendStatus.Active) {
+      throw new FriendAlreadyExistsException();
+    }
+    // if (pendingFriend.status === FriendStatus.Blocked) {
+      // throw new ImpossibleRelationException();
+    // }
+    await pendingFriend.destroy();
+    return 'Demande déclinée.';
+  }
+
+  async blockFriend(login: string, linkedlogin: string) {
     const existingFriend = await this.friendsModel.findOne({
       where: {
-        login: relationDto.login,
-        linkedlogin: relationDto.linkedlogin,
+        login: login,
+        linkedlogin: linkedlogin,
       },
     });
 
@@ -159,8 +134,8 @@ export class FriendsService {
       if (existingFriend.status === FriendStatus.Active) {
         const mirrorRelation = await this.friendsModel.findOne({
           where: {
-            login: relationDto.linkedlogin,
-            linkedlogin: relationDto.login,
+            login: linkedlogin,
+            linkedlogin: login,
             status: FriendStatus.Active
           },
         });
@@ -175,8 +150,8 @@ export class FriendsService {
     if (!existingFriend) {
       try {
         const newBlock = await this.friendsModel.create({
-          login: relationDto.login,
-          linkedlogin: relationDto.linkedlogin,
+          login: login,
+          linkedlogin: linkedlogin,
           status: FriendStatus.Blocked,
         });
         return 'La relation a été bloquée avec succès.';
@@ -195,12 +170,12 @@ export class FriendsService {
     return 'La relation a été bloquée avec succès.';
   }
 
-  async deleteFriend(relationDto: RelationDto): Promise<string> {
+  async deleteFriend(login: string, linkedlogin: string): Promise<string> {
 
     const existingFriend = await this.friendsModel.findOne({
       where: {
-        login: relationDto.login,
-        linkedlogin: relationDto.linkedlogin,
+        login: login,
+        linkedlogin: linkedlogin,
       },
     });
 
@@ -213,8 +188,8 @@ export class FriendsService {
     // destroy la relation mirroir si elle existe et n'est pas 'Blocked'
     const mirrorRelation = await this.friendsModel.findOne({
       where: {
-        login: relationDto.linkedlogin,
-        linkedlogin: relationDto.login,
+        login: linkedlogin,
+        linkedlogin: login,
       },
     });
 
@@ -223,6 +198,68 @@ export class FriendsService {
     }
 
     return 'La relation a été supprimée avec succès.';
+  }
+
+  async getSentRequests(login: string): Promise<Friends[]> {
+    const all = await Friends.findAll({
+       where: { 
+        login: login,
+        status: FriendStatus.Pending }
+    });
+    console.log(all.every((relation) => relation instanceof Friends));
+    console.log('Friends requests sent:', JSON.stringify(all, null, 2));
+    return all;
+  }
+
+  async getReceivedRequests(login: string): Promise<Friends[]> {
+    const all = await Friends.findAll({
+       where: { 
+        linkedlogin: login,
+        status: FriendStatus.Pending }
+    });
+    console.log(all.every((relation) => relation instanceof Friends));
+    console.log('Friends requests received: ', JSON.stringify(all, null, 2));
+    return all;
+  }
+
+  async getFriends(login: string): Promise<Friends[]> {
+    const all = await Friends.findAll({
+       where: { 
+        login: login,
+        status: FriendStatus.Active }
+    });
+    console.log(all.every((relation) => relation instanceof Friends));
+    console.log('Friend list:', JSON.stringify(all, null, 2));
+    return all;
+  }
+
+  async getBlocked(login: string): Promise<Friends[]> {
+    const all = await Friends.findAll({
+       where: { 
+        login: login,
+        status: FriendStatus.Blocked }
+    });
+    console.log(all.every((relation) => relation instanceof Friends));
+    console.log('Blocked list:', JSON.stringify(all, null, 2));
+    return all;
+  }
+
+  async friendExists(login: string, linkedlogin: string): Promise<boolean> {
+    const existingFriend = await this.friendsModel.findOne({
+      where: { login, linkedlogin },
+    });
+    return !!existingFriend; 
+  }
+
+
+
+  // ----- ----- DEBUG -----
+
+  async getAll(): Promise<Friends[]> {
+    const all = await Friends.findAll({});
+    console.log(all.every((relation) => relation instanceof Friends));
+    console.log('All relations:', JSON.stringify(all, null, 2));
+    return all;
   }
 
   async hardDelete(login: string): Promise<string> {

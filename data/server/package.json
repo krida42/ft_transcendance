@@ -23,7 +23,9 @@
     "db:create": "ts-node node_modules/.bin/sequelize db:create",
     "db:seed-dev": "ts-node node_modules/.bin/sequelize db:seed:all",
     "db:seed-prod": "ts-node node_modules/.bin/sequelize db:seed:all --seeders-path db/seeders-prod",
-    "db:reset": "npm run db:drop && npm run db:create && npm run db:migrate && npm run db:seed-dev && npm run db:seed-prod"
+    "db:reset": "npm run db:drop && npm run db:create && npm run db:migrate && npm run db:seed-dev && npm run db:seed-prod",
+    "generate-swagger": "node -e \"require('./swaggerExport');\" > swagger.yaml",
+    "swg-yml": "npm run generate-swagger"
   },
   "dependencies": {
     "@apollo/server": "^4.9.3",

@@ -39,6 +39,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/AuthTwoFactor.vue"),
   },
   {
+    path: "/friends",
+    name: "friends",
+    component: () => import("../views/FriendsView.vue"),
+  },
+  {
     path: "/main",
     name: "main",
     component: () => import("../views/MainView.vue"),

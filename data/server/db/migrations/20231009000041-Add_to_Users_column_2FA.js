@@ -9,7 +9,7 @@ module.exports = {
       defaultValue: false
     });
     await queryInterface.addColumn('Users', 'twoFactorSecret', {
-      type: Sequelize.STRING,
+      type: Sequelize.BLOB('tiny'),
       allowNull: true
     })
   },

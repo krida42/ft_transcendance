@@ -131,13 +131,11 @@ export class AuthService {
   }
 
   async isTwoFactorAuthCodeValid(twoFactorAuthCode: string, resUser: ResponseUserDto) {
-    console.log(resUser.public_id);
     const dbUser = await User.findOne({
       where: { public_id: resUser.public_id },
       attributes: ['twoFactorSecret'],
     });
     const secret = dbUser.twoFactorSecret;
-    console.log('user.twoFactorSecret:', secret);
 
     return authenticator.verify({
       token: twoFactorAuthCode,
@@ -146,7 +144,6 @@ export class AuthService {
   }
 
   async generateQrCodeDataURL(otpAuthUrl: string) {
-    console.log('otpAuthUrl:', otpAuthUrl);
-    return   toDataURL(otpAuthUrl);
+    return toDataURL(otpAuthUrl);
   }
 }

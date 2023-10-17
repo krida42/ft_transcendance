@@ -106,7 +106,7 @@ export class User extends Model {
 
   @ApiProperty()
   @Column({
-    type: DataTypes.STRING,
+    type: DataTypes.BLOB('tiny'),
     allowNull: true,
     field: 'twoFactorSecret',
   })
@@ -137,6 +137,8 @@ export class User extends Model {
       user.email = await CryptoService.encrypt(user.email);
     if (user.refreshToken && typeof user.refreshToken === 'string')
       user.refreshToken = await CryptoService.encrypt(user.refreshToken);
+    if (user.twoFactorSecret && typeof user.twoFactorSecret === 'string')
+      user.twoFactorSecret = await CryptoService.encrypt(user.twoFactorSecret);
   }
 
   @AfterFind
@@ -147,6 +149,8 @@ export class User extends Model {
       user.email =  await CryptoService.decrypt(Buffer.from(user.email));
     if (user.refreshToken)
       user.refreshToken = await CryptoService.decrypt(Buffer.from(user.refreshToken));
+    if (user.twoFactorSecret)
+      user.twoFactorSecret = await CryptoService.decrypt(Buffer.from(user.twoFactorSecret));
   }
 
   @BeforeCreate

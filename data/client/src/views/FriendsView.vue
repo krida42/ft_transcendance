@@ -47,19 +47,41 @@
         </div>
       </div>
     </div>
-    <div class="main bg-green-light">
+    <div class="main">
       <div class="friend-input">
-        <input type="text" placeholder="Search for friends" />
+        <input type="text" placeholder="add a friend..." />
+        <Icon size="1.5em" color="black" class="search-icon bg-red-200d">
+          <Search />
+        </Icon>
       </div>
-      <div class="friends-list"></div>
+      <div class="users-list">
+        <user-action
+          v-for="[, user] in users"
+          :key="user.id"
+          :uuid="user.id"
+          mode="request"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { Icon } from "@vicons/utils";
-import { Heart } from "@vicons/tabler";
+import { Heart, Search } from "@vicons/tabler";
 import MenuButton from "@/components/MenuButton.vue";
+import { useUsersStore } from "@/stores/users";
+import { storeToRefs } from "pinia";
+import UserAction from "@/components/UserAction.vue";
+
+const usersStore = useUsersStore();
+
+const { users } = storeToRefs(usersStore);
+
+usersStore.refreshUser("marine");
+for (let i = 0; i < 100; i++) {
+  usersStore.refreshUser("mcoucou" + i);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -76,6 +98,7 @@ import MenuButton from "@/components/MenuButton.vue";
   align-items: center;
   font-family: "Baumans", cursive;
   color: black;
+  font-size: 0.9em;
 
   .pong-button {
     align-self: flex-start;
@@ -96,10 +119,11 @@ import MenuButton from "@/components/MenuButton.vue";
     width: 90%;
     padding-left: 1rem;
     margin-block: 1rem;
+    font-size: 0.9em;
 
     p {
-      padding-top: 0.5rem;
-      font-size: 1.6em;
+      padding-top: 0.7rem;
+      font-size: 1.8em;
       line-height: normal;
       padding-bottom: 0.5rem;
     }
@@ -124,6 +148,44 @@ import MenuButton from "@/components/MenuButton.vue";
       display: inline-block;
       margin-right: 0.5rem;
     }
+  }
+}
+
+.main {
+  color: black;
+  background-color: $green-bg;
+  font-family: "Baumans", cursive;
+  // padding-block: 1rem;
+  // border: 4px solid cyan;
+  padding: 1.4rem;
+  div.friend-input {
+    // border: 1px red solid;
+    background-color: $green-light;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    border-radius: 15px;
+    // margin-inline: auto;
+
+    input {
+      // border: 1px blue solid;
+      padding: 0.5rem;
+      padding-left: 0.9rem;
+      background-color: transparent;
+    }
+    input::placeholder {
+      color: black;
+      opacity: 0.7;
+    }
+    .search-icon {
+      align-self: center;
+      margin-inline: 0.5rem;
+    }
+  }
+  .users-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4rem 1.8rem;
+    padding: 2.5rem;
   }
 }
 </style>

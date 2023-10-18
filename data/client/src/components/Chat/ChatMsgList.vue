@@ -163,8 +163,8 @@
 
 <script lang="ts" setup>
 import { Icon } from "@vicons/utils";
-import { Message, X } from "@vicons/tabler";
-import { ref, defineProps, computed } from "vue";
+import { X } from "@vicons/tabler";
+import { ref, computed } from "vue";
 import { storeToRefs } from "pinia";
 import ChatMsgItem from "./ChatMsgItem.vue";
 
@@ -261,6 +261,7 @@ function scrollToBottom() {
 }
 
 function handleScroll(event: Event) {
+  void event;
   if (!main.value) return;
   if (main.value.scrollTop === 0) {
     console.log("scrolling to top");

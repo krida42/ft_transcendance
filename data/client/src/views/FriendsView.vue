@@ -6,7 +6,10 @@
           <MenuButton svg-name="pong-logo.svg" class="bg-red-500d" />
         </div>
         <div class="status-filters-ctn bg-red-800d">
-          <div class="filter-btn">
+          <div
+            class="friends-btn filter-btn"
+            @click="activeListName = ActiveListNames.FRIENDS"
+          >
             <Icon size="3em" color="black" class="bg-red-200s">
               <Heart />
             </Icon>
@@ -33,13 +36,19 @@
             </div>
           </div>
         </div>
-        <div class="requests-btn filter-btn">
+        <div
+          class="requests-btn filter-btn"
+          @click="activeListName = ActiveListNames.REQUESTS"
+        >
           <Icon size="3em" color="black" class="bg-red-200s">
             <Heart />
           </Icon>
           <p class="bg-blue-100d">Requests</p>
         </div>
-        <div class="blocked-btn filter-btn">
+        <div
+          class="blocked-btn filter-btn"
+          @click="activeListName = ActiveListNames.BLOCKED"
+        >
           <Icon size="3em" color="black" class="bg-red-200s">
             <Heart />
           </Icon>
@@ -56,10 +65,10 @@
       </div>
       <div class="users-list">
         <user-action
-          v-for="[, user] in users"
+          v-for="[, user] in activeList"
           :key="user.id"
           :uuid="user.id"
-          mode="request"
+          :mode="activeListName"
         />
       </div>
     </div>
@@ -73,21 +82,47 @@ import MenuButton from "@/components/MenuButton.vue";
 import { useUsersStore } from "@/stores/users";
 import { storeToRefs } from "pinia";
 import UserAction from "@/components/UserAction.vue";
+import { useFriendStore } from "@/stores/friend";
+import { computed, ref } from "vue";
 
-const usersStore = useUsersStore();
+const friendStore = useFriendStore();
 
-const { users } = storeToRefs(usersStore);
+(() => {
+  friendStore.refreshFriendList();
+  friendStore.refreshFriendsReceived();
+  friendStore.refreshFriendsSent();
+  friendStore.refreshBlocked();
+})();
 
-usersStore.refreshUser("marine");
-for (let i = 0; i < 100; i++) {
-  usersStore.refreshUser("mcoucou" + i);
+enum ActiveListNames {
+  FRIENDS = "friends",
+  REQUESTS = "requests",
+  BLOCKED = "blocked",
 }
+
+let activeListName = ref(ActiveListNames.FRIENDS);
+const activeList = computed(() => {
+  switch (activeListName.value) {
+    case ActiveListNames.FRIENDS:
+      return friendStore.friends;
+    case ActiveListNames.REQUESTS:
+      return new Map([
+        ...friendStore.friendsReceived,
+        ...friendStore.friendsSent,
+      ]);
+    case ActiveListNames.BLOCKED:
+      return friendStore.blocked;
+    default:
+      return friendStore.friends;
+  }
+});
 </script>
 
 <style lang="scss" scoped>
 .friends-view {
   display: grid;
-  grid-template-columns: minmax(14em, 1fr) 7fr;
+  grid-template-columns: minmax(14rem, 1fr) 7fr;
+  grid-template-rows: 100vh;
   height: 100vh;
   width: 100%;
 }
@@ -156,10 +191,12 @@ for (let i = 0; i < 100; i++) {
   background-color: $green-bg;
   font-family: "Baumans", cursive;
   // padding-block: 1rem;
-  // border: 4px solid cyan;
+  border: 4px solid cyan;
   padding: 1.4rem;
+  display: grid;
+  grid-template-rows: auto 1fr;
   div.friend-input {
-    // border: 1px red solid;
+    border: 1px red solid;
     background-color: $green-light;
     display: grid;
     grid-template-columns: 1fr auto;
@@ -185,7 +222,10 @@ for (let i = 0; i < 100; i++) {
     display: flex;
     flex-wrap: wrap;
     gap: 4rem 1.8rem;
-    padding: 2.5rem;
+    padding-inline: 2.5rem;
+    margin-top: 2.5rem;
+    // border: 1px red solid;
+    overflow-y: scroll;
   }
 }
 </style>

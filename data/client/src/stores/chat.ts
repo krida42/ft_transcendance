@@ -84,7 +84,7 @@ export const useChatStore = defineStore({
             console.log("il est la", message.userId);
           }
         });
-        const msgsUserIds = resMsgs.map((msg: any) => msg.userId);
+        const msgsUserIds = resMsgs.map((msg: Message) => msg.userId);
         const uniqueUserIds = [...new Set(msgsUserIds)];
         const missingUserIds = uniqueUserIds.filter(
           (userId) => !usersStore.users.has(userId as string)

@@ -38,7 +38,6 @@ import { useFriendStore } from "@/stores/friend";
 import ArcadeButton from "@/components/ArcadeButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
 import router from "@/router/index";
-import { onMounted } from "vue";
 
 const friendStore = useFriendStore();
 

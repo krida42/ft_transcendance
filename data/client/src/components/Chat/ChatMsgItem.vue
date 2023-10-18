@@ -18,13 +18,13 @@
       'flex-row': !isMe,
       'self-start': !isMe,
       'self-end': isMe,
-      'mb-3': pseudo,
-      'mb-1': !pseudo,
+      'mb-3': !solo,
+      'mb-1': solo,
       'opacity-30': ack === false,
     }"
   >
     <div
-      v-if="avatar && !isMe"
+      v-if="!solo && !isMe"
       class="avatar bd-redd shrink-0"
       :class="{
         'mr-1': !isMe && avatar,
@@ -34,7 +34,7 @@
       <img class="rounded-full" :src="avatar" width="22" />
     </div>
     <div
-      v-else-if="!avatar && !isMe"
+      v-else-if="solo && !isMe"
       class="w-[22px] bd-redd shrink-0"
       :class="{
         'mr-1': !isMe,
@@ -44,8 +44,8 @@
     <div
       class="content bd-cyand p-2 rounded-t-xl"
       :class="{
-        'rounded-ee-xl': !isMe || !avatar,
-        'rounded-es-xl': isMe || !avatar,
+        'rounded-ee-xl': !isMe || solo,
+        'rounded-es-xl': isMe || solo,
         'rounded-xl': isMe,
         'bg-blue-light': !isMe,
         'bg-green-light': isMe,
@@ -126,8 +126,6 @@
 
 <script lang="ts" setup>
 import { defineProps } from "vue";
-import { Icon } from "@vicons/utils";
-import { UserCircle } from "@vicons/tabler";
 
 const props = defineProps({
   content: String,

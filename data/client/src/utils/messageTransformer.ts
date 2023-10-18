@@ -12,7 +12,6 @@ export class MessageTransformer {
       return {
         ...message,
         userPseudo: user?.pseudo,
-        userDisplayName: user?.displayName,
         userAvatar: user?.avatar,
       };
     });

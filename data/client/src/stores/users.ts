@@ -12,14 +12,15 @@ export const useUsersStore = defineStore({
   }),
   getters: {
     users: (state) =>
-      new Map<Id, User>([...state.usersMap, ...useFriendStore().friends]),
-    getUserNameById(state) {
-      return (id: string) => {
-        const user = this.users.get(id);
-        return user?.displayName || "Unknown";
-      };
-    },
+      new Map<Id, User>([
+        ...state.usersMap,
+        ...useFriendStore().friends,
+        ...useFriendStore().friendsReceived,
+        ...useFriendStore().friendsSent,
+        ...useFriendStore().blocked,
+      ]),
     currentUser: (state) => {
+      void state;
       const mainStore = useMainStore();
       return {
         id: mainStore.userInfo.id,

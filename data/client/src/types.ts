@@ -5,7 +5,7 @@ type User = {
   email?: string;
   login?: string;
   pseudo: string;
-  displayName: string;
+  // displayName: string;
   avatar: string;
   phone?: string | null;
   roles?: string[];

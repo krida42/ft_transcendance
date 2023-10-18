@@ -31,7 +31,6 @@
 </style>
 
 <script lang="ts" setup>
-import { watch } from "vue";
 import { Icon } from "@vicons/utils";
 import { User } from "@vicons/tabler";
 import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
@@ -41,13 +40,7 @@ import { useFriendStore } from "@/stores/friend";
 
 // import MyIcon from "@/components/MyIcon.vue";
 
-import { useChatStore } from "@/stores/chat";
-import { storeToRefs } from "pinia";
 import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
-
-const chatStore = useChatStore();
-
-let { openedChatId } = storeToRefs(chatStore);
 
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();

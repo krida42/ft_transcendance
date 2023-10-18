@@ -1,6 +1,6 @@
 <template>
-  <div class="user-action w-[10rem] bd-red">
-    <div class="avatar bd-red mx-auto w-[60%]">
+  <div class="user-action w-[10rem] bd-redd">
+    <div class="avatar bd-redd mx-auto w-[60%]">
       <img :src="user?.avatar" alt="user image" class="rounded-full" />
     </div>
     <div class="user-info text-xl font-medium">
@@ -34,8 +34,8 @@ const usersStore = useUsersStore();
 const { users } = usersStore;
 
 const Mode = {
-  FRIENDS: "friend",
-  REQUESTS: "request",
+  FRIENDS: "friends",
+  REQUESTS: "requests",
   BLOCKED: "blocked",
 };
 

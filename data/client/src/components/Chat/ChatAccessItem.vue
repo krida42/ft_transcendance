@@ -37,11 +37,11 @@
 
 <script setup lang="ts">
 import { Icon } from "@vicons/utils";
-import { UserCircle, Message, Circle } from "@vicons/tabler";
+import { UserCircle, Message } from "@vicons/tabler";
 import { defineProps } from "vue";
 
-type Pos = "start" | "end" | "solo";
-type Status = "online" | "offline";
+// type Pos = "start" | "end" | "solo";
+// type Status = "online" | "offline";
 
 const props = defineProps({
   status: String,
@@ -50,4 +50,5 @@ const props = defineProps({
   title: String,
   chatId: String,
 });
+void props;
 </script>

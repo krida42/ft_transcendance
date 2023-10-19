@@ -1,5 +1,11 @@
 type Id = string;
 
+enum Status {
+  Online = "online",
+  Offline = "offline",
+  InGame = "inGame",
+}
+
 type User = {
   id: Id;
   email?: string;
@@ -9,6 +15,7 @@ type User = {
   avatar: string;
   phone?: string | null;
   roles?: string[];
+  status?: string;
 };
 
 type Friend = User;

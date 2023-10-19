@@ -3,10 +3,7 @@ import { useUsersStore } from "./users";
 import messageApi from "../api/message";
 import { MessageTransformer } from "@/utils/messageTransformer";
 
-enum ChatType {
-  Channel = "channel",
-  Direct = "direct",
-}
+import { ChatType } from "@/mtypes";
 
 export const useChatStore = defineStore({
   id: "chat",

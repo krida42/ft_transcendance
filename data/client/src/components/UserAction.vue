@@ -4,7 +4,18 @@
       <img :src="user?.avatar" alt="user image" class="rounded-full" />
     </div>
     <div class="user-info text-xl font-medium">
-      <p class="username truncate">{{ user?.pseudo }}</p>
+      <p class="username truncate bd-redd">
+        <span
+          class="status relative bottom-[0.05em]"
+          :class="{
+            'bg-green-400': user?.status === Status.Online,
+            'bg-red-my': user?.status === Status.Offline,
+            'bg-yellow-my': user?.status === Status.InGame,
+            circle: user?.status,
+          }"
+        ></span
+        >{{ user?.pseudo }}
+      </p>
     </div>
     <div class="actions bd-redd flex justify-around mt-1">
       <button class="accept-btn text-green-dark" v-if="mode === Mode.REQUESTS">
@@ -30,6 +41,8 @@ import { useUsersStore } from "@/stores/users";
 import { computed } from "vue";
 import { defineProps } from "vue";
 
+import { Status } from "@/mtypes";
+
 const usersStore = useUsersStore();
 const { users } = usersStore;
 
@@ -50,6 +63,7 @@ const props = defineProps({
   },
 });
 
+console.log(Object.values(Status));
 const user = computed(() => {
   return users.get(props.uuid);
 });
@@ -75,5 +89,13 @@ if (!Object.values(Mode).includes(props.mode)) {
 .decline-btn,
 .unblock-btn {
   border: 1px solid black;
+}
+.circle {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  border: 1px solid black;
+  display: inline-block;
+  margin-right: 0.5rem;
 }
 </style>

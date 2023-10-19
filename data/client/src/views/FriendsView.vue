@@ -16,21 +16,45 @@
             <p class="bg-blue-100d">Friends</p>
           </div>
           <div class="sub-filters bd-redd">
-            <div class="filter-all">
+            <div
+              class="filter-all"
+              @click="
+                statusFilter = StatusFilter.All;
+                activeListName = ActiveListNames.FRIENDS;
+              "
+            >
               <!-- prettier-ignore -->
               <span class="circle bg-black"></span>
               <span class="">All</span>
             </div>
-            <div class="filter-online">
+            <div
+              class="filter-online"
+              @click="
+                statusFilter = StatusFilter.Online;
+                activeListName = ActiveListNames.FRIENDS;
+              "
+            >
               <!-- prettier-ignore -->
               <span class="circle bg-green-300"></span>
               <span>Online</span>
             </div>
-            <div class="filter-in-game">
+            <div
+              class="filter-in-game"
+              @click="
+                statusFilter = StatusFilter.InGame;
+                activeListName = ActiveListNames.FRIENDS;
+              "
+            >
               <span class="circle bg-yellow-500"></span>
               <span>In game</span>
             </div>
-            <div class="filter-offline">
+            <div
+              class="filter-offline"
+              @click="
+                statusFilter = StatusFilter.Offline;
+                activeListName = ActiveListNames.FRIENDS;
+              "
+            >
               <span class="circle bg-red-500"></span>
               <span>Offline</span>
             </div>
@@ -85,6 +109,8 @@ import UserAction from "@/components/UserAction.vue";
 import { useFriendStore } from "@/stores/friend";
 import { computed, ref } from "vue";
 
+import { Status } from "@/mtypes";
+
 const friendStore = useFriendStore();
 
 (() => {
@@ -93,6 +119,15 @@ const friendStore = useFriendStore();
   friendStore.refreshFriendsSent();
   friendStore.refreshBlocked();
 })();
+
+enum StatusFilter {
+  All = "all",
+  Online = "online",
+  InGame = "inGame",
+  Offline = "offline",
+}
+
+let statusFilter = ref(StatusFilter.All);
 
 enum ActiveListNames {
   FRIENDS = "friends",
@@ -104,7 +139,20 @@ let activeListName = ref(ActiveListNames.FRIENDS);
 const activeList = computed(() => {
   switch (activeListName.value) {
     case ActiveListNames.FRIENDS:
-      return friendStore.friends;
+      return new Map(
+        [...friendStore.DEBUG_friendsStatusRand].filter(([, v]) => {
+          switch (statusFilter.value) {
+            case StatusFilter.All:
+              return true;
+            case StatusFilter.Online:
+              return v.status === Status.Online;
+            case StatusFilter.InGame:
+              return v.status === Status.InGame;
+            case StatusFilter.Offline:
+              return v.status === Status.Offline;
+          }
+        })
+      );
     case ActiveListNames.REQUESTS:
       return new Map([
         ...friendStore.friendsReceived,
@@ -175,13 +223,18 @@ const activeList = computed(() => {
     align-items: flex-start;
     width: 45%;
     font-size: 1.2em;
-    .circle {
-      width: 0.6rem;
-      height: 0.6rem;
-      border-radius: 50%;
-      border: 2px solid black;
-      display: inline-block;
-      margin-right: 0.5rem;
+
+    > div {
+      cursor: pointer;
+
+      .circle {
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 50%;
+        border: 2px solid black;
+        display: inline-block;
+        margin-right: 0.5rem;
+      }
     }
   }
 }
@@ -196,7 +249,7 @@ const activeList = computed(() => {
   display: grid;
   grid-template-rows: auto 1fr;
   div.friend-input {
-    border: 1px red solid;
+    // border: 1px red solid;
     background-color: $green-light;
     display: grid;
     grid-template-columns: 1fr auto;

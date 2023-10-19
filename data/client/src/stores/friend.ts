@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import friendApi from "../api/friend";
 
+import { Status } from "@/mtypes";
+
 export const useFriendStore = defineStore({
   id: "friend",
   state: (): {
@@ -19,6 +21,16 @@ export const useFriendStore = defineStore({
     friendsReceived: (state) => new Map<Id, Friend>(state.friendsReceivedMap),
     friendsSent: (state) => new Map<Id, Friend>(state.friendsSentMap),
     blocked: (state) => new Map<Id, User>(state.blockedMap),
+    DEBUG_friendsStatusRand() {
+      const usersRandStatus = new Map<Id, User>();
+      this.friends.forEach((user) => {
+        usersRandStatus.set(user.id, {
+          ...user,
+          status: Object.values(Status)[Math.floor(Math.random() * 3)],
+        });
+      });
+      return usersRandStatus;
+    },
   },
   actions: {
     async refreshFriendList(): Promise<void> {

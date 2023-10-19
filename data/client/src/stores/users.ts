@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { useMainStore } from "./main";
 import { useFriendStore } from "./friend";
 import userApi from "../api/user";
+import { Status } from "@/mtypes";
 
 export const useUsersStore = defineStore({
   id: "users",
@@ -13,12 +14,13 @@ export const useUsersStore = defineStore({
   getters: {
     users: (state) =>
       new Map<Id, User>([
-        ...state.usersMap,
-        ...useFriendStore().friends,
+        ...useFriendStore().DEBUG_friendsStatusRand,
         ...useFriendStore().friendsReceived,
         ...useFriendStore().friendsSent,
         ...useFriendStore().blocked,
+        ...state.usersMap,
       ]),
+
     currentUser: (state) => {
       void state;
       const mainStore = useMainStore();

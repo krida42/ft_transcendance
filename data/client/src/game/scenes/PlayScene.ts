@@ -9,6 +9,7 @@ export default class PlayScene extends Scene {
     this.add.image(400, 300, "sky");
 
     const bomb = this.physics.add.image(400, 200, "bomb");
+    const paddle = this.physics.add.image(400, 200, "paddle");
     bomb.setCollideWorldBounds(true);
     bomb.body.onWorldBounds = true; // enable worldbounds collision event
     bomb.setBounce(1);

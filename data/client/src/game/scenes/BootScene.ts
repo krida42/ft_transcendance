@@ -3,6 +3,7 @@ import sky from "@/assets/game/sky.png";
 import bomb from "@/assets/game/bomb.png";
 import thudMp3 from "@/assets/game/thud.mp3";
 import thudOgg from "@/assets/game/thud.ogg";
+import paddle from "@/assets/game/paddle.svg";
 
 export default class BootScene extends Scene {
   constructor() {
@@ -13,6 +14,7 @@ export default class BootScene extends Scene {
     this.load.image("sky", sky);
     this.load.image("bomb", bomb);
     this.load.audio("thud", [thudMp3, thudOgg]);
+    this.load.svg("paddle", paddle);
   }
 
   create() {

@@ -64,6 +64,7 @@
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.7.0",
     "pg": "^8.11.2",
+    "phaser": "^3.60.0",
     "qrcode": "^1.5.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",

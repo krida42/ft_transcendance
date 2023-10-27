@@ -1,3 +1,4 @@
+import { PongController } from '../game/pong.controller';
 import { ChannelsModule } from '../channels/channels.module';
 import { ChannelsService } from '../channels/channels.service';
 import { ChannelsController } from '../channels/channels.controller';
@@ -21,8 +22,6 @@ import { HttpModule } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from 'src/tools/bcrypt.service';
 import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
-import path from 'path';
-import { REQUEST } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -50,7 +49,8 @@ import { REQUEST } from '@nestjs/core';
     AuthModule,
     HttpModule,
   ],
-  controllers: [AppController],
+  controllers: [
+    PongController, AppController],
   providers: [AuthService, JwtService, BcryptService, AppService],
   exports: [SequelizeModule],
 })

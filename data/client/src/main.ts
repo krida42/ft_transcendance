@@ -4,7 +4,6 @@ import router from "./router";
 
 import { createPinia } from "pinia";
 import axios from "axios";
-
 import "./styles/index.scss";
 
 const pinia = createPinia();

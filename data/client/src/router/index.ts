@@ -39,6 +39,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/AuthTwoFactor.vue"),
   },
   {
+    path: "/pong",
+    name: "pong",
+    component: () => import("../views/PongView.vue"),
+  },
+  {
     path: "/main",
     name: "main",
     component: () => import("../views/MainView.vue"),

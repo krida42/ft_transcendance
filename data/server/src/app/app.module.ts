@@ -1,8 +1,4 @@
-import { PongController } from '../game/pong.controller';
 import { ChannelsModule } from '../channels/channels.module';
-import { ChannelsService } from '../channels/channels.service';
-import { ChannelsController } from '../channels/channels.controller';
-import { APP_FILTER } from '@nestjs/core';
 import { FriendsModule } from './../friends/friends.module';
 import { AuthService } from 'src/authentication/auth.service';
 
@@ -22,6 +18,7 @@ import { HttpModule } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from 'src/tools/bcrypt.service';
 import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
+import { PongGateway } from 'src/game/websocket/pong.gateway';
 
 @Module({
   imports: [
@@ -49,9 +46,8 @@ import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
     AuthModule,
     HttpModule,
   ],
-  controllers: [
-    PongController, AppController],
-  providers: [AuthService, JwtService, BcryptService, AppService],
+  controllers: [AppController],
+  providers: [AuthService, JwtService, BcryptService, AppService, PongGateway],
   exports: [SequelizeModule],
 })
 export class AppModule implements NestModule {

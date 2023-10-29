@@ -17,6 +17,7 @@
     "core-js": "^3.8.3",
     "phaser": "^3.60.0",
     "pinia": "^2.1.6",
+    "socket.io-client": "^4.7.2",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
   },

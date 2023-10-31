@@ -1,21 +1,21 @@
 <template>
   <div class="friends-view">
     <div class="navigation-ctn bg-green-dark">
-      <div class="navigation bg-red-200s">
-        <div class="pong-button bg-blue-600d">
-          <MenuButton svg-name="pong-logo.svg" class="bg-red-500d" />
+      <div class="navigation">
+        <div class="pong-button">
+          <MenuButton svg-name="pong-logo.svg" />
         </div>
-        <div class="status-filters-ctn bg-red-800d">
+        <div class="status-filters-ctn">
           <div
             class="friends-btn filter-btn"
             @click="activeListName = ActiveListNames.FRIENDS"
           >
-            <Icon size="3em" color="black" class="bg-red-200s">
+            <Icon size="3em" color="black">
               <Heart />
             </Icon>
-            <p class="bg-blue-100d">Friends</p>
+            <p>Friends</p>
           </div>
-          <div class="sub-filters bd-redd">
+          <div class="sub-filters">
             <div
               class="filter-all"
               @click="
@@ -35,7 +35,7 @@
               "
             >
               <!-- prettier-ignore -->
-              <span class="circle bg-green-300"></span>
+              <span class="circle bg-green-online"></span>
               <span>Online</span>
             </div>
             <div
@@ -45,7 +45,7 @@
                 activeListName = ActiveListNames.FRIENDS;
               "
             >
-              <span class="circle bg-yellow-500"></span>
+              <span class="circle bg-blue-button"></span>
               <span>In game</span>
             </div>
             <div
@@ -55,7 +55,7 @@
                 activeListName = ActiveListNames.FRIENDS;
               "
             >
-              <span class="circle bg-red-500"></span>
+              <span class="circle bg-red-my"></span>
               <span>Offline</span>
             </div>
           </div>
@@ -64,26 +64,26 @@
           class="requests-btn filter-btn"
           @click="activeListName = ActiveListNames.REQUESTS"
         >
-          <Icon size="3em" color="black" class="bg-red-200s">
-            <Heart />
-          </Icon>
+          <img
+            src="../assets/svg/friend-request.svg"
+            class="w-[2.6rem] aspect-square ml-[-8px]"
+          />
           <p class="bg-blue-100d">Requests</p>
         </div>
         <div
           class="blocked-btn filter-btn"
           @click="activeListName = ActiveListNames.BLOCKED"
         >
-          <Icon size="3em" color="black" class="bg-red-200s">
-            <Heart />
-          </Icon>
+          <img src="../assets/svg/blocked.svg" class="aspect-square" />
           <p class="bg-blue-100d">Blocked</p>
         </div>
       </div>
     </div>
+    <div class="gradient"></div>
     <div class="main">
       <div class="friend-input">
         <input type="text" placeholder="add a friend..." />
-        <Icon size="1.5em" color="black" class="search-icon bg-red-200d">
+        <Icon size="1.5em" color="black" class="search-icon">
           <Search />
         </Icon>
       </div>
@@ -103,8 +103,6 @@
 import { Icon } from "@vicons/utils";
 import { Heart, Search } from "@vicons/tabler";
 import MenuButton from "@/components/MenuButton.vue";
-import { useUsersStore } from "@/stores/users";
-import { storeToRefs } from "pinia";
 import UserAction from "@/components/UserAction.vue";
 import { useFriendStore } from "@/stores/friend";
 import { computed, ref } from "vue";
@@ -169,7 +167,7 @@ const activeList = computed(() => {
 <style lang="scss" scoped>
 .friends-view {
   display: grid;
-  grid-template-columns: minmax(14rem, 1fr) 7fr;
+  grid-template-columns: minmax(14rem, 1fr) minmax(6rem, 0.4fr) 7fr;
   grid-template-rows: 100vh;
   height: 100vh;
   width: 100%;
@@ -198,10 +196,10 @@ const activeList = computed(() => {
     align-items: center;
     justify-content: start;
     gap: 0.8em;
-    border-radius: 20px;
+    border-radius: 15px;
     width: 90%;
     padding-left: 1rem;
-    margin-block: 1rem;
+    margin-block: 0.8rem;
     font-size: 0.9em;
 
     p {
@@ -214,37 +212,52 @@ const activeList = computed(() => {
 
   .filter-btn:hover {
     //   background-color: rgba($color: #ffffff, $alpha: 0.5);
-    background-color: rgba(#ffffff, 0.5);
+    background-color: $green-medium;
     cursor: pointer;
   }
   .sub-filters {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    width: 45%;
+    gap: 0.5rem;
+    width: 50%;
     font-size: 1.2em;
 
     > div {
       cursor: pointer;
-
+      text-align: start;
+      width: 100%;
+      padding: 0 0.8rem 0 0.8rem;
+      border-radius: 10px;
       .circle {
-        width: 0.6rem;
-        height: 0.6rem;
+        width: 0.7rem;
+        aspect-ratio: 1 / 1;
         border-radius: 50%;
-        border: 2px solid black;
+        border: 1.5px solid black;
         display: inline-block;
-        margin-right: 0.5rem;
+        margin-right: 0.8rem;
       }
     }
   }
+  .sub-filters > *:hover {
+    background-color: $green-medium;
+  }
 }
 
+.gradient {
+  background: linear-gradient(
+    to left,
+    #b7e4c7 33%,
+    #95d5b2 33%,
+    #95d5b2 66%,
+    #74c69d 66%,
+    #74c69d 100%
+  );
+}
 .main {
   color: black;
   background-color: $green-bg;
   font-family: "Baumans", cursive;
   // padding-block: 1rem;
-  border: 4px solid cyan;
   padding: 1.4rem;
   display: grid;
   grid-template-rows: auto 1fr;

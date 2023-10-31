@@ -49,21 +49,21 @@ async function setupQRCode() {
 }
 
 async function postActivate2FA() {
-  const response = await fetch(`${host}/2fa/turn-on`, {
+  await fetch(`${host}/2fa/turn-on`, {
     method: "POST",
     credentials: "include",
   });
 }
 
 async function postDeactivate2FA() {
-  const response = await fetch(`${host}/2fa/turn-off`, {
+  await fetch(`${host}/2fa/turn-off`, {
     method: "POST",
     credentials: "include",
   });
 }
 
 async function postAskForQRCode() {
-  const response = await fetch(`${host}/2fa/authenticate`, {
+  await fetch(`${host}/2fa/authenticate`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -73,7 +73,6 @@ async function postAskForQRCode() {
       twoFactorAuthCode: input.value,
     }),
   });
-  console.log(response);
 }
 </script>
 

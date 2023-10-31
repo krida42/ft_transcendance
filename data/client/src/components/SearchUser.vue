@@ -34,14 +34,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useFriendStore } from "@/stores/friend";
 import { ref } from "vue";
 import { defineProps } from "vue";
 const username = ref("");
 const loginMessage = ref("");
 const isSent = ref(false);
 const isValidUsername = ref(false);
-const friendStore = useFriendStore();
 
 const props = defineProps({
   mode: {

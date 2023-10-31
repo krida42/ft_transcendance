@@ -8,9 +8,9 @@
         <span
           class="status relative bottom-[0.05em]"
           :class="{
-            'bg-green-400': user?.status === Status.Online,
+            'bg-green-online': user?.status === Status.Online,
             'bg-red-my': user?.status === Status.Offline,
-            'bg-yellow-my': user?.status === Status.InGame,
+            'bg-blue-my': user?.status === Status.InGame,
             circle: user?.status,
           }"
         ></span

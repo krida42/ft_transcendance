@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { useMainStore } from "./main";
 import { useFriendStore } from "./friend";
 import userApi from "../api/user";
-import { Status } from "@/mtypes";
 
 export const useUsersStore = defineStore({
   id: "users",

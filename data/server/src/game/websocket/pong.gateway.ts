@@ -2,31 +2,55 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket  } from 'socket.io';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
-
+import * as jwt from 'jsonwebtoken';
+import { UsersService } from 'src/users/users.service';
+import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
+import { Inject } from '@nestjs/common';
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:8080',
     methods: ['GET', 'POST'],
+    credentials: true,
   },
   transports: ['websocket'],
 })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect{
   @WebSocketServer()
   server: Server;
-  private logger: Logger = new Logger("AppGateWay");
+  private players: Map<Socket, ResponseUserDto> = new Map();
+  constructor(@Inject(UsersService) private usersService: UsersService) {} // Injectez le service ici
 
-	handleConnection(client: any) {
-    console.log(`Client connected: ${client.id}`);
+
+	handleConnection(client: Socket) {
+    let cookie = client.client.request.headers.cookie;
+    if (!cookie) {
+      return;
+    }
+    cookie = cookie.replace('access_token=', '');
+    const user = jwt.decode(cookie) as ResponseUserDto;
+    this.players.set(client, user);
+    console.log(`Client connected: ${user.login}`);
 	}
 
-	handleDisconnect(client: any) {
-    console.log(`Client disconnected: ${client.id}`);
+	handleDisconnect(client: Socket) {
+    const user = this.players.get(client);
+    console.log(`Client disconnected: ${user.pseudo}`);
+    this.players.delete(client);
 	}
 
+  // sendBall(ball: Phaser.Physics.Arcade.Image) {
+  //   this.server.emit('user', ball);
+  //   // client.emit('user', user);
+  // }
+  
+  
+  // Broadcast the message to all connected clients
   @SubscribeMessage('message')
   handleMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    // Handle received message
-    this.server.emit('message', data); // Broadcast the message to all connected clients
+    const user = this.players.get(client);
+    console.log(`Received message from client ${user.pseudo}: ${data}`);
+    // Envoyer un message de retour au client spécifique
+    client.emit('message', `Server received your message: ${data}`);
   }
+  
 }

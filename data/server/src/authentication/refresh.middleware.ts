@@ -22,8 +22,9 @@ export class RefreshMiddleware implements NestMiddleware {
         const user = jwt.decode(req.cookies.access_token) as ResponseUserDto;
         console.log('Token access expired, refreshing... user:', user.login);
         const jwtAccess = await this.authService.refresh(user);
-        res.cookie('access_token', jwtAccess.access_token, { httpOnly: true });
-        req.cookies.access_token = jwtAccess.access_token;
+        const access_token = jwtAccess.access_token;
+        res.cookie('access_token', access_token, { httpOnly: true });
+        req.cookies.access_token = access_token;
       } else if (error.name === 'jwt malformed') {
         if (!req.cookies.access_token) return next();
         console.log('jwt malformed: ', req.cookies.access_token);

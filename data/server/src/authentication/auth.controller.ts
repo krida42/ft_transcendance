@@ -5,18 +5,12 @@ import {
   Req,
   Res,
   UseGuards,
-  HttpStatus,
-  Render,
-  Redirect,
-  Header,
   Body,
   UnauthorizedException,
-  HttpCode,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { UsersService } from 'src/users/users.service';
 import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 
 @ApiTags('auth')
@@ -24,7 +18,6 @@ import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 export class AuthController {
   constructor(
     private AuthService: AuthService,
-    private UsersService: UsersService,
   ) {}
 
   @UseGuards(AuthGuard('42'))
@@ -127,6 +120,7 @@ export class AuthController {
   async refresh(@Req() req, @Res() res) {
     const jwt = await this.AuthService.refresh(req.user);
     res.cookie('access_token', jwt.access_token, { httpOnly: true });
+    console.log('refresh=',jwt);
     return res.status(200).json({ message: 'Refresh réussi !' });
   }
 

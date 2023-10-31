@@ -6,6 +6,7 @@ import * as jwt from 'jsonwebtoken';
 import { UsersService } from 'src/users/users.service';
 import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 import { Inject } from '@nestjs/common';
+import * as p2 from 'p2-es';
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:8080',
@@ -38,11 +39,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect{
     this.players.delete(client);
 	}
 
-  // sendBall(ball: Phaser.Physics.Arcade.Image) {
-  //   this.server.emit('user', ball);
-  //   // client.emit('user', user);
-  // }
-  
+  sendBall(ball:p2.Vec2) {
+    // console.log(`Send ball to client`, ball);
+    this.server.emit('ball', ball);
+    // client.emit('user', user);
+  }
   
   // Broadcast the message to all connected clients
   @SubscribeMessage('message')

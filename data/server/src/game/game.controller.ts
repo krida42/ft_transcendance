@@ -10,4 +10,9 @@ export class GameController {
   this.gameService.initWorld();
 	this.gameService.start();
   }
+
+  @Get('stop')
+  stopGame() {
+    this.gameService.stop();
+  }
 }

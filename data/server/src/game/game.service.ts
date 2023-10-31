@@ -3,6 +3,7 @@ import * as p2 from 'p2-es';
 import { GameState } from './type';
 import { HEIGHT, WIDTH, BALL_MASS, BALL_RADIUS, BALL_POSITION,
    TIMESTEP, MAXSTEP, BALL_VELOCITY, SCORE_TO_WIN } from './const';
+import { PongGateway } from './websocket/pong.gateway';
     
   let LASTTIME = Date.now();
 
@@ -11,7 +12,8 @@ export class GameService {
   private world: p2.World;
   private gameState: GameState;
     
-  constructor() {  
+  constructor(private pongGateway: PongGateway) {
+
   }
 
   initWorld() {
@@ -63,10 +65,30 @@ export class GameService {
     wallBottom.position = [0, HEIGHT];
     this.world.addBody(wallBottom);
   }
+  
+  leftWall() {
+    const wallLeft = new p2.Body({ mass: 0 });
+    const wallLeftShape = new p2.Plane();
+    wallLeft.addShape(wallLeftShape);
+    wallLeft.position = [0, 0];
+    wallLeft.angle = Math.PI / 2;
+    this.world.addBody(wallLeft);
+  }
+
+  rightWall() {
+    const wallRight = new p2.Body({ mass: 0 });
+    const wallRightShape = new p2.Plane();
+    wallRight.addShape(wallRightShape);
+    wallRight.position = [WIDTH, 0];
+    wallRight.angle = Math.PI / 2;
+    this.world.addBody(wallRight);
+  }
 
   createWalls() {
     this.upWall();
     this.downWall();
+    this.leftWall();
+    this.rightWall();
   }
 
   renderCircleAtPosition(position: p2.Vec2) {
@@ -92,8 +114,8 @@ export class GameService {
     this.world.step(TIMESTEP, deltaTime, MAXSTEP);
     // Check if the ball hits the top or bottom wall
     this.touchWall();
-    this.renderCircleAtPosition(this.gameState.ball.position);
-    
+    // this.renderCircleAtPosition(this.gameState.ball.position);
+    this.pongGateway.sendBall(this.gameState.ball.position);
 
     LASTTIME = currentTime;
   }

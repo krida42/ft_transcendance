@@ -20,6 +20,7 @@ import { HttpModule } from '@nestjs/axios';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from 'src/tools/bcrypt.service';
 import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
+import { PongGateway } from 'src/game/websocket/pong.gateway';
 
 @Module({
   imports: [
@@ -50,7 +51,7 @@ import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
   ],
   controllers: [AppController],
   providers: [
-    GameService, AuthService, JwtService, BcryptService, AppService],
+    GameService, AuthService, JwtService, BcryptService, AppService, PongGateway],
   exports: [SequelizeModule],
 })
 export class AppModule implements NestModule {

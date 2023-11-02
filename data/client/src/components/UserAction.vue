@@ -18,16 +18,28 @@
       </p>
     </div>
     <div class="actions bd-redd flex justify-around mt-1">
-      <button class="accept-btn text-green-dark" v-if="mode === Mode.REQUESTS">
+      <button
+        class="accept-btn text-green-dark"
+        @click="acceptFriendRequest(uuid)"
+        v-if="mode === Mode.REQUESTS"
+      >
         accept
       </button>
-      <button class="decline-btn text-red-my" v-if="mode === Mode.REQUESTS">
+      <button
+        class="decline-btn text-red-my"
+        @click="declineFriendRequest(uuid)"
+        v-if="mode === Mode.REQUESTS"
+      >
         decline
       </button>
       <button class="play-btn bg-yellow-hover" v-if="mode === Mode.FRIENDS">
         play
       </button>
-      <button class="unblock-btn text-red-my" v-if="mode === Mode.BLOCKED">
+      <button
+        class="unblock-btn text-red-my"
+        @click="unblockUser(uuid)"
+        v-if="mode === Mode.BLOCKED"
+      >
         unblock
       </button>
     </div>
@@ -38,12 +50,16 @@
 // import { Icon } from "@vicons/utils";
 // import { UserCircle } from "@vicons/tabler";
 import { useUsersStore } from "@/stores/users";
+import { useFriendStore } from "@/stores/friend";
 import { computed } from "vue";
 import { defineProps } from "vue";
 
 import { Status } from "@/mtypes";
 
 const usersStore = useUsersStore();
+
+const { acceptFriendRequest, declineFriendRequest, unblockUser } =
+  useFriendStore();
 const { users } = usersStore;
 
 const Mode = {
@@ -63,15 +79,17 @@ const props = defineProps({
   },
 });
 
-console.log(Object.values(Status));
+// console.log(Object.values(Status));
 const user = computed(() => {
   return users.get(props.uuid);
 });
 
-// check if Mode is valid
-if (!Object.values(Mode).includes(props.mode)) {
-  throw new Error("Invalid mode");
-}
+(() => {
+  // check if Mode is valid
+  if (!Object.values(Mode).includes(props.mode)) {
+    throw new Error("Invalid mode");
+  }
+})();
 </script>
 
 <style lang="scss" scoped>

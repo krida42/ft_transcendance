@@ -61,5 +61,34 @@ export const useFriendStore = defineStore({
         });
       });
     },
+    async acceptFriendRequest(id: Id): Promise<void> {
+      return friendApi.acceptFriendRequest(id).then(() => {
+        this.friendsMap.set(id, this.friendsReceivedMap.get(id)!);
+        this.friendsReceivedMap.delete(id);
+      });
+    },
+    async declineFriendRequest(id: Id): Promise<void> {
+      return friendApi.declineFriendRequest(id).then(() => {
+        this.friendsReceivedMap.delete(id);
+      });
+    },
+    async blockUser(id: Id): Promise<void> {
+      return friendApi.blockUser(id).then(() => {
+        this.friendsMap.delete(id);
+        this.friendsReceivedMap.delete(id);
+        this.friendsSentMap.delete(id);
+        this.blockedMap.set(id, this.friendsMap.get(id)!);
+      });
+    },
+    async unblockUser(id: Id): Promise<void> {
+      return friendApi.unblockUser(id).then(() => {
+        this.blockedMap.delete(id);
+      });
+    },
+    async deleteFriend(id: Id): Promise<void> {
+      return friendApi.deleteFriend(id).then(() => {
+        this.friendsMap.delete(id);
+      });
+    },
   },
 });

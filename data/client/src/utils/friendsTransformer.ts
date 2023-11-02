@@ -10,4 +10,11 @@ export class FriendsTransformer {
     }
     return dividedFriendsArray;
   }
+
+  static beginWithLetters(friends: Friend[], letters: string): Friend[] {
+    letters = letters.toLowerCase();
+    return friends.filter((friend) =>
+      friend.pseudo.toLowerCase().startsWith(letters)
+    );
+  }
 }

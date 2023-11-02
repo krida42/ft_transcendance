@@ -1,5 +1,5 @@
 <template>
-  <div class="user-action w-[10rem] bd-redd">
+  <div class="user-action w-[10rem] h-[5srem] bd-redd">
     <div class="avatar bd-redd mx-auto w-[60%]">
       <img :src="user?.avatar" alt="user image" class="rounded-full" />
     </div>

@@ -8,7 +8,13 @@
         <div class="status-filters-ctn">
           <div
             class="friends-btn filter-btn"
-            @click="activeListName = ActiveListNames.FRIENDS"
+            :class="{
+              'bg-green-medium': activeListName === ActiveListName.FRIENDS,
+            }"
+            @click="
+              activeListName = ActiveListName.FRIENDS;
+              statusFilter = StatusFilter.All;
+            "
           >
             <Icon size="3em" color="black">
               <Heart />
@@ -17,10 +23,15 @@
           </div>
           <div class="sub-filters">
             <div
-              class="filter-all"
+              class="filter-all bg-opacity-50"
+              :class="{
+                'bg-green-medium':
+                  statusFilter === StatusFilter.All &&
+                  activeListName === ActiveListName.FRIENDS,
+              }"
               @click="
                 statusFilter = StatusFilter.All;
-                activeListName = ActiveListNames.FRIENDS;
+                activeListName = ActiveListName.FRIENDS;
               "
             >
               <!-- prettier-ignore -->
@@ -28,10 +39,15 @@
               <span class="">All</span>
             </div>
             <div
-              class="filter-online"
+              class="filter-online bg-opacity-50"
+              :class="{
+                'bg-green-medium':
+                  statusFilter === StatusFilter.Online &&
+                  activeListName === ActiveListName.FRIENDS,
+              }"
               @click="
                 statusFilter = StatusFilter.Online;
-                activeListName = ActiveListNames.FRIENDS;
+                activeListName = ActiveListName.FRIENDS;
               "
             >
               <!-- prettier-ignore -->
@@ -39,20 +55,30 @@
               <span>Online</span>
             </div>
             <div
-              class="filter-in-game"
+              class="filter-in-game bg-opacity-50"
+              :class="{
+                'bg-green-medium':
+                  statusFilter === StatusFilter.InGame &&
+                  activeListName === ActiveListName.FRIENDS,
+              }"
               @click="
                 statusFilter = StatusFilter.InGame;
-                activeListName = ActiveListNames.FRIENDS;
+                activeListName = ActiveListName.FRIENDS;
               "
             >
               <span class="circle bg-blue-button"></span>
               <span>In game</span>
             </div>
             <div
-              class="filter-offline"
+              class="filter-offline bg-opacity-50"
+              :class="{
+                'bg-green-medium':
+                  statusFilter === StatusFilter.Offline &&
+                  activeListName === ActiveListName.FRIENDS,
+              }"
               @click="
                 statusFilter = StatusFilter.Offline;
-                activeListName = ActiveListNames.FRIENDS;
+                activeListName = ActiveListName.FRIENDS;
               "
             >
               <span class="circle bg-red-my"></span>
@@ -62,7 +88,10 @@
         </div>
         <div
           class="requests-btn filter-btn"
-          @click="activeListName = ActiveListNames.REQUESTS"
+          :class="{
+            'bg-green-medium': activeListName === ActiveListName.REQUESTS,
+          }"
+          @click="activeListName = ActiveListName.REQUESTS"
         >
           <img
             src="../assets/svg/friend-request.svg"
@@ -72,7 +101,10 @@
         </div>
         <div
           class="blocked-btn filter-btn"
-          @click="activeListName = ActiveListNames.BLOCKED"
+          :class="{
+            'bg-green-medium': activeListName === ActiveListName.BLOCKED,
+          }"
+          @click="activeListName = ActiveListName.BLOCKED"
         >
           <img src="../assets/svg/blocked.svg" class="aspect-square" />
           <p class="bg-blue-100d">Blocked</p>
@@ -82,14 +114,14 @@
     <div class="gradient"></div>
     <div class="main">
       <div class="friend-input">
-        <input type="text" placeholder="add a friend..." />
+        <input type="text" placeholder="Search..." v-model="searchedUser" />
         <Icon size="1.5em" color="black" class="search-icon">
           <Search />
         </Icon>
       </div>
       <div class="users-list">
         <user-action
-          v-for="[, user] in activeList"
+          v-for="user in activeListFilteredBySearch"
           :key="user.id"
           :uuid="user.id"
           :mode="activeListName"
@@ -104,6 +136,7 @@ import { Icon } from "@vicons/utils";
 import { Heart, Search } from "@vicons/tabler";
 import MenuButton from "@/components/MenuButton.vue";
 import UserAction from "@/components/UserAction.vue";
+import { FriendsTransformer } from "@/utils//friendsTransformer";
 import { useFriendStore } from "@/stores/friend";
 import { computed, ref } from "vue";
 
@@ -127,40 +160,48 @@ enum StatusFilter {
 
 let statusFilter = ref(StatusFilter.All);
 
-enum ActiveListNames {
+enum ActiveListName {
   FRIENDS = "friends",
   REQUESTS = "requests",
   BLOCKED = "blocked",
 }
 
-let activeListName = ref(ActiveListNames.FRIENDS);
+let activeListName = ref(ActiveListName.FRIENDS);
 const activeList = computed(() => {
   switch (activeListName.value) {
-    case ActiveListNames.FRIENDS:
-      return new Map(
-        [...friendStore.DEBUG_friendsStatusRand].filter(([, v]) => {
-          switch (statusFilter.value) {
-            case StatusFilter.All:
-              return true;
-            case StatusFilter.Online:
-              return v.status === Status.Online;
-            case StatusFilter.InGame:
-              return v.status === Status.InGame;
-            case StatusFilter.Offline:
-              return v.status === Status.Offline;
-          }
-        })
-      );
-    case ActiveListNames.REQUESTS:
-      return new Map([
-        ...friendStore.friendsReceived,
-        ...friendStore.friendsSent,
-      ]);
-    case ActiveListNames.BLOCKED:
-      return friendStore.blocked;
+    case ActiveListName.FRIENDS:
+      return [...friendStore.DEBUG_friendsStatusRand.values()].filter((v) => {
+        switch (statusFilter.value) {
+          case StatusFilter.All:
+            return true;
+          case StatusFilter.Online:
+            return v.status === Status.Online;
+          case StatusFilter.InGame:
+            return v.status === Status.InGame;
+          case StatusFilter.Offline:
+            return v.status === Status.Offline;
+        }
+      });
+
+    case ActiveListName.REQUESTS:
+      return [
+        ...friendStore.friendsReceived.values(),
+        ...friendStore.friendsSent.values(),
+      ];
+    case ActiveListName.BLOCKED:
+      return [...friendStore.blocked.values()];
     default:
-      return friendStore.friends;
+      return [...friendStore.friends.values()];
   }
+});
+
+let searchedUser = ref("");
+
+const activeListFilteredBySearch = computed(() => {
+  return FriendsTransformer.beginWithLetters(
+    activeList.value,
+    searchedUser.value
+  );
 });
 </script>
 
@@ -201,6 +242,10 @@ const activeList = computed(() => {
     padding-left: 1rem;
     margin-block: 0.8rem;
     font-size: 0.9em;
+    &:hover {
+      background-color: $green-medium;
+      cursor: pointer;
+    }
 
     p {
       padding-top: 0.7rem;
@@ -210,11 +255,6 @@ const activeList = computed(() => {
     }
   }
 
-  .filter-btn:hover {
-    //   background-color: rgba($color: #ffffff, $alpha: 0.5);
-    background-color: $green-medium;
-    cursor: pointer;
-  }
   .sub-filters {
     display: flex;
     flex-direction: column;
@@ -228,6 +268,10 @@ const activeList = computed(() => {
       width: 100%;
       padding: 0 0.8rem 0 0.8rem;
       border-radius: 10px;
+      &:hover {
+        background-color: $green-medium;
+      }
+
       .circle {
         width: 0.7rem;
         aspect-ratio: 1 / 1;
@@ -237,9 +281,6 @@ const activeList = computed(() => {
         margin-right: 0.8rem;
       }
     }
-  }
-  .sub-filters > *:hover {
-    background-color: $green-medium;
   }
 }
 
@@ -292,6 +333,7 @@ const activeList = computed(() => {
     margin-top: 2.5rem;
     // border: 1px red solid;
     overflow-y: scroll;
+    align-content: flex-start;
   }
 }
 </style>

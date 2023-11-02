@@ -25,20 +25,33 @@
     <div class="privacy-status flex gap-[2rem] self-start ml-[3rem]">
       <div class="radio-btn">
         <input
+          v-model="privacy"
           type="radio"
           id="private"
-          name="private"
+          name="privacy"
           value="private"
           checked
         />
         <label for="private">private</label>
       </div>
       <div class="radio-btn">
-        <input type="radio" id="public" name="public" value="public" />
+        <input
+          v-model="privacy"
+          type="radio"
+          id="public"
+          name="privacy"
+          value="public"
+        />
         <label for="public">public</label>
       </div>
       <div class="radio-btn">
-        <input type="radio" id="protected" name="protected" value="protected" />
+        <input
+          v-model="privacy"
+          type="radio"
+          id="protected"
+          name="privacy"
+          value="protected"
+        />
         <label for="protected">protected</label>
       </div>
     </div>
@@ -49,7 +62,6 @@
       <button
         type="submit"
         class="bg-yellow-hover rounded-[15px] px-[1rem] h-[3rem] text-[1.5rem] text-black uppercase"
-        @click="sendForm"
       >
         create
       </button>
@@ -61,9 +73,9 @@
 import channel from "@/api/channel";
 import { ref } from "vue";
 
-const channelName = ref("");
+const privacy = ref("");
 const sendForm = () => {
-  console.log(channelName.value);
+  console.log(privacy.value);
 };
 </script>
 
@@ -78,6 +90,20 @@ const sendForm = () => {
   align-items: center;
   gap: 0.5rem;
   font-size: 1.3rem;
+}
+
+input[type="radio"]:checked:after {
+  width: 13px;
+  height: 13px;
+  border-radius: 15px;
+  top: -9px;
+  left: 0px;
+  position: relative;
+  background-color: $yellow-hover;
+  content: "";
+  display: inline-block;
+  visibility: visible;
+  border: 1px solid black;
 }
 
 button {

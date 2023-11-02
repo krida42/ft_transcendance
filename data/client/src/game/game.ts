@@ -11,7 +11,7 @@ function launch(containerId: any) {
     physics: {
       default: "arcade",
       arcade: {
-        gravity: { y: 0 },
+        gravity: { y: 0 }, // A recuperer du cote serveur ?
         debug: false,
       },
     },

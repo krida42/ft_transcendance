@@ -3,10 +3,11 @@ import { Server, Socket  } from 'socket.io';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
 import * as jwt from 'jsonwebtoken';
-import { UsersService } from 'src/users/users.service';
 import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
-import { Inject } from '@nestjs/common';
+import { Player } from '../type';
+import { CONNECTED, SEARCH } from '../const';
 import * as p2 from 'p2-es';
+
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:8080',
@@ -18,37 +19,78 @@ import * as p2 from 'p2-es';
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect{
   @WebSocketServer()
   server: Server;
-  private players: Map<Socket, ResponseUserDto> = new Map();
-  constructor(@Inject(UsersService) private usersService: UsersService) {} // Injectez le service ici
+  private usersMap: Map<Socket, ResponseUserDto> = new Map();
+  playerList: Player[] = [];
 
-
-	handleConnection(client: Socket) {
-    let cookie = client.client.request.headers.cookie;
+  getCookies(socket: Socket) {
+    let cookie = socket.client.request.headers.cookie;
     if (!cookie) {
       return;
     }
     cookie = cookie.replace('access_token=', '');
+    return cookie;
+  }
+
+	handleConnection(client: Socket) {
+    const cookie = this.getCookies(client);
     const user = jwt.decode(cookie) as ResponseUserDto;
-    this.players.set(client, user);
+    this.usersMap.set(client, user);
+    this.playerList.push({client: client, status: CONNECTED});
+
     console.log(`Client connected: ${user.login}`);
+    return;
+    // this.server.emit('connect', user);
 	}
 
 	handleDisconnect(client: Socket) {
-    const user = this.players.get(client);
+    const user = this.usersMap.get(client);
     console.log(`Client disconnected: ${user.pseudo}`);
-    this.players.delete(client);
+    this.usersMap.delete(client);
+    this.playerList.splice(this.playerList.indexOf({client: client, status: CONNECTED}), 1);
+
+    // this.server.emit('disconnect', user);
 	}
 
-  sendBall(ball:p2.Vec2) {
-    // console.log(`Send ball to client`, ball);
-    this.server.emit('ball', ball);
+  getClientInPlayerList(client: Socket): Player {
+    for (let i = 0; i < this.playerList.length; i++) {
+      if (this.playerList[i].client === client) {
+        return this.playerList[i];
+      }
+    }
+  }
+
+  @SubscribeMessage('searchGame')
+  searchGame(@ConnectedSocket() client: Socket) {
+    const user = this.usersMap.get(client);
+    this.getClientInPlayerList(client).status = SEARCH;
+    
+    console.log(`Client ${user.pseudo} searched a game`);
+  }
+
+  @SubscribeMessage('joinGame')
+  joinGame(@ConnectedSocket() client: Socket) {
+    const user = this.usersMap.get(client);
+    console.log(`Client ${user.pseudo} joined the game`);
+    // this.server.emit('joinGame', user);
+  }
+
+  
+  @SubscribeMessage('newGame')
+  newGame(){
+    console.log('new game');
+    
+  }
+
+  sendBall(ball: p2.Vec2) {
+    const array = new Float32Array(ball)
+    this.server.emit('ball', array.buffer);
     // client.emit('user', user);
   }
   
   // Broadcast the message to all connected clients
   @SubscribeMessage('message')
   handleMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    const user = this.players.get(client);
+    const user = this.usersMap.get(client);
     console.log(`Received message from client ${user.pseudo}: ${data}`);
     // Envoyer un message de retour au client spécifique
     client.emit('message', `Server received your message: ${data}`);

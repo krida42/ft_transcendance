@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DataTypes } from 'sequelize';
 import { AfterCreate, AfterFind, BeforeBulkUpdate, BeforeCreate, BeforeFind, BeforeUpdate, Column, Model, PrimaryKey, Table, BelongsToMany } from 'sequelize-typescript';
-import { DEVS } from 'src/const';
+import { DEVS } from 'src/users/const';
 import { CryptoService } from 'src/tools/crypto.service';
 import { Channels } from 'db/models/channels';
 @Table

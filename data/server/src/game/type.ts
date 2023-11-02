@@ -1,34 +1,35 @@
 import { Socket } from 'socket.io';
 import * as p2 from 'p2-es';
+import { WorldPong } from './instance/world';
+import { BallPong } from './instance/ball';
+
+export type Ball = {
+	body: p2.Body;
+	shape: p2.Circle;
+}
 
 export type Paddle = {
-	position: p2.Vec2;
+	position: [number, number];
 	width: number;
 	height: number;
 }
 
 export type Player = {
 	client: Socket;
-	paddle: Paddle;
-	score: number;
+	status: number;
+	color?: string;
+	// paddle: Paddle;
+	score?: number;
 }
 
 export type GameState = {
 	scoreToWin: number; // score to win the game
 	score1: number; // score P1
 	score2: number; // score P2
-	ball: p2.Body;
-	Player1: Player;
-	Player2: Player;
-}
-
-export type Game = {
-	id: string;
-	gameState: GameState;
-}
-
-export type GameList = {
-	games: Game[];
+	worldPong: WorldPong;
+	ballPong: BallPong;
+	// Player1: Player;
+	// Player2: Player;
 }
 
 export type PlayerList = {

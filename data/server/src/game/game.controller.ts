@@ -7,12 +7,16 @@ export class GameController {
 
   @Get('start')
   startGame() {
-  this.gameService.initWorld();
 	this.gameService.start();
   }
 
   @Get('stop')
   stopGame() {
     this.gameService.stop();
+  }
+
+  @Get('search')
+  searchGame() {
+    this.gameService.search();
   }
 }

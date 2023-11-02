@@ -120,12 +120,14 @@
         </Icon>
       </div>
       <div class="users-list">
-        <user-action
-          v-for="user in activeListFilteredBySearch"
-          :key="user.id"
-          :uuid="user.id"
-          :mode="activeListName"
-        />
+        <transition-group name="flip">
+          <user-action
+            v-for="user in activeListFilteredBySearch"
+            :key="user.id"
+            :uuid="user.id"
+            :mode="activeListName"
+          />
+        </transition-group>
       </div>
     </div>
   </div>
@@ -334,6 +336,40 @@ const activeListFilteredBySearch = computed(() => {
     // border: 1px red solid;
     overflow-y: scroll;
     align-content: flex-start;
+  }
+}
+
+$cui: 0.28s;
+
+.flip-enter-active {
+  animation: flip-in-hor-bottom (0.5s - $cui)
+    cubic-bezier(0.25, 0.46, 0.45, 0.94) (0.46s - $cui) both;
+}
+
+@keyframes flip-in-hor-bottom {
+  0% {
+    transform: rotateX(80deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotateX(0);
+    opacity: 1;
+  }
+}
+
+.flip-leave-active {
+  animation: flip-out-hor-top (0.45s - $cui)
+    cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+}
+
+@keyframes flip-out-hor-top {
+  0% {
+    transform: rotateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(70deg);
+    opacity: 0;
   }
 }
 </style>

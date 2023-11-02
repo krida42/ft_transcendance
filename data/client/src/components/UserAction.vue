@@ -19,24 +19,31 @@
     </div>
     <div class="actions bd-redd flex justify-around mt-1">
       <button
-        class="accept-btn text-green-dark"
+        class="accept-btn text-green-dark hover:bg-green-dark hover:text-white hover:border-white"
         @click="acceptFriendRequest(uuid)"
         v-if="mode === Mode.REQUESTS"
       >
         accept
       </button>
+
       <button
-        class="decline-btn text-red-my"
+        class="decline-btn text-red-my hover:bg-red-my hover:text-white hover:border-white"
         @click="declineFriendRequest(uuid)"
         v-if="mode === Mode.REQUESTS"
       >
         decline
       </button>
-      <button class="play-btn bg-yellow-hover" v-if="mode === Mode.FRIENDS">
+
+      <button
+        class="play-btn bg-yellow-hover hover:bg-yellow-700 hover:text-white"
+        @click="myAlert('Comming soon...')"
+        v-if="mode === Mode.FRIENDS"
+      >
         play
       </button>
+
       <button
-        class="unblock-btn text-red-my"
+        class="unblock-btn text-red-my hover:bg-red-my hover:text-white hover:border-white"
         @click="unblockUser(uuid)"
         v-if="mode === Mode.BLOCKED"
       >
@@ -90,12 +97,13 @@ const user = computed(() => {
     throw new Error("Invalid mode");
   }
 })();
+
+const myAlert = (msg: string) => {
+  alert(msg);
+};
 </script>
 
 <style lang="scss" scoped>
-.user-action {
-}
-
 .actions button {
   border-radius: 0.5rem;
   padding-inline: 0.4rem;

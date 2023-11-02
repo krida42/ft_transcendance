@@ -53,3 +53,18 @@ type Match = {
   duration: number;
   date: Date;
 };
+
+type Channel = {
+  id: Id;
+  name: string;
+  isAdmin: boolean;
+  isOwner: boolean;
+  chanType: ChannelType;
+  channelLogo: string;
+};
+
+enum ChannelType {
+  Private = "private",
+  Public = "public",
+  Protected = "protected",
+}

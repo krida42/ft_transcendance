@@ -1,9 +1,13 @@
 <template>
   <div class="home">
-    <div class="left">
+    <div class="left flex flex-col items-start justify-between">
       <MenuButton
         svgName="pong-logo.svg"
         @click="() => $router.push('/main/home')"
+      />
+      <MenuButton
+        svgName="heart-menu.svg"
+        @click="() => $router.push('/friends')"
       />
     </div>
     <div class="arcade">
@@ -25,6 +29,11 @@
       <MenuButton
         svgName="profile.svg"
         @click="() => $router.push('/profile')"
+      />
+      <img
+        @click="() => $router.push('/channels/my-channels')"
+        src="../assets/svg/create.svg"
+        class="absolute bottom-[100px] right-[20px] w-[1.5rem] aspect-square"
       />
       <router-link to="/about">
         <MenuButton svgName="message.svg" />
@@ -78,6 +87,12 @@ async function checkFriends() {
   position: absolute;
   background-color: $green-my;
   top: var(--border-ratio);
+}
+
+.right img:hover {
+  cursor: pointer;
+  border-radius: 15px;
+  background-color: $yellow-hover;
 }
 
 .arcade_border {

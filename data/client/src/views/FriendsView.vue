@@ -3,7 +3,10 @@
     <div class="navigation-ctn bg-green-dark">
       <div class="navigation">
         <div class="pong-button">
-          <MenuButton svg-name="pong-logo.svg" />
+          <MenuButton
+            svg-name="pong-logo.svg"
+            @click="() => $router.push('/main/home')"
+          />
         </div>
         <div class="status-filters-ctn">
           <div
@@ -194,7 +197,7 @@ const activeList = computed(() => {
   .filter-btn {
     display: flex;
     align-items: center;
-    justify-content: start;
+    justify-content: flex-start;
     gap: 0.8em;
     border-radius: 15px;
     width: 90%;

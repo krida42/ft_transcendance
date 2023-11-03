@@ -1,12 +1,12 @@
 import { Socket } from 'socket.io';
-import * as p2 from 'p2-es';
-import { WorldPong } from './instance/world';
+import * as Matter from 'matter-js';
 import { BallPong } from './instance/ball';
+import { WorldPong } from './instance/worldPong';
 
-export type Ball = {
-	body: p2.Body;
-	shape: p2.Circle;
-}
+// export type Ball = {
+// 	body: p2.Body;
+// 	shape: p2.Circle;
+// }
 
 export type Paddle = {
 	position: [number, number];

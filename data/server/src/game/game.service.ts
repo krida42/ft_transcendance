@@ -19,22 +19,14 @@ export class GameService {
     this.games[0].start();
   }
 
-  stop() {
-    console.log('Game stopped');
-    this.games[0].stop();
+  pause() {
+    console.log('Game paused');
+    this.games[0].pause();
   }
 
   search() {
     console.log('Game searched');
   }
 
-  updateGames() {
-    for (let i = 0; i < this.games.length; i++) {
-      this.games[i].update();
-    }
-  }
-
-
-  private animationInterval: NodeJS.Timeout;
-  }
+}
 

@@ -6,7 +6,6 @@ import * as jwt from 'jsonwebtoken';
 import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 import { Player } from '../type';
 import { CONNECTED, SEARCH } from '../const';
-import * as p2 from 'p2-es';
 
 @WebSocketGateway({
   cors: {
@@ -81,9 +80,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect{
     
   }
 
-  sendBall(ball: p2.Vec2) {
-    const array = new Float32Array(ball)
-    this.server.emit('ball', array.buffer);
+  sendBall(ball) {
+    console.log('send ball');
+    console.log("position: ", ball);
+    this.server.emit('ball', ball);
     // client.emit('user', user);
   }
   

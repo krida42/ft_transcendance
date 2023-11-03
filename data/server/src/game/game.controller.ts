@@ -7,12 +7,12 @@ export class GameController {
 
   @Get('start')
   startGame() {
-	this.gameService.start();
+    this.gameService.start();
   }
 
-  @Get('stop')
+  @Get('pause')
   stopGame() {
-    this.gameService.stop();
+    this.gameService.pause();
   }
 
   @Get('search')

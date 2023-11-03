@@ -2,12 +2,12 @@ import { GameState, Player } from '../type';
 import { SCORE_TO_WIN, INGAME, SEARCH } from '../const';
 import { PongGateway } from '../websocket/pong.gateway';
 import { Socket } from 'socket.io';
-import { WorldPong } from './world';
+import { WorldPong } from './worldPong';
 import { BallPong } from './ball';
 
 export class GameInit {
 	static id: number = 0;
-  static pongGateway: PongGateway;
+	static pongGateway: PongGateway;
 	
 	static clientFound(): Socket {
 		const playerList = this.pongGateway.playerList;

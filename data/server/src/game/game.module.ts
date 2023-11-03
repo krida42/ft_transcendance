@@ -6,7 +6,7 @@ import { PongGateway } from './websocket/pong.gateway';
 
 @Module({
     imports: [UsersModule],
-    controllers: [GameController,],
+    controllers: [GameController],
     providers: [GameService, PongGateway],
     exports: [GameService, PongGateway]
 })

@@ -8,18 +8,29 @@
     >
       <div class="chan-logo flex items-center gap-[1rem]">
         <img
-          src="@/assets/svg/unknown-img.svg"
+          :src="channelLogo ? channelLogo : unknownLogo"
           class="aspect-square w-[8rem]"
         />
-        <img src="@/assets/svg/pen.svg" class="pen" />
-      </div>
-      <div class="chan-name flex items-center gap-[1rem]">
         <input
+          style="display: none"
+          type="file"
+          accept="image/*"
+          @change="onFileSelected"
+          ref="fileInput"
+        />
+        <img
+          src="@/assets/svg/pen.svg"
+          @click="($refs.fileInput as HTMLInputElement).click()"
+          class="pen"
+        />
+      </div>
+      <div class="chan-name">
+        <input
+          v-model="channelName"
           type="text"
           placeholder="channel name"
           class="w-[15rem] h-[3rem] rounded-[15px] bg-transparent text-black text-[2rem] pl-[1rem]"
         />
-        <img src="@/assets/svg/pen.svg" class="pen" />
       </div>
     </div>
     <div class="privacy-status flex gap-[2rem] self-start ml-[3rem]">
@@ -72,10 +83,42 @@
 <script lang="ts" setup>
 import channel from "@/api/channel";
 import { ref } from "vue";
+import { Channel } from "@/types";
+import unknownLogo from "@/assets/svg/unknown-img.svg";
 
 const privacy = ref("");
+const channelName = ref("");
+const channelLogo = ref("");
+let files: FileList | null = null;
+let file: File | null = null;
+
+const onFileSelected = (e: Event) => {
+  if (e) e.preventDefault();
+  files = (e.target as HTMLInputElement).files;
+  if (!files || !files[0]) return;
+  file = files[0];
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = (e) => {
+    channelLogo.value = e.target?.result as string;
+    console.log(channelLogo.value);
+  };
+};
+
 const sendForm = () => {
-  console.log(privacy.value);
+  if (!file) return;
+  let newChannel: Channel = {} as Channel;
+  const fd = new FormData();
+  // fd.append("name", channelName.value);
+  // fd.append("privacy", privacy.value);
+  fd.append("image", file, file.name);
+  // fd.append("owner", user.getUser().id); demander a Kevin comment recuperer l'id de l'utilisateur courant
+  // fd.append("users", user.getUser().id); ajouter les users invites par l'utilisateur si privacy == private
+  newChannel.id = "";
+  newChannel.name = channelName.value;
+  newChannel.privacy = privacy.value;
+  newChannel.logo = fd;
+  channel.createChannel(newChannel);
 };
 </script>
 

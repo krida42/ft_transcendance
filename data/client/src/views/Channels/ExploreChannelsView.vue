@@ -33,7 +33,6 @@
 </template>
 
 <script lang="ts" setup>
-import channel from "@/api/channel";
 import { ref } from "vue";
 
 const channelName = ref("");

@@ -57,13 +57,14 @@ type Match = {
 type Channel = {
   id: Id;
   name: string;
-  isAdmin: boolean;
-  isOwner: boolean;
-  chanType: ChannelType;
-  channelLogo: string;
+  owner: User;
+  admins: User[];
+  users: User[];
+  privacy: PrivacyType;
+  logo: FormData;
 };
 
-enum ChannelType {
+enum PrivacyType {
   Private = "private",
   Public = "public",
   Protected = "protected",

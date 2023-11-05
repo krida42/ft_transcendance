@@ -1,6 +1,42 @@
 <template>
   <div class="friends-view">
-    <div class="navigation-ctn bg-green-dark">
+    <!-- <div
+      class="burger z-[2]"
+      ref="burgerEl"
+      @click="burgerIsOpen = !burgerIsOpen"
+    >
+      <img
+        src="../assets/svg/right-arrow.svg"
+        alt=""
+        srcset=""
+        class="border-2s border-red-900"
+      />
+    </div> -->
+    <!-- <Transition name="slide"> -->
+    <div
+      class="navigation-ctn bg-green-dark"
+      :class="{
+        'open-nav': burgerIsOpen || !isMobile,
+        'nav-shadow': burgerIsOpen && isMobile,
+      }"
+    >
+      <div
+        class="burger"
+        :class="{
+          'open-burger': burgerIsOpen,
+        }"
+        @click="
+          burgerIsOpen = !burgerIsOpen;
+          console.log('coucou');
+        "
+      >
+        <img
+          src="../assets/svg/right-arrow.svg"
+          alt=""
+          srcset=""
+          class="border-2s border-red-900"
+        />
+      </div>
       <div class="navigation">
         <div class="pong-button">
           <MenuButton svg-name="pong-logo.svg" />
@@ -111,6 +147,7 @@
         </div>
       </div>
     </div>
+    <!-- </Transition> -->
     <div class="gradient"></div>
     <div class="main">
       <div class="friend-input">
@@ -119,7 +156,10 @@
           <Search />
         </Icon>
       </div>
-      <div class="users-list">
+      <div
+        class="users-list"
+        @click="burgerIsOpen = isMobile && burgerIsOpen ? false : burgerIsOpen"
+      >
         <transition-group name="flip">
           <user-action
             v-for="user in activeListFilteredBySearch"
@@ -135,12 +175,12 @@
 
 <script setup lang="ts">
 import { Icon } from "@vicons/utils";
-import { Heart, Search } from "@vicons/tabler";
+import { Heart, Search, Menu2 } from "@vicons/tabler";
 import MenuButton from "@/components/MenuButton.vue";
 import UserAction from "@/components/UserAction.vue";
 import { FriendsTransformer } from "@/utils//friendsTransformer";
 import { useFriendStore } from "@/stores/friend";
-import { computed, ref } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 
 import { Status } from "@/mtypes";
 
@@ -205,6 +245,38 @@ const activeListFilteredBySearch = computed(() => {
     searchedUser.value
   );
 });
+
+let burgerEl = ref<HTMLDivElement | null>(null);
+
+// setTimeout(() => {
+//   console.log(getComputedStyle(burgerEl.value!));
+// }, 500);
+
+// watch(
+//   () => getComputedStyle(burgerEl.value!),
+//   (el) => {
+//     console.log("changement de burgerEl", el);
+//   }
+// );
+
+const MOBILE_WIDTH = 793; //MODIFIER DANS LE SCSS EGALEMENT POUR LES MEDIA QUERIES
+
+let burgerIsOpen = ref(true);
+
+let isMobile = ref(window.innerWidth <= MOBILE_WIDTH);
+
+function eventHandlerWindowResize() {
+  console.log(window.innerWidth);
+  isMobile.value = window.innerWidth <= MOBILE_WIDTH;
+  burgerIsOpen.value = !isMobile.value ? false : burgerIsOpen.value;
+}
+
+onMounted(() => {
+  window.addEventListener("resize", eventHandlerWindowResize);
+});
+onUnmounted(() => {
+  window.removeEventListener("resize", eventHandlerWindowResize);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -214,6 +286,10 @@ const activeListFilteredBySearch = computed(() => {
   grid-template-rows: 100vh;
   height: 100vh;
   width: 100%;
+}
+
+.burger {
+  display: none;
 }
 
 .navigation {
@@ -338,6 +414,103 @@ const activeListFilteredBySearch = computed(() => {
     align-content: flex-start;
   }
 }
+
+@media (max-width: 793px) {
+  .friends-view {
+    grid-template-columns: 1fr;
+    grid-template-rows: 100vh;
+  }
+  // .burger-shadow {
+  //   // content: "";
+  //   position: absolute;
+  //   width: 100%;
+  //   height: 100%;
+  //   background-color: black;
+  //   opacity: 0.7;
+  //   left: 0;
+  //   z-index: 1;
+  //   // display: none;
+  // }
+
+  .navigation-ctn {
+    $nav-width: 15rem;
+    position: absolute;
+    z-index: 2;
+    width: $nav-width;
+    height: 100vh;
+    font-size: 1.05em;
+    left: -$nav-width;
+    transition: all 0.6s ease;
+
+    .burger {
+      display: initial;
+      position: absolute;
+      right: -1.2rem;
+      // right: -1.6rem;
+      top: 49%;
+      width: 2.2rem;
+      // margin: auto;
+      // transform: translateY(-50%);
+      background-color: $green-dark;
+      border-radius: 9999px;
+      padding-block: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      img {
+        margin-left: 15%;
+      }
+    }
+
+    .open-burger {
+      transform: rotate(180deg);
+      // background-color: transparent;
+      img {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .nav-shadow {
+    box-shadow: 0px 0px 9999px 100vw rgba(0, 0, 0, 0.6),
+      0 0 20px 10px rgba(0, 0, 0, 0.4);
+  }
+
+  .gradient {
+    display: none;
+    // position: absolute;
+    // left: 15rem;
+    // z-index: 1;
+    // width: 5%;
+    // height: 100vh;
+  }
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(-100%);
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.2s ease;
+}
+
+.open-nav {
+  left: 0;
+  // border: 5px red solid;
+}
+// .open-nav-anim {
+//   animation: open-nav 1s ease;
+// }
+
+// @keyframes open-nav {
+//   0% {
+//     transform: translateX(-80%);
+//   }
+//   100% {
+//     transform: translateX(0%);
+//   }
+// }
 
 $cui: 0.28s;
 

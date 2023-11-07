@@ -2,7 +2,7 @@ import { GameState, Player } from '../type';
 import { SCORE_TO_WIN, INGAME, SEARCH } from '../const';
 import { PongGateway } from '../websocket/pong.gateway';
 import { Socket } from 'socket.io';
-import { WorldPong } from './worldPong';
+import { WorldPong } from './world';
 import { BallPong } from './ball';
 
 export class GameInit {

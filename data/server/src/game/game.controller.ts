@@ -19,4 +19,9 @@ export class GameController {
   searchGame() {
     this.gameService.search();
   }
+
+  @Get('NewRoom')
+  newRoom() {
+    this.gameService.newRoom();
+  }
 }

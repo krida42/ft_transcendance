@@ -25,11 +25,11 @@ export class Game {
     const ball = this.gameList[0].ballPong.ball.position;
     if (this.gameList[0].worldPong.engine.timing.timestamp - this.lastTime >= 1) {
       this.pongGateway.sendBall(ball);
+      console.log("position: ", this.gameList[0].ballPong.ball.velocity);
       this.lastTime = this.gameList[0].worldPong.engine.timing.timestamp;
     }
   }
 
-  // Arrêter la boucle de jeu
   pause() {
     this.gameList[0].worldPong.pause();
     clearInterval(this.gameInterval);

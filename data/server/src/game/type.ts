@@ -1,12 +1,6 @@
 import { Socket } from 'socket.io';
-import * as Matter from 'matter-js';
 import { BallPong } from './instance/ball';
-import { WorldPong } from './instance/worldPong';
-
-// export type Ball = {
-// 	body: p2.Body;
-// 	shape: p2.Circle;
-// }
+import { WorldPong } from './instance/world';
 
 export type Paddle = {
 	position: [number, number];
@@ -30,10 +24,6 @@ export type GameState = {
 	ballPong: BallPong;
 	// Player1: Player;
 	// Player2: Player;
-}
-
-export type PlayerList = {
-	players: Player[];
 }
 
 

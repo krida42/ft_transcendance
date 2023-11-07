@@ -13,6 +13,7 @@ export default class BootScene extends Scene {
   }
 
   preload() {
+    // this.load.atlas("fire", "assets/particles/fire.png");
     this.load.image("sky", sky);
     this.load.image("ball", ball);
     this.load.audio("thud", [thudMp3, thudOgg]);

@@ -1,6 +1,6 @@
 import * as Matter from 'matter-js';
 import { BALL_RADIUS, HEIGHT, WIDTH } from '../const';
-import { WorldPong } from './worldPong';
+import { WorldPong } from './world';
 import { randomInt } from 'crypto';
 
 export class BallPong {
@@ -14,7 +14,7 @@ export class BallPong {
   createBall() {
     let fX = 0;
     this.ball = Matter.Bodies.circle(WIDTH / 2, HEIGHT / 2, BALL_RADIUS, {
-      restitution: 1.0, 
+      restitution: 1, 
       friction: 0,
       frictionAir: 0,
       frictionStatic: 0,
@@ -29,8 +29,4 @@ export class BallPong {
   collisonWithWall() {
     this.worldPong.detectCollisionWithWalls(this.ball);
   }
-
-  // touchWallIncreaseVelocity() {
-  //   const ball = this.ball.body.shapes[0];
-  // } 
 }

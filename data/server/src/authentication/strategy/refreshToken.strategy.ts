@@ -9,7 +9,7 @@ import {
 } from 'src/exceptions/exceptions';
 import { cookieExtractor } from './jwt.strategy';
 import * as jwt from 'jsonwebtoken';
-import { response } from 'express';
+
 export class RefreshJwtStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',

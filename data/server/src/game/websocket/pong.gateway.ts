@@ -81,8 +81,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect{
   }
 
   sendBall(ball) {
-    console.log('send ball');
-    console.log("position: ", ball);
     this.server.emit('ball', ball);
     // client.emit('user', user);
   }

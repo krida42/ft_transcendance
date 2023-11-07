@@ -53,9 +53,6 @@ export class WorldPong{
   createWall() {
     const options = { 
       isStatic: true,
-        // restitution: 1.1,
-        // friction: 0,
-      render: { fillStyle: '#060a19' }
       };
 
     this.topWall = Matter.Bodies.rectangle(WIDTH / 2, 0, WIDTH, 50, options);
@@ -71,7 +68,7 @@ export class WorldPong{
       if ((bodyA === ball && bodyB === wall) || (bodyB === ball && bodyA === wall)) {
         console.log(`Collision avec le mur ${wallName}`);
         if (wallName === 'du haut' || wallName === 'du bas') {
-          const velocityIncrease = 0.6;
+          const velocityIncrease = 1.1;
           Matter.Body.setVelocity(ball, {
             x: ball.velocity.x > 0 ? ball.velocity.x + velocityIncrease : ball.velocity.x - velocityIncrease,
             y: ball.velocity.y > 0 ? ball.velocity.y + velocityIncrease : ball.velocity.y - velocityIncrease

@@ -28,5 +28,9 @@ export class GameService {
     console.log('Game searched');
   }
 
+  newRoom() {
+    console.log('New room created');
+  }
+
 }
 

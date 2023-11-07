@@ -7,10 +7,12 @@
       class="general-options w-[90%] h-[20vh] flex justify-start items-center gap-[2rem] px-[2rem] pb-[2rem] border-b-2 border-black"
     >
       <div class="chan-logo flex items-center gap-[1rem]">
-        <img
-          :src="channelLogo ? channelLogo : unknownLogo"
-          class="aspect-square w-[8rem]"
-        />
+        <div class="w-[8rem] h-[8rem] rounded-full overflow-hidden">
+          <img
+            :src="channelLogo ? channelLogo : unknownLogo"
+            class="object-cover w-[100%] h-[8rem]"
+          />
+        </div>
         <input
           style="display: none"
           type="file"
@@ -27,6 +29,7 @@
       <div class="chan-name">
         <input
           v-model="channelName"
+          v-on:keydown.enter.prevent
           type="text"
           placeholder="channel name"
           class="w-[15rem] h-[3rem] rounded-[15px] bg-transparent text-black text-[2rem] pl-[1rem]"
@@ -67,11 +70,21 @@
       </div>
     </div>
     <div class="chan-options min-h-[25rem] h-[50vh] w-[100%] px-[3rem]">
-      <div class="w-[100%] h-[100%] bg-green-light rounded-[15px]"></div>
+      <div
+        :class="privacy === 'public' ? 'invisible' : 'visible'"
+        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap gap-[1rem] p-[2rem] overflow-y-scroll overflow-x-hidden"
+      >
+        <user-action
+          v-for="[, user] in friendList"
+          :key="user.id"
+          :uuid="user.id"
+          :mode="'channel'"
+        />
+      </div>
     </div>
     <div class="submit-btn w-[90%] flex justify-end">
       <button
-        type="submit"
+        @click="sendForm"
         class="bg-yellow-hover rounded-[15px] px-[1rem] h-[3rem] text-[1.5rem] text-black uppercase"
       >
         create
@@ -82,15 +95,23 @@
 
 <script lang="ts" setup>
 import channel from "@/api/channel";
-import { ref } from "vue";
+import { useFriendStore } from "@/stores/friend";
+import { ref, computed } from "vue";
 import { Channel } from "@/types";
 import unknownLogo from "@/assets/svg/unknown-img.svg";
+import UserAction from "@/components/UserAction.vue";
 
 const privacy = ref("");
 const channelName = ref("");
 const channelLogo = ref("");
+const friendStore = useFriendStore();
+const friendList = computed(() => friendStore.friends);
 let files: FileList | null = null;
 let file: File | null = null;
+
+(() => {
+  friendStore.refreshFriendList();
+})();
 
 const onFileSelected = (e: Event) => {
   if (e) e.preventDefault();
@@ -123,6 +144,9 @@ const sendForm = () => {
 </script>
 
 <style lang="scss" scoped>
+form {
+  font-family: "Baumans", cursive;
+}
 .pen {
   width: 2rem;
   height: 2rem;
@@ -133,6 +157,14 @@ const sendForm = () => {
   align-items: center;
   gap: 0.5rem;
   font-size: 1.3rem;
+}
+
+label {
+  cursor: pointer;
+}
+
+input[type="radio"] {
+  cursor: pointer;
 }
 
 input[type="radio"]:checked:after {
@@ -147,9 +179,5 @@ input[type="radio"]:checked:after {
   display: inline-block;
   visibility: visible;
   border: 1px solid black;
-}
-
-button {
-  font-family: "Baumans", cursive;
 }
 </style>

@@ -11,7 +11,7 @@ export const useChatStore = defineStore({
     openedChatId: Id;
     chats: Map<Id, Chat>;
   } => ({
-    openedChatId: "marine",
+    openedChatId: "",
     chats: new Map<Id, Chat>(),
   }),
   getters: {

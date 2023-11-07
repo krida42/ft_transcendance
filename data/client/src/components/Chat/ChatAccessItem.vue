@@ -1,7 +1,7 @@
 <template>
   <!-- <li> -->
   <li
-    class="bd-redd flex justify-between items-center w-1/1 py-3 px-3 my-1 bg-[#FFFDF2] bg-opacity-40 hover:bg-blue-200 cursor-pointer"
+    class="bd-redd flex justify-between items-center w-1/1 py-3 px-3 my-1 bg-[#FFFDF2] bg-opacity-60 hover:bg-blue-200 cursor-pointer"
     :class="{
       'rounded-t-[16px]': start,
       'rounded-b-[16px]': end,

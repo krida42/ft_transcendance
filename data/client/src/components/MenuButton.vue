@@ -1,7 +1,10 @@
 <template>
   <div
     ref="gravity_button"
-    class="grid place-items-center w-[150px] aspect-square rounded-[50%]"
+    class="grid place-items-center aspect-square rounded-[50%]"
+    :style="{
+      width: size,
+    }"
   >
     <button
       class="button-menu w-[64px] aspect-square z-10 bg-green-light rounded-[50%] drop-shadow-md"
@@ -10,7 +13,7 @@
           transform: `translate(${tx}px, ${ty}px)`,
         },
       }"
-      @click="$emit('click')"
+      @click="$emit('click-cuicui')"
     >
       <img
         class="m-auto w-[2rem]"
@@ -26,7 +29,16 @@ import { defineProps } from "vue";
 import { useEventListener, useWindowSize, debouncedWatch } from "@vueuse/core";
 import { ref, onMounted } from "vue";
 
-defineProps({ svgName: String });
+defineProps({
+  svgName: {
+    type: String,
+    required: true,
+  },
+  size: {
+    type: String,
+    default: "150px",
+  },
+});
 
 const { width, height } = useWindowSize();
 const gravity_button = ref<HTMLElement | null>(null);

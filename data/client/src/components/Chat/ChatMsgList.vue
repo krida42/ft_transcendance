@@ -2,7 +2,11 @@
   <div class="chat bg-blue-grey bg-opacity-80" ref="draggableContainer">
     <div class="header bg-blue-light" @mousedown="dragMouseDown">
       <span class="title">{{ currentChat?.name }}</span>
-      <Icon size="20" class="dbd-red">
+      <Icon
+        size="20"
+        class="close-icon dbd-red"
+        @click="chatStore.openChat('')"
+      >
         <X class="bdd-cyan" />
       </Icon>
     </div>
@@ -54,6 +58,22 @@
 </template>
 
 <style lang="scss" scoped>
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  // box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  // background-color: darkgray;
+  background-color: $blue-light;
+  border-radius: 9999px;
+  // outline: 1px solid slategrey;
+}
+
 .chat {
   position: absolute;
   z-index: 9;
@@ -61,8 +81,8 @@
   display: grid;
   grid-template-rows: 9% 82% 9%;
 
-  // $height: 30rem;
-  $height: 35rem;
+  $height: 30rem;
+  // $height: 35rem;
   // $width: 0.69 * $height;
   $width: 0.75 * $height;
   height: $height;
@@ -98,6 +118,10 @@
   justify-content: space-between;
   align-items: center;
   padding-inline: 0.6rem;
+
+  .close-icon {
+    cursor: pointer;
+  }
 
   .title {
     font-family: "Baumans", cursive;

@@ -280,6 +280,22 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  // box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: $green-light;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $green-dark;
+  border-radius: 9999px;
+  // outline: 1px solid slategrey;
+}
+
 .friends-view {
   display: grid;
   grid-template-columns: minmax(14rem, 1fr) minmax(6rem, 0.4fr) 7fr;
@@ -410,7 +426,7 @@ onUnmounted(() => {
     padding-inline: 2.5rem;
     margin-top: 2.5rem;
     // border: 1px red solid;
-    overflow-y: scroll;
+    overflow-y: auto;
     align-content: flex-start;
   }
 }

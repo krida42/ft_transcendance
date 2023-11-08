@@ -7,11 +7,10 @@
       />
       <ul class="nav">
         <li
-          :class="activeButton === 'my-channels-btn' ? 'bg-green-medium' : ''"
+          :class="$route.name === 'myChannels' ? 'bg-green-medium' : ''"
           class="my-channels-btn"
           @click="
             () => {
-              activeButton = 'my-channels-btn';
               $router.push('/channels/my-channels');
             }
           "
@@ -20,11 +19,10 @@
           <p>My channels</p>
         </li>
         <li
-          :class="activeButton === 'explore-btn' ? 'bg-green-medium' : ''"
+          :class="$route.name === 'exploreChannels' ? 'bg-green-medium' : ''"
           class="explore-btn"
           @click="
             () => {
-              activeButton = 'explore-btn';
               $router.push('/channels/explore');
             }
           "
@@ -33,11 +31,10 @@
           <p>Explore</p>
         </li>
         <li
-          :class="activeButton === 'create-btn' ? 'bg-green-medium' : ''"
+          :class="$route.name === 'createChannel' ? 'bg-green-medium' : ''"
           class="create-btn"
           @click="
             () => {
-              activeButton = 'create-btn';
               $router.push('/channels/create');
             }
           "
@@ -57,8 +54,6 @@
 <script lang="ts" setup>
 import MenuButton from "@/components/MenuButton.vue";
 import { ref } from "vue";
-
-const activeButton = ref("my-channels-btn");
 </script>
 
 <style lang="scss" scoped>

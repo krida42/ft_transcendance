@@ -62,6 +62,7 @@ type Channel = {
   users: User[];
   privacy: PrivacyType;
   logo: FormData;
+  is_owner: boolean;
 };
 
 enum PrivacyType {

@@ -53,7 +53,6 @@
 
 <script lang="ts" setup>
 import MenuButton from "@/components/MenuButton.vue";
-import { ref } from "vue";
 </script>
 
 <style lang="scss" scoped>
@@ -84,13 +83,13 @@ import { ref } from "vue";
 }
 
 .nav li img {
-  width: 2rem;
-  height: 2rem;
+  width: 1.6rem;
+  height: 1.6rem;
 }
 
 .nav li p {
   font-family: "Baumans", cursive;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: black;
 }
 .gradient {

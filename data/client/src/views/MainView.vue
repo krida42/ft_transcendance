@@ -1,9 +1,13 @@
 <template>
   <div class="home">
-    <div class="left">
+    <div class="left flex flex-col items-start justify-between">
       <MenuButton
         svgName="pong-logo.svg"
         @click="() => $router.push('/main/home')"
+      />
+      <MenuButton
+        svgName="heart-menu.svg"
+        @click="() => $router.push('/friends')"
       />
     </div>
     <div class="arcade">
@@ -26,6 +30,11 @@
         svgName="profile.svg"
         @click="() => $router.push('/profile')"
         class="bd-redd"
+      />
+      <img
+        @click="() => $router.push('/channels/my-channels')"
+        src="../assets/svg/create.svg"
+        class="absolute bottom-[100px] right-[20px] w-[1.5rem] aspect-square"
       />
       <!-- <router-link to="/about"> -->
       <div class="bd-resd mb-[30px] mr-[30px]">
@@ -115,6 +124,12 @@ function toggleChatAccess() {
   position: absolute;
   background-color: $green-my;
   top: var(--border-ratio);
+}
+
+.right img:hover {
+  cursor: pointer;
+  border-radius: 15px;
+  background-color: $yellow-hover;
 }
 
 .arcade_border {

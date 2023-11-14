@@ -53,3 +53,20 @@ type Match = {
   duration: number;
   date: Date;
 };
+
+type Channel = {
+  id: Id;
+  name: string;
+  owner: User;
+  admins: User[];
+  users: User[];
+  privacy: PrivacyType;
+  logo: FormData;
+  is_owner: boolean;
+};
+
+enum PrivacyType {
+  Private = "private",
+  Public = "public",
+  Protected = "protected",
+}

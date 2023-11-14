@@ -44,6 +44,28 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/FriendsView.vue"),
   },
   {
+    path: "/channels",
+    name: "channels",
+    component: () => import("../views/Channels/ChannelsView.vue"),
+    children: [
+      {
+        path: "my-channels",
+        name: "myChannels",
+        component: () => import("../views/Channels/MyChannelsView.vue"),
+      },
+      {
+        path: "explore",
+        name: "exploreChannels",
+        component: () => import("../views/Channels/ExploreChannelsView.vue"),
+      },
+      {
+        path: "create",
+        name: "createChannel",
+        component: () => import("../views/Channels/CreateChannelView.vue"),
+      },
+    ],
+  },
+  {
     path: "/main",
     name: "main",
     component: () => import("../views/MainView.vue"),

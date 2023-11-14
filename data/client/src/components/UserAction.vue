@@ -11,7 +11,7 @@
             'bg-green-online': user?.status === Status.Online,
             'bg-red-my': user?.status === Status.Offline,
             'bg-blue-my': user?.status === Status.InGame,
-            circle: user?.status,
+            circle: user?.status && mode !== Mode.CHANNEL,
           }"
         ></span
         >{{ user?.pseudo }}
@@ -49,6 +49,9 @@
       >
         unblock
       </button>
+      <button class="invite-btn text-red-my" v-if="mode === Mode.CHANNEL">
+        invite
+      </button>
     </div>
   </div>
 </template>
@@ -73,6 +76,7 @@ const Mode = {
   FRIENDS: "friends",
   REQUESTS: "requests",
   BLOCKED: "blocked",
+  CHANNEL: "channel",
 };
 
 const props = defineProps({
@@ -115,6 +119,15 @@ const myAlert = (msg: string) => {
 .decline-btn,
 .unblock-btn {
   border: 1px solid black;
+}
+
+.invite-btn {
+  color: black;
+  background-color: $green-bg;
+}
+
+.invite-btn:hover {
+  background-color: $yellow-hover;
 }
 .circle {
   width: 0.7rem;

@@ -40,9 +40,7 @@
       />
       <p class="text-[2.2rem]">{{ username }}</p>
     </div>
-    <div class="buttons">
-      <button>Parameters</button><button>Logout</button>
-    </div>
+    <div class="buttons"><button>Settings</button><button>Logout</button></div>
   </div>
 </template>
 

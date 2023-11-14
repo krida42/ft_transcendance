@@ -205,8 +205,6 @@ import ChatMsgItem from "./ChatMsgItem.vue";
 import { useUsersStore } from "@/stores/users";
 import { useChatStore } from "@/stores/chat";
 import { MessageTransformer } from "@/utils/messageTransformer";
-import { DynamicScroller } from "vue-virtual-scroller";
-import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 
 const usersStore = useUsersStore();
 const chatStore = useChatStore();

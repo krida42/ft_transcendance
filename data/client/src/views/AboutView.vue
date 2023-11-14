@@ -31,6 +31,8 @@
       </template>
       <template v-slot:footer><h2>Je sis le footeer</h2></template>
     </TestComp>
+    <ChatUserActionPopup class="absolute z-[10] top-[50%] left-[50%]" />
+    <ChatUserActionPopupAdmin class="absolute z-[10] top-[50%] left-[10%]" />
     <h1>{{ puipui }}</h1>
   </div>
 </template>
@@ -46,6 +48,7 @@ import { Icon } from "@vicons/utils";
 import { User } from "@vicons/tabler";
 import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
 import TestComp from "@/components/TestComp.vue";
+import ChatUserActionPopup from "@/components/Chat/ChatUserActionPopup.vue";
 
 import { useUsersStore } from "@/stores/users";
 import { useFriendStore } from "@/stores/friend";
@@ -54,6 +57,7 @@ import { useFriendStore } from "@/stores/friend";
 
 import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
 import { ref } from "vue";
+import ChatUserActionPopupAdmin from "@/components/Chat/ChatUserActionPopupAdmin.vue";
 
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();

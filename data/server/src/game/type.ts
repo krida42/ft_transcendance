@@ -1,24 +1,15 @@
 import { Socket } from 'socket.io';
-import * as Matter from 'matter-js';
-import { BallPong } from './instance/ball';
-import { WorldPong } from './instance/worldPong';
-
-// export type Ball = {
-// 	body: p2.Body;
-// 	shape: p2.Circle;
-// }
-
-export type Paddle = {
-	position: [number, number];
-	width: number;
-	height: number;
-}
+import { PongBall } from './instance/ball';
+import { PongWorld } from './instance/world';
+import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
+import { PongPaddle } from './instance/paddle';
 
 export type Player = {
+	user: ResponseUserDto;
 	client: Socket;
-	status: number;
-	color?: string;
-	// paddle: Paddle;
+	disconnected?: boolean;
+	status?: number;
+	number?: number;
 	score?: number;
 }
 
@@ -26,14 +17,8 @@ export type GameState = {
 	scoreToWin: number; // score to win the game
 	score1: number; // score P1
 	score2: number; // score P2
-	worldPong: WorldPong;
-	ballPong: BallPong;
-	// Player1: Player;
-	// Player2: Player;
+	pongWorld: PongWorld;
+	pongBall: PongBall;
+	pongPaddle1: PongPaddle;
+	pongPaddle2: PongPaddle;
 }
-
-export type PlayerList = {
-	players: Player[];
-}
-
-

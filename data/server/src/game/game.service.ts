@@ -1,32 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { PongRoom } from './lobby/room';
+import { Socket } from 'socket.io';
 import { PongGateway } from './websocket/pong.gateway';
-import { Game } from './instance/game';
 
 @Injectable()
 export class GameService {
-  private games = new Array<Game>();
-
-  constructor(private pongGateway: PongGateway) {
-  }
-
-  addNewGame() {
-    this.games.push(new Game(this.pongGateway));
-  }
-
-  start() {
-    console.log('Game started');
-    this.addNewGame();
-    this.games[0].start();
+  start(){
+    console.log('Game started id:');
   }
 
   pause() {
     console.log('Game paused');
-    this.games[0].pause();
   }
 
   search() {
     console.log('Game searched');
   }
-
 }
-

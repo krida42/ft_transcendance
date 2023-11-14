@@ -1,11 +1,10 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket  } from 'socket.io';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
-import { SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
+import { SubscribeMessage } from '@nestjs/websockets';
 import * as jwt from 'jsonwebtoken';
 import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
-import { Player } from '../type';
-import { CONNECTED, SEARCH } from '../const';
+import { PongRoom } from '../lobby/room';
 
 @WebSocketGateway({
   cors: {
@@ -18,82 +17,115 @@ import { CONNECTED, SEARCH } from '../const';
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect{
   @WebSocketServer()
   server: Server;
-  private usersMap: Map<Socket, ResponseUserDto> = new Map();
-  playerList: Player[] = [];
+  private rooms = new Array<PongRoom>();
+  private usersMap = new Map<string, Socket>();
 
-  getCookies(socket: Socket) {
-    let cookie = socket.client.request.headers.cookie;
+  getUserWithCookie(socket: Socket): ResponseUserDto {
+    let cookie = socket.handshake.headers.cookie;
     if (!cookie) {
       return;
     }
-    cookie = cookie.replace('access_token=', '');
-    return cookie;
+    cookie = cookie.split('=')[1];
+    const user = jwt.decode(cookie) as ResponseUserDto;
+    if (!user) {
+      return null;
+    }
+    return user;
   }
 
-	handleConnection(client: Socket) {
-    const cookie = this.getCookies(client);
-    const user = jwt.decode(cookie) as ResponseUserDto;
-    this.usersMap.set(client, user);
-    this.playerList.push({client: client, status: CONNECTED});
+  whichRoom(user: ResponseUserDto): PongRoom {
+    return this.rooms.find(r => r.hasPlayer(user.public_id));
+  }
 
-    console.log(`Client connected: ${user.login}`);
-    return;
-    // this.server.emit('connect', user);
-	}
+  isConnected(userCookie: ResponseUserDto): boolean {
+    const client = this.usersMap.get(userCookie.public_id);
+    if (!client) {
+      return false;
+    }
+    this.whichRoom(userCookie).addPlayer({user: userCookie, client});
+    client.emit('alreadyConnected');
+    return true;
+  }
 
-	handleDisconnect(client: Socket) {
-    const user = this.usersMap.get(client);
-    console.log(`Client disconnected: ${user.pseudo}`);
-    this.usersMap.delete(client);
-    this.playerList.splice(this.playerList.indexOf({client: client, status: CONNECTED}), 1);
+  handleConnection(client: Socket) {
+    const userCookie = this.getUserWithCookie(client);
+    if (!userCookie || this.isConnected(userCookie))
+      return;
+  
+    this.addUserToMap(userCookie, client);
+    this.addUserToRoom(userCookie, client);
+  }
 
-    // this.server.emit('disconnect', user);
-	}
+  addUserToMap(userCookie: ResponseUserDto, client: Socket) {
+    const player = {user: userCookie, client};
+    this.usersMap.set(userCookie.public_id, client);
+  }
+  
+  addUserToRoom(userCookie: ResponseUserDto, client: Socket) {
+    let room = this.findRoomForUser(userCookie);
+    if (!room) {
+      room = this.findOrCreateRoom();
+    }
+    room.addPlayer({user: userCookie, client});
+  }
+  
+  findRoomForUser(userCookie: ResponseUserDto): PongRoom {
+    return this.rooms.find(r => r.hasPlayer(userCookie.public_id));
+  }
+  
+  findOrCreateRoom(): PongRoom {
+    let room = this.rooms.find(r => !r.isFull());
+    if (!room) {
+      room = new PongRoom();
+      this.rooms.push(room);
+    }
+    return room;
+  }
 
-  getClientInPlayerList(client: Socket): Player {
-    for (let i = 0; i < this.playerList.length; i++) {
-      if (this.playerList[i].client === client) {
-        return this.playerList[i];
-      }
+  handleDisconnect(client: Socket) {
+    const userCookie = this.getUserWithCookie(client);
+    if (userCookie) {
+      this.usersMap.delete(userCookie.public_id);
+      const room = this.rooms.find(r => r.hasPlayer(userCookie.public_id));
+      if (room)
+        room.removePlayer(client);
+      console.log(`Client disconnected: ${userCookie.login}`);
     }
   }
 
-  @SubscribeMessage('searchGame')
-  searchGame(@ConnectedSocket() client: Socket) {
-    const user = this.usersMap.get(client);
-    this.getClientInPlayerList(client).status = SEARCH;
-    
-    console.log(`Client ${user.pseudo} searched a game`);
-  }
+  @SubscribeMessage('moveUp')
+  handleMoveUp(client: Socket) {
+    const userCookie = this.getUserWithCookie(client);
+    if (userCookie) {
+      const room = this.rooms.find(r => r.hasPlayer(userCookie.public_id));
+      if (room) {
+        const player = room.players.find(p => p.client.id === client.id);
+        if (player) {
+          // Appeler la méthode moveUp de votre jeu ici
+          room.game.moveUp(player.number);
+        }
+      }
+    }
+}
 
-  @SubscribeMessage('joinGame')
-  joinGame(@ConnectedSocket() client: Socket) {
-    const user = this.usersMap.get(client);
-    console.log(`Client ${user.pseudo} joined the game`);
-    // this.server.emit('joinGame', user);
+@SubscribeMessage('moveDown')
+handleMoveDown(client: Socket) {
+  const userCookie = this.getUserWithCookie(client);
+  if (userCookie) {
+    const room = this.rooms.find(r => r.hasPlayer(userCookie.public_id));
+    if (room) {
+      const player = room.players.find(p => p.client.id === client.id);
+      if (player) {
+        console.log('moveDown');
+        // Appeler la méthode moveDown de votre jeu ici
+        room.game.moveDown(player.number);
+      }
+    }
   }
+}
 
-  
   @SubscribeMessage('newGame')
   newGame(){
     console.log('new game');
-    
   }
-
-  sendBall(ball) {
-    console.log('send ball');
-    console.log("position: ", ball);
-    this.server.emit('ball', ball);
-    // client.emit('user', user);
-  }
-  
-  // Broadcast the message to all connected clients
-  @SubscribeMessage('message')
-  handleMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket) {
-    const user = this.usersMap.get(client);
-    console.log(`Received message from client ${user.pseudo}: ${data}`);
-    // Envoyer un message de retour au client spécifique
-    client.emit('message', `Server received your message: ${data}`);
-  }
-  
 }

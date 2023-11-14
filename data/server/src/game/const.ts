@@ -1,17 +1,16 @@
-export const TIMESTEP = 1/60;
-export const MAXSTEP = 10;
-export let LASTTIME = Date.now();
-
-//Game state
+// Game state
 export const SCORE_TO_WIN = 11;
+export const TIME_END_GAME = 10 * 60 * 1000; // 10 minutes en millisecondes
 
 // World dimensions
 export const HEIGHT = 600;
 export const WIDTH = 800;
 
+// Wall dimensions
+export const WALL_THICKNESS = 50;
+
 // Ball dimensions
 export const BALL_RADIUS = 10;
-
 
 const BALL_VELOCITY_X = 30;
 const BALL_VELOCITY_Y = 10;
@@ -24,13 +23,21 @@ export const BALL_POSITION = [BALL_POSITION_X, BALL_POSITION_Y];
 
 export const BALL_MASS = 1;
 
+// Paddle dimensions
+export const PADDLE_WIDTH = 20;
+export const PADDLE_HEIGHT = 100;
+export const PADDLE_VELOCITY = 10;
+export const PADDLE_VELOCITY_MAX = 200;
+export const POSITION_PADDLE_1_x = WIDTH - PADDLE_WIDTH;
+export const POSITION_PADDLE_1_y = HEIGHT / 4;
+export const POSITION_PADDLE_2_x = PADDLE_WIDTH;
+export const POSITION_PADDLE_2_y = HEIGHT / 2;
+
+// Time Disconnect
+export const TIMEOUT_RECONNECT = 10000;
+
 // Player
 export const DISCONNECTED = 0;
 export const CONNECTED = 1;
 export const SEARCH = 2;
 export const INGAME = 3;
-
-// Setup bits for each available group of collision
-export const PADDLE = Math.pow(2,0);
-export const BALL =  Math.pow(2,1);
-export const WALL = Math.pow(2,2);

@@ -5,11 +5,6 @@ import { GameService } from './game.service';
 export class GameController {
   constructor(private readonly gameService: GameService) {}
 
-  @Get('start')
-  startGame() {
-    this.gameService.start();
-  }
-
   @Get('pause')
   stopGame() {
     this.gameService.pause();
@@ -19,4 +14,5 @@ export class GameController {
   searchGame() {
     this.gameService.search();
   }
+
 }

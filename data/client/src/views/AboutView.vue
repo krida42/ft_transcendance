@@ -21,6 +21,17 @@
 
     <ChatAccessList />
     <ChatMsgList class="sticky top-10 left-[33%]" />
+    <TestComp msg="coucou">
+      <template v-slot:header><h2>Je sis le header</h2></template>
+      <template v-slot>
+        <h2>
+          puipui du parent>>>>>>
+          {{ puipui }}
+        </h2>
+      </template>
+      <template v-slot:footer><h2>Je sis le footeer</h2></template>
+    </TestComp>
+    <h1>{{ puipui }}</h1>
   </div>
 </template>
 
@@ -34,6 +45,7 @@
 import { Icon } from "@vicons/utils";
 import { User } from "@vicons/tabler";
 import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
+import TestComp from "@/components/TestComp.vue";
 
 import { useUsersStore } from "@/stores/users";
 import { useFriendStore } from "@/stores/friend";
@@ -41,6 +53,7 @@ import { useFriendStore } from "@/stores/friend";
 // import MyIcon from "@/components/MyIcon.vue";
 
 import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
+import { ref } from "vue";
 
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();
@@ -50,4 +63,6 @@ usersStore.refreshUser("kevin");
 usersStore.refreshUser("vincent");
 
 friendStore.refreshFriendList();
+
+const puipui = ref("Je fais puiui");
 </script>

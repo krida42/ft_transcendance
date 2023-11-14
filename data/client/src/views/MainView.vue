@@ -61,8 +61,10 @@ import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
 import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
 import { ref } from "vue";
 import { useChatStore } from "@/stores/chat";
+import { useUsersStore } from "@/stores/users";
 
 const friendStore = useFriendStore();
+const usersStore = useUsersStore();
 
 async function checkFriends() {
   await friendStore.refreshFriendList();
@@ -77,6 +79,8 @@ async function checkFriends() {
 const chatStore = useChatStore();
 
 friendStore.refreshFriendList();
+usersStore.refreshUser("marine");
+usersStore.refreshUser("someone");
 
 let chatAccessOpened = ref(false);
 

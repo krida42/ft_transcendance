@@ -125,7 +125,7 @@
 </style>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { defineProps, defineEmits, onMounted } from "vue";
 
 const props = defineProps({
   content: String,
@@ -135,5 +135,11 @@ const props = defineProps({
   avatar: String,
   ack: Boolean,
   solo: Boolean,
+});
+
+const emits = defineEmits(["mounted"]);
+
+onMounted(() => {
+  emits("mounted");
 });
 </script>

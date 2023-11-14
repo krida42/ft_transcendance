@@ -10,7 +10,14 @@
         <X class="bdd-cyan" />
       </Icon>
     </div>
-    <div class="main" ref="main" @scroll="handleScroll">
+    <div
+      class="main"
+      :class="{
+        'scroll-smooth': smootherScroll,
+      }"
+      ref="main"
+      @scroll="handleScroll"
+    >
       <transition-group name="msg-item-animation" v-if="true">
         <ChatMsgItem
           v-for="msg in currentChatTreated"
@@ -22,6 +29,7 @@
           :is-me="msg.userId === usersStore.currentUser?.id"
           :ack="msg.ack"
           :solo="msg.solo"
+          @mounted="scrollToBottom()"
         />
       </transition-group>
 
@@ -141,7 +149,7 @@
   // padding-block: 0.2rem;
   overflow-y: scroll;
   overflow-x: hidden;
-  scroll-behavior: smooth;
+  // scroll-behavior: smooth;
 
   .msg-item-enter-active {
     transition: all 0.3s;
@@ -188,7 +196,7 @@
 <script lang="ts" setup>
 import { Icon } from "@vicons/utils";
 import { X } from "@vicons/tabler";
-import { ref, computed } from "vue";
+import { ref, computed, nextTick, onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
 import ChatMsgItem from "./ChatMsgItem.vue";
 
@@ -197,6 +205,8 @@ import ChatMsgItem from "./ChatMsgItem.vue";
 import { useUsersStore } from "@/stores/users";
 import { useChatStore } from "@/stores/chat";
 import { MessageTransformer } from "@/utils/messageTransformer";
+import { DynamicScroller } from "vue-virtual-scroller";
+import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 
 const usersStore = useUsersStore();
 const chatStore = useChatStore();
@@ -284,19 +294,34 @@ function scrollToBottom() {
   // });
 }
 
+let smootherScroll = ref(true);
+
 function handleScroll(event: Event) {
   void event;
+  // console.log("coiucou");
   if (!main.value) return;
   if (main.value.scrollTop === 0) {
     console.log("scrolling to top");
+    const previousHeight = main.value.scrollHeight;
 
-    // const previousHeight = main.value.scrollHeight;
-    // const previousScrollTop = main.value.scrollTop;
-
-    chatStore.loadMoreMessages();
-
-    // const heightDifference = main.value.scrollHeight - previousHeight;
-    // main.value.scrollTop = previousScrollTop + heightDifference;
+    chatStore.loadMoreMessages().then(() => {
+      smootherScroll.value = false;
+      nextTick(() => {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (!main.value) return;
+            const currentHeight = main.value.scrollHeight;
+            const heightDifference = currentHeight - previousHeight;
+            main.value.scrollTop += heightDifference;
+            smootherScroll.value = true;
+          }, 50);
+        });
+      });
+    });
   }
 }
+
+// setTimeout(() => {
+//   scrollToBottom();
+// }, 2000);
 </script>

@@ -58,7 +58,11 @@ export const useChatStore = defineStore({
       chat.messages.set(remoteMsgId, msg);
       chat.messages.delete(localMsgId);
     },
-    refreshChat(chatId: Id, chatType: ChatType, beforeMessageId: Id | null) {
+    async refreshChat(
+      chatId: Id,
+      chatType: ChatType,
+      beforeMessageId: Id | null
+    ) {
       const usersStore = useUsersStore();
       console.log("refreshing chat", chatId, chatType, beforeMessageId);
       const fetchFn =
@@ -66,7 +70,7 @@ export const useChatStore = defineStore({
           ? messageApi.fetchDirectMsgs
           : messageApi.fetchChannelMsgs;
 
-      fetchFn(chatId, beforeMessageId).then((resMsgs) => {
+      return fetchFn(chatId, beforeMessageId).then((resMsgs) => {
         console.log("resMsgs", resMsgs);
         resMsgs.forEach(async (message: any) => {
           // message.createdAt = new Date(Number(message.createdAt));
@@ -100,7 +104,7 @@ export const useChatStore = defineStore({
             MessageTransformer.toArray(chat.messages)
           )[0].msgId
         : null;
-      this.refreshChat(chat.id, chat.chatType, beforeMessageId);
+      return this.refreshChat(chat.id, chat.chatType, beforeMessageId);
     },
     async sendMessage(chatId: Id, chatType: ChatType, content: string) {
       const postFn =

@@ -11,18 +11,21 @@
       :start="index === 0 && true"
       :end="index === friendStore.friends.size - 1 && true"
     />
-    <!-- <ChatAccessItem
+    <ChatAccessItem
       key="marine"
       title="Marine"
       chat-id="marine"
-      @click="openAndRefreshChat('marine', 'Marine')"
-    /> -->
-    <!-- <ChatAccessItem
+      @click="
+        openAndRefreshChat('marine', 'Marine');
+        chatStore.refreshChat('marine', ChatType.Direct, 'a4');
+      "
+    />
+    <ChatAccessItem
       key="someone"
       title="Someone"
       chat-id="someone"
       @click="openAndRefreshChat('someone', 'Someone')"
-    /> -->
+    />
   </ul>
 </template>
 

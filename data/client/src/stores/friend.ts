@@ -90,5 +90,15 @@ export const useFriendStore = defineStore({
         this.friendsMap.delete(id);
       });
     },
+    async sendFriendRequest(id: Id): Promise<void> {
+      return friendApi.sendFriendRequest(id).then((user) => {
+        this.friendsSentMap.set(user.id, user);
+      });
+    },
+    async cancelFriendRequest(id: Id): Promise<void> {
+      return friendApi.cancelFriendRequest(id).then(() => {
+        this.friendsSentMap.delete(id);
+      });
+    },
   },
 });

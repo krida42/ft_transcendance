@@ -21,7 +21,7 @@
       <button
         class="accept-btn text-green-dark hover:bg-green-dark hover:text-white hover:border-white"
         @click="acceptFriendRequest(uuid)"
-        v-if="mode === Mode.REQUESTS"
+        v-if="mode === Mode.REQUEST_IN"
       >
         accept
       </button>
@@ -29,15 +29,23 @@
       <button
         class="decline-btn text-red-my hover:bg-red-my hover:text-white hover:border-white"
         @click="declineFriendRequest(uuid)"
-        v-if="mode === Mode.REQUESTS"
+        v-if="mode === Mode.REQUEST_IN"
       >
         decline
       </button>
 
       <button
+        class="unsend-btn text-red-my hover:bg-red-my hover:text-white hover:border-white"
+        @click="cancelFriendRequest(uuid)"
+        v-if="mode === Mode.REQUEST_OUT"
+      >
+        unsend
+      </button>
+
+      <button
         class="play-btn bg-yellow-hover hover:bg-yellow-700 hover:text-white"
         @click="myAlert('Comming soon...')"
-        v-if="mode === Mode.FRIENDS"
+        v-if="mode === Mode.FRIEND"
       >
         play
       </button>
@@ -68,15 +76,21 @@ import { Status } from "@/mtypes";
 
 const usersStore = useUsersStore();
 
-const { acceptFriendRequest, declineFriendRequest, unblockUser } =
-  useFriendStore();
+const {
+  acceptFriendRequest,
+  declineFriendRequest,
+  unblockUser,
+  cancelFriendRequest,
+} = useFriendStore();
 const { users } = usersStore;
 
 const Mode = {
-  FRIENDS: "friends",
-  REQUESTS: "requests",
+  FRIEND: "friend",
+  // REQUESTS: "requests",
   BLOCKED: "blocked",
   CHANNEL: "channel",
+  REQUEST_IN: "request_in",
+  REQUEST_OUT: "request_out",
 };
 
 const props = defineProps({
@@ -98,7 +112,7 @@ const user = computed(() => {
 (() => {
   // check if Mode is valid
   if (!Object.values(Mode).includes(props.mode)) {
-    throw new Error("Invalid mode");
+    throw new Error("Invalid mode: " + props.mode + "\n");
   }
 })();
 
@@ -117,6 +131,7 @@ const myAlert = (msg: string) => {
 
 .accept-btn,
 .decline-btn,
+.unsend-btn,
 .unblock-btn {
   border: 1px solid black;
 }

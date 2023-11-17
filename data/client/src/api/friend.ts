@@ -28,6 +28,14 @@ export default {
     return;
     return axios.delete(`${host}/friends/${id}/decline`).then((res) => res.data);
   },
+  async sendFriendRequest(id: Id): Promise<any> {
+    //it returns a user
+    return axios.post(`${host}/friends/${id}/add`).then((res) => res.data);
+  },
+  async cancelFriendRequest(id: Id): Promise<void> {
+    return;
+    return axios.delete(`${host}/friends/${id}/cancel`).then((res) => res.data);
+  },
 
   async blockUser(id: Id): Promise<void> {
     return;

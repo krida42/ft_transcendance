@@ -153,8 +153,20 @@
     <!-- </Transition> -->
     <div class="gradient"></div>
     <div class="main">
-      <div class="friend-input">
-        <input type="text" placeholder="Search..." v-model="searchedUser" />
+      <div
+        class="friend-input"
+        v-show="activeListName !== ActiveListName.BLOCKED"
+      >
+        <input
+          type="text"
+          :placeholder="
+            activeListName === ActiveListName.FRIENDS
+              ? 'Search a friend..'
+              : 'Add a friend'
+          "
+          v-model="searchedUser"
+          @keyup.enter="executeSearchInput"
+        />
         <Icon size="1.5em" color="black" class="search-icon">
           <Search />
         </Icon>
@@ -168,7 +180,11 @@
             v-for="user in activeListFilteredBySearch"
             :key="user.id"
             :uuid="user.id"
-            :mode="activeListName"
+            :mode="
+              activeListName === ActiveListName.REQUESTS
+                ? getRequestDirMode(user)
+                : activeListName
+            "
           />
         </transition-group>
       </div>
@@ -186,7 +202,10 @@ import { useFriendStore } from "@/stores/friend";
 import { computed, ref, onMounted, onUnmounted } from "vue";
 
 import { Status } from "@/mtypes";
+import { useUsersStore } from "@/stores/users";
+import userApi from "@/api/user";
 
+const usersStore = useUsersStore();
 const friendStore = useFriendStore();
 
 (() => {
@@ -206,9 +225,11 @@ enum StatusFilter {
 let statusFilter = ref(StatusFilter.All);
 
 enum ActiveListName {
-  FRIENDS = "friends",
-  REQUESTS = "requests",
+  FRIENDS = "friend",
+  REQUESTS = "request",
   BLOCKED = "blocked",
+  REQUESTS_IN = "request_in",
+  REQUESTS_OUT = "request_out",
 }
 
 let activeListName = ref(ActiveListName.FRIENDS);
@@ -230,8 +251,14 @@ const activeList = computed(() => {
 
     case ActiveListName.REQUESTS:
       return [
-        ...friendStore.friendsReceived.values(),
-        ...friendStore.friendsSent.values(),
+        ...Array.from(friendStore.friendsReceived.values(), (user: any) => {
+          user.direction = "received";
+          return user;
+        }),
+        ...Array.from(friendStore.friendsSent.values(), (user: any) => {
+          user.direction = "sent";
+          return user;
+        }),
       ];
     case ActiveListName.BLOCKED:
       return [...friendStore.blocked.values()];
@@ -239,6 +266,16 @@ const activeList = computed(() => {
       return [...friendStore.friends.values()];
   }
 });
+
+function getRequestDirMode(user: any) {
+  if (user.direction === "received") {
+    return ActiveListName.REQUESTS_IN;
+  } else if (user.direction === "sent") {
+    return ActiveListName.REQUESTS_OUT;
+  } else {
+    return "NO REQUEST DIRECTION";
+  }
+}
 
 let searchedUser = ref("");
 
@@ -248,8 +285,6 @@ const activeListFilteredBySearch = computed(() => {
     searchedUser.value
   );
 });
-
-let burgerEl = ref<HTMLDivElement | null>(null);
 
 // setTimeout(() => {
 //   console.log(getComputedStyle(burgerEl.value!));
@@ -280,6 +315,17 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", eventHandlerWindowResize);
 });
+
+function executeSearchInput(e: KeyboardEvent) {
+  if (activeListName.value === ActiveListName.REQUESTS) {
+    userApi.fetchUserByPseudo(searchedUser.value).then((user) => {
+      if (user) {
+        friendStore.sendFriendRequest(user.id);
+      }
+    });
+    searchedUser.value = "";
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -38,7 +38,6 @@ export default {
   },
 
   async blockUser(id: Id): Promise<void> {
-    return;
     return axios.post(`${host}/friends/${id}/block`).then((res) => res.data);
   },
   //prettier-ignore

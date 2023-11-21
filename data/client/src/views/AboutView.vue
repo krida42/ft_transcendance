@@ -31,8 +31,11 @@
       </template>
       <template v-slot:footer><h2>Je sis le footeer</h2></template>
     </TestComp>
-    <ChatUserActionPopup class="absolute z-[10] top-[50%] left-[50%]" />
-    <ChatUserActionPopupAdmin class="absolute z-[10] top-[50%] left-[10%]" />
+    <ChatUserActionPopup
+      uuid="kevin"
+      class="absolute z-[10] top-[50%] left-[50%]"
+    />
+    <ChatUserActionPopupAdmin class="absolute z-[10] top-[50%] left-[1%]" />
     <h1>{{ puipui }}</h1>
   </div>
 </template>

@@ -1,5 +1,12 @@
 <template>
   <div class="chat bg-blue-grey bg-opacity-80" ref="draggableContainer">
+    <ChatUserActionPopup
+      class="absolute top-0 bottom-0 left-0 right-0 m-auto z-20"
+      :uuid="chatUserActionPopup.userId"
+      @close="closeChatUserActionPopup()"
+      v-if="chatUserActionPopup.userId"
+      :test="usersStore.users.get(chatUserActionPopup.userId)"
+    />
     <div class="header bg-blue-light" @mousedown="dragMouseDown">
       <span class="title">{{ currentChat?.name }}</span>
       <Icon
@@ -10,6 +17,7 @@
         <X class="bdd-cyan" />
       </Icon>
     </div>
+
     <div
       class="main"
       :class="{
@@ -30,6 +38,7 @@
           :ack="msg.ack"
           :solo="msg.solo"
           @mounted="scrollToBottom()"
+          @click-avatar="openChatUserActionPopup(msg.userId)"
         />
       </transition-group>
 
@@ -196,9 +205,12 @@
 <script lang="ts" setup>
 import { Icon } from "@vicons/utils";
 import { X } from "@vicons/tabler";
-import { ref, computed, nextTick, onMounted, watch } from "vue";
+import { ref, computed, nextTick, onMounted, watch, reactive } from "vue";
 import { storeToRefs } from "pinia";
 import ChatMsgItem from "./ChatMsgItem.vue";
+
+import ChatUserActionPopup from "./ChatUserActionPopup.vue";
+import ChatUserActionPopupAdmin from "./ChatUserActionPopupAdmin.vue";
 
 // let props = defineProps({});
 
@@ -317,6 +329,21 @@ function handleScroll(event: Event) {
       });
     });
   }
+}
+
+// let isChatUserActionPopedUp = ref(false);
+
+let chatUserActionPopup = reactive({
+  userId: "",
+  isAdmin: false,
+});
+
+function openChatUserActionPopup(userId: string) {
+  chatUserActionPopup.userId = userId;
+}
+
+function closeChatUserActionPopup() {
+  chatUserActionPopup.userId = "";
 }
 
 // setTimeout(() => {

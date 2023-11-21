@@ -25,11 +25,12 @@
   >
     <div
       v-if="!solo && !isMe"
-      class="avatar bd-redd shrink-0"
+      class="avatar bd-redd shrink-0 cursor-pointer"
       :class="{
         'mr-1': !isMe && avatar,
         'ml-1 ': isMe && avatar,
       }"
+      @click="emits('click-avatar')"
     >
       <img class="rounded-full" :src="avatar" width="22" />
     </div>
@@ -137,7 +138,7 @@ const props = defineProps({
   solo: Boolean,
 });
 
-const emits = defineEmits(["mounted"]);
+const emits = defineEmits(["mounted", "click-avatar"]);
 
 onMounted(() => {
   emits("mounted");

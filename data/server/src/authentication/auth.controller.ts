@@ -85,10 +85,17 @@ export class AuthController {
   @Post('2fa/turn-off')
   @UseGuards(AuthGuard('jwt'))
   async turnOffTwoFactorAuth(@Req() req, @Res() res, @Body() body) {
-    await this.AuthService.setTwoFactorEnable(
+    try {
+      await this.AuthService.setTwoFactorEnable(
       req.user.public_id,
       false,
-    );
+      );
+      await this.AuthService.deleteTwoFactorSecret(req.user.public_id);
+      return res.status(200).json({ message: '2FA disabled !' });
+    } catch (error) {
+      console.error('Erreur 2FA:', error);
+      res.redirect('/error');
+    }
   }
 
   @Post('2fa/setup')

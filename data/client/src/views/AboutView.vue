@@ -37,6 +37,7 @@
     />
     <ChatUserActionPopupAdmin class="absolute z-[10] top-[50%] left-[1%]" />
     <h1>{{ puipui }}</h1>
+    <h1>Etat du socket is connected?: {{ state.connected }}</h1>
   </div>
 </template>
 
@@ -61,6 +62,8 @@ import { useFriendStore } from "@/stores/friend";
 import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
 import { ref } from "vue";
 import ChatUserActionPopupAdmin from "@/components/Chat/ChatUserActionPopupAdmin.vue";
+
+import { state, socket } from "@/socket";
 
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();

@@ -24,6 +24,8 @@ import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
 import path from 'path';
 import { REQUEST } from '@nestjs/core';
 
+import { RealtimeGateway } from 'src/realtime/realtime.gateway';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -49,6 +51,7 @@ import { REQUEST } from '@nestjs/core';
     FriendsModule,
     AuthModule,
     HttpModule,
+    RealtimeGateway,
   ],
   controllers: [AppController],
   providers: [AuthService, JwtService, BcryptService, AppService],

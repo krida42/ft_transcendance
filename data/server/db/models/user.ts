@@ -1,6 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DataTypes } from 'sequelize';
-import { AfterCreate, AfterFind, BeforeBulkUpdate, BeforeCreate, BeforeFind, BeforeUpdate, Column, Model, PrimaryKey, Table, BelongsToMany } from 'sequelize-typescript';
+import {
+  AfterCreate,
+  AfterFind,
+  BeforeBulkUpdate,
+  BeforeCreate,
+  BeforeFind,
+  BeforeUpdate,
+  Column,
+  Model,
+  PrimaryKey,
+  Table,
+  BelongsToMany,
+} from 'sequelize-typescript';
 import { DEVS } from 'src/users/const';
 import { CryptoService } from 'src/tools/crypto.service';
 import { Channels } from 'db/models/channels';
@@ -12,7 +24,7 @@ export class User extends Model {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
-    field: 'confidential_id', 
+    field: 'confidential_id',
   })
   public confidential_id: number;
 
@@ -22,7 +34,7 @@ export class User extends Model {
     allowNull: false,
     unique: true,
     defaultValue: DataTypes.UUIDV4,
-    field: 'public_id', 
+    field: 'public_id',
   })
   public public_id: string;
 
@@ -34,17 +46,17 @@ export class User extends Model {
     field: 'fortyTwo_id',
   })
   public fortyTwo_id: number;
-  
+
   @ApiProperty()
   @Column({
     type: DataTypes.BLOB('tiny'),
     allowNull: false,
     unique: true,
-    field: 'email', 
+    field: 'email',
     validate: { isEmail: true },
   })
   public email: string;
-  
+
   @ApiProperty()
   @Column({
     type: DataTypes.STRING,
@@ -58,7 +70,7 @@ export class User extends Model {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
-    field: 'pseudo', 
+    field: 'pseudo',
   })
   public pseudo: string;
 
@@ -66,7 +78,7 @@ export class User extends Model {
   @Column({
     type: DataTypes.STRING,
     allowNull: false,
-    field: 'avatar', 
+    field: 'avatar',
   })
   public avatar: string;
 
@@ -74,7 +86,7 @@ export class User extends Model {
   @Column({
     type: DataTypes.INTEGER,
     allowNull: true,
-    field: 'phone', 
+    field: 'phone',
   })
   public phone: number;
 
@@ -98,8 +110,8 @@ export class User extends Model {
   @ApiProperty()
   @Column({
     type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
+    allowNull: true,
+    defaultValue: null,
     field: 'twoFactorEnable',
   })
   public twoFactorEnable: boolean;
@@ -116,7 +128,7 @@ export class User extends Model {
   @Column({
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'createdAt', 
+    field: 'createdAt',
   })
   public readonly createdAt: Date;
 
@@ -124,48 +136,48 @@ export class User extends Model {
   @Column({
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'updatedAt', 
+    field: 'updatedAt',
   })
   public readonly updatedAt: Date;
 
   @BeforeCreate
   @BeforeUpdate
   static encryptText = async (user: any) => {
-    if (!user)
-      return;
+    if (!user) return;
     if (user.email && typeof user.email === 'string')
       user.email = await CryptoService.encrypt(user.email);
     if (user.refreshToken && typeof user.refreshToken === 'string')
       user.refreshToken = await CryptoService.encrypt(user.refreshToken);
     if (user.twoFactorSecret && typeof user.twoFactorSecret === 'string')
       user.twoFactorSecret = await CryptoService.encrypt(user.twoFactorSecret);
-  }
+  };
 
   @AfterFind
-  static async decryptText(user: User){
-    if (!user)
-      return;
+  static async decryptText(user: User) {
+    if (!user) return;
     if (user.email)
-      user.email =  await CryptoService.decrypt(Buffer.from(user.email));
+      user.email = await CryptoService.decrypt(Buffer.from(user.email));
     if (user.refreshToken)
-      user.refreshToken = await CryptoService.decrypt(Buffer.from(user.refreshToken));
+      user.refreshToken = await CryptoService.decrypt(
+        Buffer.from(user.refreshToken),
+      );
     if (user.twoFactorSecret)
-      user.twoFactorSecret = await CryptoService.decrypt(Buffer.from(user.twoFactorSecret));
+      user.twoFactorSecret = await CryptoService.decrypt(
+        Buffer.from(user.twoFactorSecret),
+      );
   }
 
   @BeforeCreate
   static setDefaultRole = async (user: User) => {
     user.roles = ['user'];
-  }
-  
+  };
+
   @BeforeCreate
   static setDevRole = async (user: User) => {
-    if (DEVS.includes(user.login)) 
-      user.roles = ['user', 'admin', 'dev'];
+    if (DEVS.includes(user.login)) user.roles = ['user', 'admin', 'dev'];
   };
 
   // sloquet 22:47 14/10
   // @BelongsToMany(() => Channels, { through: 'UserChannels', foreignKey: 'userId' })
   // channels: Channels[];
-
 }

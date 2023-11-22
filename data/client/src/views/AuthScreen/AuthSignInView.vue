@@ -1,17 +1,10 @@
 <template>
-  <div class="login text-white uppercase">
-    <h1 class="pb-[1rem]">Pong</h1>
-    <div
-      class="auth-screen w-[38rem] h-[26rem] m-auto rounded-[53px] bg-black flex items-center flex-col justify-center"
-    >
-      <p class="leading-none">
-        Please sign in with <br />
-        42 to continue
-      </p>
-      <button ref="auth_button" class="pong-screen-button">Sign in</button>
-      <img class="w-[4rem]" src="../assets/svg/42_logo.svg" />
-    </div>
-  </div>
+  <p class="leading-none">
+    Please sign in with <br />
+    42 to continue
+  </p>
+  <button ref="auth_button" class="pong-screen-button">Sign in</button>
+  <img class="w-[4rem]" src="@/assets/svg/42_logo.svg" />
 </template>
 
 <script lang="ts" setup>
@@ -31,22 +24,10 @@ async function getAuthorizationUrl(): Promise<string> {
   return authorizationURL;
 }
 
-// console.log("env var: ", import.meta.env.VITE_API_URL")
-console.log("env var: ", process.env);
-
 const auth_button = ref<HTMLElement | null>(null);
 useEventListener(auth_button, "click", () => {
   console.log("click");
   axios.defaults.withCredentials = true;
-  // axios
-  //   .get("http://localhost:3001/auth/42")
-  //   .then((res) => {
-  //     window.location.href = res.data;
-  //     console.log(res);
-  //   })
-  //   .catch((err) => {
-  //     console.log("my error: ", err.message);
-  //   });
   getAuthorizationUrl()
     .then((res) => {
       window.location.href = res;
@@ -57,27 +38,6 @@ useEventListener(auth_button, "click", () => {
     });
 });
 </script>
-
-<style lang="scss" scoped>
-.login {
-  font-size: 1.8rem;
-  font-family: "VT323", monospace;
-}
-
-.auth-screen {
-  gap: 2.5rem;
-}
-
-@media (max-width: 42rem) {
-  .auth-screen {
-    width: 90vw;
-    height: 70vw;
-  }
-  .auth-screen {
-    gap: 6vw;
-  }
-}
-</style>
 
 <!-- font-family: 'Baumans', cursive;
 

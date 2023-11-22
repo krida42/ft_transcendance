@@ -16,12 +16,6 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
   },
   {
-    path: "/login",
-    name: "login",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/LoginView.vue"),
-  },
-  {
     path: "/profile",
     name: "profile",
     component: () =>
@@ -37,6 +31,33 @@ const routes: Array<RouteRecordRaw> = [
     path: "/auth-2FA",
     name: "authTwoFactor",
     component: () => import("../views/AuthTwoFactor.vue"),
+  },
+  {
+    path: "/auth",
+    name: "auth",
+    component: () => import("../views/AuthScreen/AuthMainView.vue"),
+    children: [
+      {
+        path: "sign-in",
+        name: "signIn",
+        component: () => import("../views/AuthScreen/AuthSignInView.vue"),
+      },
+      {
+        path: "2FA-enable",
+        name: "2FAEnable",
+        component: () => import("../views/AuthScreen/Auth2FAEnableView.vue"),
+      },
+      {
+        path: "2FA-QR",
+        name: "2FAQR",
+        component: () => import("../views/AuthScreen/Auth2FAQRView.vue"),
+      },
+      {
+        path: "2FA-code",
+        name: "2FACode",
+        component: () => import("../views/AuthScreen/Auth2FACodeView.vue"),
+      },
+    ],
   },
   {
     path: "/pong",

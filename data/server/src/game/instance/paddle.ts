@@ -28,6 +28,14 @@ export class PongPaddle {
     Matter.World.add(this.pongWorld.world, this.paddle);
   }
 
+  resetPosition() {
+    Matter.Body.setVelocity(this.paddle, { x: 0, y: 0 });
+    if (this.player === 1)
+      Matter.Body.setPosition(this.paddle, { x: POSITION_PADDLE_1_x, y: POSITION_PADDLE_1_y });
+    else
+      Matter.Body.setPosition(this.paddle, { x: POSITION_PADDLE_2_x, y: POSITION_PADDLE_2_y });
+  }
+
   moveUp() {
     Matter.Body.setVelocity(this.paddle, { x: 0, y: -this.speed });
   }

@@ -1,7 +1,6 @@
 import * as Matter from 'matter-js';
 import { HEIGHT, WALL_THICKNESS, WIDTH } from '../const';
 
-
 export class PongWorld{
   world: Matter.World;
   engine: Matter.Engine;
@@ -40,8 +39,15 @@ export class PongWorld{
     Matter.Runner.run(this.runner, this.engine);
   }
 
-  pause(){
+  pause() {
+    if (this.engine.timing.isRunning) {
+      Matter.Runner.stop(this.runner);
+    }
+  }
+
+  end() {
     Matter.Runner.stop(this.runner);
+    Matter.Engine.clear(this.engine);
   }
 
   createWall() {
@@ -58,7 +64,7 @@ export class PongWorld{
   ballCollisionWithWalls(ball: Matter.Body) {
     const checkCollisionWithWall = (bodyA: Matter.Body, bodyB: Matter.Body, wall: Matter.Body, wallName: string) => {
       if ((bodyA === ball && bodyB === wall) || (bodyB === ball && bodyA === wall)) {
-        // console.log(`Collision avec le mur ${wallName}`);
+        console.log(`Collision avec le mur ${wallName}`);
         if (wallName === 'du haut' || wallName === 'du bas') {
           const velocityIncrease = 0.6;
           Matter.Body.setVelocity(ball, {
@@ -66,12 +72,13 @@ export class PongWorld{
             y: ball.velocity.y > 0 ? ball.velocity.y + velocityIncrease : ball.velocity.y - velocityIncrease
           });
         }
-        else if (wallName === 'de gauche' || wallName === 'de droite') {
-          // this.pause();
-        }
+        if (wallName === 'de gauche')
+          Matter.Events.trigger(this.engine, 'score', { player: 2 });
+        else if (wallName === 'de droite')
+          Matter.Events.trigger(this.engine, 'score', { player: 1 });
       }
     };
-  
+
     Matter.Events.on(this.engine, 'collisionStart', (event) => {
       event.pairs.forEach((pair) => {
         checkCollisionWithWall(pair.bodyA, pair.bodyB, this.topWall, 'du haut');

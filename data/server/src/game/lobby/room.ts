@@ -1,51 +1,58 @@
 import { Socket  } from 'socket.io';
 import { Game } from "../instance/game";
 import { Player } from '../type';
-import { TIMEOUT_RECONNECT, TIME_END_GAME } from '../const';
+import { BEFORE_GAME, TIMEOUT_RECONNECT } from '../const';
+import { PongGateway } from '../websocket/pong.gateway';
 
 export class PongRoom {
+  pongGateway: PongGateway;
 	game: Game;
+  GameState: { score: [number, number]; time: number; };
 	started = false;
+  startTime: number = 0;
+  pauseTime: number = 0;
+  isGameEnded: boolean = false;
   playersMax = 2;
   players = new Array<Player>();
-  timerGame: NodeJS.Timeout;
   disconnectPlayers = new Map<string, NodeJS.Timeout>();
   
-  constructor() {
+  constructor(PongGateway: PongGateway) {
     this.game = new Game(this);
-  }
-  
-  timerStartGame() {
-    this.timerGame = setTimeout(() => {
-      this.end();
-    }, TIME_END_GAME);
-    
+    this.pongGateway = PongGateway;
+    this.GameState = { score: [0, 0], time: 0 };
   }
 
   showPlayers() {
     console.log('Players login in room', this.players.map(p => p.user.login));
   }
 
-	start() {
-		console.log('Game started id:', this.game.id);
-    this.showPlayers();
-    if (!this.started && this.players.length === this.playersMax) {
-      this.started = true;
-      this.game.start();
-      // this.timerStartGame(); // temps de jeu
+  timeGestion() {
+    if (this.pauseTime !== 0) {
+      this.startTime -= Date.now() - this.pauseTime;
+      this.pauseTime = 0;
     }
-	}
+  }
+
+  start() {
+    console.log('Game started id:', Game.id);
+    this.showPlayers();
+    if (this.started || this.players.length !== this.playersMax) {
+      return;
+    }
+    this.started = true;
+    setTimeout(() => this.game.start(), BEFORE_GAME);
+  }
 
   end() {
     if (!this.started)
       return;
     console.log('Game ended');
     this.started = false;
-    this.game.end();
-    clearTimeout(this.timerGame);
-    this.players.forEach(player => {
-      player.client.emit('end');
-    });
+    this.game.endGame();
+  }
+
+  close() {
+    this.pongGateway.closeRoom(this);
   }
 
   moveDown(player: number) {
@@ -92,7 +99,8 @@ export class PongRoom {
 	
 	pause() {
 		console.log('Game paused');
-		this.game.pause();
+    this.pauseTime = Date.now();
+    this.game.pause();
 	}
 
   reconnectPlayer(oldPlayer: Player, newPlayer: Player) {
@@ -101,6 +109,12 @@ export class PongRoom {
     clearTimeout(this.disconnectPlayers.get(oldPlayer.client.id));
     this.game.start();
     console.log(`Client reconnected: ${oldPlayer.user.login}`);
+
+    oldPlayer.client.emit('gameState', this.GameState);
+  
+    // Reset paddle movement event handlers for the reconnected player
+    oldPlayer.client.on('moveUp', () => this.moveUp(oldPlayer.number));
+    oldPlayer.client.on('moveDown', () => this.moveDown(oldPlayer.number));
   }
 
   addPlayerToRoom(player: Player) {
@@ -110,11 +124,14 @@ export class PongRoom {
     }
     if (this.players.length === this.playersMax && this.started === false)
       this.start();
-    console.log('Player added to room', player.user.login);
   }
 
   addPlayer(player: Player) {
     console.log('Player added to room', player.user.login);
+    if (this.isGameEnded) {
+      console.log('Game has ended. Player cannot join.');
+      return;
+    }
     const oldPlayer = this.players.find(p => p.user.public_id === player.user.public_id);
     if (oldPlayer)
       this.reconnectPlayer(oldPlayer, player);
@@ -131,29 +148,37 @@ export class PongRoom {
   }
   
   disconnectPlayer(player: Player) {
+    this.game.pause();
     player.disconnected = true;
     console.log('Player removed from room');
     this.showPlayers();
-    this.game.pause();
-  }
+  } 
   
   removeDisconnectedPlayer(player: Player, client: Socket) {
     this.disconnectPlayers.set(
-      player.client.id,
-      setTimeout(() => {
-        const index = this.players.findIndex(p => p.client.id === client.id);
-        if (index !== -1) {
+    player.client.id,
+    setTimeout(() => {
+      const index = this.players.findIndex(p => p.client.id === client.id);
+      if (index !== -1) {
+        this.players.splice(index, 1);
+      }
+      if (this.players.length === 0) {
+        this.end();
+      }
+      else if (this.players.length < this.playersMax) {
+        this.started = false;
+        this.game.pause();
+        const otherPlayerIndex = this.players.findIndex(p => p !== player);
+        if (otherPlayerIndex !== -1) {
+          // Declare the other player as the winner
+          this.game.declarePlayerWinnerForDeconnection(otherPlayerIndex);
           this.players.splice(index, 1);
+          // this.end();
+          // this.close();
         }
-        if (this.players.length === 0) {
-          this.end();
-        }
-        else if (this.players.length < this.playersMax) {
-          this.started = false;
-          this.game.pause();
-        }
-      }, TIMEOUT_RECONNECT));
-  }
+      }
+    }, TIMEOUT_RECONNECT));
+}
 
   isFull(): boolean {
     return this.players.length === this.playersMax;

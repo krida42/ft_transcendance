@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger'; // Importez ceci si vous utilisez Swagger pour la documentation
+import { ApiProperty } from '@nestjs/swagger';
 
 import {
   IsNotEmpty,
@@ -7,7 +7,6 @@ import {
   IsOptional,
   isPhoneNumber,
 } from 'class-validator';
-import { Is } from 'sequelize-typescript';
 
 export class UpdateUserDto {
   @IsOptional()

@@ -1,6 +1,8 @@
+
 // Game state
 export const SCORE_TO_WIN = 11;
-export const TIME_END_GAME = 10 * 60 * 1000; // 10 minutes en millisecondes
+export const TIME_END_GAME = 1 * 60 * 1000; // 5 minutes en millisecondes
+export const BEFORE_GAME = 3 * 1000; // 3 secondes en millisecondes
 
 // World dimensions
 export const HEIGHT = 600;

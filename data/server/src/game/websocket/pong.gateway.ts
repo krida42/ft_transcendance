@@ -39,11 +39,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
   isConnected(userCookie: ResponseUserDto): boolean {
     const client = this.usersMap.get(userCookie.public_id);
-    if (!client) {
+    if (!client)
       return false;
-    }
-    this.whichRoom(userCookie).addPlayer({user: userCookie, client});
     client.emit('alreadyConnected');
+    this.whichRoom(userCookie).addPlayer({user: userCookie, client});
     return true;
   }
 
@@ -76,19 +75,32 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect{
   findOrCreateRoom(): PongRoom {
     let room = this.rooms.find(r => !r.isFull());
     if (!room) {
-      room = new PongRoom();
+      room = new PongRoom(this);
       this.rooms.push(room);
     }
     return room;
   }
 
+  closeRoom(room: PongRoom) {
+    const index = this.rooms.findIndex(r => r === room);
+    const players = room.players;
+    players.forEach(player => {
+      player.client.emit('roomClosed');
+      this.usersMap.delete(player.user.public_id);
+    });
+    if (index !== -1) {
+      if (this.rooms[index].isGameEnded)
+        this.rooms.splice(index, 1);
+    }
+  }
+
   handleDisconnect(client: Socket) {
     const userCookie = this.getUserWithCookie(client);
     if (userCookie) {
-      this.usersMap.delete(userCookie.public_id);
       const room = this.rooms.find(r => r.hasPlayer(userCookie.public_id));
       if (room)
         room.removePlayer(client);
+      this.usersMap.delete(userCookie.public_id);
       console.log(`Client disconnected: ${userCookie.login}`);
     }
   }

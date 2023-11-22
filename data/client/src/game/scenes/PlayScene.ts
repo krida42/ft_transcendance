@@ -11,6 +11,7 @@ export default class PlayScene extends Scene {
   timer: any;
   timerText!: Phaser.GameObjects.Text; // Add the '!' operator to indicate that this property will be initialized later
   score: any;
+  scoreText!: Phaser.GameObjects.Text;
   socket: any;
 
   constructor() {
@@ -53,22 +54,20 @@ export default class PlayScene extends Scene {
     this.paddle2 = paddle2;
   }
 
-  // displayScore() {}
-
-  // displayTimer() {
-  //   this.timerText = this.add.text(10, 50, "00:00", {
-  //     font: "32px Arial",
-  //     color: "#ffffff",
-  //   });
-  // }
-
   create() {
     // background
     this.add.image(400, 300, "sky");
 
     // timer
     this.timer = 0; // Définissez le timer à 0 par défaut
-    this.timerText = this.add.text(10, 10, "Time: 0", {
+    this.timerText = this.add.text(400, 10, "Time: 0", {
+      font: "16px Arial",
+      color: "#ffffff",
+    });
+
+    //score
+    this.score = [0, 0];
+    this.scoreText = this.add.text(400, 30, "", {
       font: "16px Arial",
       color: "#ffffff",
     });
@@ -76,17 +75,32 @@ export default class PlayScene extends Scene {
     // input
     let upKey = null;
     let downKey = null;
+    let leftKey = null;
+    let rightKey = null;
     if (this.input.keyboard) {
       upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
       downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+      leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+      rightKey = this.input.keyboard.addKey(
+        Phaser.Input.Keyboard.KeyCodes.RIGHT
+      );
     }
 
+    // emit
     upKey?.on("down", () => {
       this.socket.emit("moveUp");
     });
 
     downKey?.on("down", () => {
       this.socket.emit("moveDown");
+    });
+
+    leftKey?.on("down", () => {
+      this.socket.emit("moveLeft");
+    });
+
+    rightKey?.on("down", () => {
+      this.socket.emit("moveRight");
     });
 
     // receive
@@ -113,6 +127,29 @@ export default class PlayScene extends Scene {
       this.timer = time;
     });
 
+    this.socket.on("gameState", (gameState: any) => {
+      this.timer = gameState.time;
+      this.score = gameState.score;
+    });
+
+    this.socket.on("winner", () => {
+      this.scene.start("ErrorScene", {
+        message: "Vous avez gagné !",
+      });
+    });
+
+    this.socket.on("loser", () => {
+      this.scene.start("ErrorScene", {
+        message: "Vous avez perdu !",
+      });
+    });
+
+    this.socket.on("draw", () => {
+      this.scene.start("ErrorScene", {
+        message: "Match nul !",
+      });
+    });
+
     this.socket.on("alreadyConnected", () => {
       this.scene.start("ErrorScene", {
         message: "Vous êtes déjà connecté à une partie.",
@@ -121,6 +158,7 @@ export default class PlayScene extends Scene {
   }
 
   update() {
+    // display objects
     this.ball.x = this.ballPosition[0];
     this.ball.y = this.ballPosition[1];
 
@@ -130,13 +168,14 @@ export default class PlayScene extends Scene {
     this.paddle2.x = this.paddlePosition2[0];
     this.paddle2.y = this.paddlePosition2[1];
 
+    // display timer
     const minutes = Math.floor(this.timer / 60);
     const seconds = Math.floor(this.timer % 60);
     this.timerText.setText(
-      "Time: " + minutes + ":" + (seconds < 10 ? "0" : "") + seconds
+      minutes + " : " + (seconds < 10 ? "0" : "") + seconds
     );
 
-    console.log("padde1", this.paddlePosition1[0]);
-    // console.log("update", this.ballPosition[0]);
+    // display score
+    this.scoreText.setText(this.score[0] + " - " + this.score[1]);
   }
 }

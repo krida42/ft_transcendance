@@ -26,7 +26,6 @@ async function getAuthorizationUrl(): Promise<string> {
 
 const auth_button = ref<HTMLElement | null>(null);
 useEventListener(auth_button, "click", () => {
-  console.log("click");
   axios.defaults.withCredentials = true;
   getAuthorizationUrl()
     .then((res) => {

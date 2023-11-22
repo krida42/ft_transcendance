@@ -35,21 +35,23 @@ export class AuthService {
       refreshToken: jwt.refreshToken,
     });
     res.cookie('access_token', jwt.access_token, { httpOnly: true });
-    return (await this.redirectSignIn(user, res));
+    return await this.redirectSignIn(user, res);
   }
 
   async redirectSignIn(user: ResponseUserDto, res: any): Promise<Response> {
-    if (await this.isTwoFactorEnable(user.public_id))
-    {
+    if ((await this.isTwoFactorEnable(user.public_id)) !== null) {
+      if ((await this.isTwoFactorEnable(user.public_id)) === false)
+        return res.redirect('http://localhost:8080/main/home');
       if (await this.hasTwoFactorSecret(user.public_id))
-        return res.redirect('http://localhost:8080/auth-2FA');
-      else
-        return res.redirect('http://localhost:8080/auth-2FA/setup');
+        return res.redirect('http://localhost:8080/auth/2FA-code');
+      return res.redirect('http://localhost:8080/auth/2FA-QR');
     }
-    return res.redirect('http://localhost:8080/main/home');
+    return res.redirect('http://localhost:8080/auth/2FA-enable');
   }
 
-  async login(user: ResponseUserDto): Promise<{ access_token: string; refreshToken: string }> {
+  async login(
+    user: ResponseUserDto,
+  ): Promise<{ access_token: string; refreshToken: string }> {
     user.twoFactorAuthenticated = false;
     const payload = {
       ...userToPayload(user),
@@ -89,20 +91,36 @@ export class AuthService {
     };
   }
 
-  async logout(user: ResponseUserDto): Promise<{ message: [number], user: ResponseUserDto }> {
+  async logout(
+    user: ResponseUserDto,
+  ): Promise<{ message: [number]; user: ResponseUserDto }> {
     console.log('Deconnexion of: ', user.login);
     return await this.UsersService.updateUser(user.public_id, {
       refreshToken: null,
     });
   }
 
-  async setTwoFactorSecret(secret: string, public_id: uuidv4): Promise<{ message: [number], user: ResponseUserDto }> {
+  async setTwoFactorSecret(
+    secret: string,
+    public_id: uuidv4,
+  ): Promise<{ message: [number]; user: ResponseUserDto }> {
     return await this.UsersService.updateUser(public_id, {
       twoFactorSecret: secret,
     });
   }
 
-  async setTwoFactorEnable(public_id: uuidv4, bool: boolean): Promise<{ message: [number], user: ResponseUserDto }> {  
+  async deleteTwoFactorSecret(
+    public_id: uuidv4,
+  ): Promise<{ message: [number]; user: ResponseUserDto }> {
+    return await this.UsersService.updateUser(public_id, {
+      twoFactorSecret: null,
+    });
+  }
+
+  async setTwoFactorEnable(
+    public_id: uuidv4,
+    bool: boolean,
+  ): Promise<{ message: [number]; user: ResponseUserDto }> {
     return await this.UsersService.updateUser(public_id, {
       twoFactorEnable: bool,
     });
@@ -113,7 +131,9 @@ export class AuthService {
   }
 
   async hasTwoFactorSecret(public_id: uuidv4): Promise<boolean> {
-    return (await this.UsersService.findById(public_id)).twoFactorSecret !== null;
+    return (
+      (await this.UsersService.findById(public_id)).twoFactorSecret !== null
+    );
   }
 
   async generateTwoFactorSecret(user: ResponseUserDto) {
@@ -130,7 +150,10 @@ export class AuthService {
     };
   }
 
-  async isTwoFactorAuthCodeValid(twoFactorAuthCode: string, resUser: ResponseUserDto) {
+  async isTwoFactorAuthCodeValid(
+    twoFactorAuthCode: string,
+    resUser: ResponseUserDto,
+  ) {
     const dbUser = await User.findOne({
       where: { public_id: resUser.public_id },
       attributes: ['twoFactorSecret'],

@@ -13,6 +13,8 @@ import { Server, Socket } from 'socket.io';
 import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 import * as jwt from 'jsonwebtoken';
 
+import { StatusDto, Status } from './dto/status.dto';
+
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:8080',
@@ -36,12 +38,16 @@ export class RealtimeGateway
 
   handleConnection(client: Socket) {
     console.log('Socket: Client connected: ', client.id);
+
     client.data.user = this.getUserWithCookie(client);
+    client.join(client.data.user.public_id);
+
     console.log('Socket: client.data.user: ', client.data.user);
   }
 
   handleDisconnect(client: Socket) {
     console.log('Socket: Client disconnected: ', client.id);
+    client.leave(client.data.user.public_id);
   }
 
   getUserWithCookie(socket: Socket): ResponseUserDto | null {
@@ -57,87 +63,157 @@ export class RealtimeGateway
     return user;
   }
 
+  findSocketBySocketId(id: string): Socket {
+    return this.server.sockets.sockets.get(id);
+  }
+
+  findSocketByUserId(userId: string) {
+    // return this.server.sockets.sockets.get(userId);
+    return [...this.server.sockets.sockets.values()].find(
+      (socket) => (socket.data.user as ResponseUserDto).public_id === userId,
+    );
+  }
+
+  pingUserGotFriendRequest(userId: string) {
+    const socket = this.findSocketByUserId(userId);
+    if (socket) {
+      socket.emit('gotFriendRequest');
+    }
+  }
+
+  transmitMessageToUser(userId: string, message: unknown) {
+    throw new Error('Method not implemented.');
+    // const socket = this.findSocketByUserId(userId);
+    // if (socket) {
+    //   socket.emit('message', message);
+    // }
+    this.server.to(userId).emit('message', message);
+  }
+
+  transmitMessageToRoom(roomId: string, message: unknown) {
+    throw new Error('Method not implemented.');
+    this.server.to(roomId).emit('message', message);
+  }
+
+  transmitMessageOfUserToRoom(
+    userId: string,
+    roomId: string,
+    message: unknown,
+  ) {
+    throw new Error('Method not implemented.');
+    const socket = this.findSocketByUserId(userId);
+    if (socket) {
+      socket.to(roomId).emit('message', message);
+    }
+  }
+
+  enterUserInRoom(userId: string, roomId: string) {
+    const socket = this.findSocketByUserId(userId);
+    if (socket) {
+      socket.join(roomId);
+    }
+  }
+
+  leaveUserFromRoom(userId: string, roomId: string) {
+    const socket = this.findSocketByUserId(userId);
+    if (socket) {
+      socket.leave(roomId);
+    }
+  }
+
+  bindUserToChannels(userId: string, channels: any[]) {
+    console.warn(
+      'A VOIR avec sylvain',
+      'bindUserToChannels: channels: ',
+      channels,
+    );
+    throw new Error('Method not implemented.');
+    const socket = this.findSocketByUserId(userId);
+    if (socket) {
+      channels.forEach((channel) => {
+        socket.join(channel.id);
+      });
+    }
+  }
+
+  unbindUserFromChannels(userId: string, channels: any[]) {
+    console.warn(
+      'A VOIR avec sylvain',
+      'bindUserToChannels: channels: ',
+      channels,
+    );
+    throw new Error('Method not implemented.');
+    const socket = this.findSocketByUserId(userId);
+    if (socket) {
+      channels.forEach((channel) => {
+        socket.leave(channel.id);
+      });
+    }
+  }
+
+  bindUserToFriends(userId: string, friends: any[]) {
+    console.warn(
+      'A VOIR avec sylvain',
+      'bindUserToChannels: channels: ',
+      friends,
+    );
+    throw new Error('Method not implemented.');
+    const socket = this.findSocketByUserId(userId);
+    if (socket) {
+      friends.forEach((friend) => {
+        socket.join(friend.id);
+      });
+    }
+  }
+
+  unbindUserFromFriends(userId: string, friends: any[]) {
+    console.warn(
+      'A VOIR avec sylvain',
+      'bindUserToChannels: channels: ',
+      friends,
+    );
+    throw new Error('Method not implemented');
+    const socket = this.findSocketByUserId(userId);
+    if (socket) {
+      friends.forEach((friend) => {
+        socket.leave(friend.id);
+      });
+    }
+  }
+
+  transmitStatusOfUserToFriends(
+    userId: string,
+    status: Status,
+    friends: any[],
+  ) {
+    throw new Error('Method not implemented. Waiting for sylvain');
+    const socket = this.findSocketByUserId(userId);
+    if (socket) {
+      friends.forEach((friend) => {
+        if (this.findSocketByUserId(friend.id)) {
+          socket.to(friend.id).emit('status', new StatusDto(userId, status));
+        }
+      });
+    }
+  }
+
   @SubscribeMessage('cuicui')
   handleCuicui(
-    @MessageBody() data: Object,
+    @MessageBody() data: object,
     @ConnectedSocket() client: Socket,
-  ): Object {
+  ): object {
     console.log('cuicui event, data: ', data);
     client.emit('cocorico', {
       fromClient: data,
       id: client.id,
       user: client.data.user,
     });
-    return "Acknoledgement I'm the server, I received your message!";
+    return {
+      str: "Acknoledgement I'm the server, I received your message!",
+      pseudo: client.data.user.pseudo,
+      pseudo2: this.findSocketBySocketId(client.id).data.user.pseudo,
+      pseudo3: this.findSocketByUserId(client.data.user.public_id).data.user
+        .pseudo,
+    };
   }
-
-  //   @SubscribeMessage('message')
-  //   async handleMessage(client: Socket, payload: any): Promise<void> {
-  //     const user = await this.userService.findOneById(payload.userId);
-  //     const channel = await this.channelService.findOneByName(
-  //       payload.channelName,
-  //     );
-  //     const message = await this.channelService.createMessage(
-  //       payload.message,
-  //       user,
-  //       channel,
-  //     );
-  //     this.server.emit('message', message);
-  //   }
-
-  //   @SubscribeMessage('join')
-  //   async handleJoin(client: Socket, payload: any): Promise<void> {
-  //     const user = await this.userService.findOneById(payload.userId);
-  //     const channel = await this.channelService.findOneByName(
-  //       payload.channelName,
-  //     );
-  //     const message = await this.channelService.createMessage(
-  //       `${user.username} joined the channel.`,
-  //       user,
-  //       channel,
-  //     );
-  //     this.server.emit('message', message);
-  //   }
-
-  //   @SubscribeMessage('leave')
-  //   async handleLeave(client: Socket, payload: any): Promise<void> {
-  //     const user = await this.userService.findOneById(payload.userId);
-  //     const channel = await this.channelService.findOneByName(
-  //       payload.channelName,
-  //     );
-  //     const message = await this.channelService.createMessage(
-  //       `${user.username} left the channel.`,
-  //       user,
-  //       channel,
-  //     );
-  //     this.server.emit('message', message);
-  //   }
-
-  //   @SubscribeMessage('typing')
-  //   async handleTyping(client: Socket, payload: any): Promise<void> {
-  //     const user = await this.userService.findOneById(payload.userId);
-  //     const channel = await this.channelService.findOneByName(
-  //       payload.channelName,
-  //     );
-  //     const message = await this.channelService.createMessage(
-  //       `${user.username} is typing...`,
-  //       user,
-  //       channel,
-  //     );
-  //     this.server.emit('message', message);
-  //   }
-
-  //   @SubscribeMessage('stopTyping')
-  //   async handleStopTyping(client: Socket, payload: any): Promise<void> {
-  //     const user = await this.userService.findOneById(payload.userId);
-  //     const channel = await this.channelService.findOneByName(
-  //       payload.channelName,
-  //     );
-  //     const message = await this.channelService.createMessage(
-  //       `${user.username} stopped typing.`,
-  //       user,
-  //       channel,
-  //     );
-  //     this.server.emit('message', message);
-  //   }
 }

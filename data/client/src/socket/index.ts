@@ -29,6 +29,6 @@ socket.on("disconnect", () => {
   state.connected = false;
 });
 
-socket.on("cocorico", (data) => {
-  console.log("cocorico event: Received: ", data);
-});
+//Pour les effet de bord
+// A mettre a la fin de ce fichier
+import("./friend");

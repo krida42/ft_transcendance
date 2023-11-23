@@ -75,4 +75,20 @@ usersStore.refreshUser("vincent");
 friendStore.refreshFriendList();
 
 const puipui = ref("Je fais puiui");
+
+class TestClass {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  getname() {
+    return this.name;
+  }
+}
+
+console.log(
+  "test de testcalass tringified",
+  JSON.stringify(new TestClass("kevin"))
+);
 </script>

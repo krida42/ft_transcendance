@@ -91,8 +91,10 @@ export const useFriendStore = defineStore({
       });
     },
     async sendFriendRequest(id: Id): Promise<void> {
+      console.log("sendFriendRequest, id:", id);
       return friendApi.sendFriendRequest(id).then((user) => {
         this.friendsSentMap.set(user.id, user);
+        console.log("sendFriendRequest then, user:", user);
       });
     },
     async cancelFriendRequest(id: Id): Promise<void> {

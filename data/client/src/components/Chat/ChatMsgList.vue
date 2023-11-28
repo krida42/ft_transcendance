@@ -1,12 +1,14 @@
 <template>
   <div class="chat bg-blue-grey bg-opacity-80" ref="draggableContainer">
-    <ChatUserActionPopup
-      class="absolute top-0 bottom-0 left-0 right-0 m-auto z-20"
-      :uuid="chatUserActionPopup.userId"
-      @close="closeChatUserActionPopup()"
-      v-if="chatUserActionPopup.userId"
-      :test="usersStore.users.get(chatUserActionPopup.userId)"
-    />
+    <Transition name="slide-in-left">
+      <ChatUserActionPopup
+        class="absolute top-[30%] left-0 right-0 mx-auto z-20"
+        :uuid="chatUserActionPopup.userId"
+        @close="closeChatUserActionPopup()"
+        v-if="chatUserActionPopup.userId"
+        :test="usersStore.users.get(chatUserActionPopup.userId)"
+      />
+    </Transition>
     <div class="header bg-blue-light" @mousedown="dragMouseDown">
       <span class="title">{{ currentChat?.name }}</span>
       <Icon
@@ -200,6 +202,43 @@
     padding-inline: 1.2rem;
   }
 }
+
+@keyframes my-bounce {
+  0%,
+  100% {
+    // transform: translateY(-25%);
+    transform: none;
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    // transform: none;
+    transform: translateY(50%);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+.animate-my-bounce {
+  animation: my-bounce 2s;
+}
+
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateZ(0) translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-left-enter-active {
+  animation: slide-in-left 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.slide-in-left-leave-active {
+  animation: slide-in-left 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse
+    both;
+}
 </style>
 
 <script lang="ts" setup>
@@ -209,14 +248,12 @@ import { ref, computed, nextTick, onMounted, watch, reactive } from "vue";
 import { storeToRefs } from "pinia";
 import ChatMsgItem from "./ChatMsgItem.vue";
 
-import ChatUserActionPopup from "./ChatUserActionPopup.vue";
-import ChatUserActionPopupAdmin from "./ChatUserActionPopupAdmin.vue";
-
 // let props = defineProps({});
 
 import { useUsersStore } from "@/stores/users";
 import { useChatStore } from "@/stores/chat";
 import { MessageTransformer } from "@/utils/messageTransformer";
+import ChatUserActionPopup from "./ChatUserActionPopup.vue";
 
 const usersStore = useUsersStore();
 const chatStore = useChatStore();

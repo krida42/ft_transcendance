@@ -1,6 +1,6 @@
 <template>
   <div
-    class="chat-user-action-popup grid grid-rows-2 w-[18rem] h-[9rem] bg-black bg-opacity-80 rounded-xl text-white px-5 py-3"
+    class="chat-user-action-popup-admin w-[18rem] bg-black bg-opacity-80 rounded-xl text-white px-5 py-5"
   >
     <div class="user-info dbg-green-200 grid grid-cols-12 gap-x-3 items-center">
       <div class="user-avatar col-span-3 border-red-900 border-2d">
@@ -17,31 +17,54 @@
       </p>
       <Icon
         size="1.8rem"
-        class="bd-blues self-start justify-self-end relative right-[-0.6rem] top-[-0.4rem] cursor-pointer"
+        class="bd-blues self-start justify-self-end relative right-[-0.7rem] top-[-0.8rem] cursor-pointer"
         @click="emits('close')"
       >
         <X />
       </Icon>
     </div>
-    <div class="actions flex justify-around dbg-red-200 items-center">
-      <Transition name="slide-left">
-        <button
-          v-if="test"
-          class="hover:bg-gray-500"
-          :class="{
-            // 'bg-green-500': addFriendAnimation,
-            // 'hover:bg-green-500': addFriendAnimation,
-            // 'bg-[#7c2c2c]': !addFriendAnimation,
-            'add-friend-anim': addFriendAnimation,
-          }"
-          @click="sendFriendRequestHere()"
-        >
-          ADD FRIEND
-        </button>
-      </Transition>
-      <button class="text-red-my hover:bg-[#7c2c2c]" @click="blockUserHere()">
-        BLOCK
+    <div class="actions flex dbg-blue-200 items-center mt-4 gap-x-5 bd-redd">
+      <!-- <button class="hover:bg-gray-500">ADD FRIEND</button> -->
+      <button
+        v-if="user"
+        class="border-[1px]"
+        :class="{
+          'hover:bg-gray-500': canAddFriend,
+          'border-white': canAddFriend,
+          'text-gray-400': !canAddFriend,
+          'border-gray-400': !canAddFriend,
+        }"
+        @click="canAddFriend ? sendFriendRequest(user!.id) : null"
+        :disabled="!canAddFriend"
+      >
+        {{
+          canAddFriend
+            ? "ADD FRIEND"
+            : friendStore.friendsSent.has(user.id)
+            ? "SENT ✓"
+            : "FRIEND ✓"
+        }}
       </button>
+      <button
+        v-if="!admin && user"
+        class="border-[1px] border-white text-red-my hover:bg-[#7c2c2c]"
+        @click="
+          friendStore.blocked.has(user.id)
+            ? unblockUser(user!.id)
+            : blockUser(user!.id)
+        "
+      >
+        {{ !user || friendStore.blocked.has(user.id) ? "UNBLOCK" : "BLOCK" }}
+      </button>
+
+      <!-- <button class="w-[100%] hover:bg-gray-500">ADD FRIEND</button> -->
+    </div>
+    <div class="admin-btns gap-x-5 gap-y-3 grid grid-cols-3 mt-4" v-if="admin">
+      <button class="px-4">KICK</button>
+      <button class="px-4 mr">BAN</button>
+      <button class="col-start-1">MUTE 1H</button>
+      <button class="">MUTE 3H</button>
+      <button class="">MUTE 12H</button>
     </div>
   </div>
 </template>
@@ -50,8 +73,9 @@
 import { Icon } from "@vicons/utils";
 import { User, X } from "@vicons/tabler";
 import { computed, defineEmits, defineProps, ref } from "vue";
-import { useUsersStore } from "@/stores/users";
 import { useFriendStore } from "@/stores/friend";
+import { useUsersStore } from "@/stores/users";
+import friend from "@/api/friend";
 
 const props = defineProps({
   test: {
@@ -62,90 +86,56 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  admin: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const emits = defineEmits(["close"]);
 
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();
+const { sendFriendRequest, blockUser, unblockUser } = friendStore;
 
 const user = computed(() => {
   return usersStore.users.get(props.uuid);
 });
 
-let addFriendAnimation = ref(false);
-
-let test = ref(true);
-
-function sendFriendRequestHere() {
-  friendStore.sendFriendRequest(user.value!.id);
-  if (!addFriendAnimation.value) {
-    addFriendAnimation.value = true;
-    setTimeout(() => {
-      addFriendAnimation.value = false;
-      test.value = false;
-    }, 1500);
-  }
-}
-
-function blockUserHere() {
-  friendStore.blockUser(user.value!.id);
-}
+let canAddFriend = computed(() => {
+  if (!user.value) return false;
+  return (
+    !friendStore.friends.has(user.value.id) &&
+    !friendStore.friendsSent.has(user.value.id)
+  );
+});
 </script>
 
 <style lang="scss" scoped>
-.chat-user-action-popup {
+.chat-user-action-popup-admin {
   font-family: "Baumans";
 }
 
 button {
   //   background: #7c2c2c;
-  border: 1px solid white;
+  // border: 1px solid white;
   border-radius: 0.5rem;
-  width: 45%;
-  margin-top: 0.4rem;
+  width: 100%;
+  //   margin-top: 0.4rem;
   //   margin-bottom: 1rem;
   height: 2.3rem;
-}
 
-.add-friend-anim {
-  // animation: color-progress 1s ease-in-out;
-  animation: add-friend 0.8s ease-in-out 1 both;
-}
-
-@keyframes add-friend {
-  from {
-    transform: scale(1);
-    transform-origin: center center;
-    animation-timing-function: ease-out;
-  }
-
-  10% {
-    transform: scale(0.91);
-    animation-timing-function: ease-in;
-  }
-  17% {
-    transform: scale(0.98);
-    animation-timing-function: ease-out;
-  }
-  33% {
-    transform: scale(0.87);
-    animation-timing-function: ease-in;
-    background-color: $green-dark;
-  }
-  45% {
-    transform: scale(1);
-    animation-timing-function: ease-out;
+  &:active {
+    transform: scale(0.95);
   }
 }
-
-.slide-left-enter-active,
-.slide-left-leave-active {
-  transition: all 0.3s ease-in-out;
-}
-
-.slide-left-leave-to {
-  // transform: translateX(-100%);
-  opacity: 0;
+div.admin-btns > * {
+  color: $red-my;
+  border: 1px solid white;
+  //   padding-inline: 1px;
+  &:hover {
+    background-color: #7c2c2c;
+  }
 }
 </style>

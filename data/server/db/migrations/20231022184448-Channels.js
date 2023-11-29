@@ -37,6 +37,12 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
+      imageData: {
+        type: Sequelize.BUFFER,
+        allowNull: true,
+        defaultValue: null,
+        unique: false,
+      },
     });
   },
 

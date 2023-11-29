@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Put,
   Body,
   Delete,
   ParseUUIDPipe,
@@ -10,6 +11,10 @@ import {
   Req,
   Query,
 } from '@nestjs/common';
+
+import { UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
+
+import { FileInterceptor } from '@nestjs/platform-express';
 
 import { Channels } from 'db/models/channels';
 import { ChannelsService } from './channels.service';
@@ -95,4 +100,44 @@ export class ChannelsController {
     async getChannels(@Req() req, @Query('state') state: string | undefined) {
         return this.channelService.getChannels(this.login, state);
     }
+
+    // @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ summary: 'Get channels of specific user (query param)' })
+    @Get('/userChannels')
+    async getUserChannels(@Req() req, @Query('user') user: string | undefined) {
+        return this.channelService.getUserChannels(user);
+    }
+
+    // @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ summary: 'Get users list of channel' })
+    @Get('/channelsUsers/:chanId')
+    async getChannelUsers(@Req() req, @Param('chanId') chanId: string) {
+        return this.channelService.getChannelUsers(chanId);
+    }
+
+    // @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ summary: 'Get ban list of channel' })
+    @Get('/channelsBanlist/:chanId')
+    async getChannelBanlist(@Req() req, @Param('chanId') chanId: string) {
+        return this.channelService.getChannelBanlist(chanId);
+    }
+
+    // @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ summary: 'Change channel image' })
+    @Put('/channels/:chanId/image')
+    @UseInterceptors(FileInterceptor('image'))
+
+    async updateImage(@Req() req, @Param('chanId') chanId: string,
+                             @UploadedFile() image: Express.Multer.File,)
+                            {
+        return this.channelService.putImage(this.login, chanId, image);
+    }
+
+    // @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ summary: 'Mute userId to channel' })
+    @Post('/channels/:chanId/mute/:userId')
+    async muteUser(@Req() req, @Param('chanId') chanId: string, @Param('userId') userId: string) {
+        return this.channelService.muteUser(this.login, chanId, userId);
+    }
+
 }

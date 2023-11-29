@@ -47,7 +47,7 @@ export class UsersService {
 
   async findById(id: uuidv4) {
     const public_id = id;
-    if (!isUUID(public_id)) throw new InvalidUUIDException();
+    if (!isUUID(public_id, 4)) throw new InvalidUUIDException();
     const user = await User.findOne({
       where: { public_id },
       attributes: this.attributesToRetrieve,
@@ -55,6 +55,26 @@ export class UsersService {
     if (!user) throw new UserNotFoundException();
     return user;
   }
+
+  async findByIds(ids: uuidv4[]): Promise<User[]> {
+
+    if (!ids.every((ids) => isUUID(ids, 4))) {
+      throw new InvalidUUIDException();
+    }
+
+    const users = await User.findAll({
+      where: { public_id: ids },
+      attributes: this.attributesToRetrieve,
+    });
+
+    if (users.length !== ids.length) {
+      throw new UserNotFoundException();
+    }
+
+    return users;
+  }
+
+
 
   async findByPseudo(pseudo: string) {
     const user = await User.findOne({

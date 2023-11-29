@@ -236,7 +236,7 @@ let activeListName = ref(ActiveListName.FRIENDS);
 const activeList = computed(() => {
   switch (activeListName.value) {
     case ActiveListName.FRIENDS:
-      return [...friendStore.friends.values()].filter((v) => {
+      return [...friendStore.DEBUG_friendsStatusRand.values()].filter((v) => {
         switch (statusFilter.value) {
           case StatusFilter.All:
             return true;
@@ -252,11 +252,11 @@ const activeList = computed(() => {
     case ActiveListName.REQUESTS:
       return [
         ...Array.from(friendStore.friendsReceived.values(), (user: any) => {
-          user.direction = "received";
+          user.requestDirection = "received";
           return user;
         }),
         ...Array.from(friendStore.friendsSent.values(), (user: any) => {
-          user.direction = "sent";
+          user.requestDirection = "sent";
           return user;
         }),
       ];
@@ -268,9 +268,9 @@ const activeList = computed(() => {
 });
 
 function getRequestDirMode(user: any) {
-  if (user.direction === "received") {
+  if (user.requestDirection === "received") {
     return ActiveListName.REQUESTS_IN;
-  } else if (user.direction === "sent") {
+  } else if (user.requestDirection === "sent") {
     return ActiveListName.REQUESTS_OUT;
   } else {
     return "NO REQUEST DIRECTION";

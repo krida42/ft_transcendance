@@ -40,14 +40,13 @@ export class RealtimeGateway
     console.log('Socket: Client connected: ', client.id);
 
     client.data.user = this.getUserWithCookie(client);
-    client.join(client.data.user.public_id);
+    client.join(this.getUserPersonalRoom(client.data.user.public_id));
 
     console.log('Socket: client.data.user: ', client.data.user);
   }
 
   handleDisconnect(client: Socket) {
     console.log('Socket: Client disconnected: ', client.id);
-    client.leave(client.data.user.public_id);
   }
 
   getUserWithCookie(socket: Socket): ResponseUserDto | null {
@@ -74,37 +73,12 @@ export class RealtimeGateway
     );
   }
 
-  pingUserGotFriendRequest(userId: string) {
-    const socket = this.findSocketByUserId(userId);
-    if (socket) {
-      socket.emit('gotFriendRequest');
-    }
+  getUserPersonalRoom(userId: string): string {
+    return `user:${userId}`;
   }
 
-  transmitMessageToUser(userId: string, message: unknown) {
-    throw new Error('Method not implemented.');
-    // const socket = this.findSocketByUserId(userId);
-    // if (socket) {
-    //   socket.emit('message', message);
-    // }
-    this.server.to(userId).emit('message', message);
-  }
-
-  transmitMessageToRoom(roomId: string, message: unknown) {
-    throw new Error('Method not implemented.');
-    this.server.to(roomId).emit('message', message);
-  }
-
-  transmitMessageOfUserToRoom(
-    userId: string,
-    roomId: string,
-    message: unknown,
-  ) {
-    throw new Error('Method not implemented.');
-    const socket = this.findSocketByUserId(userId);
-    if (socket) {
-      socket.to(roomId).emit('message', message);
-    }
+  getUserFriendsRoom(userId: string): string {
+    return `friends:${userId}`;
   }
 
   enterUserInRoom(userId: string, roomId: string) {
@@ -118,82 +92,6 @@ export class RealtimeGateway
     const socket = this.findSocketByUserId(userId);
     if (socket) {
       socket.leave(roomId);
-    }
-  }
-
-  bindUserToChannels(userId: string, channels: any[]) {
-    console.warn(
-      'A VOIR avec sylvain',
-      'bindUserToChannels: channels: ',
-      channels,
-    );
-    throw new Error('Method not implemented.');
-    const socket = this.findSocketByUserId(userId);
-    if (socket) {
-      channels.forEach((channel) => {
-        socket.join(channel.id);
-      });
-    }
-  }
-
-  unbindUserFromChannels(userId: string, channels: any[]) {
-    console.warn(
-      'A VOIR avec sylvain',
-      'bindUserToChannels: channels: ',
-      channels,
-    );
-    throw new Error('Method not implemented.');
-    const socket = this.findSocketByUserId(userId);
-    if (socket) {
-      channels.forEach((channel) => {
-        socket.leave(channel.id);
-      });
-    }
-  }
-
-  bindUserToFriends(userId: string, friends: any[]) {
-    console.warn(
-      'A VOIR avec sylvain',
-      'bindUserToChannels: channels: ',
-      friends,
-    );
-    throw new Error('Method not implemented.');
-    const socket = this.findSocketByUserId(userId);
-    if (socket) {
-      friends.forEach((friend) => {
-        socket.join(friend.id);
-      });
-    }
-  }
-
-  unbindUserFromFriends(userId: string, friends: any[]) {
-    console.warn(
-      'A VOIR avec sylvain',
-      'bindUserToChannels: channels: ',
-      friends,
-    );
-    throw new Error('Method not implemented');
-    const socket = this.findSocketByUserId(userId);
-    if (socket) {
-      friends.forEach((friend) => {
-        socket.leave(friend.id);
-      });
-    }
-  }
-
-  transmitStatusOfUserToFriends(
-    userId: string,
-    status: Status,
-    friends: any[],
-  ) {
-    throw new Error('Method not implemented. Waiting for sylvain');
-    const socket = this.findSocketByUserId(userId);
-    if (socket) {
-      friends.forEach((friend) => {
-        if (this.findSocketByUserId(friend.id)) {
-          socket.to(friend.id).emit('status', new StatusDto(userId, status));
-        }
-      });
     }
   }
 

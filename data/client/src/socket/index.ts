@@ -32,3 +32,4 @@ socket.on("disconnect", () => {
 //Pour les effet de bord
 // A mettre a la fin de ce fichier
 import("./friend");
+import("./message");

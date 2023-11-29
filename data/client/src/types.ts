@@ -45,7 +45,7 @@ enum ChatType {
   Direct = "direct",
 }
 
-type Match = {
+export type Match = {
   id: Id;
   scoreMe: number;
   scoreOp: number;
@@ -54,12 +54,12 @@ type Match = {
   date: Date;
 };
 
-type Channel = {
+export type Channel = {
   id: Id;
   name: string;
   owner: User;
   admins: User[];
-  users: User[];
+  members: User[];
   privacy: PrivacyType;
   logo: FormData;
   is_owner: boolean;
@@ -70,3 +70,9 @@ enum PrivacyType {
   Public = "public",
   Protected = "protected",
 }
+
+export type NavItem = {
+  iconName: string;
+  category: string;
+  route: string;
+};

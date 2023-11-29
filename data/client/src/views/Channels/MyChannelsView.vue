@@ -14,13 +14,13 @@
       >
         <ul class="my-channels-list">
           <MyChannelItem
-            v-for="(channel, index) in myChannelsList"
+            v-for="channel in myChannelsList"
             :key="channel.id"
+            :id="channel.id"
             :name="channel.name"
             :logo="channel.logo"
             :members="channel.members"
             :is_owner="channel.is_owner"
-            :index="index"
             :len="myChannelsList.length"
           />
         </ul>

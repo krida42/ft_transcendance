@@ -66,6 +66,25 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/channels/:channelId/settings",
+    name: "channelSettings",
+    component: () => import("../views/Channels/ChannelSettingsView.vue"),
+    children: [
+      {
+        path: "general",
+        name: "channelSettingsGeneral",
+        component: () =>
+          import("../views/Channels/ChannelSettingsGeneralView.vue"),
+      },
+      {
+        path: "members",
+        name: "channelSettingsMembers",
+        component: () =>
+          import("../views/Channels/ChannelSettingsMembersView.vue"),
+      },
+    ],
+  },
+  {
     path: "/main",
     name: "main",
     component: () => import("../views/MainView.vue"),

@@ -71,7 +71,7 @@
     </div>
     <div class="chan-options min-h-[25rem] h-[50vh] w-[100%] px-[3rem]">
       <div
-        :class="privacy === 'public' ? 'invisible' : 'visible'"
+        :class="privacy === 'public' ? 'hidden' : 'block'"
         class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap gap-[1rem] p-[2rem] overflow-y-scroll overflow-x-hidden"
       >
         <input
@@ -84,7 +84,7 @@
           class="w-[100%] h-[3rem] rounded-[15px] bg-yellow-hover text-black text-[1.2rem] pl-[1rem]"
         />
         <user-action
-          :class="privacy === 'private' ? 'visible' : 'invisible'"
+          :class="privacy === 'private' ? 'block' : 'hidden'"
           v-for="[, user] in friendList"
           :key="user.id"
           :uuid="user.id"

@@ -32,5 +32,13 @@ export const useChannelsStore = defineStore({
         this.channels.delete(channelId);
       });
     },
+    async removeUserFromChannel(channelId: Id, userId: Id): Promise<void> {
+      return channelsApi.removeUserFromChannel(channelId).then(() => {
+        const channel = this.channels.get(channelId);
+        if (channel) {
+          channel.users = channel.users.filter((user) => user.id !== userId);
+        }
+      });
+    },
   },
 });

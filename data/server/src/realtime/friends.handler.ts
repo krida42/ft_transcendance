@@ -1,15 +1,36 @@
-import { SubscribeMessage } from '@nestjs/websockets';
+import {
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
+} from '@nestjs/websockets';
+import { Socket } from 'socket.io';
 import { RealtimeGateway } from './realtime.gateway';
 import { Status, StatusDto } from './dto/status.dto';
+import { RoomService } from './room.service';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class FriendsHandler {
-  constructor(private readonly realtimeGateway: RealtimeGateway) {}
+  constructor(
+    private readonly realtimeGateway: RealtimeGateway,
+    private readonly roomService: RoomService,
+  ) {}
+
+  @SubscribeMessage('status')
+  handleStatus(
+    @MessageBody() status: Status,
+    @ConnectedSocket() client: Socket,
+  ): void {
+    console.log('status event, status: ', status);
+    client.data.status = status;
+    client
+      .to(this.roomService.getUserFriendsRoom(client.data.user.public_id))
+      .emit('status', new StatusDto(client.data.user.public_id, status));
+  }
 
   pingUserGotFriendRequest(userId: string) {
     const socket = this.realtimeGateway.findSocketByUserId(userId);
-    if (socket) {
-      socket.emit('gotFriendRequest');
-    }
+    socket.emit('gotFriendRequest');
   }
 
   bindUserToFriends(userId: string, friends: any[]) {
@@ -20,9 +41,8 @@ export class FriendsHandler {
     );
     throw new Error('Method not implemented.');
     const socket = this.realtimeGateway.findSocketByUserId(userId);
-    if (!socket) return;
     friends.forEach((friend) => {
-      socket.join(this.realtimeGateway.getUserFriendsRoom(friend.public_id));
+      socket.join(this.roomService.getUserFriendsRoom(friend.public_id));
     });
   }
 
@@ -34,24 +54,15 @@ export class FriendsHandler {
     );
     throw new Error('Method not implemented');
     const socket = this.realtimeGateway.findSocketByUserId(userId);
-    if (!socket) return;
     friends.forEach((friend) => {
-      socket.leave(this.realtimeGateway.getUserFriendsRoom(friend.public_id));
+      socket.leave(this.roomService.getUserFriendsRoom(friend.public_id));
     });
   }
 
   transmitStatusOfUserToConnectedFriends(userId: string, status: Status) {
     const socket = this.realtimeGateway.findSocketByUserId(userId);
-    if (!socket) return;
-
     socket
-      .to(this.realtimeGateway.getUserFriendsRoom(userId))
+      .to(this.roomService.getUserFriendsRoom(userId))
       .emit('status', new StatusDto(userId, status));
-
-    // friends.forEach((friend) => {
-    //   if (this.realtimeGateway.findSocketByUserId(friend.id)) {
-    //     socket.to(friend.public_id).emit('status', new StatusDto(userId, status));
-    //   }
-    // });
   }
 }

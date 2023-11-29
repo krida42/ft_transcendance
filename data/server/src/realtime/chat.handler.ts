@@ -1,25 +1,18 @@
 import { SubscribeMessage } from '@nestjs/websockets';
 import { RealtimeGateway } from './realtime.gateway';
+import { Injectable } from '@nestjs/common';
+import { RoomService } from './room.service';
 
+@Injectable()
 export class ChatHandler {
-  constructor(private readonly realtimeGateway: RealtimeGateway) {}
-
-  findSocketByUserId = this.realtimeGateway.findSocketByUserId;
-
-  @SubscribeMessage('join')
-  handleJoin(client: any, payload: any): string {
-    return 'Hello world!';
-  }
+  constructor(
+    private readonly realtimeGateway: RealtimeGateway,
+    private readonly roomService: RoomService,
+  ) {}
 
   bindUserToChannels(userId: string, channels: any[]) {
-    console.warn(
-      'A VOIR avec sylvain',
-      'bindUserToChannels: channels: ',
-      channels,
-    );
     throw new Error('Method not implemented.');
-    const socket = this.findSocketByUserId(userId);
-    if (!socket) return;
+    const socket = this.realtimeGateway.findSocketByUserId(userId);
 
     channels.forEach((channel) => {
       socket.join(channel.id);
@@ -27,14 +20,8 @@ export class ChatHandler {
   }
 
   unbindUserFromChannels(userId: string, channels: any[]) {
-    console.warn(
-      'A VOIR avec sylvain',
-      'bindUserToChannels: channels: ',
-      channels,
-    );
     throw new Error('Method not implemented.');
-    const socket = this.findSocketByUserId(userId);
-    if (!socket) return;
+    const socket = this.realtimeGateway.findSocketByUserId(userId);
 
     channels.forEach((channel) => {
       socket.leave(channel.id);
@@ -47,26 +34,20 @@ export class ChatHandler {
     message: unknown,
   ) {
     throw new Error('Method not implemented.');
-    const socket = this.findSocketByUserId(fromUserId);
-    if (!socket) return;
+    const socket = this.realtimeGateway.findSocketByUserId(fromUserId);
 
-    socket.to(toUserId).emit('message', message);
+    socket
+      .to(this.roomService.getUserPersonalRoom(toUserId))
+      .emit('message', message);
   }
 
-  #transmitMessageToRoom(roomId: string, message: unknown) {
-    throw new Error('Method not implemented.');
-    this.realtimeGateway.server.to(roomId).emit('message', message);
-  }
-
-  #transmitMessageOfUserToRoom(
-    userId: string,
-    roomId: string,
+  transmitMessageOfUserToChannel(
+    fromUserId: string,
+    channelId: string,
     message: unknown,
   ) {
     throw new Error('Method not implemented.');
-    const socket = this.findSocketByUserId(userId);
-    if (socket) {
-      socket.to(roomId).emit('message', message);
-    }
+    const socket = this.realtimeGateway.findSocketByUserId(fromUserId);
+    socket.to(channelId).emit('message', message);
   }
 }

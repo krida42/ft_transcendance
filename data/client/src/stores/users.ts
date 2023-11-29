@@ -13,7 +13,7 @@ export const useUsersStore = defineStore({
   getters: {
     users: (state) =>
       new Map<Id, User>([
-        ...useFriendStore().DEBUG_friendsStatusRand,
+        // ...useFriendStore().DEBUG_friendsStatusRand,
         ...useFriendStore().friendsReceived,
         ...useFriendStore().friendsSent,
         ...useFriendStore().blocked,

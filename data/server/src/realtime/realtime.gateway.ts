@@ -14,6 +14,7 @@ import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 import * as jwt from 'jsonwebtoken';
 
 import { StatusDto, Status } from './dto/status.dto';
+import { RoomService } from './room.service';
 
 @WebSocketGateway({
   cors: {
@@ -27,7 +28,7 @@ import { StatusDto, Status } from './dto/status.dto';
 export class RealtimeGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor() {} // private readonly authService: AuthService, // private readonly friendsService: FriendsService, // private readonly channelService: ChannelService, // private readonly userService: UserService,
+  constructor(private readonly roomService: RoomService) {}
 
   @WebSocketServer() server: Server;
   //   private logger: Logger = new Logger('AppGateway');
@@ -40,7 +41,9 @@ export class RealtimeGateway
     console.log('Socket: Client connected: ', client.id);
 
     client.data.user = this.getUserWithCookie(client);
-    client.join(this.getUserPersonalRoom(client.data.user.public_id));
+    client.join(
+      this.roomService.getUserPersonalRoom(client.data.user.public_id),
+    );
 
     console.log('Socket: client.data.user: ', client.data.user);
   }
@@ -67,32 +70,11 @@ export class RealtimeGateway
   }
 
   findSocketByUserId(userId: string) {
-    // return this.server.sockets.sockets.get(userId);
-    return [...this.server.sockets.sockets.values()].find(
+    const socket = [...this.server.sockets.sockets.values()].find(
       (socket) => (socket.data.user as ResponseUserDto).public_id === userId,
     );
-  }
-
-  getUserPersonalRoom(userId: string): string {
-    return `user:${userId}`;
-  }
-
-  getUserFriendsRoom(userId: string): string {
-    return `friends:${userId}`;
-  }
-
-  enterUserInRoom(userId: string, roomId: string) {
-    const socket = this.findSocketByUserId(userId);
-    if (socket) {
-      socket.join(roomId);
-    }
-  }
-
-  leaveUserFromRoom(userId: string, roomId: string) {
-    const socket = this.findSocketByUserId(userId);
-    if (socket) {
-      socket.leave(roomId);
-    }
+    if (!socket) throw new Error('findSocketByUserId: Socket not found');
+    return socket;
   }
 
   @SubscribeMessage('cuicui')

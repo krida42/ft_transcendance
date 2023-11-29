@@ -3,7 +3,7 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.addColumn('Users', 'refreshToken', {
-      type: Sequelize.BLOB('long'),
+      type: Sequelize.BYTEA('long'),
       allowNull: true,
       defaultValue: null
     });

@@ -1,18 +1,31 @@
 import { Scene } from "phaser";
 import io from "socket.io-client";
-import paddle from "@/assets/game/paddle.svg";
 export default class PlayScene extends Scene {
+  // socket = "player"
+  socket: any;
+
+  // gameObjects
   ballPosition: any;
   ball: any;
   paddlePosition1: any;
   paddlePosition2: any;
   paddle1: any;
   paddle2: any;
+
   timer: any;
   timerText!: Phaser.GameObjects.Text; // Add the '!' operator to indicate that this property will be initialized later
+
   score: any;
   scoreText!: Phaser.GameObjects.Text;
-  socket: any;
+
+  pause: any;
+  pauseText!: Phaser.GameObjects.Text;
+
+  //input
+  upKey: any;
+  downKey: any;
+  leftKey: any;
+  rightKey: any;
 
   constructor() {
     super({ key: "PlayScene" });
@@ -72,34 +85,53 @@ export default class PlayScene extends Scene {
       color: "#ffffff",
     });
 
-    // input
-    let upKey = null;
-    let downKey = null;
-    let leftKey = null;
-    let rightKey = null;
-    if (this.input.keyboard) {
-      upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-      downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-      leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-      rightKey = this.input.keyboard.addKey(
-        Phaser.Input.Keyboard.KeyCodes.RIGHT
-      );
+    // pause
+    this.pause = false;
+    this.pauseText = this.add.text(400, 300, "", {
+      font: "16px Arial",
+      color: "#ffffff",
+    });
+
+    // screen-split
+    const graphics = this.add.graphics({ lineStyle: { color: 0xffffff } }); // Remplacez 0xffffff par la couleur que vous voulez
+    const screenHeight = this.cameras.main.height;
+    const screenWidth = this.cameras.main.width;
+    const dashSize = 10;
+    const gapSize = 5;
+
+    for (let y = 0; y < screenHeight; y += dashSize + gapSize) {
+      graphics.lineBetween(screenWidth / 2, y, screenWidth / 2, y + dashSize);
     }
 
+    // input
+    if (!this.input.keyboard) {
+      return;
+    }
+    this.upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    this.downKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.DOWN
+    );
+    this.leftKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.LEFT
+    );
+    this.rightKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.RIGHT
+    );
+
     // emit
-    upKey?.on("down", () => {
+    this.upKey.on("down", () => {
       this.socket.emit("moveUp");
     });
 
-    downKey?.on("down", () => {
+    this.downKey.on("down", () => {
       this.socket.emit("moveDown");
     });
 
-    leftKey?.on("down", () => {
+    this.leftKey.on("down", () => {
       this.socket.emit("moveLeft");
     });
 
-    rightKey?.on("down", () => {
+    this.rightKey.on("down", () => {
       this.socket.emit("moveRight");
     });
 
@@ -130,6 +162,14 @@ export default class PlayScene extends Scene {
     this.socket.on("gameState", (gameState: any) => {
       this.timer = gameState.time;
       this.score = gameState.score;
+    });
+
+    this.socket.on("pause", () => {
+      this.pause = true;
+    });
+
+    this.socket.on("resume", () => {
+      this.pause = false;
     });
 
     this.socket.on("winner", () => {
@@ -168,6 +208,20 @@ export default class PlayScene extends Scene {
     this.paddle2.x = this.paddlePosition2[0];
     this.paddle2.y = this.paddlePosition2[1];
 
+    // move paddle
+    if (this.upKey.isDown) {
+      this.socket.emit("moveUp");
+    }
+    if (this.downKey.isDown) {
+      this.socket.emit("moveDown");
+    }
+    if (this.leftKey.isDown) {
+      this.socket.emit("moveLeft");
+    }
+    if (this.rightKey.isDown) {
+      this.socket.emit("moveRight");
+    }
+
     // display timer
     const minutes = Math.floor(this.timer / 60);
     const seconds = Math.floor(this.timer % 60);
@@ -177,5 +231,10 @@ export default class PlayScene extends Scene {
 
     // display score
     this.scoreText.setText(this.score[0] + " - " + this.score[1]);
+
+    // display pause
+    if (this.pauseText) {
+      this.pauseText.setText(this.pause ? "Pause" : "");
+    }
   }
 }

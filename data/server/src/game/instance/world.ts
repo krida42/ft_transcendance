@@ -2,9 +2,12 @@ import * as Matter from 'matter-js';
 import { HEIGHT, WALL_THICKNESS, WIDTH } from '../const';
 
 export class PongWorld{
+  //engine
   world: Matter.World;
   engine: Matter.Engine;
   runner: Matter.Runner;
+
+  //walls
   topWall: Matter.Body;
   bottomWall: Matter.Body;
   leftWall: Matter.Body;
@@ -17,21 +20,19 @@ export class PongWorld{
   }
 
   createEngine() {
-    this.engine = Matter.Engine.create(
-      {
-        width: WIDTH,
-        height: HEIGHT,
-        gravity: {
-          scale: 0,
-          x: 0,
-          y: 0,
-        },
-        timeScale: 1,
-        velocityIterations: 4,
-        positionIterations: 4,
-        wireframes: false,
+    this.engine = Matter.Engine.create({
+      width: WIDTH,
+      height: HEIGHT,
+      gravity: {
+        scale: 0,
+        x: 0,
+        y: 0,
       },
-    );
+      timeScale: 1,
+      velocityIterations: 4,
+      positionIterations: 4,
+      wireframes: false,
+    },);
   }
 
   run() {
@@ -40,9 +41,7 @@ export class PongWorld{
   }
 
   pause() {
-    if (this.engine.timing.isRunning) {
-      Matter.Runner.stop(this.runner);
-    }
+    Matter.Runner.stop(this.runner);
   }
 
   end() {
@@ -64,14 +63,7 @@ export class PongWorld{
   ballCollisionWithWalls(ball: Matter.Body) {
     const checkCollisionWithWall = (bodyA: Matter.Body, bodyB: Matter.Body, wall: Matter.Body, wallName: string) => {
       if ((bodyA === ball && bodyB === wall) || (bodyB === ball && bodyA === wall)) {
-        console.log(`Collision avec le mur ${wallName}`);
-        if (wallName === 'du haut' || wallName === 'du bas') {
-          const velocityIncrease = 0.6;
-          Matter.Body.setVelocity(ball, {
-            x: ball.velocity.x > 0 ? ball.velocity.x + velocityIncrease : ball.velocity.x - velocityIncrease,
-            y: ball.velocity.y > 0 ? ball.velocity.y + velocityIncrease : ball.velocity.y - velocityIncrease
-          });
-        }
+        // console.log(`Collision avec le mur ${wallName}`);
         if (wallName === 'de gauche')
           Matter.Events.trigger(this.engine, 'score', { player: 2 });
         else if (wallName === 'de droite')

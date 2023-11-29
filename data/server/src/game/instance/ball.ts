@@ -5,6 +5,7 @@ import { randomInt } from 'crypto';
 
 export class PongBall {
   ball: Matter.Body;
+  acceleration: number = 0.0001;
 
   constructor(private pongWorld: PongWorld) {
     this.createBall();
@@ -18,16 +19,28 @@ export class PongBall {
       friction: 0,
       frictionAir: 0,
       frictionStatic: 0,
-      density: 0.001,
+      density: 1,
     });
     Matter.World.add(this.pongWorld.world, this.ball);
-    randomInt(0, 2) === 0 ? fX = 0.001 : fX = -0.001;
-    const force = { x: fX, y: 0.001 }; // y a changer a 0y
+    randomInt(0, 2) === 0 ? fX = 1 : fX = -1;
+    const force = { x: fX, y: 1 }; // y a changer a 0y
+    Matter.Body.applyForce(this.ball, this.ball.position, force);
+  }
+
+  update() {
+    this.acceleration += 0.0001;
+    const fX = this.ball.velocity.x * this.acceleration;
+    const fY = this.ball.velocity.y * this.acceleration;
+    const force = { x: fX, y: fY };
     Matter.Body.applyForce(this.ball, this.ball.position, force);
   }
 
   resetPosition() {
+    this.acceleration = 0.0001;
+    this.ball.velocity.x = 0;
+    this.ball.velocity.y = 0;
     Matter.Body.setPosition(this.ball, { x: WIDTH / 2, y: HEIGHT / 2 });
+    
     let fX = 0;
     let fY = 0;
     randomInt(0, 2) === 0 ? fX = 0.01 : fX = -0.01;

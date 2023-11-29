@@ -14,11 +14,11 @@ export class PongPaddle {
   createPaddle() {
     this.paddle = Matter.Bodies.rectangle(
       0, 0, PADDLE_WIDTH, PADDLE_HEIGHT, {
-      restitution: 1,
+      restitution: 0,
       friction: 0,
       frictionAir: 0,
       frictionStatic: 0,
-      density: 0.001,
+      density: 1,
       inertia: Infinity,
     });
     if (this.player === 1)
@@ -29,11 +29,15 @@ export class PongPaddle {
   }
 
   resetPosition() {
-    Matter.Body.setVelocity(this.paddle, { x: 0, y: 0 });
+    this.stopMoving();
     if (this.player === 1)
       Matter.Body.setPosition(this.paddle, { x: POSITION_PADDLE_1_x, y: POSITION_PADDLE_1_y });
     else
       Matter.Body.setPosition(this.paddle, { x: POSITION_PADDLE_2_x, y: POSITION_PADDLE_2_y });
+  }
+
+  stopMoving() {
+    Matter.Body.setVelocity(this.paddle, { x: 0, y: 0 });
   }
 
   moveUp() {

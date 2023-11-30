@@ -33,7 +33,10 @@ export class ChannelsService {
 
   ) {}
 
-    async createChannel(login: string, channelDto: createChannelDto): Promise<string> {
+    // ----------   CREATE / DELETE / UPDATE CHANNEL
+
+    async createChannel(login: string, channelDto: createChannelDto): Promise<string>
+    {
         const name = channelDto.name;
         const chan = await this.channelModel.findOne({ where: { name: name } });
         if (chan) {
@@ -52,7 +55,8 @@ export class ChannelsService {
         }
     }
 
-    async deleteChannel(login: string, name: string): Promise<string> {
+    async deleteChannel(login: string, name: string): Promise<string>
+    {
         const chan = await this.channelModel.findOne({ where: { name: name } });
         if (!chan) {
             throw new ChannelNotFoundException();
@@ -67,7 +71,54 @@ export class ChannelsService {
         }
     }
 
-    async joinChannel(login: string, name: string): Promise<string> {
+    async updateChannel(login: string, name: string, channelDto: updateChannelDto): Promise<string>
+    {
+        const chan = await this.channelModel.findOne({ where: { name: name } });
+        if (!chan) {
+            throw new ChannelNotFoundException();
+        }
+        // TODO check login is admin / owner of the channel
+        // TODO check new mode != current mode
+
+        try {
+            chan.channelType = channelDto.channelType; 
+            chan.password = channelDto.password
+            await chan.save();
+            // return `Channel ${name} password updated.`;
+            return `Channel ${name} updated.`;
+        } catch (error) {
+            throw new BadRequestException(error.message);
+        }
+    }
+
+    async putImage(login: string, name: string, image: Express.Multer.File): Promise<string>
+    {
+        try {
+
+            if (!image) {
+                throw new BadRequestException('No image provided');
+            }
+    
+            const chan = await this.channelModel.findOne({ where: { name: name } });
+            if (!chan) {
+                throw new ChannelNotFoundException();
+            }
+
+            chan.imageData = image.buffer;
+
+            return `${login} put image successfully on channel ${name}.`;
+            // return { success: true, message: 'Image updated successfully' };
+
+        } catch (error) {
+            throw new BadRequestException(error.message);
+        }
+    }
+
+
+    // ----------   JOIN / QUIT CHANNEL
+
+    async joinChannel(login: string, name: string): Promise<string>
+    {
         const chan = await this.channelModel.findOne({ where: { name: name } });
         if (!chan) {
             throw new ChannelNotFoundException();
@@ -76,7 +127,7 @@ export class ChannelsService {
         login = "test";
         const userr = await this.usersService.findByLogin(login);
         if (userr == null) {
-            throw new ChannelAlreadyExistsException();
+            throw new ChannelAlreadyExistsException(); // 400
         }
         // const user = await User.findByPk((await userr).id);
         // if (!user) {
@@ -100,7 +151,8 @@ export class ChannelsService {
         }
     }
 
-    async quitChannel(login: string, name: string): Promise<string> {
+    async quitChannel(login: string, name: string): Promise<string>
+    {
         const chan = await this.channelModel.findOne({ where: { name: name } });
         if (!chan) {
             throw new ChannelNotFoundException();
@@ -132,26 +184,27 @@ export class ChannelsService {
         }
     }
 
-    async updateChannel(login: string, name: string, channelDto: updateChannelDto): Promise<string> {
+    // ----------   INVITE
+
+    async inviteToChannel(login: string, name:string, userId: string): Promise<string>
+    {
         const chan = await this.channelModel.findOne({ where: { name: name } });
         if (!chan) {
             throw new ChannelNotFoundException();
         }
-        // TODO check login is admin / owner of the channel
-        // TODO check new mode != current mode
-
         try {
-            chan.channelType = channelDto.channelType; 
-            chan.password = channelDto.password
-            await chan.save();
-            // return `Channel ${name} password updated.`;
-            return `Channel ${name} updated.`;
+            // todo send invite to user
+            return `${login} invited to channel ${name}.`;
         } catch (error) {
             throw new BadRequestException(error.message);
         }
     }
 
-    async addAdminChannel(login: string, name: string, userId: string): Promise<string> {
+
+    // ----------   OWNER / ADMIN OPERATIONS
+
+    async addAdminChannel(login: string, name: string, userId: string): Promise<string>
+    {
         const chan = await this.channelModel.findOne({ where: { name: name } });
         if (!chan) {
             throw new ChannelNotFoundException();
@@ -165,7 +218,8 @@ export class ChannelsService {
         }
     }
 
-    async delAdminChannel(login: string, name: string, userId: string): Promise<string> {
+    async delAdminChannel(login: string, name: string, userId: string): Promise<string>
+    {
         const chan = await this.channelModel.findOne({ where: { name: name } });
         if (!chan) {
             throw new ChannelNotFoundException();
@@ -179,20 +233,56 @@ export class ChannelsService {
         }
     }
 
-    async inviteToChannel(login: string, name:string, userId: string): Promise<string> {
+    async muteUser(login: string, name:string, userId: string): Promise<string>
+    {
         const chan = await this.channelModel.findOne({ where: { name: name } });
         if (!chan) {
             throw new ChannelNotFoundException();
         }
         try {
-            // todo send invite to user
-            return `${login} invited to channel ${name}.`;
+            // TODO mute userId in db
+            return `${userId} muted in ${name}.`;
+
         } catch (error) {
             throw new BadRequestException(error.message);
         }
     }
 
-    async getChannels(login: string, state: string): Promise<Channels[]> {
+    async kickUser(login: string, name:string, userId: string): Promise<string>
+    {
+        const chan = await this.channelModel.findOne({ where: { name: name } });
+        if (!chan) {
+            throw new ChannelNotFoundException();
+        }
+        try {
+            // TODO kick userId in db
+            return `${userId} muted in ${name}.`;
+
+        } catch (error) {
+            throw new BadRequestException(error.message);
+        }
+    }
+
+    async banUser(login: string, name:string, userId: string): Promise<string>
+    {
+        const chan = await this.channelModel.findOne({ where: { name: name } });
+        if (!chan) {
+            throw new ChannelNotFoundException();
+        }
+        try {
+            // TODO ban userId in db
+            return `${userId} muted in ${name}.`;
+
+        } catch (error) {
+            throw new BadRequestException(error.message);
+        }
+    }
+
+
+    // ----------   GET CHANNELS
+
+    async getChannels(login: string, state: string): Promise<Channels[]>
+    {
         if (state === 'joined') {
             return this.getAll(); // FIXME
         }
@@ -204,7 +294,8 @@ export class ChannelsService {
         }
     }
 
-    async getUserChannels(user: string): Promise<Channels[]> {
+    async getUserChannels(user: string): Promise<Channels[]>
+    {
 
         const userChannels = await this.channelUsersModel.findAll({
             where: { userId: user },
@@ -216,7 +307,8 @@ export class ChannelsService {
     }
 
 
-    async getChannelUsers(name: string): Promise<User[]> {
+    async getChannelUsers(name: string): Promise<User[]>
+    {
 
         const channel = await Channels.findOne({ where: { name: name } });
         if (!channel) {
@@ -233,7 +325,8 @@ export class ChannelsService {
         return Array.isArray(users) ? users : [users];
     }
 
-    async getChannelBanlist(name: string): Promise<User[]> {
+    async getChannelBanlist(name: string): Promise<User[]>
+    {
 
         const channel = await Channels.findOne({ where: { name: name } });
         if (!channel) {
@@ -251,46 +344,13 @@ export class ChannelsService {
     }
     
     
-    async getAll(): Promise<Channels[]> {
+    async getAll(): Promise<Channels[]>
+    {
         const all = await Channels.findAll({});
         console.log(all.every((chan) => chan instanceof Channels));
         console.log('All channels:', JSON.stringify(all, null, 2));
         return all;
     }
 
-    async putImage(login: string, name: string, image: Express.Multer.File): Promise<string> {
-        try {
 
-            if (!image) {
-                throw new BadRequestException('No image provided');
-            }
-    
-            const chan = await this.channelModel.findOne({ where: { name: name } });
-            if (!chan) {
-                throw new ChannelNotFoundException();
-            }
-
-            chan.imageData = image.buffer;
-
-            return `${login} put image successfully on channel ${name}.`;
-            // return { success: true, message: 'Image updated successfully' };
-
-        } catch (error) {
-            throw new BadRequestException(error.message);
-        }
-    }
-
-    async muteUser(login: string, name:string, userId: string): Promise<string> {
-        const chan = await this.channelModel.findOne({ where: { name: name } });
-        if (!chan) {
-            throw new ChannelNotFoundException();
-        }
-        try {
-            // TODO mute userId in db
-            return `${userId} muted in ${name}.`;
-
-        } catch (error) {
-            throw new BadRequestException(error.message);
-        }
-    }
 }

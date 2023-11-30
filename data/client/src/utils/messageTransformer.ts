@@ -1,3 +1,5 @@
+import { Id, Message, User } from "@/types";
+
 export class MessageTransformer {
   static toArray(messages: Map<Id, Message>): Message[] {
     return Array.from(messages.values());

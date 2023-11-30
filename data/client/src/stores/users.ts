@@ -3,6 +3,8 @@ import { useMainStore } from "./main";
 import { useFriendStore } from "./friend";
 import userApi from "../api/user";
 
+import { Id, User } from "@/types";
+
 export const useUsersStore = defineStore({
   id: "users",
   state: (): {

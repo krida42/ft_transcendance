@@ -1,3 +1,5 @@
+import { Id, Friend } from "@/types";
+
 export class FriendsTransformer {
   static toArray(friends: Map<Id, Friend>): Friend[] {
     return Array.from(friends.values());

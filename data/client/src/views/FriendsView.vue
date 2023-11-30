@@ -201,7 +201,7 @@ import { FriendsTransformer } from "@/utils//friendsTransformer";
 import { useFriendStore } from "@/stores/friend";
 import { computed, ref, onMounted, onUnmounted } from "vue";
 
-import { Status } from "@/mtypes";
+import { Status } from "@/types";
 import { useUsersStore } from "@/stores/users";
 import userApi from "@/api/user";
 

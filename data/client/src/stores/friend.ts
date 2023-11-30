@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import friendApi from "../api/friend";
 
-import { Status } from "@/mtypes";
+import { Friend, Id, Status, User } from "@/types";
 
 export const useFriendStore = defineStore({
   id: "friend",

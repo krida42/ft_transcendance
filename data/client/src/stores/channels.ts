@@ -1,9 +1,7 @@
-//de quels channels je fais partie
-//de quels channels je suis admin
-//de quels channels je suis owner
-
 import { defineStore } from "pinia";
 import channelsApi from "../api/channel";
+import { Channel, Id } from "@/types";
+
 export const useChannelsStore = defineStore({
   id: "channels",
   state: (): {
@@ -36,7 +34,9 @@ export const useChannelsStore = defineStore({
       return channelsApi.removeUserFromChannel(channelId).then(() => {
         const channel = this.channels.get(channelId);
         if (channel) {
-          channel.users = channel.users.filter((user) => user.id !== userId);
+          channel.members = channel.members.filter(
+            (user) => user.id !== userId
+          );
         }
       });
     },

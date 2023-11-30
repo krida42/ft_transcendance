@@ -1,12 +1,12 @@
-type Id = string;
+export type Id = string;
 
-enum Status {
+export enum Status {
   Online = "online",
   Offline = "offline",
   InGame = "inGame",
 }
 
-type User = {
+export type User = {
   id: Id;
   email?: string;
   login?: string;
@@ -18,9 +18,9 @@ type User = {
   status?: string;
 };
 
-type Friend = User;
+export type Friend = User;
 
-type Message = {
+export type Message = {
   msgId: Id;
   content: string;
   createdAt: Date;
@@ -33,14 +33,14 @@ type Message = {
   solo?: boolean;
 };
 
-type Chat = {
+export type Chat = {
   id: Id;
   name: string;
   messages: Map<Id, Message>;
   chatType: ChatType;
 };
 
-enum ChatType {
+export enum ChatType {
   Channel = "channel",
   Direct = "direct",
 }
@@ -65,7 +65,7 @@ export type Channel = {
   is_owner: boolean;
 };
 
-enum PrivacyType {
+export enum PrivacyType {
   Private = "private",
   Public = "public",
   Protected = "protected",

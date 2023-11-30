@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { Channel, Id } from "@/types";
+
 const host = process.env.VUE_APP_API_URL;
 
 export default {

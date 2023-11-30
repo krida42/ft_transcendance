@@ -7,6 +7,7 @@
         @close="closeChatUserActionPopup()"
         v-if="chatUserActionPopup.userId"
         :test="usersStore.users.get(chatUserActionPopup.userId)"
+        admin
       />
     </Transition>
     <div class="header bg-blue-light" @mousedown="dragMouseDown">

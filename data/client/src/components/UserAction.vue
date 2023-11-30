@@ -72,7 +72,7 @@ import { useFriendStore } from "@/stores/friend";
 import { computed } from "vue";
 import { defineProps } from "vue";
 
-import { Status } from "@/mtypes";
+import { Status } from "@/types";
 
 const usersStore = useUsersStore();
 

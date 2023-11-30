@@ -3,7 +3,7 @@ import { useUsersStore } from "./users";
 import messageApi from "../api/message";
 import { MessageTransformer } from "@/utils/messageTransformer";
 
-import { ChatType } from "@/mtypes";
+import { Chat, ChatType, Id, Message } from "@/types";
 
 export const useChatStore = defineStore({
   id: "chat",

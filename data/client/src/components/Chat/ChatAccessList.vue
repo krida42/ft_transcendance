@@ -33,7 +33,7 @@
 import ChatAccessItem from "./ChatAccessItem.vue";
 import { useFriendStore } from "@/stores/friend";
 import { useChatStore } from "@/stores/chat";
-import { ChatType } from "@/mtypes";
+import { ChatType } from "@/types";
 
 const friendStore = useFriendStore();
 const chatStore = useChatStore();

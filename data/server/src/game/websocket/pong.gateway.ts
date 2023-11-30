@@ -15,7 +15,7 @@ import { PlayerManager } from '../lobby/playerManager';
   },
   transports: ['websocket'],
 })
-export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect{
+export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
   rooms = new Array<PongRoom>();
@@ -131,21 +131,35 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect{
         }
       }
     }
-}
+  }
 
-@SubscribeMessage('moveDown')
-handleMoveDown(client: Socket) {
-  const userCookie = this.getUserWithCookie(client);
-  if (userCookie) {
-    const room = this.rooms.find(r => r.PlayerManager.hasPlayer(userCookie.public_id));
-    if (room) {
-      const player = room.players.find(p => p.client.id === client.id);
-      if (player) {
-        room.moveDown(player.number);
+  @SubscribeMessage('moveDown')
+  handleMoveDown(client: Socket) {
+    const userCookie = this.getUserWithCookie(client);
+    if (userCookie) {
+      const room = this.rooms.find(r => r.PlayerManager.hasPlayer(userCookie.public_id));
+      if (room) {
+        const player = room.players.find(p => p.client.id === client.id);
+        if (player) {
+          room.moveDown(player.number);
+        }
       }
     }
   }
-}
+
+  @SubscribeMessage('stopMoving')
+  handleStopMoving(client: Socket) {
+    const userCookie = this.getUserWithCookie(client);
+    if (userCookie) {
+      const room = this.rooms.find(r => r.PlayerManager.hasPlayer(userCookie.public_id));
+      if (room) {
+        const player = room.players.find(p => p.client.id === client.id);
+        if (player) {
+          room.stopMoving(player.number);
+        }
+      }
+    }
+  }
 
   @SubscribeMessage('newGame')
   newGame(){

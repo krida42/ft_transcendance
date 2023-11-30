@@ -14,12 +14,8 @@ export class PongPaddle {
   createPaddle() {
     this.paddle = Matter.Bodies.rectangle(
       0, 0, PADDLE_WIDTH, PADDLE_HEIGHT, {
-      restitution: 0,
-      friction: 0,
-      frictionAir: 0,
-      frictionStatic: 0,
+      restitution: 1,
       density: 1,
-      inertia: Infinity,
     });
     if (this.player === 1)
       Matter.Body.setPosition(this.paddle, { x: POSITION_PADDLE_1_x, y: POSITION_PADDLE_1_y });

@@ -73,6 +73,13 @@ export class PongRoom {
     this.game.moveUp(player);
   }
 
+  stopMoving(player: number) {
+    // console.log('stopMoving', player);
+    if (!this.started)
+      return;
+    this.game.stopMoving(player);
+  }
+
   sendBallPosition(ball: [number, number]) {
     // console.log('Ball position sent to clients:', ball); 
     this.players.forEach(player => {

@@ -21,22 +21,20 @@ export class PongWorld{
 
   createEngine() {
     this.engine = Matter.Engine.create({
-      width: WIDTH,
-      height: HEIGHT,
       gravity: {
         scale: 0,
         x: 0,
-        y: 0,
+        y: 0
       },
       timeScale: 1,
       velocityIterations: 4,
       positionIterations: 4,
       wireframes: false,
     },);
+    this.runner = Matter.Runner.create();
   }
 
   run() {
-    this.runner = Matter.Runner.create();
     Matter.Runner.run(this.runner, this.engine);
   }
 
@@ -46,6 +44,7 @@ export class PongWorld{
 
   end() {
     Matter.Runner.stop(this.runner);
+    Matter.World.clear(this.world, false);
     Matter.Engine.clear(this.engine);
   }
 
@@ -64,19 +63,19 @@ export class PongWorld{
     const checkCollisionWithWall = (bodyA: Matter.Body, bodyB: Matter.Body, wall: Matter.Body, wallName: string) => {
       if ((bodyA === ball && bodyB === wall) || (bodyB === ball && bodyA === wall)) {
         // console.log(`Collision avec le mur ${wallName}`);
-        if (wallName === 'de gauche')
+        if (wallName === 'gauche')
           Matter.Events.trigger(this.engine, 'score', { player: 2 });
-        else if (wallName === 'de droite')
+        else if (wallName === 'droite')
           Matter.Events.trigger(this.engine, 'score', { player: 1 });
       }
     };
 
     Matter.Events.on(this.engine, 'collisionStart', (event) => {
       event.pairs.forEach((pair) => {
-        checkCollisionWithWall(pair.bodyA, pair.bodyB, this.topWall, 'du haut');
-        checkCollisionWithWall(pair.bodyA, pair.bodyB, this.bottomWall, 'du bas');
-        checkCollisionWithWall(pair.bodyA, pair.bodyB, this.leftWall, 'de gauche');
-        checkCollisionWithWall(pair.bodyA, pair.bodyB, this.rightWall, 'de droite');
+        checkCollisionWithWall(pair.bodyA, pair.bodyB, this.topWall, 'haut');
+        checkCollisionWithWall(pair.bodyA, pair.bodyB, this.bottomWall, 'bas');
+        checkCollisionWithWall(pair.bodyA, pair.bodyB, this.leftWall, 'gauche');
+        checkCollisionWithWall(pair.bodyA, pair.bodyB, this.rightWall, 'droite');
       });
     });
   }

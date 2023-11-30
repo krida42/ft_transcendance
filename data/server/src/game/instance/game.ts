@@ -235,4 +235,11 @@ export class Game {
     else
       this.gameState.pongPaddle2.moveUp();
   }
+
+  stopMoving(player: number) {
+    if (player === 1)
+      this.gameState.pongPaddle1.stopMoving();
+    else
+      this.gameState.pongPaddle2.stopMoving();
+  }
 }

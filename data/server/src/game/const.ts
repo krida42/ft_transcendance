@@ -12,7 +12,7 @@ export const WIDTH = 800;
 export const WALL_THICKNESS = 50;
 
 // Ball dimensions
-export const BALL_RADIUS = 10;
+export const BALL_RADIUS = 20;
 
 const BALL_VELOCITY_X = 30;
 const BALL_VELOCITY_Y = 10;

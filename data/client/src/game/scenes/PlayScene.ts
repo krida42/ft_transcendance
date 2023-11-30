@@ -122,17 +122,29 @@ export default class PlayScene extends Scene {
     this.upKey.on("down", () => {
       this.socket.emit("moveUp");
     });
+    this.upKey.on("up", () => {
+      this.socket.emit("stopMoving");
+    });
 
     this.downKey.on("down", () => {
       this.socket.emit("moveDown");
+    });
+    this.downKey.on("up", () => {
+      this.socket.emit("stopMoving");
     });
 
     this.leftKey.on("down", () => {
       this.socket.emit("moveLeft");
     });
+    this.leftKey.on("up", () => {
+      this.socket.emit("stopMoving");
+    });
 
     this.rightKey.on("down", () => {
       this.socket.emit("moveRight");
+    });
+    this.rightKey.on("up", () => {
+      this.socket.emit("stopMoving");
     });
 
     // receive

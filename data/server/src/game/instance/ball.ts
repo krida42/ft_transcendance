@@ -14,21 +14,22 @@ export class PongBall {
 
   createBall() {
     let fX = 0;
+    let fY = 0;
     this.ball = Matter.Bodies.circle(WIDTH / 2, HEIGHT / 2, BALL_RADIUS, {
-      restitution: 1, 
       friction: 0,
       frictionAir: 0,
       frictionStatic: 0,
-      density: 1,
+      restitution: 1,
+      density: 0.01,
     });
     Matter.World.add(this.pongWorld.world, this.ball);
-    randomInt(0, 2) === 0 ? fX = 1 : fX = -1;
-    const force = { x: fX, y: 1 }; // y a changer a 0y
+    randomInt(0, 2) === 0 ? fX = 0.1 : fX = -0.1;
+    randomInt(0, 2) === 0 ? fY = 0.1 : fY = -0.1;
+    const force = { x: fX, y: fY }; // y a changer a 0y
     Matter.Body.applyForce(this.ball, this.ball.position, force);
   }
 
   update() {
-    this.acceleration += 0.0001;
     const fX = this.ball.velocity.x * this.acceleration;
     const fY = this.ball.velocity.y * this.acceleration;
     const force = { x: fX, y: fY };
@@ -36,7 +37,6 @@ export class PongBall {
   }
 
   resetPosition() {
-    this.acceleration = 0.0001;
     this.ball.velocity.x = 0;
     this.ball.velocity.y = 0;
     Matter.Body.setPosition(this.ball, { x: WIDTH / 2, y: HEIGHT / 2 });

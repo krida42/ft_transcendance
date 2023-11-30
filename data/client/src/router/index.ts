@@ -65,6 +65,52 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/PongView.vue"),
   },
   {
+    path: "/friends",
+    name: "friends",
+    component: () => import("../views/FriendsView.vue"),
+  },
+  {
+    path: "/channels",
+    name: "channels",
+    component: () => import("../views/Channels/ChannelsView.vue"),
+    children: [
+      {
+        path: "my-channels",
+        name: "myChannels",
+        component: () => import("../views/Channels/MyChannelsView.vue"),
+      },
+      {
+        path: "explore",
+        name: "exploreChannels",
+        component: () => import("../views/Channels/ExploreChannelsView.vue"),
+      },
+      {
+        path: "create",
+        name: "createChannel",
+        component: () => import("../views/Channels/CreateChannelView.vue"),
+      },
+    ],
+  },
+  {
+    path: "/channels/:channelId/settings",
+    name: "channelSettings",
+    component: () => import("../views/Channels/ChannelSettingsView.vue"),
+    children: [
+      {
+        path: "general",
+        name: "channelSettingsGeneral",
+        component: () =>
+          import("../views/Channels/ChannelSettingsGeneralView.vue"),
+      },
+      {
+        path: "members",
+        name: "channelSettingsMembers",
+        component: () =>
+          import("../views/Channels/ChannelSettingsMembersView.vue"),
+      },
+    ],
+  },
+  {
     path: "/main",
     name: "main",
     component: () => import("../views/MainView.vue"),

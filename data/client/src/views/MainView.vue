@@ -1,9 +1,13 @@
 <template>
   <div class="home">
-    <div class="left">
+    <div class="left flex flex-col items-start justify-between">
       <MenuButton
         svgName="pong-logo.svg"
         @click="() => $router.push('/main/home')"
+      />
+      <MenuButton
+        svgName="heart-menu.svg"
+        @click="() => $router.push('/friends')"
       />
     </div>
     <div class="arcade">
@@ -25,8 +29,34 @@
       <MenuButton
         svgName="profile.svg"
         @click="() => $router.push('/profile')"
+        class="bd-redd"
       />
-      <MenuButton svgName="message.svg" />
+      <img
+        @click="() => $router.push('/channels/my-channels')"
+        src="../assets/svg/create.svg"
+        class="absolute bottom-[100px] right-[20px] w-[1.5rem] aspect-square"
+      />
+      <!-- <router-link to="/about"> -->
+      <div class="bd-resd mb-[30px] mr-[30px]">
+        <div class="bd-redd relative" v-show="chatAccessOpened">
+          <ChatAccessList class="relative z-10 right-[2rem]" />
+
+          <ChatMsgList
+            class="left-[-420px] top-[-230px]"
+            v-show="chatStore.openedChatId !== ''"
+          />
+        </div>
+        <MenuButton
+          svgName="message.svg"
+          size="90px"
+          class="bd-greedn float-right relative z-[100]"
+          @click="
+            toggleChatAccess();
+            console.log(chatAccessOpened);
+          "
+        />
+      </div>
+      <!-- </router-link> -->
     </div>
   </div>
 </template>
@@ -36,9 +66,14 @@ import { useFriendStore } from "@/stores/friend";
 import ArcadeButton from "@/components/ArcadeButton.vue";
 import MenuButton from "@/components/MenuButton.vue";
 import router from "@/router/index";
-import { onMounted } from "vue";
+import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
+import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
+import { ref } from "vue";
+import { useChatStore } from "@/stores/chat";
+import { useUsersStore } from "@/stores/users";
 
 const friendStore = useFriendStore();
+const usersStore = useUsersStore();
 
 async function checkFriends() {
   await friendStore.refreshFriendList();
@@ -48,6 +83,18 @@ async function checkFriends() {
   } else {
     router.push("/main/friend-play");
   }
+}
+
+const chatStore = useChatStore();
+
+friendStore.refreshFriendList();
+usersStore.refreshUser("marine");
+usersStore.refreshUser("someone");
+
+let chatAccessOpened = ref(false);
+
+function toggleChatAccess() {
+  chatAccessOpened.value = !chatAccessOpened.value;
 }
 </script>
 
@@ -77,6 +124,12 @@ async function checkFriends() {
   position: absolute;
   background-color: $green-my;
   top: var(--border-ratio);
+}
+
+.right img:hover {
+  cursor: pointer;
+  border-radius: 15px;
+  background-color: $yellow-hover;
 }
 
 .arcade_border {

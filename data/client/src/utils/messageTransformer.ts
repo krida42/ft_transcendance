@@ -1,3 +1,5 @@
+import { Id, Message, User } from "@/types";
+
 export class MessageTransformer {
   static toArray(messages: Map<Id, Message>): Message[] {
     return Array.from(messages.values());
@@ -12,7 +14,6 @@ export class MessageTransformer {
       return {
         ...message,
         userPseudo: user?.pseudo,
-        userDisplayName: user?.displayName,
         userAvatar: user?.avatar,
       };
     });
@@ -33,9 +34,10 @@ export class MessageTransformer {
       if (nextMsg && msg.userId === nextMsg.userId) {
         beautyfiedArr.push({
           ...msg,
-          userAvatar: undefined,
-          userPseudo: undefined,
-          createdAt: undefined,
+          // userAvatar: undefined,
+          // userPseudo: undefined,
+          // createdAt: undefined,
+          solo: true,
         });
       } else {
         beautyfiedArr.push({

@@ -1,35 +1,100 @@
 .pong-screen {
-	width: 65%;
-	height: 40%;
-	border-radius: 40px;
-	background-color: black;
-	filter: drop-shadow(5px 10px 10px rgb(0 0 0 / 0.3));
-	color: white;
-	font-family: "VT323";
-	font-size: 1.7rem;
-	text-transform: uppercase;
+  width: 65%;
+  height: 40%;
+  border-radius: 40px;
+  background-color: black;
+  filter: drop-shadow(5px 10px 10px rgb(0 0 0 / 0.3));
+  color: white;
+  font-family: "VT323";
+  font-size: 1.7rem;
+  text-transform: uppercase;
 }
 
 .pong-screen-button {
-	padding: 0 1rem 0 1rem;
-	border: 2px solid white;
-	text-transform: uppercase;
+  padding: 0 1rem 0 1rem;
+  border: 2px solid white;
+  text-transform: uppercase;
 }
 
 .pong-screen-button:hover {
-	background-color: white;
-	color: black;
+  background-color: white;
+  color: black;
 }
 
 @media (max-height: 780px) {
-	.pong-screen {
-	  width: 60%;
-	}
+  .pong-screen {
+    width: 60%;
   }
-  
-  @media (max-width: 640px) {
-	.pong-screen {
-	  width: 85%;
-	  height: 45%;
-	}
+}
+
+@media (max-width: 640px) {
+  .pong-screen {
+    width: 85%;
+    height: 45%;
   }
+}
+
+.heartbeat-leave-active {
+  // animation: color-progress 1s ease-in-out;
+  animation: heartbeat 0.6s ease-in-out 1 both;
+}
+
+.heartbeat-enter-active {
+  animation: heartbeat 0.6s ease-in-out 0.6s 1 both reverse;
+}
+
+@keyframes heartbeat {
+  from {
+    transform: scale(1);
+    transform-origin: center center;
+    animation-timing-function: ease-out;
+  }
+
+  20% {
+    transform: scale(0.91);
+    animation-timing-function: ease-in;
+  }
+  27% {
+    transform: scale(0.98);
+    animation-timing-function: ease-out;
+  }
+  43% {
+    transform: scale(0.87);
+    animation-timing-function: ease-in;
+  }
+  55% {
+    transform: scale(1);
+    animation-timing-function: ease-out;
+  }
+}
+
+.heartbeat-success-leave-active {
+  // animation: color-progress 1s ease-in-out;
+  animation: heartbeat-success 0.6s ease-in-out 1 both;
+}
+
+@keyframes heartbeat-success {
+  from {
+    transform: scale(1);
+    transform-origin: center center;
+    animation-timing-function: ease-out;
+  }
+
+  20% {
+    transform: scale(0.91);
+    animation-timing-function: ease-in;
+  }
+  27% {
+    transform: scale(0.98);
+    animation-timing-function: ease-out;
+  }
+  43% {
+    transform: scale(0.87);
+    animation-timing-function: ease-in;
+    background-color: $green-dark;
+  }
+  55% {
+    transform: scale(1);
+    animation-timing-function: ease-out;
+  }
+}

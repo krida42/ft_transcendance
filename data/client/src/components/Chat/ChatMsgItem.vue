@@ -18,24 +18,25 @@
       'flex-row': !isMe,
       'self-start': !isMe,
       'self-end': isMe,
-      'mb-3': pseudo,
-      'mb-1': !pseudo,
+      'mb-3': !solo,
+      'mb-1': solo,
       'opacity-30': ack === false,
     }"
   >
     <div
-      v-if="avatar && !isMe"
-      class="avatar bd-redd shrink-0"
+      v-if="!solo && !isMe"
+      class="avatar bd-redd shrink-0 cursor-pointer"
       :class="{
         'mr-1': !isMe && avatar,
         'ml-1 ': isMe && avatar,
       }"
+      @click="emits('click-avatar')"
     >
       <img class="rounded-full" :src="avatar" width="22" />
     </div>
     <div
-      v-else-if="!avatar && !isMe"
-      class="w-[22px] bd-redd"
+      v-else-if="solo && !isMe"
+      class="w-[22px] bd-redd shrink-0"
       :class="{
         'mr-1': !isMe,
         'ml-1 ': isMe,
@@ -44,14 +45,14 @@
     <div
       class="content bd-cyand p-2 rounded-t-xl"
       :class="{
-        'rounded-ee-xl': !isMe || !avatar,
-        'rounded-es-xl': isMe || !avatar,
+        'rounded-ee-xl': !isMe || solo,
+        'rounded-es-xl': isMe || solo,
         'rounded-xl': isMe,
         'bg-blue-light': !isMe,
         'bg-green-light': isMe,
       }"
     >
-      <div class="header flex justify-between">
+      <div class="header flex justify-between" v-if="!solo">
         <span class="pseudo bd-redd text-red-700">{{ props.pseudo }}</span>
         <span
           class="date text-xs bd-redd"
@@ -81,12 +82,51 @@
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+// @keyframes avatar-keyframes {
+//   0% {
+//     transform: scale(0);
+//   }
+//   100% {
+//     transform: scale(1);
+//   }
+// }
+
+// .avatar-anim-enter-active {
+//   animation: avatar-keyframes 4s; //ease-in-out;
+// }
+
+// .avatar-anim-leave-active {
+//   animation: avatar-keyframes 10s; //ease-in-out reverse;
+// }
+
+// .header-anim-enter-active {
+//   animation: header-keyframes 1s ease-in-out;
+// }
+
+// .header-anim-leave-active {
+//   animation: header-keyframes 0.2s reverse;
+// }
+
+// @keyframes header-keyframes {
+//   0% {
+//     // transform: scale(0);
+//     opacity: 0;
+//     font-size: 0px;
+//     height: 0px;
+//     padding: 0;
+//     margin: 0;
+//   }
+
+//   100% {
+//     height: 0;
+//     opacity: 0;
+//   }
+// }
+</style>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
-import { Icon } from "@vicons/utils";
-import { UserCircle } from "@vicons/tabler";
+import { defineProps, defineEmits, onMounted } from "vue";
 
 const props = defineProps({
   content: String,
@@ -95,5 +135,12 @@ const props = defineProps({
   pseudo: String,
   avatar: String,
   ack: Boolean,
+  solo: Boolean,
+});
+
+const emits = defineEmits(["mounted", "click-avatar"]);
+
+onMounted(() => {
+  emits("mounted");
 });
 </script>

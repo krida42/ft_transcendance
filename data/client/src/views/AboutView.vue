@@ -19,14 +19,29 @@
       <Apple />
     </MyIcon> -->
 
-    <ChatAccessList>
-      <ChatAccessItem
-        v-for="[, friend] in friendStore.friends"
-        :key="friend.id"
-        :title="friend.pseudo"
-      />
-    </ChatAccessList>
-    <ChatMsgList />
+    <ChatAccessList />
+    <ChatMsgList class="sticky top-10 left-[33%]" />
+    <TestComp msg="coucou">
+      <template v-slot:header><h2>Je sis le header</h2></template>
+      <template v-slot>
+        <h2>
+          puipui du parent>>>>>>
+          {{ puipui }}
+        </h2>
+      </template>
+      <template v-slot:footer><h2>Je sis le footeer</h2></template>
+    </TestComp>
+    <ChatUserActionPopup
+      uuid="kevin"
+      class="absolute z-[10] top-[50%] left-[50%]"
+    />
+    <ChatUserActionPopup
+      uuid="kevin"
+      class="absolute z-[10] top-[50%] left-[1%]"
+      admin
+    />
+    <h1>{{ puipui }}</h1>
+    <!-- <h1>Etat du socket is connected?: {{ state.connected }}</h1> -->
   </div>
 </template>
 
@@ -37,25 +52,21 @@
 </style>
 
 <script lang="ts" setup>
-import { watch } from "vue";
 import { Icon } from "@vicons/utils";
 import { User } from "@vicons/tabler";
 import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
-import ChatMsgItem from "@/components/Chat/ChatMsgItem.vue";
+import TestComp from "@/components/TestComp.vue";
+import ChatUserActionPopup from "@/components/Chat/ChatUserActionPopup.vue";
 
 import { useUsersStore } from "@/stores/users";
 import { useFriendStore } from "@/stores/friend";
 
 // import MyIcon from "@/components/MyIcon.vue";
 
-import { useChatStore } from "@/stores/chat";
-import { storeToRefs } from "pinia";
 import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
-import ChatAccessItem from "@/components/Chat/ChatAccessItem.vue";
+import { ref } from "vue";
 
-const chatStore = useChatStore();
-
-let { openedChatId } = storeToRefs(chatStore);
+// import { state, socket } from "@/socket";
 
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();
@@ -65,4 +76,22 @@ usersStore.refreshUser("kevin");
 usersStore.refreshUser("vincent");
 
 friendStore.refreshFriendList();
+
+const puipui = ref("Je fais puiui");
+
+class TestClass {
+  name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  getname() {
+    return this.name;
+  }
+}
+
+console.log(
+  "test de testcalass tringified",
+  JSON.stringify(new TestClass("kevin"))
+);
 </script>

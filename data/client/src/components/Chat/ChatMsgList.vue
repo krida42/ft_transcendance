@@ -1,39 +1,69 @@
 <template>
   <div class="chat bg-blue-grey bg-opacity-80" ref="draggableContainer">
+    <Transition name="slide-in-left">
+      <ChatUserActionPopup
+        class="absolute top-[30%] left-0 right-0 mx-auto z-20"
+        :uuid="chatUserActionPopup.userId"
+        @close="closeChatUserActionPopup()"
+        v-if="chatUserActionPopup.userId"
+        :test="usersStore.users.get(chatUserActionPopup.userId)"
+        admin
+      />
+    </Transition>
     <div class="header bg-blue-light" @mousedown="dragMouseDown">
       <span class="title">{{ currentChat?.name }}</span>
-      <Icon size="20" class="dbd-red">
+      <Icon
+        size="20"
+        class="close-icon dbd-red"
+        @click="chatStore.openChat('')"
+      >
         <X class="bdd-cyan" />
       </Icon>
     </div>
-    <div class="main" ref="main">
-      <transition-group name="msg-item">
+
+    <div
+      class="main"
+      :class="{
+        'scroll-smooth': smootherScroll,
+      }"
+      ref="main"
+      @scroll="handleScroll"
+    >
+      <transition-group name="msg-item-animation" v-if="true">
         <ChatMsgItem
           v-for="msg in currentChatTreated"
-          :key="msg.msgId"
+          :key="msg.vueTrackId || msg.msgId"
           :content="msg.content"
           :pseudo="msg.userPseudo"
           :avatar="msg.userAvatar"
           :date="msg.createdAt"
           :is-me="msg.userId === usersStore.currentUser?.id"
           :ack="msg.ack"
+          :solo="msg.solo"
+          @mounted="scrollToBottom()"
+          @click-avatar="openChatUserActionPopup(msg.userId)"
         />
       </transition-group>
-      <!-- <slot> </slot> -->
-      <!-- <ChatMsgItem content="Salut je suis un message" />
 
-      <ChatMsgItem
-        content="Salut je suis un message"
-        pseudo="Adrien"
-        :date="new Date()"
-        avatar="https://cdn.intra.42.fr/users/95f9dafeb1e78d2374207ab32c186d31/kisikaya.jpg"
-      />
-      <ChatMsgItem
-        isMe
-        content="je sais surtut celui de Mathieu"
-        :date="new Date()"
-        pseudo="Timothee"
-      /> -->
+      <!-- <transition-groupe name="msg2-item" v-else>
+        <div
+          class="mg-item-ctn bd-blue"
+          v-for="msg in currentChatTreated"
+          :key="msg.vueTrackId || msg.msgId"
+        >
+          <ChatMsgItem
+            :content="msg.content"
+            :pseudo="msg.userPseudo"
+            :avatar="msg.userAvatar"
+            :date="msg.createdAt"
+            :is-me="msg.userId === usersStore.currentUser?.id"
+            :ack="msg.ack"
+            :class="{
+              'ml-auto': msg.userId === usersStore.currentUser?.id,
+            }"
+          />
+        </div>
+      </transition-groupe> -->
     </div>
     <div class="footer">
       <input
@@ -48,6 +78,22 @@
 </template>
 
 <style lang="scss" scoped>
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  // box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  // background-color: darkgray;
+  background-color: $blue-light;
+  border-radius: 9999px;
+  // outline: 1px solid slategrey;
+}
+
 .chat {
   position: absolute;
   z-index: 9;
@@ -55,8 +101,8 @@
   display: grid;
   grid-template-rows: 9% 82% 9%;
 
-  // $height: 30rem;
-  $height: 35rem;
+  $height: 30rem;
+  // $height: 35rem;
   // $width: 0.69 * $height;
   $width: 0.75 * $height;
   height: $height;
@@ -93,6 +139,10 @@
   align-items: center;
   padding-inline: 0.6rem;
 
+  .close-icon {
+    cursor: pointer;
+  }
+
   .title {
     font-family: "Baumans", cursive;
     width: 50%;
@@ -110,7 +160,8 @@
   padding-inline: 0.5rem;
   // padding-block: 0.2rem;
   overflow-y: scroll;
-  // scroll-behavior: revert;
+  overflow-x: hidden;
+  // scroll-behavior: smooth;
 
   .msg-item-enter-active {
     transition: all 0.3s;
@@ -126,6 +177,20 @@
     opacity: 0;
     transform: translateY(100%);
   }
+
+  .msg-item-animation-enter-active {
+    animation: shade-in-move 0.3s;
+  }
+
+  @keyframes shade-in-move {
+    0% {
+      transform: translateY(50%);
+    }
+
+    100% {
+      transform: translateY(0%);
+    }
+  }
 }
 
 .footer {
@@ -138,12 +203,49 @@
     padding-inline: 1.2rem;
   }
 }
+
+@keyframes my-bounce {
+  0%,
+  100% {
+    // transform: translateY(-25%);
+    transform: none;
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    // transform: none;
+    transform: translateY(50%);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+.animate-my-bounce {
+  animation: my-bounce 2s;
+}
+
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateZ(0) translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-left-enter-active {
+  animation: slide-in-left 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.slide-in-left-leave-active {
+  animation: slide-in-left 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse
+    both;
+}
 </style>
 
 <script lang="ts" setup>
 import { Icon } from "@vicons/utils";
-import { Message, X } from "@vicons/tabler";
-import { ref, defineProps, computed } from "vue";
+import { X } from "@vicons/tabler";
+import { ref, computed, nextTick, onMounted, watch, reactive } from "vue";
 import { storeToRefs } from "pinia";
 import ChatMsgItem from "./ChatMsgItem.vue";
 
@@ -152,6 +254,7 @@ import ChatMsgItem from "./ChatMsgItem.vue";
 import { useUsersStore } from "@/stores/users";
 import { useChatStore } from "@/stores/chat";
 import { MessageTransformer } from "@/utils/messageTransformer";
+import ChatUserActionPopup from "./ChatUserActionPopup.vue";
 
 const usersStore = useUsersStore();
 const chatStore = useChatStore();
@@ -208,7 +311,7 @@ enum ChatType {
   Channel = "channel",
 }
 
-function sendMessage() {
+async function sendMessage() {
   console.log(inputMessage.value, "hey");
   if (inputMessage.value === "/r") {
     console.log("refreshing");
@@ -216,14 +319,17 @@ function sendMessage() {
   } else if (inputMessage.value === "/ra4") {
     console.log("refreshing");
     chatStore.refreshChat("marine", ChatType.Direct, "a4");
+  } else if (inputMessage.value === "/s") {
+    console.log("refreshing randome");
+    chatStore.refreshChat("someone", ChatType.Direct, null);
   } else {
-    chatStore.sendMessage("marine", ChatType.Direct, inputMessage.value);
+    chatStore
+      .sendMessage(chatStore.openedChatId, ChatType.Direct, inputMessage.value)
+      .then(() => {
+        scrollToBottom();
+      });
   }
   inputMessage.value = "";
-  // scrollToBottom();
-  setTimeout(() => {
-    // scrollToBottom();
-  }, 1);
 }
 
 let main = ref<HTMLDivElement>();
@@ -231,5 +337,54 @@ let main = ref<HTMLDivElement>();
 function scrollToBottom() {
   if (!main.value) return;
   main.value.scrollTop = main.value.scrollHeight;
+  // requestAnimationFrame(() => {
+  //   main.value!.scrollTop = main.value!.scrollHeight;
+  // });
 }
+
+let smootherScroll = ref(true);
+
+function handleScroll(event: Event) {
+  void event;
+  // console.log("coiucou");
+  if (!main.value) return;
+  if (main.value.scrollTop === 0) {
+    console.log("scrolling to top");
+    const previousHeight = main.value.scrollHeight;
+
+    chatStore.loadMoreMessages().then(() => {
+      smootherScroll.value = false;
+      nextTick(() => {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (!main.value) return;
+            const currentHeight = main.value.scrollHeight;
+            const heightDifference = currentHeight - previousHeight;
+            main.value.scrollTop += heightDifference;
+            smootherScroll.value = true;
+          }, 50);
+        });
+      });
+    });
+  }
+}
+
+// let isChatUserActionPopedUp = ref(false);
+
+let chatUserActionPopup = reactive({
+  userId: "",
+  isAdmin: false,
+});
+
+function openChatUserActionPopup(userId: string) {
+  chatUserActionPopup.userId = userId;
+}
+
+function closeChatUserActionPopup() {
+  chatUserActionPopup.userId = "";
+}
+
+// setTimeout(() => {
+//   scrollToBottom();
+// }, 2000);
 </script>

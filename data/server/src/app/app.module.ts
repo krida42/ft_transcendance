@@ -21,6 +21,8 @@ import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from 'src/tools/bcrypt.service';
 import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
 
+import { RealtimeModule } from 'src/realtime/realtime.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -47,6 +49,7 @@ import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
     AuthModule,
     HttpModule,
     GameModule,
+    RealtimeModule,
   ],
   controllers: [AppController],
   providers: [JwtService, BcryptService, AppService],

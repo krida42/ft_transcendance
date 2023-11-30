@@ -3,6 +3,8 @@ import { useMainStore } from "./main";
 import { useFriendStore } from "./friend";
 import userApi from "../api/user";
 
+import { Id, User } from "@/types";
+
 export const useUsersStore = defineStore({
   id: "users",
   state: (): {
@@ -12,14 +14,17 @@ export const useUsersStore = defineStore({
   }),
   getters: {
     users: (state) =>
-      new Map<Id, User>([...state.usersMap, ...useFriendStore().friends]),
-    getUserNameById(state) {
-      return (id: string) => {
-        const user = this.users.get(id);
-        return user?.displayName || "Unknown";
-      };
-    },
+      new Map<Id, User>([
+        ...useFriendStore().DEBUG_friendsStatusRand,
+        // ...useFriendStore().friends,
+        ...useFriendStore().friendsReceived,
+        ...useFriendStore().friendsSent,
+        ...useFriendStore().blocked,
+        ...state.usersMap,
+      ]),
+
     currentUser: (state) => {
+      void state;
       const mainStore = useMainStore();
       return {
         id: mainStore.userInfo.id,

@@ -1,7 +1,7 @@
 <template>
   <!-- <li> -->
   <li
-    class="bd-redd flex justify-between items-center w-1/1 py-3 px-3 my-1 bg-[#FFFDF2] bg-opacity-40 hover:bg-blue-200 cursor-pointer"
+    class="bd-redd flex justify-between items-center w-1/1 py-3 px-3 my-1 bg-[#FFFDF2] bg-opacity-60 hover:bg-blue-200 cursor-pointer"
     :class="{
       'rounded-t-[16px]': start,
       'rounded-b-[16px]': end,
@@ -25,8 +25,7 @@
     <!-- </div> -->
 
     <div
-      v-if="false"
-      class="status w-2 h-2 border-1 border-black rounded-full bg-red-700ee"
+      class="status w-2 h-2 border-1 border-black rounded-full bg-red-700"
       :class="{
         'bg-green-700': status === 'online',
         'bg-red-700': status === 'offline',
@@ -38,16 +37,18 @@
 
 <script setup lang="ts">
 import { Icon } from "@vicons/utils";
-import { UserCircle, Message, Circle } from "@vicons/tabler";
+import { UserCircle, Message } from "@vicons/tabler";
 import { defineProps } from "vue";
 
-type Pos = "start" | "end" | "solo";
-type Status = "online" | "offline";
+// type Pos = "start" | "end" | "solo";
+// type Status = "online" | "offline";
 
 const props = defineProps({
   status: String,
   start: Boolean,
   end: Boolean,
   title: String,
+  chatId: String,
 });
+void props;
 </script>

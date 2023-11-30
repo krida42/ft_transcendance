@@ -27,12 +27,20 @@ export class FriendsService {
     @InjectModel(Friends)
     private readonly friendsModel: typeof Friends,
 
-    // private readonly usersService: UsersService,
+    private readonly usersService: UsersService,
   ) {}
 
   async createFriend(login: string, linkedlogin: string): Promise<Friends> {
 
-    // this.usersService.findByLogin()
+    const user = this.usersService.findByLogin(login);
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    const linkedUser = this.usersService.findByLogin(linkedlogin);
+    if (!linkedUser) {
+      throw new UserNotFoundException();
+    }
 
     if (login === linkedlogin) {
       throw new ImpossibleRelationException();

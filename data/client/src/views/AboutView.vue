@@ -19,6 +19,7 @@
       <Apple />
     </MyIcon> -->
 
+    <h3>Status: {{ mainStore.status }}</h3>
     <ChatAccessList />
     <ChatMsgList class="sticky top-10 left-[33%]" />
     <TestComp msg="coucou">
@@ -41,7 +42,7 @@
       admin
     />
     <h1>{{ puipui }}</h1>
-    <!-- <h1>Etat du socket is connected?: {{ state.connected }}</h1> -->
+    <h1>Etat du socket is connected?: {{ state.connected }}</h1>
   </div>
 </template>
 
@@ -60,13 +61,16 @@ import ChatUserActionPopup from "@/components/Chat/ChatUserActionPopup.vue";
 
 import { useUsersStore } from "@/stores/users";
 import { useFriendStore } from "@/stores/friend";
+import { useMainStore } from "@/stores/main";
 
 // import MyIcon from "@/components/MyIcon.vue";
 
 import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
 import { ref } from "vue";
 
-// import { state, socket } from "@/socket";
+import { state, socket } from "@/socket";
+
+const mainStore = useMainStore();
 
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();

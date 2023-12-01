@@ -9,6 +9,8 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 
+import { forwardRef, Inject } from '@nestjs/common';
+
 import { Server, Socket } from 'socket.io';
 import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 import * as jwt from 'jsonwebtoken';
@@ -16,22 +18,24 @@ import * as jwt from 'jsonwebtoken';
 import { StatusDto, Status } from './dto/status.dto';
 import { RoomService } from './room.service';
 
-@WebSocketGateway({
-  cors: {
-    origin: 'http://localhost:8080',
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
-  //   transports: ['websocket'],
-  //   namespace: 'cuicui',
-})
+import { FriendsGateway } from './friends.gateway';
+import { ChatGateway } from './chat.gateway';
+import { WebSocketGatewayOptions } from './gateway.conf';
+
+@WebSocketGateway(WebSocketGatewayOptions)
 export class RealtimeGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private readonly roomService: RoomService) {}
+  constructor(
+    private readonly roomService: RoomService,
+    @Inject(forwardRef(() => FriendsGateway))
+    private friendsHandler: FriendsGateway,
+    @Inject(forwardRef(() => ChatGateway))
+    private chatHandler: ChatGateway,
+  ) {}
 
   @WebSocketServer() server: Server;
-  //   private logger: Logger = new Logger('AppGateway');
+  // private logger: Logger = new Logger('AppGateway');
 
   afterInit(server: Server) {
     console.log('Socket server: Initialized!');
@@ -45,7 +49,7 @@ export class RealtimeGateway
       this.roomService.getUserPersonalRoom(client.data.user.public_id),
     );
 
-    console.log('Socket: client.data.user: ', client.data.user);
+    console.log('Socket: client.data.user.pseudo: ', client.data.user.pseudo);
   }
 
   handleDisconnect(client: Socket) {
@@ -66,22 +70,28 @@ export class RealtimeGateway
   }
 
   findSocketBySocketId(id: string): Socket {
+    console.log('- - --  --  -- - - - ALL SOCKETS: ', this.server.allSockets());
     return this.server.sockets.sockets.get(id);
   }
 
-  findSocketByUserId(userId: string) {
-    const socket = [...this.server.sockets.sockets.values()].find(
-      (socket) => (socket.data.user as ResponseUserDto).public_id === userId,
-    );
-    if (!socket) throw new Error('findSocketByUserId: Socket not found');
-    return socket;
+  async findSocketByUserId(userId: string) {
+    // const socket = [...this.server.sockets.sockets.values()].find(
+    //   (socket) => (socket.data.user as ResponseUserDto).public_id === userId,
+    // );
+    const socket = await this.server
+      .in(this.roomService.getUserPersonalRoom(userId))
+      .fetchSockets();
+    console.log('taille de fetchSockets: ', socket.length);
+    // console.log('socket heyhey: ', socket[0].data);
+    if (!socket[0]) throw new Error('findSocketByUserId: Socket not found');
+    return socket[0] as unknown as Socket;
   }
 
   @SubscribeMessage('cuicui')
-  handleCuicui(
+  async handleCuicui(
     @MessageBody() data: object,
     @ConnectedSocket() client: Socket,
-  ): object {
+  ) {
     console.log('cuicui event, data: ', data);
     client.emit('cocorico', {
       fromClient: data,
@@ -91,9 +101,11 @@ export class RealtimeGateway
     return {
       str: "Acknoledgement I'm the server, I received your message!",
       pseudo: client.data.user.pseudo,
-      pseudo2: this.findSocketBySocketId(client.id).data.user.pseudo,
-      pseudo3: this.findSocketByUserId(client.data.user.public_id).data.user
-        .pseudo,
+      // pseudo2: this.findSocketBySocketId(client.id).data.user.pseudo,
+      pseudo3: (await this.findSocketByUserId(client.data.user.public_id)).data
+        .user.pseudo,
     };
   }
+
+  // handleStatus = this.friendsHandler.handleStatus.bind(this.friendsHandler);
 }

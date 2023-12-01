@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { RealtimeGateway } from './realtime.gateway';
 import { RoomService } from './room.service';
+import { FriendsGateway } from './friends.gateway';
+import { ChatGateway } from './chat.gateway';
 
 @Module({
   imports: [],
   controllers: [],
-  providers: [RealtimeGateway, RoomService],
-  exports: [RealtimeGateway, RoomService],
+  providers: [RealtimeGateway, RoomService, FriendsGateway, ChatGateway],
+  exports: [RealtimeGateway, RoomService, FriendsGateway, ChatGateway],
 })
 export class RealtimeModule {}

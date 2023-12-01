@@ -1,22 +1,31 @@
 'use strict';
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Friends', {
-      id: {
-        type: Sequelize.INTEGER,
+      sender_id: {
         primaryKey: true,
-        autoIncrement: true,
-      },
-      login: {
-        type: Sequelize.STRING,
+        foreignKey: true,
         allowNull: false,
-        unique: false,
-      },
-      linkedlogin: {
         type: Sequelize.STRING,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      receiver_id: {
+        primaryKey: true,
+        foreignKey: true,
         allowNull: false,
-        unique: false,
+        type: Sequelize.UUIDV4,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       status: {
         type: Sequelize.ENUM('Pending', 'Active', 'Blocked'),
@@ -34,7 +43,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
-     await queryInterface.dropTable('Friends');
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('Friends');
   }
 };

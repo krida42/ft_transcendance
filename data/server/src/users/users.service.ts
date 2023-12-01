@@ -57,7 +57,6 @@ export class UsersService {
   }
 
   async findByIds(ids: uuidv4[]): Promise<User[]> {
-
     if (!ids.every((ids) => isUUID(ids, 4))) {
       throw new InvalidUUIDException();
     }
@@ -73,8 +72,6 @@ export class UsersService {
 
     return users;
   }
-
-
 
   async findByPseudo(pseudo: string) {
     const user = await User.findOne({
@@ -144,15 +141,14 @@ export class UsersService {
   async updateUser(
     id: uuidv4,
     updateUserDto: UpdateUserDto,
-  ): Promise<{ message: [number], user: ResponseUserDto }> {
+  ): Promise<{ message: [number]; user: ResponseUserDto }> {
     if (!isUUID(id)) throw new InvalidUUIDException();
     try {
       const user = await this.usersModel.update(
         { ...updateUserDto },
         { where: { public_id: id }, individualHooks: true },
       );
-      if (user[0] === 0)
-        return { message: user, user: null };
+      if (user[0] === 0) return { message: user, user: null };
       const UpdatedUser = await this.usersModel.findOne({
         where: { public_id: id },
         attributes: this.attributesToRetrieve,

@@ -2,10 +2,13 @@ import axios from "axios";
 
 import { Friend, Id, User } from "@/types";
 
-const host = process.env.VUE_APP_API_URL;
+// const host = process.env.VUE_APP_API_URL;
+const host = "http://localhost:3001";
 
 export default {
   async fetchFriendList(): Promise<Friend[]> {
+    console.log("cuicui: ", host);
+    console.log("heyhey: ", process.env);
     return axios.get(`${host}/friends`).then((res) => res.data);
   },
 
@@ -22,12 +25,10 @@ export default {
   },
 
   async acceptFriendRequest(id: Id): Promise<void> {
-    return;
-    return axios.post(`${host}/friends/${id}/accept`).then((res) => res.data);
+    return axios.patch(`${host}/friends/${id}/accept`).then((res) => res.data);
   },
   //prettier-ignore
   async declineFriendRequest(id: Id): Promise<void> {
-    return;
     return axios.delete(`${host}/friends/${id}/decline`).then((res) => res.data);
   },
   async sendFriendRequest(id: Id): Promise<any> {
@@ -35,7 +36,6 @@ export default {
     return axios.post(`${host}/friends/${id}/add`).then((res) => res.data);
   },
   async cancelFriendRequest(id: Id): Promise<void> {
-    return;
     return axios.delete(`${host}/friends/${id}/cancel`).then((res) => res.data);
   },
 

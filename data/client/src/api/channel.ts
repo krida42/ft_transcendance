@@ -2,7 +2,8 @@ import axios from "axios";
 
 import { Channel, Id } from "@/types";
 
-const host = process.env.VUE_APP_API_URL;
+// const host = process.env.VUE_APP_API_URL;
+const host = "http://localhost:3001";
 
 export default {
   async fetchChannel(channelId: string) {

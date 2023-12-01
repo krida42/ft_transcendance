@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const host = process.env.VUE_APP_API_URL;
+// const host = process.env.VUE_APP_API_URL;
+const host = "http://localhost:3001";
 
 export default {
   async fetchUser(userId: string) {
@@ -16,6 +17,6 @@ export default {
       .get(`${host}/users`, {
         params: { pseudo: pseudo },
       })
-      .then((res) => res.data);
+      .then((res) => ({ ...res.data, id: res.data.public_id }));
   },
 };

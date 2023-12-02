@@ -2,7 +2,6 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel} from '@nestjs/sequelize';
 
 import { Channels } from 'db/models/channels';
-import { ChannelsBanlist } from 'db/models/channelsBanlist';
 import { ChannelsUsers } from 'db/models/channelsUsers';
 
 import { createChannelDto } from './dto/createChannel.dto';
@@ -27,9 +26,6 @@ export class ChannelsService {
 
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
-
-    @InjectModel(ChannelsBanlist)
-    private readonly channelBanlistModel: typeof ChannelsBanlist,
 
   ) {}
 
@@ -81,8 +77,8 @@ export class ChannelsService {
         // TODO check new mode != current mode
 
         try {
-            chan.channelType = channelDto.channelType; 
-            chan.password = channelDto.password
+            chan.chanType = channelDto.channelType; 
+            chan.chanPassword = channelDto.password
             await chan.save();
             // return `Channel ${name} password updated.`;
             return `Channel ${name} updated.`;
@@ -104,7 +100,7 @@ export class ChannelsService {
                 throw new ChannelNotFoundException();
             }
 
-            chan.imageData = image.buffer;
+            chan.chanImage = image.buffer;
 
             return `${login} put image successfully on channel ${name}.`;
             // return { success: true, message: 'Image updated successfully' };
@@ -301,7 +297,7 @@ export class ChannelsService {
             where: { userId: user },
         });
 
-        const channelIds = userChannels.map((userChannel) => userChannel.channelId);
+        const channelIds = userChannels.map((userChannel) => userChannel.chanId);
         const channels = await Channels.findAll({ where: { id: channelIds } });
         return channels;
     }
@@ -325,6 +321,7 @@ export class ChannelsService {
         return Array.isArray(users) ? users : [users];
     }
 
+    /*
     async getChannelBanlist(name: string): Promise<User[]>
     {
 
@@ -342,6 +339,7 @@ export class ChannelsService {
 
         return Array.isArray(bannedUsers) ? bannedUsers : [bannedUsers];
     }
+    */
     
     
     async getAll(): Promise<Channels[]>

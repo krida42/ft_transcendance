@@ -7,25 +7,25 @@ module.exports = {
         primaryKey: true,
         foreignKey: true,
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
         references: {
-          model: 'users',
-          key: 'id'
+          model: 'Users',
+          key: 'public_id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
       },
       receiver_id: {
         primaryKey: true,
         foreignKey: true,
         allowNull: false,
-        type: Sequelize.UUIDV4,
+        type: Sequelize.UUID,
         references: {
-          model: 'users',
-          key: 'id'
+          model: 'Users',
+          key: 'public_id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
       },
       status: {
         type: Sequelize.ENUM('Pending', 'Active', 'Blocked'),
@@ -34,16 +34,16 @@ module.exports = {
       },
       createdAt: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updatedAt: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
     });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Friends');
-  }
+  },
 };

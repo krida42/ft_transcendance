@@ -279,11 +279,10 @@ export class FriendsService {
   async getFriends(current_id: uuidv4): Promise<PublicUserDto[]> {
     const all = await Friends.findAll({
       where: {
-        sender_id: current_id,
+        [Op.or]: [{ sender_id: current_id }, { receiver_id: current_id }],
         status: FriendStatus.Active,
       },
     });
-
     const publicUserDtoArray: PublicUserDto[] = [];
     for (const relation of all) {
       const receiver_user = await this.usersService.findById(

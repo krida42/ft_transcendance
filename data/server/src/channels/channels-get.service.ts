@@ -2,7 +2,6 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel} from '@nestjs/sequelize';
 
 import { Channels } from 'db/models/channels';
-import { ChannelsBanlist } from 'db/models/channelsBanlist';
 import { ChannelsUsers } from 'db/models/channelsUsers';
 
 import { createChannelDto } from './dto/createChannel.dto';
@@ -30,9 +29,6 @@ export class ChannelsGetService {
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
 
-    @InjectModel(ChannelsBanlist)
-    private readonly channelBanlistModel: typeof ChannelsBanlist,
-
   ) {}
 
     // ----------   GET CHANNELS
@@ -59,7 +55,7 @@ export class ChannelsGetService {
             where: { userId: user },
         });
 
-        const channelIds = userChannels.map((userChannel) => userChannel.channelId);
+        const channelIds = userChannels.map((userChannel) => userChannel.chanId);
         const channels = await Channels.findAll({ where: { id: channelIds } });
         return channels;
     }
@@ -70,7 +66,7 @@ export class ChannelsGetService {
             where: { userId: user },
         });
 
-        const channelIds = userChannels.map((userChannel) => userChannel.channelId);
+        const channelIds = userChannels.map((userChannel) => userChannel.chanId);
 
         const channelsWithoutUser = await Channels.findAll({
             where: {
@@ -100,6 +96,7 @@ export class ChannelsGetService {
         return Array.isArray(users) ? users : [users];
     }
 
+    /* // FIXME
     async getChannelBanlist(name: string): Promise<User[]>
     {
 
@@ -108,7 +105,7 @@ export class ChannelsGetService {
             throw new ChannelNotFoundException();
         }
 
-        const banlist = await this.channelBanlistModel.findAll({
+        const banlist = await this.channelUsersModel.findAll({
             where: { channelId: channel.id, isBanned: true },
         });
 
@@ -117,8 +114,9 @@ export class ChannelsGetService {
 
         return Array.isArray(bannedUsers) ? bannedUsers : [bannedUsers];
     }
-    
-    
+    */
+
+
     async getAll(): Promise<Channels[]>
     {
         const all = await Channels.findAll({});

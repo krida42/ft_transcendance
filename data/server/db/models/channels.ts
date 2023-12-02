@@ -1,18 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DataTypes } from 'sequelize';
-import { Column, Model, Table, AllowNull, Default, Length } from 'sequelize-typescript';
+import {
+  Column,
+  Model,
+  PrimaryKey,
+  Table,
+  AllowNull,
+  Default,
+  Length,
+} from 'sequelize-typescript';
 import { MaxLength, MinLength, IsAlphanumeric } from 'class-validator';
 
 @Table
 export class Channels extends Model {
+  @PrimaryKey
   @ApiProperty()
   @Column({
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    field: 'id', 
+    unique: true,
+    allowNull: false,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    field: 'chanId',
   })
-  public id: number;
+  public chanId: string;
 
   @ApiProperty()
   @MinLength(3, { message: 'Channel name is too short (min 3 characters)' })
@@ -22,62 +32,48 @@ export class Channels extends Model {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
-    field: 'name', 
+    field: 'chanName',
   })
-  public name: string;
+  public chanName: string;
 
   @ApiProperty()
   @Column({
-    type: DataTypes.STRING,
+    type: DataTypes.UUID,
     allowNull: false,
     unique: false,
-    field: 'owner', 
+    field: 'ownerId',
   })
-  public owner: string;
+  public ownerId: string;
 
   @ApiProperty()
   @Column({
     type: DataTypes.ENUM('Direct', 'Public', 'Protected', 'Private'),
     allowNull: false,
     defaultValue: 'Public',
-    field: 'channelType',
+    field: 'chanType',
   })
-  public channelType: string;
+  public chanType: string;
 
   @ApiProperty()
   @MinLength(6, { message: 'Channel password is too short (min 6 characters)' })
-  @MaxLength(128, { message: 'Channel password is too long (max 128 characters)' })
+  @MaxLength(128, {
+    message: 'Channel password is too long (max 128 characters)',
+  })
   @Column({
     type: DataTypes.STRING,
     allowNull: false,
     unique: false,
-    defaultValue: '',
-    field: 'password', 
+    defaultValue: 'nan',
+    field: 'chanPassword',
   })
-  public password: string;
+  public chanPassword: string;
 
   @ApiProperty()
-  @Column({
-    type: DataTypes.DATE,
-    allowNull: false,
-    field: 'createdAt', 
-  })
-  public readonly createdAt: Date;
-
-  @ApiProperty()
-  @Column({
-    type: DataTypes.DATE,
-    allowNull: false,
-    field: 'updatedAt', 
-  })
-  public readonly updatedAt: Date;
-
-  @ApiProperty()
-  @AllowNull(true)
   @Default(null)
   @Column({
-    type: DataTypes.BLOB('long'),
-    field: 'imageData',
+    allowNull: true,
+    type: DataTypes.BLOB,
+    field: 'chanImage',
     validate: {
       isImage(value: Buffer) {
         if (!value) {
@@ -99,6 +95,21 @@ export class Channels extends Model {
       },
     },
   })
-  public imageData: Buffer;
+  public chanImage: Buffer;
 
+  @ApiProperty()
+  @Column({
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'createdAt',
+  })
+  public readonly createdAt: Date;
+
+  @ApiProperty()
+  @Column({
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'updatedAt',
+  })
+  public readonly updatedAt: Date;
 }

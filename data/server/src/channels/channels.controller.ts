@@ -111,7 +111,7 @@ export class ChannelsController
     {
         return this.channelService.quitChannel(this.login, chanId);
     }
-    
+
     // ----------   INVITE
 
     @ApiOperation({ summary: 'Invite userId to channel' })
@@ -199,11 +199,13 @@ export class ChannelsController
         return this.channelService.getChannelUsers(chanId);
     }
 
+    /* // FIXME
     @ApiOperation({ summary: 'Get ban list of channel' })
     @Get('/channels/:chanId/banlist')
     async getChannelBanlist(@Req() req, @Param('chanId') chanId: string)
     {
         return this.channelService.getChannelBanlist(chanId);
     }
+    */
 
 }

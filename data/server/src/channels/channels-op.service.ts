@@ -2,7 +2,6 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel} from '@nestjs/sequelize';
 
 import { Channels } from 'db/models/channels';
-import { ChannelsBanlist } from 'db/models/channelsBanlist';
 import { ChannelsUsers } from 'db/models/channelsUsers';
 
 import { createChannelDto } from './dto/createChannel.dto';
@@ -27,9 +26,6 @@ export class ChannelsOpService {
 
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
-
-    @InjectModel(ChannelsBanlist)
-    private readonly channelBanlistModel: typeof ChannelsBanlist,
 
   ) {}
 

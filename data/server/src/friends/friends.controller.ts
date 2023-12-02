@@ -31,19 +31,31 @@ import { v4 as uuidv4 } from 'uuid';
 @Controller('')
 export class FriendsController {
   private public_id: string; // TEMP
+  private static isFirstUserConnected = true; // TEMP
 
   constructor(
     private readonly friendsService: FriendsService,
     private readonly usersService: UsersService,
   ) {
-    this.setCurrentId()
+    this.setCurrentId(); // TEMP
   }
 
-  async setCurrentId()
-  {
-    // const user = await this.usersService.findByLogin("mv");
-    const user = await this.usersService.findByLogin("sloquet");
-    this.public_id = user.public_id;
+  async setCurrentId() { // TEMP
+    let user: User;
+    if (FriendsController.isFirstUserConnected  === true) {
+      user = await this.usersService.findByLogin('marvin');
+      FriendsController.isFirstUserConnected = false;
+    }
+    else {
+      user = await this.usersService.findByLogin('ben');
+      FriendsController.isFirstUserConnected = true;
+    }
+    if (user && user.public_id) {
+      this.public_id = user.public_id;
+    }
+    else {
+      console.error("L'utilisateur ou sa propriété 'public_id' est null.");
+    }
   }
 
   // @UseGuards(AuthGuard('jwt'))

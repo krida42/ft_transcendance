@@ -5,12 +5,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from '../users/users.module';
 
 import { Channels } from 'db/models/channels';
-import { ChannelsBanlist } from 'db/models/channelsBanlist';
 import { ChannelsUsers } from 'db/models/channelsUsers';
 
 @Module({
     imports: [
-        SequelizeModule.forFeature([Channels, ChannelsBanlist, ChannelsUsers]),
+        SequelizeModule.forFeature([Channels, ChannelsUsers]),
         UsersModule
     ],
     controllers: [ChannelsController],

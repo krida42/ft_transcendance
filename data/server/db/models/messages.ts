@@ -1,16 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DataTypes } from 'sequelize';
-import { Table, Column, Model, ForeignKey, PrimaryKey } from 'sequelize-typescript';
+import {
+  Column,
+  Model,
+  Table,
+  PrimaryKey,
+  ForeignKey,
+} from 'sequelize-typescript';
 import { User } from './user';
 import { Channels } from './channels';
 
 @Table
-export class ChannelsUsers extends Model {
-
+export class Messages extends Model {
   @ApiProperty()
   @PrimaryKey
+  @Column({
+    unique: true,
+    autoIncrement: true,
+    type: DataTypes.INTEGER,
+    field: 'msgId',
+  })
+  public msgId: number;
+
+  @ApiProperty()
   @ForeignKey(() => Channels)
   @Column({
+    unique: false,
     allowNull: false,
     type: DataTypes.UUID,
     field: 'chanId',
@@ -18,9 +33,9 @@ export class ChannelsUsers extends Model {
   public chanId: string;
 
   @ApiProperty()
-  @PrimaryKey
   @ForeignKey(() => User)
   @Column({
+    unique: false,
     allowNull: false,
     type: DataTypes.UUID,
     field: 'userId',
@@ -29,12 +44,12 @@ export class ChannelsUsers extends Model {
 
   @ApiProperty()
   @Column({
-    type: DataTypes.ENUM('Direct', 'Owner', 'Admin', 'User', 'Muted', 'Banned'),
+    unique: false,
     allowNull: false,
-    defaultValue: 'User',
-    field: 'userStatus',
+    type: DataTypes.STRING,
+    field: 'content',
   })
-  public userStatus: string;
+  public content: string;
 
   @ApiProperty()
   @Column({

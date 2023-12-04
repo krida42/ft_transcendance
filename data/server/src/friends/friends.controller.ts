@@ -3,23 +3,16 @@ import {
   Get,
   Post,
   Patch,
-  Body,
   Delete,
-  ParseUUIDPipe,
   Param,
-  UseGuards,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 
-import { Friends } from 'db/models/friends';
 import { FriendsService } from './friends.service';
 
 import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
   ApiOperation,
-  ApiParam,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -64,25 +57,31 @@ export class FriendsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   async createFriendRequest(@Req() req, @Param('userId') userId: uuidv4) {
     // console.log('req.user.login:', req.user.login);
-    return this.friendsService.createFriendRequest(this.public_id, userId);
+    return this.friendsService.createFriend(this.public_id, userId);
   }
 
   @ApiOperation({ summary: 'Accept a friend request' })
   @Patch('/friends/:userId/accept')
   async acceptFriendRequest(@Req() req, @Param('userId') userId: uuidv4) {
-    return this.friendsService.acceptFriendRequest(this.public_id, userId);
+    return this.friendsService.acceptFriend(this.public_id, userId);
   }
 
   @ApiOperation({ summary: 'Decline a friend request' })
   @Delete('/friends/:userId/decline')
   async declineFriendRequest(@Req() req, @Param('userId') userId: uuidv4) {
-    return this.friendsService.declineFriendRequest(this.public_id, userId);
+    return this.friendsService.cancelFriend(this.public_id, userId);
   }
 
-  @ApiOperation({ summary: 'Decline a friend request' })
+  @ApiOperation({ summary: 'Cancel a friend request' })
   @Delete('/friends/:userId/cancel')
   async cancelFriendRequest(@Req() req, @Param('userId') userId: uuidv4) {
-    return this.friendsService.cancelFriendRequest(this.public_id, userId);
+    return this.friendsService.cancelFriend(userId, this.public_id);
+  }
+
+  @ApiOperation({ summary: 'Delete friend or unblock user' })
+  @Delete('/friends/:userId/delete')
+  async deleteFriend(@Req() req, @Param('userId') userId: uuidv4) {
+    return this.friendsService.deleteFriend(this.public_id, userId);
   }
 
   @ApiOperation({ summary: 'Block someone' })
@@ -91,11 +90,14 @@ export class FriendsController {
     return this.friendsService.blockFriend(this.public_id, userId);
   }
 
-  @ApiOperation({ summary: 'Delete friend or unblock user' })
-  @Delete('/friends/:userId/delete')
-  async deleteFriend(@Req() req, @Param('userId') userId: uuidv4) {
-    return this.friendsService.deleteFriend(this.public_id, userId);
+  @ApiOperation({ summary: 'Unblock someone' })
+  @Delete('/friends/:userId/unblock')
+  async unblockFriend(@Req() req, @Param('userId') userId: uuidv4) {
+    return this.friendsService.unblockFriend(this.public_id, userId);
   }
+
+
+  // ---------- GET
 
   @ApiOperation({ summary: 'Get friend requests you have sent' })
   @Get('/friends-sent')

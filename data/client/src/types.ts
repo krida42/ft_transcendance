@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type Id = string;
 
 export enum Status {
@@ -5,6 +7,17 @@ export enum Status {
   Offline = "offline",
   InGame = "inGame",
 }
+
+export const StatusSchema = z.nativeEnum(Status);
+
+export const UserResponseSchema = z.object({
+  id: z.string(),
+  login: z.string(),
+  pseudo: z.string(),
+  avatar: z.string(),
+});
+
+export type UserResponse = z.infer<typeof UserResponseSchema>;
 
 export type User = {
   id: Id;

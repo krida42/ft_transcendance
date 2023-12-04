@@ -45,6 +45,11 @@ export class RealtimeGateway
     console.log('Socket: Client connected: ', client.id);
 
     client.data.user = this.getUserWithCookie(client);
+    if (!client.data.user) {
+      console.log("Socket: Client doesn't have a cookie, disconnecting");
+      client.disconnect();
+      return;
+    }
     client.join(
       this.roomService.getUserPersonalRoom(client.data.user.public_id),
     );
@@ -59,7 +64,7 @@ export class RealtimeGateway
   getUserWithCookie(socket: Socket): ResponseUserDto | null {
     let cookie = socket.handshake.headers.cookie;
     if (!cookie) {
-      return;
+      return null;
     }
     cookie = cookie.split('=')[1];
     const user = jwt.decode(cookie) as ResponseUserDto;

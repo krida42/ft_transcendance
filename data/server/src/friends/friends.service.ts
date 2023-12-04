@@ -16,8 +16,8 @@ enum FriendStatus {
 
 // POST createFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
 // PATCH acceptFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
-// DELETE cancelFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
-// DLETE deleteFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
+// DELETE deleteFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
+// ---------- BLOCK / UNBLOCK
 // POST blockFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
 // DELETE unblockFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
 // ---------- GET
@@ -102,28 +102,6 @@ export class FriendsService {
     return this.fetchPublicUserDto(sender_id);
   }
 
-  async cancelFriend(
-    receiver_id: uuidv4,
-    sender_id: uuidv4,
-  ): Promise<PublicUserDto> {
-    if (this.checkId(sender_id) === this.checkId(receiver_id)) {
-      throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
-    }
-    const pendingFriend = await this.friendsModel.findOne({
-      where: {
-        sender_id: sender_id,
-        receiver_id: receiver_id,
-        status: FriendStatus.Pending,
-      },
-    });
-
-    if (!pendingFriend) {
-      throw new HttpException('friend request not found', HttpStatus.NOT_FOUND);
-    }
-    await pendingFriend.destroy();
-    return this.fetchPublicUserDto(sender_id);
-  }
-
   async deleteFriend(
     current_id: uuidv4,
     friend_id: uuidv4,
@@ -131,21 +109,15 @@ export class FriendsService {
     if (this.checkId(current_id) === this.checkId(friend_id)) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
-    const existingFriend = await this.friendsModel.findOne({
-      where: {
-        [Op.or]: [
-          { sender_id: current_id, receiver_id: friend_id },
-          { sender_id: friend_id, receiver_id: current_id },
-        ],
-        status: FriendStatus.Active,
-      },
-    });
-
-    if (!existingFriend)
+    const friendship = await this.getFriendship(current_id, friend_id);
+    if (!friendship) {
       throw new HttpException('relation not found', HttpStatus.NOT_FOUND);
-    else await existingFriend.destroy();
+    }
+    await friendship.destroy();
     return this.fetchPublicUserDto(friend_id);
   }
+
+  // ---------- BLOCK / UNBLOCK
 
   async blockFriend(
     sender_id: uuidv4,
@@ -165,7 +137,7 @@ export class FriendsService {
         friendship.status = FriendStatus.Blocked;
         await friendship.save();
       } else {
-        const newBlocked = await this.friendsModel.create({
+        await this.friendsModel.create({
           sender_id: sender_id,
           receiver_id: receiver_id,
           status: FriendStatus.Blocked,

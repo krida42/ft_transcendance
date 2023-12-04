@@ -1,37 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DataTypes } from 'sequelize';
-import { Column, Model, Table } from 'sequelize-typescript';
+import { Column, Model, Table, ForeignKey, PrimaryKey } from 'sequelize-typescript';
+import { User } from './user';
 
 @Table
 export class Friends extends Model {
-  @ApiProperty()
-  @Column({
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    field: 'id', 
-  })
-  public id: number;
 
-  @ApiProperty()
+  @PrimaryKey
+  @ForeignKey(() => User)
   @Column({
-    type: DataTypes.STRING,
     allowNull: false,
-    unique: false,
-    field: 'login', 
+    type: DataTypes.UUID,
+    field: 'sender_id',
   })
-  public login: string;
+  public sender_id: string;
 
-  @ApiProperty()
+  @PrimaryKey
+  @ForeignKey(() => User)
   @Column({
-    type: DataTypes.STRING,
     allowNull: false,
-    unique: false,
-    field: 'linkedlogin', 
+    type: DataTypes.UUID,
+    field: 'receiver_id',
   })
-  public linkedlogin: string;
+  public receiver_id: string;
 
-  @ApiProperty()
   @Column({
     type: DataTypes.ENUM('Pending', 'Active', 'Blocked'),
     allowNull: false,
@@ -40,20 +32,17 @@ export class Friends extends Model {
   })
   public status: string;
 
-  @ApiProperty()
   @Column({
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'createdAt', 
+    field: 'createdAt',
   })
   public readonly createdAt: Date;
 
-  @ApiProperty()
   @Column({
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'updatedAt', 
+    field: 'updatedAt',
   })
   public readonly updatedAt: Date;
-
 }

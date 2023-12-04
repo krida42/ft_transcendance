@@ -10,6 +10,7 @@ import {
   Param,
   Req,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 
 import { UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
@@ -20,6 +21,8 @@ import { Channels } from 'db/models/channels';
 import { ChannelsService } from './channels.service';
 import { createChannelDto } from './dto/createChannel.dto';
 import { updateChannelDto } from './dto/updateChannel.dto';
+
+import { AuthGuard } from '@nestjs/passport';
 
 import {
   ApiBadRequestResponse,
@@ -47,9 +50,10 @@ export class ChannelsController
     @ApiResponse({ status: 200, description: 'Channel created successfully' })
     @ApiResponse({ status: 400, description: 'Bad Request' })
     @Post('/channels')
+    @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
     async createChannel(@Req() req, @Body() channelDto: createChannelDto)
     {
-        return this.channelService.createChannel(this.login, channelDto);
+        return this.channelService.createChannel(req.user.login, channelDto);
     }
 
     @ApiOperation({ summary: 'Delete a channel' })
@@ -57,9 +61,10 @@ export class ChannelsController
     @ApiResponse({ status: 404, description: 'Channel not found' })
     @ApiResponse({ status: 400, description: 'Bad Request' })
     @Delete('/channels/:chanId')
+    @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
     async deleteChannel(@Req() req, @Param('chanId') chanId: string)
     {
-        return this.channelService.deleteChannel(this.login, chanId);
+        return this.channelService.deleteChannel(req.user.login, chanId);
     }
 
     @ApiOperation({ summary: 'Update a channel (dto)' })
@@ -106,7 +111,7 @@ export class ChannelsController
     {
         return this.channelService.quitChannel(this.login, chanId);
     }
-    
+
     // ----------   INVITE
 
     @ApiOperation({ summary: 'Invite userId to channel' })
@@ -182,7 +187,7 @@ export class ChannelsController
 
     @ApiOperation({ summary: 'Get channels of specific user (query param)' })
     @Get('/userChannels')
-    async getUserChannels(@Req() req, @Query('user') user: string | undefined)
+    async getChannelsWithUser(@Req() req, @Query('user') user: string | undefined)
     {
         return this.channelService.getUserChannels(user);
     }
@@ -194,11 +199,13 @@ export class ChannelsController
         return this.channelService.getChannelUsers(chanId);
     }
 
+    /* // FIXME
     @ApiOperation({ summary: 'Get ban list of channel' })
     @Get('/channels/:chanId/banlist')
     async getChannelBanlist(@Req() req, @Param('chanId') chanId: string)
     {
         return this.channelService.getChannelBanlist(chanId);
     }
+    */
 
 }

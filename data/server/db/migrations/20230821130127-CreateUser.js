@@ -20,7 +20,7 @@ module.exports = {
         unique: true,
       },
       email: {
-        type: Sequelize.BYTEA('tiny'),
+        type: Sequelize.BLOB,
         allowNull: false,
         unique: true,
         validate: { isEmail: true },

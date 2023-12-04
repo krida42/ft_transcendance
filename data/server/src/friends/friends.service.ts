@@ -44,7 +44,23 @@ export class FriendsService {
     return id;
   }
 
-  async newPublicUserDto(id: uuidv4): Promise<PublicUserDto> {
+  async friendExists(user1_id: uuidv4, user2_id: uuidv4): Promise<boolean> {
+    const existingFriendship = await Friends.findOne({
+      where: {
+        [Op.or]: [
+          { sender_id: user1_id, receiver_id: user2_id },
+          { sender_id: user2_id, receiver_id: user1_id },
+        ],
+      },
+    });
+
+    if (existingFriendship) {
+      return true;
+    }
+    return false;
+  }
+
+  async fetchPublicUserDto(id: uuidv4): Promise<PublicUserDto> {
     const user = await this.usersService.findById(id);
     const publicUserDto = new PublicUserDto(
       user.public_id,
@@ -53,6 +69,24 @@ export class FriendsService {
       user.avatar,
     );
     return publicUserDto;
+  }
+
+  async fetchUserDtoArrayFor(current_id: uuidv4, all: Friends[]): Promise<PublicUserDto[]> {
+    const publicUserDtoArray: PublicUserDto[] = [];
+    for (const relation of all) {
+      let other_user = await this.usersService.findById(relation.sender_id);
+      if (relation.sender_id === current_id) {
+        other_user = await this.usersService.findById(relation.receiver_id);
+      }
+      const publicUserDto = new PublicUserDto(
+        other_user.public_id,
+        other_user.pseudo,
+        other_user.login,
+        other_user.avatar,
+      );
+      publicUserDtoArray.push(publicUserDto);
+    }
+    return publicUserDtoArray;
   }
 
   async createFriendRequest(
@@ -71,7 +105,7 @@ export class FriendsService {
         receiver_id: receiver_id,
         status: FriendStatus.Pending,
       });
-      return this.newPublicUserDto(receiver_id);
+      return this.fetchPublicUserDto(receiver_id);
     } catch (error) {
       throw new HttpException('createFriend: ' + error, HttpStatus.BAD_REQUEST);
     }
@@ -101,7 +135,7 @@ export class FriendsService {
     }
     pendingFriend.status = FriendStatus.Active;
     await pendingFriend.save();
-    return this.newPublicUserDto(sender_id);
+    return this.fetchPublicUserDto(sender_id);
   }
 
   async declineFriendRequest(
@@ -125,7 +159,7 @@ export class FriendsService {
       throw new FriendAlreadyExistsException();
     }
     await pendingFriend.destroy();
-    return this.newPublicUserDto(sender_id);
+    return this.fetchPublicUserDto(sender_id);
   }
 
   async cancelFriendRequest(
@@ -149,7 +183,7 @@ export class FriendsService {
       throw new FriendAlreadyExistsException();
     }
     await pendingFriend.destroy();
-    return this.newPublicUserDto(sender_id);
+    return this.fetchPublicUserDto(sender_id);
   }
 
   async blockFriend(login: uuidv4, linkedlogin: uuidv4) {
@@ -283,61 +317,20 @@ export class FriendsService {
         status: FriendStatus.Active,
       },
     });
-    const publicUserDtoArray: PublicUserDto[] = [];
-    for (const relation of all) {
-      const receiver_user = await this.usersService.findById(
-        relation.receiver_id,
-      );
-      const publicUserDto = new PublicUserDto(
-        receiver_user.public_id,
-        receiver_user.pseudo,
-        receiver_user.login,
-        receiver_user.avatar,
-      );
-      publicUserDtoArray.push(publicUserDto);
-    }
-    return publicUserDtoArray;
+    return this.fetchUserDtoArrayFor(current_id, all);
   }
 
   async getBlocked(current_id: uuidv4): Promise<PublicUserDto[]> {
     const all = await Friends.findAll({
       where: {
-        sender_id: current_id,
+        [Op.or]: [{ sender_id: current_id }, { receiver_id: current_id }],
         status: FriendStatus.Blocked,
       },
     });
-
-    const publicUserDtoArray: PublicUserDto[] = [];
-    for (const relation of all) {
-      const receiver_user = await this.usersService.findById(
-        relation.receiver_id,
-      );
-      const publicUserDto = new PublicUserDto(
-        receiver_user.public_id,
-        receiver_user.pseudo,
-        receiver_user.login,
-        receiver_user.avatar,
-      );
-      publicUserDtoArray.push(publicUserDto);
-    }
-    return publicUserDtoArray;
+    return this.fetchUserDtoArrayFor(current_id, all);
   }
 
-  async friendExists(user1_id: uuidv4, user2_id: uuidv4): Promise<boolean> {
-    const existingFriendship = await Friends.findOne({
-      where: {
-        [Op.or]: [
-          { sender_id: user1_id, receiver_id: user2_id },
-          { sender_id: user2_id, receiver_id: user1_id },
-        ],
-      },
-    });
 
-    if (existingFriendship) {
-      return true;
-    }
-    return false;
-  }
 
   async hardDelete(current_id: uuidv4): Promise<string> {
     try {

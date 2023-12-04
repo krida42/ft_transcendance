@@ -44,7 +44,6 @@ export default {
   },
   //prettier-ignore
   async unblockUser(id: Id): Promise<void> {
-    return;
     return axios.delete(`${host}/friends/${id}/unblock`).then((res) => res.data);
   },
 

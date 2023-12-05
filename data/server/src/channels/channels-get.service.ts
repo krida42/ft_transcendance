@@ -299,6 +299,7 @@ export class ChannelsGetService {
     return channelDtoArray;
   }
 
+
   async fetchChanUsersToChanDtoArray(
     all: ChannelsUsers[],
   ): Promise<channelDto[]> {
@@ -306,5 +307,6 @@ export class ChannelsGetService {
     const channels = await Channels.findAll({ where: { chanId: channelIds } });
     return this.fetchChannelDtoArray(channels);
   }
+
 
 }

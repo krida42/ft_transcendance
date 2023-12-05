@@ -122,6 +122,7 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   async createChannel(@Req() req, @Body() editChannelDto: EditChannelDto) {
     // console.log('req.user.login:', req.user.login);
+    console.log('editChannelDto:', editChannelDto);
     return this.channelService.createChannel(this.public_id, editChannelDto);
   }
 

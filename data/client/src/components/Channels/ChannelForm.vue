@@ -1,6 +1,6 @@
 <template>
   <form
-    @submit.prevent="sendForm"
+    @submit.prevent="createForm"
     class="create-channel min-h-[100vh] flex flex-col justify-evenly items-center"
   >
     <div
@@ -54,8 +54,8 @@
           type="radio"
           id="private"
           name="privacy"
-          value="private"
-          :checked="privacy === 'private' ? true : false"
+          value="Private"
+          :checked="privacy === 'Private' ? true : false"
         />
         <label for="private">private</label>
       </div>
@@ -65,8 +65,8 @@
           type="radio"
           id="public"
           name="privacy"
-          value="public"
-          :checked="privacy === 'public' ? true : false"
+          value="Public"
+          :checked="privacy === 'Public' ? true : false"
         />
         <label for="public">public</label>
       </div>
@@ -76,28 +76,29 @@
           type="radio"
           id="protected"
           name="privacy"
-          value="protected"
-          :checked="privacy === 'protected' ? true : false"
+          value="Protected"
+          :checked="privacy === 'Protected' ? true : false"
         />
         <label for="protected">protected</label>
       </div>
     </div>
     <div class="chan-options min-h-[25rem] h-[50vh] w-[100%] px-[3rem]">
       <div
-        :class="privacy === 'public' ? 'hidden' : 'block'"
+        :class="privacy === 'Public' ? 'hidden' : 'block'"
         class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap gap-[1rem] p-[2rem] overflow-y-auto overflow-x-hidden"
       >
         <input
+          v-model="password"
           type="text"
           :placeholder="
-            privacy === 'private'
+            privacy === 'Private'
               ? 'search for friends...'
               : 'set a password...'
           "
           class="w-[100%] h-[3rem] rounded-[15px] bg-yellow-hover text-black text-[1.2rem] pl-[1rem]"
         />
         <user-action
-          :class="privacy === 'private' ? 'block' : 'hidden'"
+          :class="privacy === 'Private' ? 'block' : 'hidden'"
           v-for="[, user] in friendList"
           :key="user.id"
           :uuid="user.id"
@@ -107,7 +108,6 @@
     </div>
     <div class="submit-btn w-[90%] flex justify-end">
       <button
-        @click="sendForm"
         class="bg-yellow-hover rounded-[15px] px-[1rem] h-[3rem] text-[1.5rem] text-black uppercase"
       >
         {{ props.formType === "create" ? "create" : "save" }}
@@ -126,7 +126,7 @@ import unknownLogo from "@/assets/svg/unknown-img.svg";
 import UserAction from "@/components/UserAction.vue";
 import { PrivacyType } from "@/types";
 import router from "@/router";
-
+import axios from "axios";
 const props = defineProps({
   formType: {
     type: String,
@@ -147,6 +147,7 @@ const channelId = computed(() => {
     ? (router.currentRoute.value.params.channelId as string)
     : "";
 });
+const password = ref("");
 
 let files: FileList | null = null;
 let file: File | null = null;
@@ -168,20 +169,21 @@ const onFileSelected = (e: Event) => {
   };
 };
 
-const createForm = () => {
-  if (!file) return;
-  let newChannel: Channel = {} as Channel;
-  const fd = new FormData();
-  // fd.append("name", channelName.value);
-  // fd.append("privacy", privacy.value);
-  fd.append("image", file, file.name);
-  // fd.append("owner", user.getUser().id); demander a Kevin comment recuperer l'id de l'utilisateur courant
-  // fd.append("users", user.getUser().id); ajouter les users invites par l'utilisateur si privacy == private
-  newChannel.id = "";
-  newChannel.name = channelName.value;
-  newChannel.privacy = privacy.value;
-  newChannel.logo = fd;
-  channel.createChannel(newChannel);
+const createForm = async () => {
+  //const fd = new FormData();
+  const data = {
+    chanName: channelName.value,
+    chanType: privacy.value,
+    chanPassword: password.value,
+  };
+  // fd.append("image", file, file.name);
+  // fd.append("chanName", channelName.value);
+  // fd.append("chanType", privacy.value);
+  // fd.append("chanPassword", password.value);
+  console.log(data);
+  axios.post(`http://localhost:3001/channels`, data).then((res) => {
+    console.log(res);
+  });
 };
 
 const editForm = () => {

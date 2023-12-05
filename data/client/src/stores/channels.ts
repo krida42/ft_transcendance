@@ -10,7 +10,7 @@ export const useChannelsStore = defineStore({
     myChannels: new Map<Id, Channel>(),
   }),
   getters: {
-    myChannels: (state) => new Map<Id, Channel>(state.myChannels),
+    Channels: (state) => new Map<Id, Channel>(state.myChannels),
     myChannelsList: (state) => {
       const myChannels: Channel[] = [];
       state.myChannels.forEach((channel) => {

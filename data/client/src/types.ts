@@ -66,9 +66,9 @@ export type Channel = {
 };
 
 export enum PrivacyType {
-  Private = "private",
-  Public = "public",
-  Protected = "protected",
+  Private = "Private",
+  Public = "Public",
+  Protected = "Protected",
 }
 
 export type NavItem = {

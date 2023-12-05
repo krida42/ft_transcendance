@@ -24,6 +24,7 @@ export class Channels extends Model {
   })
   public chanId: string;
 
+ 
   @ApiProperty()
   @MinLength(3, { message: 'Channel name is too short (min 3 characters)' })
   @MaxLength(20, { message: 'Channel name is too long (max 20 characters)' })
@@ -77,39 +78,6 @@ export class Channels extends Model {
     field: 'nbUser',
   })
   public nbUser: number;
-
-  /*
-
-  @ApiProperty()
-  @Default(null)
-  @Column({
-    allowNull: true,
-    type: DataTypes.BLOB,
-    field: 'chanImage',
-    validate: {
-      isImage(value: Buffer) {
-        if (!value) {
-          return;
-        }
-        const validFormats = ['image/jpeg', 'image/png'];
-        if (!validFormats.includes(value.slice(0, 4).toString('hex'))) {
-          throw new Error('Invalid image format');
-        }
-      },
-      isNotTooLarge(value: Buffer) {
-        if (!value) {
-          return;
-        }
-        const maxSize = 5 * 1024 * 1024; // 5 MB
-        if (value.length > maxSize) {
-          throw new Error('Image size exceeds the limit');
-        }
-      },
-    },
-  })
-  public chanImage: Buffer;
-
-  */
 
   @ApiProperty()
   @Column({

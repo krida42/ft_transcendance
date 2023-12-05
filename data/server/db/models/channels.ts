@@ -14,7 +14,6 @@ import { MaxLength, MinLength, IsAlphanumeric } from 'class-validator';
 @Table
 export class Channels extends Model {
   @PrimaryKey
-  @ApiProperty()
   @Column({
     unique: true,
     allowNull: false,
@@ -25,7 +24,6 @@ export class Channels extends Model {
   public chanId: string;
 
  
-  @ApiProperty()
   @MinLength(3, { message: 'Channel name is too short (min 3 characters)' })
   @MaxLength(20, { message: 'Channel name is too long (max 20 characters)' })
   @IsAlphanumeric('en-US', { message: 'Invalid characters in channel name' })
@@ -56,21 +54,19 @@ export class Channels extends Model {
   })
   public chanType: string;
 
-  @ApiProperty()
   @MinLength(6, { message: 'Channel password is too short (min 6 characters)' })
   @MaxLength(128, {
     message: 'Channel password is too long (max 128 characters)',
-  })
+   })
   @Column({
     unique: false,
     allowNull: false,
     type: DataTypes.STRING,
-    defaultValue: 'nan',
+    defaultValue: 'nannan',
     field: 'chanPassword',
   })
   public chanPassword: string;
 
-  @ApiProperty()
   @Column({
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -79,7 +75,6 @@ export class Channels extends Model {
   })
   public nbUser: number;
 
-  @ApiProperty()
   @Column({
     type: DataTypes.DATE,
     allowNull: false,
@@ -87,7 +82,6 @@ export class Channels extends Model {
   })
   public readonly createdAt: Date;
 
-  @ApiProperty()
   @Column({
     type: DataTypes.DATE,
     allowNull: false,

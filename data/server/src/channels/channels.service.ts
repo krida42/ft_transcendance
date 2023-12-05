@@ -68,13 +68,12 @@ export class ChannelsService {
   ): Promise<channelDto> {
     this.friendsService.checkId(current_id);
 
-    console.log('-----------------------createChannel', editChannelDto);
+    // console.log('-----------------------createChannel', editChannelDto);
 
     const chan = await this.channelModel.findOne({
       where: { chanName: editChannelDto.chanName },
     });
     
-    console.log('-----------------------chan', chan);
 
     if (chan) {
       throw new HttpException('name already exist', HttpStatus.CONFLICT);
@@ -93,7 +92,7 @@ export class ChannelsService {
 
     if (editChannelDto.chanType == ChanType.Protected)
       pass = await BcryptService.hashPassword(pass);
-    else pass = 'nan';
+    else pass = 'nannan';
     try {
 
 
@@ -114,11 +113,15 @@ export class ChannelsService {
       });
       */
 
-      return this.fetchChannelDto(chan);
+      return;
+      //return this.fetchChannelDto(chan);
+
     } catch (error) {
       throw new HttpException('createChannel ' + error, HttpStatus.BAD_REQUEST);
     }
   }
+
+  /*
 
   async updateChannel(
     current_id: uuidv4,
@@ -259,4 +262,6 @@ export class ChannelsService {
     );
     return dto;
   }
+
+  */
 }

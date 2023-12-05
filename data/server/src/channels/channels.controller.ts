@@ -126,6 +126,8 @@ export class ChannelsController {
     return this.channelService.createChannel(this.public_id, editChannelDto);
   }
 
+  /*
+
   @ApiOperation({ summary: 'Update a channel (dto)' })
   @ApiResponse({ status: 200, description: 'Channel updated successfully' })
   @ApiResponse({ status: 404, description: 'Channel not found' })
@@ -382,6 +384,8 @@ export class ChannelsController {
   async getOwnerChan(@Req() req, @Param('chanId') chanId: uuidv4) {
     return this.channelGetService.getOwnerChan(chanId);
   }
+
+  */
 
 }
 

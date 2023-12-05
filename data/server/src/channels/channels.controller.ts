@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { v4 as uuidv4 } from 'uuid';
+import { uuidv4} from 'src/types';
 import { AuthGuard } from '@nestjs/passport';
 
 import { ChannelsService } from './channels.service';

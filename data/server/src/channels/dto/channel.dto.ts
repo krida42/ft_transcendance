@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
 export class channelDto {
@@ -6,42 +5,27 @@ export class channelDto {
   chanId: string;
 
   @IsNotEmpty()
-  @ApiProperty({
-    example: 'chan',
-    description: 'channel name',
-  })
-  name: string;
+  chanName: string;
 
   @IsNotEmpty()
-  @ApiProperty({
-    example: 'Public',
-    description: 'type de channel',
-    enum: ['Direct', 'Public', 'Protected', 'Private'],
-  })
-  channelType: string;
+  chanType: string;
 
   @IsNotEmpty()
   ownerId: string;
 
   @IsNotEmpty()
-  @ApiProperty({
-    example: '2',
-    description: 'number of users',
-  })
   nbUser: number;
-
-  // TODO add image
 
   constructor(
     chanId: string,
-    name: string,
-    channelType: string,
+    chanName: string,
+    chanType: string,
     ownerId: string,
     nbUser: number,
   ) {
     this.chanId = chanId;
-    this.name = name;
-    this.channelType = channelType;
+    this.chanName = chanName;
+    this.chanType = chanType;
     this.ownerId = ownerId;
     this.nbUser = nbUser;
   }

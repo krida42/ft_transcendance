@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { isUUID } from 'class-validator';
-import { v4 as uuidv4 } from 'uuid';
+import { uuidv4 } from 'src/types';
 
 import { Friends } from 'db/models/friends';
 import { UsersService } from '../users/users.service';

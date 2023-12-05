@@ -2,8 +2,8 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { isUUID } from 'class-validator';
-import { v4 as uuidv4 } from 'uuid';
 import { DestroyOptions } from 'sequelize/types';
+import { uuidv4 } from 'src/types';
 
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
@@ -68,17 +68,12 @@ export class ChannelsService {
   ): Promise<channelDto> {
     this.friendsService.checkId(current_id);
 
-    // console.log('-----------------------createChannel', editChannelDto);
-
     const chan = await this.channelModel.findOne({
       where: { chanName: editChannelDto.chanName },
     });
-    
-
     if (chan) {
       throw new HttpException('name already exist', HttpStatus.CONFLICT);
     }
-
 
     let pass = editChannelDto.chanPassword;
     if (pass == null || pass.length < 6) {
@@ -94,8 +89,6 @@ export class ChannelsService {
       pass = await BcryptService.hashPassword(pass);
     else pass = 'nannan';
     try {
-
-
       const chan = await this.channelModel.create({
         chanName: editChannelDto.chanName,
         ownerId: current_id,
@@ -104,18 +97,13 @@ export class ChannelsService {
         nbUser: 1,
       });
 
-
-      /*
       await this.channelUsersModel.create({
         chanId: chan.chanId,
         userId: current_id,
         userStatus: UserStatus.Owner,
       });
-      */
 
-      return;
-      //return this.fetchChannelDto(chan);
-
+      return this.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException('createChannel ' + error, HttpStatus.BAD_REQUEST);
     }
@@ -248,10 +236,11 @@ export class ChannelsService {
       throw new HttpException('quitChannel ' + error, HttpStatus.BAD_REQUEST);
     }
   }
+  */
 
   // ---------- UTILS
 
-  async fetchChannelDto(chanId: uuidv4): Promise<channelDto> {
+  async fetchChannelDto(chanId: string): Promise<channelDto> {
     const chan = await this.channelsGetService.findById(chanId);
     const dto = new channelDto(
       chan.chanId,
@@ -262,6 +251,4 @@ export class ChannelsService {
     );
     return dto;
   }
-
-  */
 }

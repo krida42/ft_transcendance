@@ -30,6 +30,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
+      nbUser: {
+        unique: false,
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
       chanImage: {
         unique: false,
         allowNull: true,

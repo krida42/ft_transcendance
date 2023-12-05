@@ -17,14 +17,17 @@ enum FriendStatus {
 // POST createFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
 // PATCH acceptFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
 // DELETE deleteFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
+
 // ---------- BLOCK / UNBLOCK
 // POST blockFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
 // DELETE unblockFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
+
 // ---------- GET
 // GET getSentRequests(current_id: uuidv4): Promise<PublicUserDto[]> OK
 // GET getSentRequests(current_id: uuidv4): Promise<PublicUserDto[]> OK
 // GET getFriends(current_id: uuidv4): Promise<PublicUserDto[]> OK
 // GET getBlocked(current_id: uuidv4): Promise<PublicUserDto[]> OK
+
 // ---------- UTILS
 // checkId(id: uuidv4): Promise<uuidv4> OK
 // friendExists(user1_id: uuidv4, user2_id: uuidv4): Promise<boolean> OK
@@ -228,7 +231,7 @@ export class FriendsService {
     }
     const user = await this.usersService.findById(id);
     if (!user) {
-      throw new HttpException('invalid uuidv4', HttpStatus.BAD_REQUEST);
+      throw new HttpException('user uuidv4 not found', HttpStatus.NOT_FOUND);
     }
     return id;
   }

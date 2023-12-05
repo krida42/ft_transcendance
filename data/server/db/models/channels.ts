@@ -69,6 +69,15 @@ export class Channels extends Model {
   public chanPassword: string;
 
   @ApiProperty()
+  @Column({
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
+    field: 'nbUser',
+  })
+  public nbUser: number;
+
+  @ApiProperty()
   @Default(null)
   @Column({
     allowNull: true,

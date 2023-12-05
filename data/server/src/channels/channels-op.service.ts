@@ -1,144 +1,274 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectModel} from '@nestjs/sequelize';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
+import { isUUID } from 'class-validator';
+import { v4 as uuidv4 } from 'uuid';
+import { DestroyOptions } from 'sequelize/types';
 
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
-
-import { createChannelDto } from './dto/createChannel.dto';
-import { updateChannelDto } from './dto/updateChannel.dto';
+import { editChannelDto } from './dto/editChannel.dto';
+import { channelDto } from './dto/channel.dto';
 import { User } from 'db/models/user';
+import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { UsersService } from '../users/users.service';
-import { DestroyOptions } from 'sequelize/types';
+import { ChannelsGetService } from '../channels/channels-get.service';
+import { FriendsService } from '../friends/friends.service';
 
-import {
-    ChannelNotFoundException,
-    ChannelAlreadyExistsException,
-} from 'src/exceptions/exceptions1';
-import { UserNotFoundException } from 'src/exceptions/exceptions';
+enum ChanType {
+  Direct = 'Direct',
+  Public = 'Public',
+  Protected = 'Protected',
+  Private = 'Private',
+}
+
+enum UserStatus {
+  Direct = 'Direct',
+  Owner = 'Owner',
+  Admin = 'Admin',
+  User = 'User',
+  Muted = 'Muted',
+  Banned = 'Banned',
+  Invited = 'Invited',
+}
+
+// ---------- ADMIN
+// POST addAdmin(current_id, chanId, userId): Promise<PublicUserDto> FIXME
+// DELETE delAdmin(current_id, chanId, userId): Promise<PublicUserDto> FIXME
+
+// ---------- INVITE
+// POST invite(current_id, chanId, userId): Promise<PublicUserDto> FIXME
+// DELETE uninvite(current_id, chanId, userId): Promise<PublicUserDto> FIXME
+
+// ---------- BAN
+// POST ban(current_id, chanId, userId): Promise<PublicUserDto> FIXME
+// DELETE unban(current_id, chanId, userId): Promise<PublicUserDto> FIXME
+
+// ---------- MUTE
+// PATCH mute(current_id, chanId, userId): Promise<PublicUserDto> FIXME
+
+// ---------- KICK
+// DELETE kick(current_id, chanId, userId): Promise<PublicUserDto> FIXME
+
+// ---------- UTILS
+// checkUserIds(current_id: uuidv4, userId: uuidv4) OK
+// fetchPublicUserDto(id: uuidv4): Promise<PublicUserDto> OK
 
 @Injectable()
 export class ChannelsOpService {
   constructor(
-
     @InjectModel(Channels)
     private readonly channelModel: typeof Channels,
+    private readonly channelsGetService: ChannelsGetService,
     private readonly usersService: UsersService,
+    private readonly friendsService: FriendsService,
 
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
-
   ) {}
 
-    // ----------   INVITE
+  // ---------- ADMIN
+  async addAdmin(
+    current_id: uuidv4,
+    chanId: uuidv4,
+    userId: uuidv4,
+  ): Promise<PublicUserDto> {
+    this.channelsGetService.checkId(chanId);
+    this.checkUserIds(current_id, userId);
 
-    async inviteToChannel(login: string, name:string, userId: string): Promise<string>
-    {
-        const chan = await this.channelModel.findOne({ where: { name: name } });
-        if (!chan) {
-            throw new ChannelNotFoundException();
-        }
-        try {
-            // todo send invite to user
-            return `${login} invited to channel ${name}.`;
-        } catch (error) {
-            throw new BadRequestException(error.message);
-        }
+    // TODO check current_id is admin / owner of the channel
+
+    try {
+      // TODO SET userId to admin
+
+      return this.fetchPublicUserDto(userId);
+    } catch (error) {
+      throw new HttpException(
+        'createFriendRequest ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+  }
 
+  async delAdmin(
+    current_id: uuidv4,
+    chanId: uuidv4,
+    userId: uuidv4,
+  ): Promise<PublicUserDto> {
+    this.channelsGetService.checkId(chanId);
+    this.checkUserIds(current_id, userId);
 
-    // ----------   OWNER / ADMIN OPERATIONS
+    // TODO check current_id is admin / owner of the channel
 
-    async addAdminChannel(login: string, name: string, userId: string): Promise<string>
-    {
-        const chan = await this.channelModel.findOne({ where: { name: name } });
-        if (!chan) {
-            throw new ChannelNotFoundException();
-        }
-        // TODO check login is admin / owner of the channel
-        try {
-            // todo set user to admin
-            return `${login} is now admin of channel ${name}.`;
-        } catch (error) {
-            throw new BadRequestException(error.message);
-        }
+    try {
+      // TODO UNSET userId to admin
+
+      return this.fetchPublicUserDto(userId);
+    } catch (error) {
+      throw new HttpException(
+        'createFriendRequest ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+  }
 
-    async delAdminChannel(login: string, name: string, userId: string): Promise<string>
-    {
-        const chan = await this.channelModel.findOne({ where: { name: name } });
-        if (!chan) {
-            throw new ChannelNotFoundException();
-        }
-        // TODO check login is admin / owner of the channel
-        try {
-            // todo UNSET user admin
-            return `${login} admin deleted from channel ${name}.`;
-        } catch (error) {
-            throw new BadRequestException(error.message);
-        }
+  // ----------   INVITE
+  async invite(
+    current_id: uuidv4,
+    chanId: uuidv4,
+    userId: uuidv4,
+  ): Promise<PublicUserDto> {
+    this.channelsGetService.checkId(chanId);
+    this.checkUserIds(current_id, userId);
+
+    // TODO check current_id is admin / owner of the channel
+
+    try {
+      // TODO create invite for userId
+
+      return this.fetchPublicUserDto(userId);
+    } catch (error) {
+      throw new HttpException(
+        'createFriendRequest ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+  }
 
-    // temps de mute 5 min / 1h / 3h
-    async muteUser(login: string, name:string, userId: string): Promise<string>
-    {
-        const chan = await this.channelModel.findOne({ where: { name: name } });
-        if (!chan) {
-            throw new ChannelNotFoundException();
-        }
-        try {
-            // TODO mute userId in db
-            return `${userId} muted in ${name}.`;
+  async uninvite(
+    current_id: uuidv4,
+    chanId: uuidv4,
+    userId: uuidv4,
+  ): Promise<PublicUserDto> {
+    this.channelsGetService.checkId(chanId);
+    this.checkUserIds(current_id, userId);
 
-        } catch (error) {
-            throw new BadRequestException(error.message);
-        }
+    // TODO check current_id is admin / owner of the channel
+
+    try {
+      // TODO remove invite for userId
+
+      return this.fetchPublicUserDto(userId);
+    } catch (error) {
+      throw new HttpException(
+        'createFriendRequest ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+  }
 
-    async kickUser(login: string, name:string, userId: string): Promise<string>
-    {
-        const chan = await this.channelModel.findOne({ where: { name: name } });
-        if (!chan) {
-            throw new ChannelNotFoundException();
-        }
-        try {
-            // TODO kick userId in db
-            return `${userId} muted in ${name}.`;
 
-        } catch (error) {
-            throw new BadRequestException(error.message);
-        }
+  // ---------- BAN
+  async banUser(
+    current_id: uuidv4,
+    chanId: uuidv4,
+    userId: uuidv4,
+  ): Promise<PublicUserDto> {
+    this.channelsGetService.checkId(chanId);
+    this.checkUserIds(current_id, userId);
+
+    // TODO check current_id is admin / owner of the channel
+
+    try {
+      // TODO SET BAN for userId
+
+      return this.fetchPublicUserDto(userId);
+    } catch (error) {
+      throw new HttpException(
+        'createFriendRequest ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+  }
 
-    async banUser(login: string, name:string, userId: string): Promise<string>
-    {
-        const chan = await this.channelModel.findOne({ where: { name: name } });
-        if (!chan) {
-            throw new ChannelNotFoundException();
-        }
-        try {
-            // TODO ban userId in db
-            return `${userId} muted in ${name}.`;
+  async unbanUser(
+    current_id: uuidv4,
+    chanId: uuidv4,
+    userId: uuidv4,
+  ): Promise<PublicUserDto> {
+    this.channelsGetService.checkId(chanId);
+    this.checkUserIds(current_id, userId);
 
-        } catch (error) {
-            throw new BadRequestException(error.message);
-        }
+    // TODO check current_id is admin / owner of the channel
+
+    try {
+      // TODO UNSET BAN for userId
+
+      return this.fetchPublicUserDto(userId);
+    } catch (error) {
+      throw new HttpException(
+        'createFriendRequest ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+  }
 
-    // ONLY with owner
-    async unbanUser(login: string, name:string, userId: string): Promise<string>
-    {
-        const chan = await this.channelModel.findOne({ where: { name: name } });
-        if (!chan) {
-            throw new ChannelNotFoundException();
-        }
-        try {
-            // TODO ban userId in db
-            return `${userId} muted in ${name}.`;
 
-        } catch (error) {
-            throw new BadRequestException(error.message);
-        }
+  // ---------- MUTE
+  // temps de mute 5 min / 1h / 3h
+  async mute(
+    current_id: uuidv4,
+    chanId: uuidv4,
+    userId: uuidv4,
+  ): Promise<PublicUserDto> {
+    this.channelsGetService.checkId(chanId);
+    this.checkUserIds(current_id, userId);
+
+    // TODO check current_id is admin / owner of the channel
+
+    try {
+      // TODO MUTE for LIMITED TIME userId
+
+      return this.fetchPublicUserDto(userId);
+    } catch (error) {
+      throw new HttpException(
+        'createFriendRequest ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+  }
 
+  // ---------- KICK
+  async kick(
+    current_id: uuidv4,
+    chanId: uuidv4,
+    userId: uuidv4,
+  ): Promise<PublicUserDto> {
+    this.channelsGetService.checkId(chanId);
+    this.checkUserIds(current_id, userId);
+
+    // TODO check current_id is admin / owner of the channel
+
+    try {
+      // TODO KICK userId
+
+      return this.fetchPublicUserDto(userId);
+    } catch (error) {
+      throw new HttpException(
+        'createFriendRequest ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  // ---------- UTILS
+  async checkUserIds(current_id: uuidv4, userId: uuidv4) {
+    if (
+      this.friendsService.checkId(current_id) ===
+      this.friendsService.checkId(userId)
+    ) {
+      throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
+    }
+  }
+
+  async fetchPublicUserDto(id: uuidv4): Promise<PublicUserDto> {
+    const user = await this.usersService.findById(id);
+    const publicUserDto = new PublicUserDto(
+      user.public_id,
+      user.pseudo,
+      user.login,
+      user.avatar,
+    );
+    return publicUserDto;
+  }
 }
-

@@ -8,9 +8,9 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { v4 as uuidv4 } from 'uuid';
+import { AuthGuard } from '@nestjs/passport';
 
 import { FriendsService } from './friends.service';
 import { User } from 'db/models/user';
@@ -51,9 +51,11 @@ export class FriendsController {
   // @Delete('/friends/:userId/decline') OK
   // @Delete('/friends/:userId/cancel') OK
   // @Delete('/friends/:userId/delete') OK
+
   // ---------- BLOCK / UNBLOCK
   // @Post('/friends/:userId/block') OK
   // @Delete('/friends/:userId/unblock') OK
+
   // ---------- GET
   // @Get('/friends-sent') OK
   // @Get('/friends-received') OK

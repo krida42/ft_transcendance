@@ -40,7 +40,7 @@
       />
       <p class="text-[2.2rem]">{{ username }}</p>
     </div>
-    <div class="buttons"><button>Settings</button><button>Logout</button></div>
+    <ProfileButttons mode="my-profile" />
   </div>
 </template>
 
@@ -51,6 +51,7 @@ import MenuButton from "@/components/MenuButton.vue";
 import axios from "axios";
 import { onBeforeMount, ref } from "vue";
 import { Match, Id } from "@/types";
+import ProfileButttons from "@/components/profile/ProfileButtons.vue";
 
 const host = process.env.VUE_APP_API_URL;
 const rank = "beginner";
@@ -175,7 +176,7 @@ html {
   height: 100%;
   margin-bottom: 3vh;
   border-radius: 20px;
-  overflow: scroll;
+  overflow-y: auto;
 }
 
 .rank {
@@ -197,29 +198,6 @@ html {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.buttons {
-  grid-area: buttons;
-  background-color: $green-my;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: var(--bento-gap);
-}
-
-.buttons > * {
-  width: calc(100% - 2 * var(--bento-gap));
-  height: calc(50% - 1.5 * var(--bento-gap));
-  font-size: 1.5rem;
-  text-transform: uppercase;
-  background-color: $yellow-hover;
-  border-radius: 20px;
-  box-shadow: 1px 5px 4px -3px rgba(0, 0, 0, 0.5);
-}
-
-.buttons > *:hover {
-  box-shadow: inset 3px 5px 4px -3px rgba(0, 0, 0, 0.5);
 }
 
 @media (max-width: 1050px) {

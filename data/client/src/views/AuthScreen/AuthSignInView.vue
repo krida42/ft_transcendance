@@ -37,9 +37,3 @@ useEventListener(auth_button, "click", () => {
     });
 });
 </script>
-
-<!-- font-family: 'Baumans', cursive;
-
-font-family: 'Roboto', sans-serif;
-
-font-family: 'VT323', monospace; -->

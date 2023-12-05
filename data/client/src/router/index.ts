@@ -28,11 +28,6 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "about" */ "../views/DevView.vue"),
   },
   {
-    path: "/auth-2FA",
-    name: "authTwoFactor",
-    component: () => import("../views/AuthTwoFactor.vue"),
-  },
-  {
     path: "/auth",
     name: "auth",
     component: () => import("../views/AuthScreen/AuthMainView.vue"),
@@ -108,6 +103,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () =>
           import("../views/Channels/ChannelSettingsMembersView.vue"),
       },
+      {
+        path: "bans",
+        name: "channelSettingsBans",
+        component: () =>
+          import("../views/Channels/ChannelSettingsBansView.vue"),
+      },
     ],
   },
   {
@@ -134,6 +135,16 @@ const routes: Array<RouteRecordRaw> = [
         path: "friend-play",
         name: "friendPlay",
         component: () => import("../views/PongScreen/FriendPlayView.vue"),
+      },
+      {
+        path: "join-queue",
+        name: "joinQueue",
+        component: () => import("../views/PongScreen/JoinQueueView.vue"),
+      },
+      {
+        path: "waiting",
+        name: "waiting",
+        component: () => import("../views/PongScreen/WaitingOpponentView.vue"),
       },
     ],
   },

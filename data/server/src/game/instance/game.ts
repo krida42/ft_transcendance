@@ -43,12 +43,12 @@ export class Game {
 
   start() {
     this.gameState.pongWorld.run();
+    this.gameState.pongBall.startBallAcceleration();
     this.running = true;
     if (this.pongRoom.startTime === 0)
       this.pongRoom.startTime = Date.now();
     this.setupIntervals();
     this.setupTimeEndGame();
-    // this.gameState.pongBall.startBallAcceleration();
   }
 
   pause() {
@@ -135,9 +135,9 @@ export class Game {
     // this.accelerationBallInterval = setInterval(() => this.accelerationBall(), 1000);
   }
 
-  // accelerationBall() {
-  //   this.gameState.pongBall.update();
-  // }
+  accelerationBall() {
+    this.gameState.pongBall.update();
+  }
 
   clearIntervals() {
     clearInterval(this.gameInterval);

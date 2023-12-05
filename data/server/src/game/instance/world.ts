@@ -65,16 +65,28 @@ export class PongWorld{
 
   setupCollisions(gameState: GameState) {
     // Walls collision
-    this.ballCollisionWithWalls(gameState.pongBall.ball);
+    this.ballCollisionWithWalls(gameState.pongBall);
     // Paddles and Ball collision
     this.ballCollisionWithPaddle(gameState.pongPaddle1, gameState.pongBall);
     this.ballCollisionWithPaddle(gameState.pongPaddle2, gameState.pongBall);
   }
 
-  ballCollisionWithWalls(ball: Matter.Body) {
+  ballCollisionWithWalls(pongBall: PongBall) {
+    const ball = pongBall.ball;
     const checkCollisionWithWall = (bodyA: Matter.Body, bodyB: Matter.Body, wall: Matter.Body, wallName: string) => {
       if ((bodyA === ball && bodyB === wall) || (bodyB === ball && bodyA === wall)) {
-        // console.log(`Collision avec le mur ${wallName}`);
+        console.log(`Collision avec le mur ${wallName}`);
+        if (wallName === 'bas'){
+          const downVelocity = Matter.Vector.create(ball.velocity.x, -ball.velocity.y);
+          pongBall.previousVelocity = downVelocity;
+          Matter.Body.setVelocity(ball, downVelocity);
+        }
+        else if (wallName === 'haut')
+        {
+          const upVelocity = Matter.Vector.create(ball.velocity.x, -ball.velocity.y);
+          pongBall.previousVelocity = upVelocity;
+          Matter.Body.setVelocity(ball, upVelocity);
+        }
         if (wallName === 'gauche')
           Matter.Events.trigger(this.engine, 'score', { player: 2 });
         else if (wallName === 'droite')
@@ -99,7 +111,11 @@ export class PongWorld{
   const checkCollisionWithPaddle = (bodyA: Matter.Body, bodyB: Matter.Body, paddleBody: Matter.Body) => {
     if ((bodyA === ball && bodyB === paddleBody) || (bodyB === ball && bodyA === paddleBody)) {
       this.startEngineUpdate(pongPaddle);
-      console.log('Collision avec la raquette');
+      const invertedVelocity = Matter.Vector.create(-ball.velocity.x, ball.velocity.y);
+      pongBall.previousVelocity = invertedVelocity;
+      Matter.Body.setVelocity(ball, invertedVelocity);
+      // Mettre à jour la vélocité de la balle avec la vélocité inversée
+      Matter.Body.setVelocity(ball, invertedVelocity);
     }
   }
 

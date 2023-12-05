@@ -85,7 +85,7 @@
     <div class="chan-options min-h-[25rem] h-[50vh] w-[100%] px-[3rem]">
       <div
         :class="privacy === 'public' ? 'hidden' : 'block'"
-        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap gap-[1rem] p-[2rem] overflow-y-scroll overflow-x-hidden"
+        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap gap-[1rem] p-[2rem] overflow-y-auto overflow-x-hidden"
       >
         <input
           type="text"

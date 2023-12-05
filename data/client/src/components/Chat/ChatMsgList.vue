@@ -159,7 +159,7 @@
   flex-direction: column;
   padding-inline: 0.5rem;
   // padding-block: 0.2rem;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   // scroll-behavior: smooth;
 

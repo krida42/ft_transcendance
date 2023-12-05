@@ -22,7 +22,11 @@
         <ArcadeButton :angle="90" @pongClick="checkFriends()"
           >Play with friends</ArcadeButton
         >
-        <ArcadeButton :angle="-90">Play random game</ArcadeButton>
+        <ArcadeButton
+          :angle="-90"
+          @pongClick="() => router.push('/main/join-queue')"
+          >Play random game</ArcadeButton
+        >
       </div>
     </div>
     <div class="right flex flex-col items-end justify-between">

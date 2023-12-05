@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Channels', {
       chanId: {
         primaryKey: true,
@@ -10,6 +10,7 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.literal('uuid_generate_v4()'),
       },
+
       chanName: {
         unique: true,
         allowNull: false,
@@ -18,7 +19,7 @@ module.exports = {
       ownerId: {
         unique: false,
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
       },
       chanType: {
         allowNull: false,
@@ -30,11 +31,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
-      chanImage: {
+      nbUser: {
         unique: false,
-        allowNull: true,
-        type: Sequelize.BLOB,
-        defaultValue: null,
+        allowNull: false,
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -47,7 +47,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
-     await queryInterface.dropTable('Channels');
-  }
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('Channels');
+  },
 };

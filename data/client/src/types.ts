@@ -71,17 +71,17 @@ export type Channel = {
   id: Id;
   name: string;
   owner: User;
-  admins: User[];
   members: User[];
+  admins: User[];
+  bans: User[];
   privacy: PrivacyType;
-  logo: FormData;
-  is_owner: boolean;
+  logo?: FormData;
 };
 
 export enum PrivacyType {
-  Private = "private",
-  Public = "public",
-  Protected = "protected",
+  Private = "Private",
+  Public = "Public",
+  Protected = "Protected",
 }
 
 export type NavItem = {

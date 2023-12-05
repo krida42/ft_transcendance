@@ -64,7 +64,7 @@ const button_text = computed(() => {
 
 const optionsChannel = (channelId: string) => {
   if (channel.is_owner) {
-    router.push(`/channels/${channelId}/settings`);
+    router.push(`/channels/${channelId}/settings/general`);
   } else {
     console.log("leave");
     //channelsStore.removeUserFromChannel(userStore.currentUser.id, channelId);

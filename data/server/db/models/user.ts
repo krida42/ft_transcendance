@@ -150,13 +150,17 @@ export class User extends Model {
       user.refreshToken = await CryptoService.encrypt(user.refreshToken);
     if (user.twoFactorSecret && typeof user.twoFactorSecret === 'string')
       user.twoFactorSecret = await CryptoService.encrypt(user.twoFactorSecret);
+
+    console.log("encryptText mec user.email: ",user.email.toString());
   };
 
   @AfterFind
   static async decryptText(user: User) {
     if (!user) return;
-    if (user.email)
-      user.email = await CryptoService.decrypt(Buffer.from(user.email));
+    if (user.email) {
+      console.log("decrypttext mec user.email: ",user.email.toString());
+      // user.email = await CryptoService.decrypt(user.email);
+    }
     if (user.refreshToken)
       user.refreshToken = await CryptoService.decrypt(
         Buffer.from(user.refreshToken),

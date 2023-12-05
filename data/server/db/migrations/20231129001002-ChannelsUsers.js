@@ -29,7 +29,7 @@ module.exports = {
       },
       userStatus: {
         allowNull: false,
-        type: Sequelize.ENUM('Direct', 'Owner', 'Admin', 'User', 'Muted', 'Banned'),
+        type: Sequelize.ENUM('Direct', 'Owner', 'Admin', 'User', 'Muted', 'Banned', 'Invited'),
         defaultValue: 'User',
       },
       createdAt: {

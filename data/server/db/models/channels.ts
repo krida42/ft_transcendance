@@ -14,7 +14,6 @@ import { MaxLength, MinLength, IsAlphanumeric } from 'class-validator';
 @Table
 export class Channels extends Model {
   @PrimaryKey
-  @ApiProperty()
   @Column({
     unique: true,
     allowNull: false,
@@ -24,7 +23,7 @@ export class Channels extends Model {
   })
   public chanId: string;
 
-  @ApiProperty()
+ 
   @MinLength(3, { message: 'Channel name is too short (min 3 characters)' })
   @MaxLength(20, { message: 'Channel name is too long (max 20 characters)' })
   @IsAlphanumeric('en-US', { message: 'Invalid characters in channel name' })
@@ -38,9 +37,10 @@ export class Channels extends Model {
 
   @ApiProperty()
   @Column({
-    type: DataTypes.UUID,
-    allowNull: false,
     unique: false,
+    allowNull: false,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     field: 'ownerId',
   })
   public ownerId: string;
@@ -54,50 +54,27 @@ export class Channels extends Model {
   })
   public chanType: string;
 
-  @ApiProperty()
   @MinLength(6, { message: 'Channel password is too short (min 6 characters)' })
   @MaxLength(128, {
     message: 'Channel password is too long (max 128 characters)',
-  })
+   })
   @Column({
-    type: DataTypes.STRING,
-    allowNull: false,
     unique: false,
-    defaultValue: 'nan',
+    allowNull: false,
+    type: DataTypes.STRING,
+    defaultValue: 'nannan',
     field: 'chanPassword',
   })
   public chanPassword: string;
 
-  @ApiProperty()
-  @Default(null)
   @Column({
-    allowNull: true,
-    type: DataTypes.BLOB,
-    field: 'chanImage',
-    validate: {
-      isImage(value: Buffer) {
-        if (!value) {
-          return;
-        }
-        const validFormats = ['image/jpeg', 'image/png'];
-        if (!validFormats.includes(value.slice(0, 4).toString('hex'))) {
-          throw new Error('Invalid image format');
-        }
-      },
-      isNotTooLarge(value: Buffer) {
-        if (!value) {
-          return;
-        }
-        const maxSize = 5 * 1024 * 1024; // 5 MB
-        if (value.length > maxSize) {
-          throw new Error('Image size exceeds the limit');
-        }
-      },
-    },
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
+    field: 'nbUser',
   })
-  public chanImage: Buffer;
+  public nbUser: number;
 
-  @ApiProperty()
   @Column({
     type: DataTypes.DATE,
     allowNull: false,
@@ -105,7 +82,6 @@ export class Channels extends Model {
   })
   public readonly createdAt: Date;
 
-  @ApiProperty()
   @Column({
     type: DataTypes.DATE,
     allowNull: false,

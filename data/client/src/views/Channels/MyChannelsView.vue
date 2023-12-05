@@ -10,7 +10,7 @@
       class="channels-ctn min-h-[35rem] h-[80vh] w-[100%] px-[3rem] pb-[3rem]"
     >
       <div
-        class="w-[100%] h-[100%] bg-green-light rounded-[15px] overflow-scroll"
+        class="w-[100%] h-[100%] bg-green-light rounded-[15px] overflow-y-scroll"
       >
         <ul class="my-channels-list">
           <MyChannelItem
@@ -18,9 +18,9 @@
             :key="channel.id"
             :id="channel.id"
             :name="channel.name"
-            :logo="channel.logo"
+            :logo="channel?.logo"
             :members="channel.members"
-            :is_owner="channel.is_owner"
+            :is_owner="channelsStore.isOwner(channel.id, currentUserId)"
             :len="myChannelsList.length"
           />
         </ul>
@@ -31,26 +31,21 @@
 
 <script lang="ts" setup>
 import MyChannelItem from "@/components/Channels/MyChannelItem.vue";
-import axios from "axios";
-import { ref, onBeforeMount } from "vue";
+import { ref } from "vue";
 import { Channel } from "@/types";
+import { useChannelsStore } from "@/stores/channels";
+import { useUsersStore } from "@/stores/users";
 
-const host = process.env.VUE_APP_API_URL;
+const channelsStore = useChannelsStore();
+const usersStore = useUsersStore();
+
+() => {
+  channelsStore.refreshChannels();
+};
+
+const currentUserId = usersStore.currentUser?.id;
 const myChannelsList = ref<Channel[]>([]);
-
-async function getMyChannels() {
-  axios
-    .get(host + "/channels/my-channels")
-    .then((res) => {
-      myChannelsList.value = res.data;
-      console.log(res.data);
-    })
-    .catch((err) => console.log(err));
-}
-
-onBeforeMount(() => {
-  getMyChannels();
-});
+myChannelsList.value = channelsStore.myChannelsList;
 </script>
 
 <style lang="scss" scoped></style>

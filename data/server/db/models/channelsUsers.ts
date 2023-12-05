@@ -29,7 +29,7 @@ export class ChannelsUsers extends Model {
 
   @ApiProperty()
   @Column({
-    type: DataTypes.ENUM('Direct', 'Owner', 'Admin', 'User', 'Muted', 'Banned'),
+    type: DataTypes.ENUM('Direct', 'Owner', 'Admin', 'User', 'Muted', 'Banned', 'Invited'),
     allowNull: false,
     defaultValue: 'User',
     field: 'userStatus',

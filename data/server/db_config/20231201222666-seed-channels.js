@@ -9,7 +9,8 @@ module.exports = {
         chanName: 'Public mChan',
         ownerId: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
         chanType: 'Public',
-        chanPassword: 'nan',
+        chanPassword: 'nannan',
+        nbUser: 1,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
@@ -18,7 +19,8 @@ module.exports = {
         chanName: 'Protected mChan',
         ownerId: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
         chanType: 'Protected',
-        chanPassword: 'nan',
+        chanPassword: 'nannan',
+        nbUser: 1,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
@@ -27,7 +29,8 @@ module.exports = {
         chanName: 'Private mChan',
         ownerId: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
         chanType: 'Private',
-        chanPassword: 'nan',
+        chanPassword: 'nannan',
+        nbUser: 1,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
@@ -36,7 +39,8 @@ module.exports = {
         chanName: 'Direct MarvinBen',
         ownerId: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
         chanType: 'Direct',
-        chanPassword: 'nan',
+        chanPassword: 'nannan',
+        nbUser: 1,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },

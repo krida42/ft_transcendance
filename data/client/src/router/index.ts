@@ -108,6 +108,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () =>
           import("../views/Channels/ChannelSettingsMembersView.vue"),
       },
+      {
+        path: "bans",
+        name: "channelSettingsBans",
+        component: () =>
+          import("../views/Channels/ChannelSettingsBansView.vue"),
+      },
     ],
   },
   {

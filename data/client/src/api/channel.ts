@@ -30,7 +30,7 @@ export default {
     return res.data;
   },
 
-  async removeUserFromChannel(channelId: Id) {
+  async leaveChannel(channelId: Id) {
     const res = await axios.delete(`${host}/channels/${channelId}/quit}`);
     return res.data;
   },

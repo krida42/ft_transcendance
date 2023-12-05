@@ -1,9 +1,9 @@
 <template>
   <div
-    class="channel-settings-members min-h-[100vh] flex flex-col items-center justify-around gap-[3rem]"
+    class="channel-settings-bans min-h-[100vh] flex flex-col items-center justify-around gap-[3rem]"
   >
     <div class="title-ctn w-[16rem] pt-[1rem]">
-      <h1 class="text-[1.8rem] pb-[1rem]">Members</h1>
+      <h1 class="text-[1.8rem] pb-[1rem]">Bans</h1>
       <hr class="border-t-2 border-black" />
     </div>
     <div
@@ -15,7 +15,7 @@
         <ChannelSettingsMembers
           v-for="member in currentChannel?.members"
           :key="member.id"
-          :mode="'members'"
+          :mode="'bans'"
           :userId="member.id"
           :username="member.pseudo"
           :avatar="member.avatar"

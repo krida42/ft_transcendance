@@ -7,7 +7,7 @@ import { DestroyOptions } from 'sequelize/types';
 
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
-import { editChannelDto } from './dto/editChannel.dto';
+import { EditChannelDto } from './dto/editChannel.dto';
 import { channelDto } from './dto/channel.dto';
 import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
@@ -261,6 +261,7 @@ export class ChannelsGetService {
     }
   }
 
+
   async findById(chanId: uuidv4): Promise<Channels> {
     const chan = await Channels.findOne({ where: { chanId: chanId } });
     if (!chan) {
@@ -268,6 +269,7 @@ export class ChannelsGetService {
     }
     return chan;
   }
+
 
   async fetchChannelDto(chanId: uuidv4): Promise<channelDto> {
     const chan = await this.findById(chanId);
@@ -304,4 +306,5 @@ export class ChannelsGetService {
     const channels = await Channels.findAll({ where: { chanId: channelIds } });
     return this.fetchChannelDtoArray(channels);
   }
+
 }

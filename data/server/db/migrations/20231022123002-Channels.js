@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Channels', {
       chanId: {
         primaryKey: true,
@@ -18,7 +18,7 @@ module.exports = {
       ownerId: {
         unique: false,
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.UUID,
       },
       chanType: {
         allowNull: false,
@@ -35,12 +35,12 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
       },
-      chanImage: {
-        unique: false,
-        allowNull: true,
-        type: Sequelize.BLOB,
-        defaultValue: null,
-      },
+      // chanImage: {
+      // unique: false,
+      // allowNull: true,
+      // type: Sequelize.BLOB,
+      // defaultValue: null,
+      // },
       createdAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -52,7 +52,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
-     await queryInterface.dropTable('Channels');
-  }
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('Channels');
+  },
 };

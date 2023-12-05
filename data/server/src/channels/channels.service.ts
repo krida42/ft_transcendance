@@ -7,13 +7,14 @@ import { DestroyOptions } from 'sequelize/types';
 
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
-import { editChannelDto } from './dto/editChannel.dto';
+import { EditChannelDto } from './dto/editChannel.dto';
 import { channelDto } from './dto/channel.dto';
 import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { FriendsService } from '../friends/friends.service';
 import { ChannelsGetService } from '../channels/channels-get.service';
+import { BcryptService } from 'src/tools/bcrypt.service';
 
 enum ChanType {
   Direct = 'Direct',
@@ -63,7 +64,7 @@ export class ChannelsService {
 
   async createChannel(
     current_id: uuidv4,
-    editChannelDto: editChannelDto,
+    editChannelDto: EditChannelDto,
   ): Promise<channelDto> {
     this.friendsService.checkId(current_id);
 
@@ -74,25 +75,35 @@ export class ChannelsService {
       throw new HttpException('name already exist', HttpStatus.CONFLICT);
     }
 
-    if (
-      editChannelDto.chanPassword == null &&
-      editChannelDto.chanType == ChanType.Protected
-    ) {
-      throw new HttpException('password missing', HttpStatus.BAD_REQUEST);
+    let pass = editChannelDto.chanPassword;
+    if (pass == null || pass.length < 6) {
+      if (editChannelDto.chanType == ChanType.Protected) {
+        throw new HttpException(
+          'password missing or too short',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
+
+    if (editChannelDto.chanType == ChanType.Protected)
+      pass = await BcryptService.hashPassword(pass);
+    else pass = 'nan';
 
     try {
       const chan = await this.channelModel.create({
         chanName: editChannelDto.chanName,
-        chanType: editChannelDto.chanType,
-        chanPassword: editChannelDto.chanPassword,
         ownerId: current_id,
+        chanType: editChannelDto.chanType,
+        chanPassword: pass,
+        nbUser: 1,
       });
-      if (!chan.chanPassword) {
-        chan.chanPassword = 'nan';
-      }
-      // TODO BCRYPT PASSWORD
-      // TODO ADD OWNER TO CHANNEL
+
+      await this.channelUsersModel.create({
+        chanId: chan.chanId,
+        userId: current_id,
+        userStatus: UserStatus.Owner,
+      });
+
       return this.fetchChannelDto(chan);
     } catch (error) {
       throw new HttpException('createChannel ' + error, HttpStatus.BAD_REQUEST);
@@ -102,7 +113,7 @@ export class ChannelsService {
   async updateChannel(
     current_id: uuidv4,
     chanId: uuidv4,
-    editChannelDto: editChannelDto,
+    editChannelDto: EditChannelDto,
   ): Promise<channelDto> {
     this.friendsService.checkId(current_id);
 
@@ -153,7 +164,15 @@ export class ChannelsService {
 
     const chan = await this.channelsGetService.findById(chanId);
 
-    // TODO check current_id is OWNER of the channel
+    const ownerChan = await this.channelUsersModel.findOne({
+      where: {
+        chanId: chanId,
+        userId: current_id,
+        userStatus: UserStatus.Owner,
+      },
+    });
+    if (!ownerChan)
+      throw new HttpException('not owner', HttpStatus.BAD_REQUEST);
 
     try {
       // TODO DELETE ALL USERSCHANNEL with chanId

@@ -38,9 +38,10 @@ export class Channels extends Model {
 
   @ApiProperty()
   @Column({
-    type: DataTypes.UUID,
-    allowNull: false,
     unique: false,
+    allowNull: false,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     field: 'ownerId',
   })
   public ownerId: string;
@@ -60,9 +61,9 @@ export class Channels extends Model {
     message: 'Channel password is too long (max 128 characters)',
   })
   @Column({
-    type: DataTypes.STRING,
-    allowNull: false,
     unique: false,
+    allowNull: false,
+    type: DataTypes.STRING,
     defaultValue: 'nan',
     field: 'chanPassword',
   })
@@ -76,6 +77,8 @@ export class Channels extends Model {
     field: 'nbUser',
   })
   public nbUser: number;
+
+  /*
 
   @ApiProperty()
   @Default(null)
@@ -105,6 +108,8 @@ export class Channels extends Model {
     },
   })
   public chanImage: Buffer;
+
+  */
 
   @ApiProperty()
   @Column({

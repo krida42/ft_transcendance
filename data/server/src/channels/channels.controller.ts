@@ -17,7 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ChannelsService } from './channels.service';
 import { ChannelsGetService } from './channels-get.service';
 import { ChannelsOpService } from './channels-op.service';
-import { editChannelDto } from './dto/editChannel.dto';
+import { EditChannelDto } from './dto/editChannel.dto';
 import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
 
@@ -120,7 +120,7 @@ export class ChannelsController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @Post('/channels')
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
-  async createChannel(@Req() req, @Body() editChannelDto: editChannelDto) {
+  async createChannel(@Req() req, @Body() editChannelDto: EditChannelDto) {
     // console.log('req.user.login:', req.user.login);
     return this.channelService.createChannel(this.public_id, editChannelDto);
   }
@@ -133,7 +133,7 @@ export class ChannelsController {
   async updateChannel(
     @Req() req,
     @Param('chanId') chanId: uuidv4,
-    @Body() editChannelDto: editChannelDto,
+    @Body() editChannelDto: EditChannelDto,
   ) {
     return this.channelService.updateChannel(
       this.public_id,
@@ -381,4 +381,6 @@ export class ChannelsController {
   async getOwnerChan(@Req() req, @Param('chanId') chanId: uuidv4) {
     return this.channelGetService.getOwnerChan(chanId);
   }
+
 }
+

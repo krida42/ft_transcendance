@@ -7,7 +7,7 @@ import { DestroyOptions } from 'sequelize/types';
 
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
-import { editChannelDto } from './dto/editChannel.dto';
+import { EditChannelDto } from './dto/editChannel.dto';
 import { channelDto } from './dto/channel.dto';
 import { User } from 'db/models/user';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
@@ -66,6 +66,7 @@ export class ChannelsOpService {
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
   ) {}
+
 
   // ---------- ADMIN
   async addAdmin(
@@ -271,4 +272,5 @@ export class ChannelsOpService {
     );
     return publicUserDto;
   }
+
 }

@@ -151,14 +151,14 @@ export class User extends Model {
     if (user.twoFactorSecret && typeof user.twoFactorSecret === 'string')
       user.twoFactorSecret = await CryptoService.encrypt(user.twoFactorSecret);
 
-    console.log("encryptText mec user.email: ",user.email.toString());
+    console.log('encryptText mec user.email: ', user.email.toString());
   };
 
   @AfterFind
   static async decryptText(user: User) {
     if (!user) return;
     if (user.email) {
-      console.log("decrypttext mec user.email: ",user.email.toString());
+      // console.log("decrypttext mec user.email: ",user.email.toString());
       // user.email = await CryptoService.decrypt(user.email);
     }
     if (user.refreshToken)
@@ -180,5 +180,4 @@ export class User extends Model {
   static setDevRole = async (user: User) => {
     if (DEVS.includes(user.login)) user.roles = ['user', 'admin', 'dev'];
   };
-
 }

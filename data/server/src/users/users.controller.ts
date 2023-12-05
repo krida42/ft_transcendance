@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -30,7 +31,27 @@ import { AuthGuard } from '@nestjs/passport';
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  private public_id: string; // TEMP
+  private static isFirstUserConnected = true; // TEMP
+  constructor(private readonly usersService: UsersService) {
+    this.setCurrentId(); // TEMP
+  }
+  async setCurrentId() {
+    // TEMP
+    let user: User;
+    if (UsersController.isFirstUserConnected === true) {
+      user = await this.usersService.findByLogin('marvin');
+      UsersController.isFirstUserConnected = false;
+    } else {
+      user = await this.usersService.findByLogin('ben');
+      UsersController.isFirstUserConnected = true;
+    }
+    if (user && user.public_id) {
+      this.public_id = user.public_id;
+    } else {
+      console.error("L'utilisateur ou sa propriété 'public_id' est null.");
+    }
+  }
 
   @Get()
   @ApiOperation({ summary: 'Find all users' })
@@ -70,7 +91,7 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
-  @Patch(':id')
+  @Patch()
   @ApiOperation({ summary: 'Update user' })
   @ApiParam({
     name: 'id',
@@ -78,11 +99,13 @@ export class UsersController {
     format: 'uuid',
     description: 'UUIDv4 of the user',
   })
-  async update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return this.usersService.updateUser(id, updateUserDto);
+  async update(@Body() updateUserDto: UpdateUserDto, @Req() req) {
+    console.log('this.public_id: ', this.public_id);
+    console.log(
+      'new ParseUUIDPipe(req.user.id): ',
+      new ParseUUIDPipe(this.public_id as uuidv4),
+    );
+    return this.usersService.updateUser(this.public_id, updateUserDto);
   }
 
   @Delete(':id')

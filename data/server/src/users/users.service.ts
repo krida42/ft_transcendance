@@ -138,6 +138,27 @@ export class UsersService {
     }
   }
 
+  // async updateUser(
+  //   id: uuidv4,
+  //   updateUserDto: UpdateUserDto,
+  // ): Promise<{ message: [number]; user: ResponseUserDto }> {
+  //   if (!isUUID(id)) throw new InvalidUUIDException();
+  //   try {
+  //     const user = await this.usersModel.update(
+  //       { ...updateUserDto },
+  //       { where: { public_id: id }, individualHooks: true },
+  //     );
+  //     if (user[0] === 0) return { message: user, user: null };
+  //     const UpdatedUser = await this.usersModel.findOne({
+  //       where: { public_id: id },
+  //       attributes: this.attributesToRetrieve,
+  //     });
+  //     return { message: user, user: await responseUser(UpdatedUser) };
+  //   } catch (error) {
+  //     this.handleUniqueConstraintError(error);
+  //   }
+  // }
+  /// A  REFAIRE - - - - - - -- ---- --- -- - - - - - - -  -
   async updateUser(
     id: uuidv4,
     updateUserDto: UpdateUserDto,

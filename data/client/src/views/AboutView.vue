@@ -69,6 +69,7 @@ import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
 import { ref } from "vue";
 
 import { state, socket } from "@/socket";
+import axios from "axios";
 
 const mainStore = useMainStore();
 
@@ -82,6 +83,10 @@ usersStore.refreshUser("vincent");
 friendStore.refreshFriendList();
 
 const puipui = ref("Je fais puiui");
+
+axios.patch("http://localhost:3001/users", {
+  pseudo: "cuicui",
+});
 
 class TestClass {
   name: string;

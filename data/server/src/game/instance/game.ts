@@ -1,4 +1,3 @@
-import { clear } from 'console';
 import { SCORE_TO_WIN, TIME_END_GAME } from '../const';
 import { PongRoom } from '../lobby/room';
 import { GameState } from "../type";
@@ -49,6 +48,7 @@ export class Game {
       this.pongRoom.startTime = Date.now();
     this.setupIntervals();
     this.setupTimeEndGame();
+    // this.gameState.pongBall.startBallAcceleration();
   }
 
   pause() {
@@ -132,12 +132,12 @@ export class Game {
   setupIntervals() {
     this.gameInterval = setInterval(() => this.sendStatusGameClient(), 1);
     this.timeInterval = setInterval(() => this.sendTimeGame(), 100);
-    this.accelerationBallInterval = setInterval(() => this.accelerationBall(), 1000);
+    // this.accelerationBallInterval = setInterval(() => this.accelerationBall(), 1000);
   }
 
-  accelerationBall() {
-    this.gameState.pongBall.update();
-  }
+  // accelerationBall() {
+  //   this.gameState.pongBall.update();
+  // }
 
   clearIntervals() {
     clearInterval(this.gameInterval);
@@ -210,7 +210,7 @@ export class Game {
       this.endGame();
     }
     else {
-      console.error('Invalid player index');
+      console.error('Invalid player index deconnection');
     }
   }
 

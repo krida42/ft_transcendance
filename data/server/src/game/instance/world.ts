@@ -1,5 +1,8 @@
 import * as Matter from 'matter-js';
 import { HEIGHT, WALL_THICKNESS, WIDTH } from '../const';
+import { GameState } from '../type';
+import { PongBall } from './ball';
+import { PongPaddle } from './paddle';
 
 export class PongWorld{
   //engine
@@ -40,6 +43,7 @@ export class PongWorld{
 
   pause() {
     Matter.Runner.stop(this.runner);
+    console.log('PAUSE ENGINE');
   }
 
   end() {
@@ -57,6 +61,14 @@ export class PongWorld{
     this.leftWall = Matter.Bodies.rectangle(-WALL_THICKNESS / 2, HEIGHT / 2, WALL_THICKNESS, HEIGHT, options);
     this.rightWall = Matter.Bodies.rectangle(WIDTH + WALL_THICKNESS / 2, HEIGHT / 2, WALL_THICKNESS, HEIGHT, options);
     Matter.World.add(this.world, [this.topWall, this.bottomWall, this.leftWall, this.rightWall]);
+  }
+
+  setupCollisions(gameState: GameState) {
+    // Walls collision
+    this.ballCollisionWithWalls(gameState.pongBall.ball);
+    // Paddles and Ball collision
+    this.ballCollisionWithPaddle(gameState.pongPaddle1, gameState.pongBall);
+    this.ballCollisionWithPaddle(gameState.pongPaddle2, gameState.pongBall);
   }
 
   ballCollisionWithWalls(ball: Matter.Body) {
@@ -80,6 +92,32 @@ export class PongWorld{
     });
   }
 
+  ballCollisionWithPaddle(pongPaddle: PongPaddle, pongBall: PongBall) {
+  const paddle = pongPaddle.paddle;
+  const ball = pongBall.ball;
+
+  const checkCollisionWithPaddle = (bodyA: Matter.Body, bodyB: Matter.Body, paddleBody: Matter.Body) => {
+    if ((bodyA === ball && bodyB === paddleBody) || (bodyB === ball && bodyA === paddleBody)) {
+      this.startEngineUpdate(pongPaddle);
+      console.log('Collision avec la raquette');
+    }
+  }
+
+  Matter.Events.on(this.engine, 'collisionStart', (event) => {
+    event.pairs.forEach((pair) => {
+      checkCollisionWithPaddle(pair.bodyA, pair.bodyB, paddle);
+    });
+  });
+  }
+
+  startEngineUpdate(pongPaddle: PongPaddle) {
+    const paddle = pongPaddle.paddle;
+    Matter.Events.on(this.engine, 'afterUpdate', () => {
+      const position = paddle.position;
+      Matter.Body.setPosition(paddle, { x: pongPaddle.whichPaddlePositionX(), y: position.y }); // Modifiez cette ligne
+    });
+  }
+  
   static getRandomInt(max: number) {
     return Math.floor(Math.random() * Math.floor(max));
   }

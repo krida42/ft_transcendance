@@ -14,5 +14,4 @@ export class GameController {
   searchGame() {
     this.gameService.search();
   }
-
 }

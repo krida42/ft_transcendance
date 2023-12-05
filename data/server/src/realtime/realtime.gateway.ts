@@ -34,22 +34,18 @@ export class RealtimeGateway
   //   private logger: Logger = new Logger('AppGateway');
 
   afterInit(server: Server) {
-    console.log('Socket server: Initialized!');
   }
 
   handleConnection(client: Socket) {
-    console.log('Socket: Client connected: ', client.id);
 
     client.data.user = this.getUserWithCookie(client);
     client.join(
       this.roomService.getUserPersonalRoom(client.data.user.public_id),
     );
 
-    console.log('Socket: client.data.user: ', client.data.user);
   }
 
   handleDisconnect(client: Socket) {
-    console.log('Socket: Client disconnected: ', client.id);
   }
 
   getUserWithCookie(socket: Socket): ResponseUserDto | null {
@@ -82,7 +78,6 @@ export class RealtimeGateway
     @MessageBody() data: object,
     @ConnectedSocket() client: Socket,
   ): object {
-    console.log('cuicui event, data: ', data);
     client.emit('cocorico', {
       fromClient: data,
       id: client.id,

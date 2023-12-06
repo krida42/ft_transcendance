@@ -22,27 +22,15 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { UsersService } from './users.service';
 import { User } from 'db/models/user';
 import { UpdateUserDto } from './dto/updateUser.dto';
-import { v4 as uuidv4 } from 'uuid';
 import { DeveloperGuard } from './dev.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { uuidv4 } from 'src/types';
 
 @ApiBearerAuth()
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Get()
-  @ApiOperation({ summary: 'Find all users' })
-  @ApiResponse({ status: 200, description: 'Return all users.' })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  find(
-    @Query('bool') bool: string,
-    @Query('pseudo') pseudo: string,
-  ): Promise<User[] | User> {
-    if (bool === 'true') return this.usersService.findAll();
-    else if (pseudo) return this.usersService.findByPseudo(pseudo);
-  }
 
   @Get(':id')
   @ApiOperation({ summary: 'Find one user by id' })

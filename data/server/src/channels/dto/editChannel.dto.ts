@@ -7,7 +7,7 @@ export class EditChannelDto {
     example: 'chan',
     description: 'channel name',
   })
-  chanName: string;
+  chanName!: string;
 
   @IsNotEmpty()
   @ApiProperty({
@@ -15,14 +15,14 @@ export class EditChannelDto {
     description: 'type de channel',
     enum: ['Direct', 'Public', 'Protected', 'Private'],
   })
-  chanType: string;
+  chanType!: string;
 
   @IsOptional()
   @ApiProperty({
     example: 'pass',
     description: 'channel password',
   })
-  chanPassword: string;
+  chanPassword!: string;
 
   // TODO add image
 }

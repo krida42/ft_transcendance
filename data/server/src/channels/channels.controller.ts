@@ -41,7 +41,7 @@ enum UserStatus {
 @ApiTags('channels v3 (jwt OFF)')
 @Controller('')
 export class ChannelsController {
-  private public_id: string; // TEMP
+  private public_id: string | null = null; // TEMP
   private static isFirstUserConnected = true; // TEMP
 
   constructor(
@@ -55,7 +55,7 @@ export class ChannelsController {
 
   async setCurrentId() {
     // TEMP
-    let user: User;
+    let user: User | null;
     if (ChannelsController.isFirstUserConnected === true) {
       user = await this.usersService.findByLogin('marvin');
       ChannelsController.isFirstUserConnected = false;
@@ -120,13 +120,12 @@ export class ChannelsController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @Post('/channels')
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
-  async createChannel(@Req() req, @Body() editChannelDto: EditChannelDto) {
-    // console.log('req.user.login:', req.user.login);
+  async createChannel(@Req() req : Request, @Body() editChannelDto: EditChannelDto) {
+    // console.log('req.user.login:', req.user.id);
     console.log('editChannelDto:', editChannelDto);
     return this.channelService.createChannel(this.public_id, editChannelDto);
   }
 
-  /*
 
   @ApiOperation({ summary: 'Update a channel (dto)' })
   @ApiResponse({ status: 200, description: 'Channel updated successfully' })
@@ -134,7 +133,7 @@ export class ChannelsController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @Patch('/channels/:chanId')
   async updateChannel(
-    @Req() req,
+    @Req() req : Request,
     @Param('chanId') chanId: uuidv4,
     @Body() editChannelDto: EditChannelDto,
   ) {
@@ -150,7 +149,7 @@ export class ChannelsController {
   @ApiResponse({ status: 404, description: 'Channel not found' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @Delete('/channels/:chanId')
-  async deleteChannel(@Req() req, @Param('chanId') chanId: uuidv4) {
+  async deleteChannel(@Req() req : Request, @Param('chanId') chanId: uuidv4) {
     return this.channelService.deleteChannel(this.public_id, chanId);
   }
 
@@ -161,7 +160,7 @@ export class ChannelsController {
   @ApiResponse({ status: 200, description: 'Channel join successfully' })
   @ApiResponse({ status: 404, description: 'Channel not found' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
-  async joinChannel(@Req() req, @Param('chanId') chanId: string) {
+  async joinChannel(@Req() req : Request, @Param('chanId') chanId: string) {
     return this.channelService.joinChannel(this.public_id, chanId);
   }
 
@@ -170,7 +169,7 @@ export class ChannelsController {
   @ApiResponse({ status: 404, description: 'Channel not found' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @Delete('/channels/:chanId/quit')
-  async quitChannel(@Req() req, @Param('chanId') chanId: string) {
+  async quitChannel(@Req() req : Request, @Param('chanId') chanId: string) {
     return this.channelService.quitChannel(this.public_id, chanId);
   }
 
@@ -182,7 +181,7 @@ export class ChannelsController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @Post('/channels/:chanId/admin/:userId')
   async addAdmin(
-    @Req() req,
+    @Req() req : Request,
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
@@ -195,7 +194,7 @@ export class ChannelsController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @Delete('/channels/:chanId/admin/:userId')
   async delAdmin(
-    @Req() req,
+    @Req() req : Request,
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
@@ -209,7 +208,7 @@ export class ChannelsController {
   @ApiResponse({ status: 404, description: 'Channel not found' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async inviteToChannel(
-    @Req() req,
+    @Req() req : Request,
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
@@ -222,7 +221,7 @@ export class ChannelsController {
   @ApiResponse({ status: 404, description: 'Channel not found' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async uninviteToChannel(
-    @Req() req,
+    @Req() req : Request,
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
@@ -240,7 +239,7 @@ export class ChannelsController {
   @ApiResponse({ status: 404, description: 'Channel not found' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async banUser(
-    @Req() req,
+    @Req() req : Request,
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
@@ -253,7 +252,7 @@ export class ChannelsController {
   @ApiResponse({ status: 404, description: 'Channel not found' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async unbanUser(
-    @Req() req,
+    @Req() req : Request,
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
@@ -267,7 +266,7 @@ export class ChannelsController {
   @ApiResponse({ status: 404, description: 'Channel not found' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async muteUser(
-    @Req() req,
+    @Req() req : Request,
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
@@ -281,7 +280,7 @@ export class ChannelsController {
   @ApiResponse({ status: 404, description: 'Channel not found' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async kickUser(
-    @Req() req,
+    @Req() req : Request,
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
@@ -292,7 +291,7 @@ export class ChannelsController {
 
   @ApiOperation({ summary: 'Get data of channel' })
   @Get('/channels/:chanId')
-  async getDataChan(@Req() req, @Param('chanId') chanId: uuidv4) {
+  async getDataChan(@Req() req : Request, @Param('chanId') chanId: uuidv4) {
     return this.channelGetService.getDataChan(chanId);
   }
 
@@ -302,19 +301,19 @@ export class ChannelsController {
     summary: 'Get joined channels (execpt direct chan) (sorted)',
   })
   @Get('/channels-joined')
-  async getJoinedChan(@Req() req) {
+  async getJoinedChan(@Req() req : Request) {
     return this.channelGetService.getJoinedChan(this.public_id);
   }
 
   @ApiOperation({ summary: 'Get direct joined channels (sorted)' })
   @Get('/channels-direct')
-  async getDirectChan(@Req() req) {
+  async getDirectChan(@Req() req : Request) {
     return this.channelGetService.getDirectChan(this.public_id);
   }
 
   @ApiOperation({ summary: 'Get available channels (sorted)' })
   @Get('/channels-available')
-  async getAvailableChan(@Req() req) {
+  async getAvailableChan(@Req() req : Request) {
     return this.channelGetService.getUnjoinedChan(
       this.public_id,
       ChanType.Public,
@@ -323,7 +322,7 @@ export class ChannelsController {
 
   @ApiOperation({ summary: 'Get protected unjoined channels (sorted)' })
   @Get('/channels-unjoined-protect')
-  async getProtectedChan(@Req() req) {
+  async getProtectedChan(@Req() req : Request) {
     return this.channelGetService.getUnjoinedChan(
       this.public_id,
       ChanType.Protected,
@@ -332,7 +331,7 @@ export class ChannelsController {
 
   @ApiOperation({ summary: 'Get private unjoined channels (sorted)' })
   @Get('/channels-unjoined-private')
-  async getPrivateChan(@Req() req) {
+  async getPrivateChan(@Req() req : Request) {
     return this.channelGetService.getUnjoinedChan(
       this.public_id,
       ChanType.Private,
@@ -345,47 +344,45 @@ export class ChannelsController {
     summary: 'Get all users list include mutes,admins,owner)',
   })
   @Get('/channels/:chanId/users')
-  async getUsersChan(@Req() req, @Param('chanId') chanId: uuidv4) {
+  async getUsersChan(@Req() req : Request, @Param('chanId') chanId: uuidv4) {
     return this.channelGetService.getUsersChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get only users/muted list' })
   @Get('/channels/:chanId/users-only')
-  async getUsersOnlyChan(@Req() req, @Param('chanId') chanId: uuidv4) {
+  async getUsersOnlyChan(@Req() req : Request, @Param('chanId') chanId: uuidv4) {
     return this.channelGetService.getUsersOnlyChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get mutes list' })
   @Get('/channels/:chanId/mutes')
-  async getMutesChan(@Req() req, @Param('chanId') chanId: uuidv4) {
+  async getMutesChan(@Req() req : Request, @Param('chanId') chanId: uuidv4) {
     return this.channelGetService.getMutesChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get admins (owner include) list' })
   @Get('/channels/:chanId/admins')
-  async getAdminsChan(@Req() req, @Param('chanId') chanId: uuidv4) {
+  async getAdminsChan(@Req() req : Request, @Param('chanId') chanId: uuidv4) {
     return this.channelGetService.getAdminsChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get invites list' })
   @Get('/channels/:chanId/invites')
-  async getInvitesChan(@Req() req, @Param('chanId') chanId: uuidv4) {
+  async getInvitesChan(@Req() req : Request, @Param('chanId') chanId: uuidv4) {
     return this.channelGetService.getInvitesChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get bans list' })
   @Get('/channels/:chanId/bans')
-  async getBansChan(@Req() req, @Param('chanId') chanId: uuidv4) {
+  async getBansChan(@Req() req : Request, @Param('chanId') chanId: uuidv4) {
     return this.channelGetService.getBansChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get owner' })
   @Get('/channels/:chanId/owner')
-  async getOwnerChan(@Req() req, @Param('chanId') chanId: uuidv4) {
+  async getOwnerChan(@Req() req : Request, @Param('chanId') chanId: uuidv4) {
     return this.channelGetService.getOwnerChan(chanId);
   }
-
-  */
 
 }
 

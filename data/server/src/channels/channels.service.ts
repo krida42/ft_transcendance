@@ -109,8 +109,6 @@ export class ChannelsService {
     }
   }
 
-  /*
-
   async updateChannel(
     current_id: uuidv4,
     chanId: uuidv4,
@@ -154,7 +152,7 @@ export class ChannelsService {
       chan.chanPassword = editChannelDto.chanPassword;
       // TODO BCRYPT PASSWORD
       await chan.save();
-      return this.fetchChannelDto(chan);
+      return this.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException('createChannel ' + error, HttpStatus.BAD_REQUEST);
     }
@@ -178,7 +176,7 @@ export class ChannelsService {
     try {
       // TODO DELETE ALL USERSCHANNEL with chanId
 
-      const dto = this.fetchChannelDto(chan);
+      const dto = this.fetchChannelDto(chan.chanId);
       await chan.destroy();
       return dto;
     } catch (error) {
@@ -205,7 +203,7 @@ export class ChannelsService {
         userStatus: UserStatus.User,
       });
 
-      return this.fetchChannelDto(chan);
+      return this.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException('joinChannel ' + error, HttpStatus.BAD_REQUEST);
     }
@@ -229,18 +227,17 @@ export class ChannelsService {
       };
       await this.channelUsersModel.destroy(destroyOptions);
 
-      const dto = this.fetchChannelDto(chan);
+      const dto = this.fetchChannelDto(chan.chanId);
       // TODO DESTROY chanId if channel is empty
       return dto;
     } catch (error) {
       throw new HttpException('quitChannel ' + error, HttpStatus.BAD_REQUEST);
     }
   }
-  */
 
   // ---------- UTILS
 
-  async fetchChannelDto(chanId: string): Promise<channelDto> {
+  async fetchChannelDto(chanId: uuidv4): Promise<channelDto> {
     const chan = await this.channelsGetService.findById(chanId);
     const dto = new channelDto(
       chan.chanId,

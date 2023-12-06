@@ -25,7 +25,7 @@ export class RefreshMiddleware implements NestMiddleware {
         const access_token = jwtAccess.access_token;
         res.cookie('access_token', access_token, { httpOnly: true });
         req.cookies.access_token = access_token;
-      } else if (error.name === 'jwt malformed') {
+      } else if ((error as jwt.JsonWebTokenError).name === 'jwt malformed') {
         if (!req.cookies.access_token) return next();
         console.log('jwt malformed: ', req.cookies.access_token);
         res.clearCookie('access_token');

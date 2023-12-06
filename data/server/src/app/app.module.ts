@@ -35,7 +35,7 @@ import { RealtimeModule } from 'src/realtime/realtime.module';
         | 'sqlite'
         | 'mariadb',
       host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
+      port: process.env.DB_PORT ? parseInt(process.env.DB_PORT): undefined,
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,

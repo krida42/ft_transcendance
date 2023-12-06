@@ -13,7 +13,7 @@ export class Friends extends Model {
     type: DataTypes.UUID,
     field: 'sender_id',
   })
-  public sender_id: string;
+  public sender_id!: string | null;
 
   @PrimaryKey
   @ForeignKey(() => User)
@@ -22,7 +22,7 @@ export class Friends extends Model {
     type: DataTypes.UUID,
     field: 'receiver_id',
   })
-  public receiver_id: string;
+  public receiver_id!: string | null;
 
   @Column({
     type: DataTypes.ENUM('Pending', 'Active', 'Blocked'),
@@ -30,19 +30,19 @@ export class Friends extends Model {
     defaultValue: 'Pending',
     field: 'status',
   })
-  public status: string;
+  public status!: string;
 
   @Column({
     type: DataTypes.DATE,
     allowNull: false,
     field: 'createdAt',
   })
-  public readonly createdAt: Date;
+  public readonly createdAt!: Date;
 
   @Column({
     type: DataTypes.DATE,
     allowNull: false,
     field: 'updatedAt',
   })
-  public readonly updatedAt: Date;
+  public readonly updatedAt!: Date;
 }

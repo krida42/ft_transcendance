@@ -2,26 +2,26 @@ import { Expose } from 'class-transformer';
 // A completer avec ApiProperty
 export class ResponseUserDto {
   @Expose({ name: 'public_id' })
-  public_id: string;
+  public_id!: string;
 
   @Expose()
-  email: string;
+  email!: string;
 
   @Expose()
-  login: string;
+  login!: string;
 
   @Expose()
-  pseudo: string;
+  pseudo!: string;
 
   @Expose({ name: 'avatar' })
-  avatar: string;
+  avatar!: string;
 
   @Expose()
-  phone: string | null;
+  phone!: string | null;
 
   @Expose()
-  roles: string[];
+  roles!: string[];
 
   @Expose()
-  twoFactorAuthenticated: boolean;
+  twoFactorAuthenticated!: boolean;
 }

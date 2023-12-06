@@ -45,7 +45,7 @@ export class UpdateUserDto {
     example: 'odjqwpdpfjef@E2oerkp',
     required: false,
   })
-  refreshToken?: string;
+  refreshToken?: string | null;
 
   @IsOptional()
   twoFactorEnable?: boolean;

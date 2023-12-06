@@ -20,7 +20,7 @@ export class Messages extends Model {
     type: DataTypes.INTEGER,
     field: 'msgId',
   })
-  public msgId: number;
+  public msgId!: number;
 
   @ApiProperty()
   @ForeignKey(() => Channels)
@@ -30,7 +30,7 @@ export class Messages extends Model {
     type: DataTypes.UUID,
     field: 'chanId',
   })
-  public chanId: string;
+  public chanId!: string;
 
   @ApiProperty()
   @ForeignKey(() => User)
@@ -40,7 +40,7 @@ export class Messages extends Model {
     type: DataTypes.UUID,
     field: 'userId',
   })
-  public userId: string;
+  public userId!: string;
 
   @ApiProperty()
   @Column({
@@ -49,7 +49,7 @@ export class Messages extends Model {
     type: DataTypes.STRING,
     field: 'content',
   })
-  public content: string;
+  public content!: string;
 
   @ApiProperty()
   @Column({
@@ -57,7 +57,7 @@ export class Messages extends Model {
     allowNull: false,
     field: 'createdAt',
   })
-  public readonly createdAt: Date;
+  public readonly createdAt!: Date;
 
   @ApiProperty()
   @Column({
@@ -65,5 +65,5 @@ export class Messages extends Model {
     allowNull: false,
     field: 'updatedAt',
   })
-  public readonly updatedAt: Date;
+  public readonly updatedAt!: Date;
 }

@@ -67,8 +67,6 @@ export class ChannelsGetService {
     private readonly channelUsersModel: typeof ChannelsUsers,
   ) {}
 
-  /*
-
   // ---------- GET CHANNEL DATA
   async getDataChan(chanId: uuidv4): Promise<channelDto> {
     return this.fetchChannelDto(chanId);
@@ -234,7 +232,6 @@ export class ChannelsGetService {
 
   // ---------- UTILS
 
-    /*
   async fetchUserDtoArray(userChan: ChannelsUsers[]): Promise<PublicUserDto[]> {
     const userIds = userChan.map((userChan) => userChan.userId);
     const users = await this.usersService.findByIds(userIds);
@@ -251,9 +248,7 @@ export class ChannelsGetService {
     return publicUserDtoArray;
   }
 
-  */
-
-  async checkId(id: uuidv4): Promise<uuidv4> {
+  async checkId(id: uuidv4) {
     if (!id) {
       throw new HttpException('null uuidv4', HttpStatus.BAD_REQUEST);
     }
@@ -274,8 +269,6 @@ export class ChannelsGetService {
     }
     return chan;
   }
-
-  /*
 
 
   async fetchChannelDto(chanId: uuidv4): Promise<channelDto> {
@@ -314,7 +307,5 @@ export class ChannelsGetService {
     const channels = await Channels.findAll({ where: { chanId: channelIds } });
     return this.fetchChannelDtoArray(channels);
   }
-
-  */
 
 }

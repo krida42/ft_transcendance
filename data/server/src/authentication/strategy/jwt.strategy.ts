@@ -6,7 +6,7 @@ import { UsersService } from '../../users/users.service';
 
 export function cookieExtractor(req: request.Request) {
   let jwt = null;
-  if (req && req.cookies) jwt = req.cookies['access_token'];
+  if (req && req.cookies) jwt = req.cookies['access_token' as any];
   else console.error('Erreur lors de la récupération des cookies');
   return jwt;
 }
@@ -25,8 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     try {
       if (payload) {
         const user = await this.UsersService.findById(payload.public_id);
-        if (!user) 
-          throw new Error('User not found');
+        if (!user) throw new Error('User not found');
         return payload;
       }
     } catch (error) {

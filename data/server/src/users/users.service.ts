@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'db/models/user';
 import { CreateUserDto } from './dto/createUser.dto';
@@ -6,6 +6,7 @@ import { uuidv4 } from 'src/types';
 import { UniqueConstraintError } from 'sequelize';
 import { isUUID } from 'class-validator';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { v4 } from 'uuid';
 import {
   UniqueConstraintException,
   InvalidUUIDException,
@@ -104,7 +105,7 @@ export class UsersService {
     return createUserDto;
   }
 
-  async findOrCreate(userData: any): Promise<ResponseUserDto> {
+  async findOrCreate(userData: any) {
     const user = await this.findByLogin(userData.login);
     if (!user) {
       const createUserDto = await this.userDataToCreateUserDto(userData);
@@ -115,33 +116,34 @@ export class UsersService {
     return await responseUser(user);
   }
 
-  private handleUniqueConstraintError(error: any) {
+  /*
+  private handleUniqueConstraintError(error: unknown) {
     if (error instanceof UniqueConstraintError) {
       const fieldNotUnique = Object.keys(error.fields)[0];
       throw new UniqueConstraintException(fieldNotUnique);
     }
     console.log(error);
-    throw new Error(error);
   }
+  */
 
-  async createUser(createUserDto: CreateUserDto): Promise<ResponseUserDto> {
+  async createUser(createUserDto: CreateUserDto) {
     try {
       const user = await this.usersModel.create({
-        public_id: uuidv4(),
+        public_id: v4(),
         ...createUserDto,
       });
       const resUser = await responseUser(user);
       // console.log('create :', responseUser);
       return resUser;
     } catch (error) {
-      this.handleUniqueConstraintError(error);
+      console.error(error);
+      throw new HttpException('', HttpStatus.CONFLICT);
+      // this.handleUniqueConstraintError(error);
     }
   }
 
-  async updateUser(
-    id: uuidv4,
-    updateUserDto: UpdateUserDto,
-  ): Promise<{ message: [number]; user: ResponseUserDto }> {
+  // ): Promise<{ message: [number]; user: ResponseUserDto}> {
+  async updateUser(id: uuidv4, updateUserDto: UpdateUserDto) {
     if (!isUUID(id)) throw new InvalidUUIDException();
     try {
       const user = await this.usersModel.update(
@@ -153,9 +155,11 @@ export class UsersService {
         where: { public_id: id },
         attributes: this.attributesToRetrieve,
       });
-      return { message: user, user: await responseUser(UpdatedUser) };
+      //  A REVOIR - - -- - 
+      return { message: user, user: await responseUser(UpdatedUser!) };
     } catch (error) {
-      this.handleUniqueConstraintError(error);
+      console.error(error);
+      throw new HttpException('', HttpStatus.CONFLICT);
     }
   }
 

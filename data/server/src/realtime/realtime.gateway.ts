@@ -30,7 +30,7 @@ export class RealtimeGateway
 {
   constructor(private readonly roomService: RoomService) {}
 
-  @WebSocketServer() server: Server;
+  @WebSocketServer() server!: Server;
   //   private logger: Logger = new Logger('AppGateway');
 
   afterInit(server: Server) {
@@ -55,17 +55,18 @@ export class RealtimeGateway
   getUserWithCookie(socket: Socket): ResponseUserDto | null {
     let cookie = socket.handshake.headers.cookie;
     if (!cookie) {
-      return;
+      return null;
     }
     cookie = cookie.split('=')[1];
     const user = jwt.decode(cookie) as ResponseUserDto;
+    console.log(user);
     if (!user) {
       return null;
     }
     return user;
   }
 
-  findSocketBySocketId(id: string): Socket {
+  findSocketBySocketId(id: string): Socket | undefined {
     return this.server.sockets.sockets.get(id);
   }
 
@@ -91,7 +92,7 @@ export class RealtimeGateway
     return {
       str: "Acknoledgement I'm the server, I received your message!",
       pseudo: client.data.user.pseudo,
-      pseudo2: this.findSocketBySocketId(client.id).data.user.pseudo,
+      // pseudo2: this.findSocketBySocketId(client.id).data.user.pseudo,
       pseudo3: this.findSocketByUserId(client.data.user.public_id).data.user
         .pseudo,
     };

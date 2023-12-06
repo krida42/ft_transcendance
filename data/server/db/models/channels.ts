@@ -21,7 +21,7 @@ export class Channels extends Model {
     defaultValue: DataTypes.UUIDV4,
     field: 'chanId',
   })
-  public chanId: string;
+  public chanId!: string;
 
  
   @MinLength(3, { message: 'Channel name is too short (min 3 characters)' })
@@ -33,7 +33,7 @@ export class Channels extends Model {
     unique: true,
     field: 'chanName',
   })
-  public chanName: string;
+  public chanName!: string;
 
   @ApiProperty()
   @Column({
@@ -43,7 +43,7 @@ export class Channels extends Model {
     defaultValue: DataTypes.UUIDV4,
     field: 'ownerId',
   })
-  public ownerId: string;
+  public ownerId!: string;
 
   @ApiProperty()
   @Column({
@@ -52,7 +52,7 @@ export class Channels extends Model {
     defaultValue: 'Public',
     field: 'chanType',
   })
-  public chanType: string;
+  public chanType!: string;
 
   @MinLength(6, { message: 'Channel password is too short (min 6 characters)' })
   @MaxLength(128, {
@@ -65,7 +65,7 @@ export class Channels extends Model {
     defaultValue: 'nannan',
     field: 'chanPassword',
   })
-  public chanPassword: string;
+  public chanPassword!: string;
 
   @Column({
     type: DataTypes.INTEGER,
@@ -73,19 +73,19 @@ export class Channels extends Model {
     defaultValue: 1,
     field: 'nbUser',
   })
-  public nbUser: number;
+  public nbUser!: number;
 
   @Column({
     type: DataTypes.DATE,
     allowNull: false,
     field: 'createdAt',
   })
-  public readonly createdAt: Date;
+  public readonly createdAt!: Date;
 
   @Column({
     type: DataTypes.DATE,
     allowNull: false,
     field: 'updatedAt',
   })
-  public readonly updatedAt: Date;
+  public readonly updatedAt!: Date;
 }

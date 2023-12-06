@@ -26,7 +26,7 @@ export class User extends Model {
     autoIncrement: true,
     field: 'confidential_id',
   })
-  public confidential_id: number;
+  public confidential_id!: number;
 
   @ApiProperty()
   @Column({
@@ -36,7 +36,7 @@ export class User extends Model {
     defaultValue: DataTypes.UUIDV4,
     field: 'public_id',
   })
-  public public_id: string;
+  public public_id!: string;
 
   @ApiProperty()
   @Column({
@@ -45,7 +45,7 @@ export class User extends Model {
     unique: true,
     field: 'fortyTwo_id',
   })
-  public fortyTwo_id: number;
+  public fortyTwo_id!: number;
 
   @ApiProperty()
   @Column({
@@ -55,7 +55,7 @@ export class User extends Model {
     field: 'email',
     validate: { isEmail: true },
   })
-  public email: string;
+  public email!: string;
 
   @ApiProperty()
   @Column({
@@ -63,7 +63,7 @@ export class User extends Model {
     allowNull: false,
     field: 'login',
   })
-  public login: string;
+  public login!: string;
 
   @ApiProperty()
   @Column({
@@ -72,7 +72,7 @@ export class User extends Model {
     unique: true,
     field: 'pseudo',
   })
-  public pseudo: string;
+  public pseudo!: string;
 
   @ApiProperty()
   @Column({
@@ -80,7 +80,7 @@ export class User extends Model {
     allowNull: false,
     field: 'avatar',
   })
-  public avatar: string;
+  public avatar!: string;
 
   @ApiProperty()
   @Column({
@@ -88,7 +88,7 @@ export class User extends Model {
     allowNull: true,
     field: 'phone',
   })
-  public phone: number;
+  public phone!: number;
 
   @ApiProperty()
   @Column({
@@ -97,7 +97,7 @@ export class User extends Model {
     field: 'roles',
     defaultValue: ['user'],
   })
-  public roles: string[];
+  public roles!: string[];
 
   @ApiProperty()
   @Column({
@@ -105,7 +105,7 @@ export class User extends Model {
     allowNull: true,
     field: 'refreshToken',
   })
-  public refreshToken: string;
+  public refreshToken!: string | null;
 
   @ApiProperty()
   @Column({
@@ -114,7 +114,7 @@ export class User extends Model {
     defaultValue: null,
     field: 'twoFactorEnable',
   })
-  public twoFactorEnable: boolean;
+  public twoFactorEnable!: boolean;
 
   @ApiProperty()
   @Column({
@@ -122,7 +122,7 @@ export class User extends Model {
     allowNull: true,
     field: 'twoFactorSecret',
   })
-  public twoFactorSecret: string;
+  public twoFactorSecret!: string | null;
 
   @ApiProperty()
   @Column({
@@ -130,7 +130,7 @@ export class User extends Model {
     allowNull: false,
     field: 'createdAt',
   })
-  public readonly createdAt: Date;
+  public readonly createdAt!: Date;
 
   @ApiProperty()
   @Column({
@@ -138,7 +138,7 @@ export class User extends Model {
     allowNull: false,
     field: 'updatedAt',
   })
-  public readonly updatedAt: Date;
+  public readonly updatedAt!: Date;
 
   @BeforeCreate
   @BeforeUpdate

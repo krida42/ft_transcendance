@@ -15,7 +15,7 @@ export class ChannelsUsers extends Model {
     type: DataTypes.UUID,
     field: 'chanId',
   })
-  public chanId: string;
+  public chanId!: string;
 
   @ApiProperty()
   @PrimaryKey
@@ -25,7 +25,7 @@ export class ChannelsUsers extends Model {
     type: DataTypes.UUID,
     field: 'userId',
   })
-  public userId: string;
+  public userId!: string;
 
   @ApiProperty()
   @Column({
@@ -34,7 +34,7 @@ export class ChannelsUsers extends Model {
     defaultValue: 'User',
     field: 'userStatus',
   })
-  public userStatus: string;
+  public userStatus!: string;
 
   @ApiProperty()
   @Column({
@@ -42,7 +42,7 @@ export class ChannelsUsers extends Model {
     allowNull: false,
     field: 'createdAt',
   })
-  public readonly createdAt: Date;
+  public readonly createdAt!: Date;
 
   @ApiProperty()
   @Column({
@@ -50,5 +50,5 @@ export class ChannelsUsers extends Model {
     allowNull: false,
     field: 'updatedAt',
   })
-  public readonly updatedAt: Date;
+  public readonly updatedAt!: Date;
 }

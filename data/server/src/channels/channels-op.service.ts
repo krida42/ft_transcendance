@@ -67,7 +67,6 @@ export class ChannelsOpService {
     private readonly channelUsersModel: typeof ChannelsUsers,
   ) {}
 
-  /*
 
   // ---------- ADMIN
   async addAdmin(
@@ -273,7 +272,5 @@ export class ChannelsOpService {
     );
     return publicUserDto;
   }
-
-  */
 
 }

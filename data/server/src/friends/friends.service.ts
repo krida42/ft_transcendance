@@ -129,7 +129,7 @@ export class FriendsService {
     if (this.checkId(sender_id) === this.checkId(receiver_id)) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
-    if (this.youBlockIt(sender_id, receiver_id))
+    if ( await this.youBlockIt(sender_id, receiver_id))
       throw new HttpException('user already blocked', HttpStatus.CONFLICT);
 
     try {
@@ -260,7 +260,7 @@ export class FriendsService {
     else return false;
   }
 
-  async getFriendship(user1_id: uuidv4, user2_id: uuidv4): Promise<Friends> {
+  async getFriendship(user1_id: uuidv4, user2_id: uuidv4): Promise<Friends | null> {
     return await Friends.findOne({
       where: {
         [Op.and]: [

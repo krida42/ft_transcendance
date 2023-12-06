@@ -16,18 +16,16 @@ import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private AuthService: AuthService,
-  ) {}
+  constructor(private AuthService: AuthService) {}
 
   @UseGuards(AuthGuard('42'))
   @Get('42')
-  async fortyTwoLogin(@Res() res) {}
+  async fortyTwoLogin(@Res() res: Response) {}
 
   @UseGuards(AuthGuard('42'))
   @Get('callback')
   @ApiTags('callback')
-  async callback(@Req() req, @Res() res) {
+  async callback(@Req() req: Request & { user: any }, @Res() res: Response) {
     try {
       await this.AuthService.signIn(req.user._json, res);
     } catch (error) {
@@ -35,7 +33,7 @@ export class AuthController {
         "Erreur lors de l'échange du code contre un jeton ou lors de la demande a l'API 42:",
         error,
       );
-      res.redirect('/error');
+      (res as any).redirect('/error');
     }
   }
 
@@ -43,72 +41,87 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @ApiTags('test')
   @ApiParam({ name: 'token' })
-  async data(@Req() req, @Res() res) {
+  async data(@Req() req: Request & { user: any }, @Res() res: Response) {
     console.log('Passe les systemes d authentification', req.user.login);
-    res.json('success');
+    (res as any).json('success');
   }
 
+  /*
   @UseGuards(AuthGuard('jwt'))
   @Post('logout')
   @ApiParam({ name: 'token' })
-  async logout(@Req() req, @Res({ passthrough: true }) res): Promise<{ message: [number]; user: ResponseUserDto }> {
+  async logout(@Req() req : Request & { user: any } & { user: any }, @Res({ passthrough: true }) res : Response): Promise<{ message: [number]; user: ResponseUserDto }> {
     await this.AuthService.logout(req.user);
     res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
     res.clearCookie('access_token');
-    // return res.redirect('http://localhost:8080/main/home');
-    return;
+    // return (res as any).redirect('http://localhost:8080/main/home');
+
+    return { message: [1], user: req.user};
   }
+  */
 
   // @UseGuards(AuthGuard('jwt'))
   // @Post('2FA')
-  // async twoFactorAuthentication(@Req() req, @Res() res) {
+  // async twoFactorAuthentication(@Req() req : Request & { user: any }, @Res() res : Response) {
   //   const user = await this.UsersService.findUser(req.user.public_id);
   //   const secret = this.AuthService.generateTwoFactorAuthenticationSecret(user);
-  //   return res.status(HttpStatus.OK);
+  //   return (res as any).status(HttpStatus.OK);
   // }
 
   @Post('2fa/turn-on')
   @UseGuards(AuthGuard('jwt'))
-  async turnOnTwoFactorAuth(@Req() req, @Res() res, @Body() body) {
+  async turnOnTwoFactorAuth(
+    @Req() req: Request & { user: any },
+    @Res() res: Response,
+    @Body() body: Body,
+  ) {
     try {
-      await this.AuthService.setTwoFactorEnable(
-        req.user.public_id,
-        true,
-      );
-      return res.status(200).json({ message: '2FA enabled !' });
+      await this.AuthService.setTwoFactorEnable(req.user.public_id, true);
+      return (res as any).status(200).json({ message: '2FA enabled !' });
     } catch (error) {
       console.error('Erreur 2FA:', error);
-      res.redirect('/error');
+      (res as any).redirect('/error');
     }
   }
 
   @Post('2fa/turn-off')
   @UseGuards(AuthGuard('jwt'))
-  async turnOffTwoFactorAuth(@Req() req, @Res() res, @Body() body) {
+  async turnOffTwoFactorAuth(
+    @Req() req: Request & { user: any },
+    @Res() res: Response,
+    @Body() body: any,
+  ) {
     try {
-      await this.AuthService.setTwoFactorEnable(
-      req.user.public_id,
-      false,
-      );
+      await this.AuthService.setTwoFactorEnable(req.user.public_id, false);
       await this.AuthService.deleteTwoFactorSecret(req.user.public_id);
-      return res.status(200).json({ message: '2FA disabled !' });
+      return (res as any).status(200).json({ message: '2FA disabled !' });
     } catch (error) {
       console.error('Erreur 2FA:', error);
-      res.redirect('/error');
+      (res as any).redirect('/error');
     }
   }
 
   @Post('2fa/setup')
   @UseGuards(AuthGuard('jwt'))
-  async setupTwoFactorAuth(@Req() req, @Res() res) {
-    const { secret, otpAuthUrl } = await this.AuthService.generateTwoFactorSecret(req.user);
-    const qrCodeDataURL = await this.AuthService.generateQrCodeDataURL(otpAuthUrl);
-    return res.status(200).json({ otpAuthUrl, qrCodeDataURL });
+  async setupTwoFactorAuth(
+    @Req() req: Request & { user: any },
+    @Res() res: Response,
+  ) {
+    const { secret, otpAuthUrl } =
+      await this.AuthService.generateTwoFactorSecret(req.user);
+    const qrCodeDataURL = await this.AuthService.generateQrCodeDataURL(
+      otpAuthUrl,
+    );
+    return (res as any).status(200).json({ otpAuthUrl, qrCodeDataURL });
   }
 
   @Post('2fa/authenticate')
   @UseGuards(AuthGuard('jwt'))
-  async authenticate(@Req() req, @Res() res, @Body() body) {
+  async authenticate(
+    @Req() req: Request & { user: any },
+    @Res() res: Response,
+    @Body() body: any,
+  ) {
     const isCodeValid = await this.AuthService.isTwoFactorAuthCodeValid(
       body.twoFactorAuthCode,
       req.user,
@@ -117,22 +130,22 @@ export class AuthController {
       throw new UnauthorizedException('Wrong authentication code');
     }
     const jwt = await this.AuthService.login2fa(req.user);
-    res.cookie('access_token', jwt.access_token, { httpOnly: true });
-    return res.status(200).json({ message: '2FA réussi !' });
+    (res as any).cookie('access_token', jwt.access_token, { httpOnly: true });
+    return (res as any).status(200).json({ message: '2FA réussi !' });
   }
 
   //Utile ou pas?
   @Post('refresh')
   @UseGuards(AuthGuard('jwt-refresh'))
-  async refresh(@Req() req, @Res() res) {
+  async refresh(@Req() req: Request & { user: any }, @Res() res: Response) {
     const jwt = await this.AuthService.refresh(req.user);
-    res.cookie('access_token', jwt.access_token, { httpOnly: true });
-    console.log('refresh=',jwt);
-    return res.status(200).json({ message: 'Refresh réussi !' });
+    (res as any).cookie('access_token', jwt.access_token, { httpOnly: true });
+    console.log('refresh=', jwt);
+    return (res as any).status(200).json({ message: 'Refresh réussi !' });
   }
 
   @Get('error')
-  async error(@Res() res) {
-    return res.send('Erreur lors de la connexion');
+  async error(@Res() res: Response) {
+    return (res as any).send('Erreur lors de la connexion');
   }
 }

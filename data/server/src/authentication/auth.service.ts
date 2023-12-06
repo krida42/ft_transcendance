@@ -5,8 +5,8 @@ import { UsersService } from '../users/users.service';
 import { Json } from 'sequelize/types/utils';
 import { authenticator } from 'otplib';
 import { User } from 'db/models/user';
-import { v4 as uuidv4 } from 'uuid';
 import QRCode, { toDataURL } from 'qrcode';
+import { uuidv4 } from 'src/types';
 
 export function userToPayload(user: ResponseUserDto) {
   const payload = {
@@ -91,37 +91,20 @@ export class AuthService {
     };
   }
 
-  async logout(
-    user: ResponseUserDto,
-  ): Promise<{ message: [number]; user: ResponseUserDto }> {
-    console.log('Deconnexion of: ', user.login);
-    return await this.UsersService.updateUser(user.public_id, {
-      refreshToken: null,
-    });
-  }
-
-  async setTwoFactorSecret(
-    secret: string,
-    public_id: uuidv4,
-  ): Promise<{ message: [number]; user: ResponseUserDto }> {
-    return await this.UsersService.updateUser(public_id, {
+  async setTwoFactorSecret(secret: string, public_id: uuidv4) {
+    await this.UsersService.updateUser(public_id, {
       twoFactorSecret: secret,
     });
   }
 
-  async deleteTwoFactorSecret(
-    public_id: uuidv4,
-  ): Promise<{ message: [number]; user: ResponseUserDto }> {
-    return await this.UsersService.updateUser(public_id, {
-      twoFactorSecret: null,
+  async deleteTwoFactorSecret(public_id: uuidv4) {
+    await this.UsersService.updateUser(public_id, {
+      twoFactorSecret: undefined,
     });
   }
 
-  async setTwoFactorEnable(
-    public_id: uuidv4,
-    bool: boolean,
-  ): Promise<{ message: [number]; user: ResponseUserDto }> {
-    return await this.UsersService.updateUser(public_id, {
+  async setTwoFactorEnable(public_id: uuidv4, bool: boolean) {
+    await this.UsersService.updateUser(public_id, {
       twoFactorEnable: bool,
     });
   }
@@ -138,11 +121,7 @@ export class AuthService {
 
   async generateTwoFactorSecret(user: ResponseUserDto) {
     const secret = authenticator.generateSecret();
-    const otpAuthUrl = authenticator.keyuri(
-      user.login,
-      process.env.APP_NAME,
-      secret,
-    );
+    const otpAuthUrl = authenticator.keyuri(user.login, 'service name', secret);
     await this.setTwoFactorSecret(secret, user.public_id);
     return {
       secret,
@@ -158,11 +137,11 @@ export class AuthService {
       where: { public_id: resUser.public_id },
       attributes: ['twoFactorSecret'],
     });
-    const secret = dbUser.twoFactorSecret;
+    const secret = dbUser?.twoFactorSecret;
 
     return authenticator.verify({
       token: twoFactorAuthCode,
-      secret: secret,
+      secret: secret || '',
     });
   }
 

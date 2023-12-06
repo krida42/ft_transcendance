@@ -1,7 +1,7 @@
 import { SCORE_TO_WIN, TIME_END_GAME } from '../const';
 import { PongRoom } from '../lobby/room';
-import { GameState } from "../type";
-import { GameInit } from "./gameInit";
+import { GameState } from '../type';
+import { GameInit } from './gameInit';
 import * as Matter from 'matter-js';
 
 export class Game {
@@ -9,18 +9,19 @@ export class Game {
   running: boolean = false;
   accelerationBallInterval: NodeJS.Timeout;
 
+
   //game
   scorePlayer1: number = 0;
   scorePlayer2: number = 0;
   finished: boolean = false;
   remainingTime: number = 0;
   timeEndGame: NodeJS.Timeout;
-  
+
   //room and status
   static id: number = 0;
   pongRoom: PongRoom;
   gameState: GameState;
-  
+
   //send
   lastTime: number = 0;
   gameInterval: NodeJS.Timeout;
@@ -45,8 +46,7 @@ export class Game {
     this.gameState.pongWorld.run();
     this.gameState.pongBall.startBallAcceleration();
     this.running = true;
-    if (this.pongRoom.startTime === 0)
-      this.pongRoom.startTime = Date.now();
+    if (this.pongRoom.startTime === 0) this.pongRoom.startTime = Date.now();
     this.setupIntervals();
     this.setupTimeEndGame();
   }
@@ -58,24 +58,23 @@ export class Game {
       this.clearIntervals();
       this.sendGamePaused();
       this.pongRoom.pauseTime = Date.now();
-      this.remainingTime = TIME_END_GAME - (this.pongRoom.pauseTime - this.pongRoom.startTime);
+      this.remainingTime =
+        TIME_END_GAME - (this.pongRoom.pauseTime - this.pongRoom.startTime);
       clearTimeout(this.timeEndGame);
     }
   }
 
   resume() {
-    if (!this.gameState.pongWorld.engine.timing.isRunning) {
-      this.running = true;
-      this.gameState.pongWorld.run();
-      this.setupIntervals();
-      this.sendGameResumed();
-      this.resumeTime();
-    }
+    this.running = true;
+    this.gameState.pongWorld.run();
+    this.setupIntervals();
+    this.sendGameResumed();
+    this.resumeTime();
   }
 
   calculateRemainingTime() {
     const currentTime = Date.now();
-    var elapsedTime = (currentTime - this.pongRoom.startTime);
+    var elapsedTime = currentTime - this.pongRoom.startTime;
     elapsedTime -= this.pongRoom.totalPauseTime;
     const remainingTime = TIME_END_GAME - elapsedTime;
     return remainingTime;
@@ -115,15 +114,16 @@ export class Game {
   }
 
   updateScore(event) {
-    if (event.player === 1)
-      this.scorePlayer1++;
-    else if (event.player === 2)
-      this.scorePlayer2++;
+    if (event.player === 1) this.scorePlayer1++;
+    else if (event.player === 2) this.scorePlayer2++;
     const score: [number, number] = [this.scorePlayer1, this.scorePlayer2];
     this.pongRoom.sendScore(score);
     this.pongRoom.GameState.score = score;
-  
-    if (this.scorePlayer1 >= SCORE_TO_WIN || this.scorePlayer2 >= SCORE_TO_WIN) {
+
+    if (
+      this.scorePlayer1 >= SCORE_TO_WIN ||
+      this.scorePlayer2 >= SCORE_TO_WIN
+    ) {
       this.declareWinner();
       this.endGame();
     }
@@ -155,10 +155,20 @@ export class Game {
   // Send positions of ball and paddles
   sendPositions(ball) {
     this.sendBallPosition(ball);
-    this.sendPaddlePosition([this.gameState.pongPaddle1.paddle.position.x,
-      this.gameState.pongPaddle1.paddle.position.y], 1);
-    this.sendPaddlePosition([this.gameState.pongPaddle2.paddle.position.x,
-      this.gameState.pongPaddle2.paddle.position.y], 2);
+    this.sendPaddlePosition(
+      [
+        this.gameState.pongPaddle1.paddle.position.x,
+        this.gameState.pongPaddle1.paddle.position.y,
+      ],
+      1,
+    );
+    this.sendPaddlePosition(
+      [
+        this.gameState.pongPaddle2.paddle.position.x,
+        this.gameState.pongPaddle2.paddle.position.y,
+      ],
+      2,
+    );
   }
 
   sendBallPosition(ball) {
@@ -184,18 +194,20 @@ export class Game {
   }
 
   declareWinner() {
-    if (this.scorePlayer1 > this.scorePlayer2)
-      this.declarePlayerWinner(0, 1);
+    if (this.scorePlayer1 > this.scorePlayer2) this.declarePlayerWinner(0, 1);
     else if (this.scorePlayer2 > this.scorePlayer1)
       this.declarePlayerWinner(1, 0);
-    else
-      this.declareDraw();
+    else this.declareDraw();
     this.endGame();
   }
 
   declarePlayerWinner(winnerIndex: number, loserIndex: number) {
-    if (winnerIndex >= 0 && winnerIndex < this.pongRoom.players.length &&
-        loserIndex >= 0 && loserIndex < this.pongRoom.players.length) {
+    if (
+      winnerIndex >= 0 &&
+      winnerIndex < this.pongRoom.players.length &&
+      loserIndex >= 0 &&
+      loserIndex < this.pongRoom.players.length
+    ) {
       this.pongRoom.players[winnerIndex].client.emit('winner');
       this.pongRoom.players[loserIndex].client.emit('loser');
     } else {
@@ -204,18 +216,16 @@ export class Game {
   }
 
   declarePlayerWinnerForDeconnection(winnerIndex: number) {
-    if (winnerIndex >= 0 && winnerIndex < this.pongRoom.players.length)
-    {
+    if (winnerIndex >= 0 && winnerIndex < this.pongRoom.players.length) {
       this.pongRoom.players[winnerIndex].client.emit('winner');
       this.endGame();
-    }
-    else {
+    } else {
       console.error('Invalid player index deconnection');
     }
   }
 
   declareDraw() {
-    this.pongRoom.players.forEach(player => player.client.emit('draw'));
+    this.pongRoom.players.forEach((player) => player.client.emit('draw'));
   }
 
   declareAbandon() {
@@ -223,23 +233,17 @@ export class Game {
   }
 
   moveDown(player: number) {
-    if (player === 1)
-      this.gameState.pongPaddle1.moveDown();
-    else
-      this.gameState.pongPaddle2.moveDown();
+    if (player === 1) this.gameState.pongPaddle1.moveDown();
+    else this.gameState.pongPaddle2.moveDown();
   }
 
   moveUp(player: number) {
-    if (player === 1)
-      this.gameState.pongPaddle1.moveUp();
-    else
-      this.gameState.pongPaddle2.moveUp();
+    if (player === 1) this.gameState.pongPaddle1.moveUp();
+    else this.gameState.pongPaddle2.moveUp();
   }
 
   stopMoving(player: number) {
-    if (player === 1)
-      this.gameState.pongPaddle1.stopMoving();
-    else
-      this.gameState.pongPaddle2.stopMoving();
+    if (player === 1) this.gameState.pongPaddle1.stopMoving();
+    else this.gameState.pongPaddle2.stopMoving();
   }
 }

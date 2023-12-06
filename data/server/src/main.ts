@@ -4,13 +4,12 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerTheme } from 'swagger-themes';
 import { ValidationPipe } from '@nestjs/common';
-import * as session from 'express-session';
+import session from 'express-session';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import { CustomExceptionFilter } from './exceptions/exceptions.middleware';
 
-
-async function bootstrap() {  
+async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const config = new DocumentBuilder()
@@ -44,12 +43,12 @@ async function bootstrap() {
   // Configuration du middleware express-session
   app.use(
     session({
-      secret: process.env.SESSION_SECRET ?? "",
+      secret: process.env.SESSION_SECRET ?? '',
       resave: false,
       saveUninitialized: false,
     }),
   );
-  
+
   // app.set('trust proxy', 1); // trust first proxy for cookie-session mais pas sur que ce soit utile
 
   // Configuration du middleware passport

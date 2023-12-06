@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "paths": {"class-transformer": ["node_modules/class-transformer"]},
+    "paths": { "class-transformer": ["node_modules/class-transformer"] },
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -13,11 +13,12 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "strict": false,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
   }
 }

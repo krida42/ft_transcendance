@@ -101,7 +101,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     room.PlayerManager.addPlayer({ user: userCookie, client });
   }
 
-  findRoomForUser(userCookie: ResponseUserDto): PongRoom {
+  findRoomForUser(userCookie: ResponseUserDto) {
     return this.rooms.find((r) =>
       r.PlayerManager.hasPlayer(userCookie.public_id),
     );
@@ -128,36 +128,33 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  executeMove(client: Socket, moveDir: 'moveUp' | 'moveDown') {
+    const userCookie = this.getUserWithCookie(client);
+    if (!userCookie) return;
+    const room = this.rooms.find((r) =>
+      r.PlayerManager.hasPlayer(userCookie.public_id),
+    );
+    if (!room) return;
+
+    const player = room.players.find((p) => p.client.id === client.id);
+    if (player?.number == null || ![0, 1].includes(player?.number))
+      throw new Error('handle move down' + player?.number);
+
+    if (moveDir === 'moveUp') {
+      room.moveUp(player.number);
+    } else if (moveDir === 'moveDown') {
+      room.moveDown(player.number);
+    }
+  }
+
   @SubscribeMessage('moveUp')
   handleMoveUp(client: Socket) {
-    const userCookie = this.getUserWithCookie(client);
-    if (userCookie) {
-      const room = this.rooms.find((r) =>
-        r.PlayerManager.hasPlayer(userCookie.public_id),
-      );
-      if (room) {
-        const player = room.players.find((p) => p.client.id === client.id);
-        if (player) {
-          room.moveUp(player.number);
-        }
-      }
-    }
+    this.executeMove(client, 'moveUp');
   }
 
   @SubscribeMessage('moveDown')
   handleMoveDown(client: Socket) {
-    const userCookie = this.getUserWithCookie(client);
-    if (userCookie) {
-      const room = this.rooms.find((r) =>
-        r.PlayerManager.hasPlayer(userCookie.public_id),
-      );
-      if (room) {
-        const player = room.players.find((p) => p.client.id === client.id);
-        if (player) {
-          room.moveDown(player.number);
-        }
-      }
-    }
+    this.executeMove(client, 'moveDown');
   }
 
   @SubscribeMessage('stopMoving')
@@ -169,9 +166,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
       );
       if (room) {
         const player = room.players.find((p) => p.client.id === client.id);
-        if (player) {
-          room.stopMoving(player.number);
-        }
+        if (player?.number == null || ![0, 1].includes(player?.number))
+          throw new Error('handle stop move' + player);
+        room.stopMoving(player.number);
       }
     }
   }

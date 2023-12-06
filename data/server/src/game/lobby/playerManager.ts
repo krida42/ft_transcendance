@@ -129,10 +129,17 @@ export class PlayerManager {
 
     oldPlayer.client.emit('gameState', this.pongRoom.GameState);
 
-    oldPlayer.client.on('moveUp', () => this.pongRoom.moveUp(oldPlayer.number));
-    oldPlayer.client.on('moveDown', () =>
-      this.pongRoom.moveDown(oldPlayer.number),
-    );
+    oldPlayer.client.on('moveUp', () => {
+      if (oldPlayer.number != 0 && oldPlayer.number != 1)
+        throw new Error('reconnectPlayer move up' + oldPlayer.number);
+      this.pongRoom.moveUp(oldPlayer.number);
+    });
+
+    oldPlayer.client.on('moveDown', () => {
+      if (oldPlayer.number != 0 && oldPlayer.number != 1)
+        throw new Error('reconnectPlayer move down' + oldPlayer.number);
+      this.pongRoom.moveDown(oldPlayer.number);
+    });
 
     if (this.pongRoom.started && !this.pongRoom.isGameEnded) {
       this.pongRoom.resume();

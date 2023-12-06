@@ -233,16 +233,19 @@ export class Game {
 
   moveDown(player: number) {
     if (player === 1) this.gameState.pongPaddle1.moveDown();
-    else this.gameState.pongPaddle2.moveDown();
+    else if (player === 0) this.gameState.pongPaddle2.moveDown();
+    else throw new Error('moveDown player nb ' + JSON.stringify(player));
   }
 
   moveUp(player: number) {
     if (player === 1) this.gameState.pongPaddle1.moveUp();
-    else this.gameState.pongPaddle2.moveUp();
+    else if (player === 0) this.gameState.pongPaddle2.moveUp();
+    else throw new Error('moveUp player nb ' + JSON.stringify(player));
   }
 
   stopMoving(player: number) {
     if (player === 1) this.gameState.pongPaddle1.stopMoving();
-    else this.gameState.pongPaddle2.stopMoving();
+    else if (player === 0) this.gameState.pongPaddle2.stopMoving();
+    else throw new Error('stopMoving player nb ' + JSON.stringify(player));
   }
 }

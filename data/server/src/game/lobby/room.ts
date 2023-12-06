@@ -75,7 +75,7 @@ export class PongRoom {
     this.game.stopMoving(player);
   }
 
-  sendBallPosition(ball: [number, number]) {
+  sendBallPosition(ball: Matter.Vector) {
     // console.log('Ball position sent to clients:', ball);
     this.players.forEach((player) => {
       player.client.emit('ball', ball);

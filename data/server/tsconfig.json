@@ -19,6 +19,6 @@
     "strict": false,
     "strictNullChecks": false,
     "noImplicitAny": false,
-    "strictBindCallApply":false,
+    "strictBindCallApply": false
   }
 }

@@ -152,7 +152,7 @@ export class Game {
   }
 
   // Send positions of ball and paddles
-  sendPositions(ball) {
+  sendPositions(ball: Matter.Vector) {
     this.sendBallPosition(ball);
     this.sendPaddlePosition(
       [
@@ -170,7 +170,7 @@ export class Game {
     );
   }
 
-  sendBallPosition(ball) {
+  sendBallPosition(ball: Matter.Vector) {
     this.pongRoom.sendBallPosition(ball);
   }
 

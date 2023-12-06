@@ -1,5 +1,5 @@
-import { GameState, Player } from '../type';
-import { SCORE_TO_WIN, INGAME } from '../const';
+import { GameState } from '../type';
+import { SCORE_TO_WIN } from '../const';
 import { PongGateway } from '../websocket/pong.gateway';
 import { PongWorld } from './world';
 import { PongBall } from './ball';
@@ -21,6 +21,7 @@ export class GameInit {
 			pongPaddle1: new PongPaddle(pongWorldInstance, 1),
 			pongPaddle2: new PongPaddle(pongWorldInstance, 2),
 		};
+		pongWorldInstance.setupCollisions(newGameState);
 		return newGameState;
 	}
 }

@@ -1,5 +1,5 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Server, Socket  } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { SubscribeMessage } from '@nestjs/websockets';
 import * as jwt from 'jsonwebtoken';
@@ -17,14 +17,14 @@ import { PlayerManager } from '../lobby/playerManager';
 })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
-  server: Server;
+  server!: Server;
   rooms = new Array<PongRoom>();
   usersMap = new Map<string, Socket>();
 
-  getUserWithCookie(socket: Socket): ResponseUserDto {
+  getUserWithCookie(socket: Socket): ResponseUserDto | null {
     let cookie = socket.handshake.headers.cookie;
     if (!cookie) {
-      return;
+      return null;
     }
     cookie = cookie.split('=')[1];
     const user = jwt.decode(cookie) as ResponseUserDto;
@@ -34,33 +34,40 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return user;
   }
 
-  whichRoom(user: ResponseUserDto): PongRoom {
-    return this.rooms.find(r => r.PlayerManager.hasPlayer(user.public_id));
+  whichRoom(user: ResponseUserDto): PongRoom | undefined {
+    return this.rooms.find((r) => r.PlayerManager.hasPlayer(user.public_id));
   }
 
   isConnected(userCookie: ResponseUserDto): boolean {
     const client = this.usersMap.get(userCookie.public_id);
-    if (!client)
-      return false;
+    if (!client) return false;
     client.emit('alreadyConnected');
-    this.whichRoom(userCookie).PlayerManager.addPlayer({user: userCookie, client});
-    return true;
+    return (
+      this.whichRoom(userCookie)?.PlayerManager.addPlayer({
+        user: userCookie,
+        client,
+      }) || false
+    );
   }
 
   handleConnection(client: Socket) {
     const userCookie = this.getUserWithCookie(client);
-    if (!userCookie)
-      return;
-    
+    if (!userCookie) return;
+
     const existingRoom = this.whichRoom(userCookie);
     if (existingRoom) {
-      const existingPlayer = existingRoom.PlayerManager.players.find(p => p.user.public_id === userCookie.public_id);
+      const existingPlayer = existingRoom.PlayerManager.players.find(
+        (p) => p.user.public_id === userCookie.public_id,
+      );
       if (existingPlayer && existingPlayer.disconnected) {
-        existingRoom.PlayerManager.reconnectPlayer(existingPlayer, {user: userCookie, client});
+        existingRoom.PlayerManager.reconnectPlayer(existingPlayer, {
+          user: userCookie,
+          client,
+        });
         return;
       }
     }
-  
+
     if (!this.isConnected(userCookie)) {
       this.addUserToMap(userCookie, client);
       this.addUserToRoom(userCookie, client);
@@ -70,9 +77,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(client: Socket) {
     const userCookie = this.getUserWithCookie(client);
     if (userCookie) {
-      const room = this.rooms.find(r => r.PlayerManager.hasPlayer(userCookie.public_id));
-      if (room)
-      {
+      const room = this.rooms.find((r) =>
+        r.PlayerManager.hasPlayer(userCookie.public_id),
+      );
+      if (room) {
         room.PlayerManager.removePlayer(client);
         this.usersMap.delete(userCookie.public_id);
         console.log(`Client disconnected: ${userCookie.login}`);
@@ -81,24 +89,26 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   addUserToMap(userCookie: ResponseUserDto, client: Socket) {
-    const player = {user: userCookie, client};
+    const player = { user: userCookie, client };
     this.usersMap.set(userCookie.public_id, client);
   }
-  
+
   addUserToRoom(userCookie: ResponseUserDto, client: Socket) {
     let room = this.findRoomForUser(userCookie);
     if (!room) {
       room = this.findOrCreateRoom();
     }
-    room.PlayerManager.addPlayer({user: userCookie, client});
+    room.PlayerManager.addPlayer({ user: userCookie, client });
   }
-  
-  findRoomForUser(userCookie: ResponseUserDto): PongRoom {
-    return this.rooms.find(r => r.PlayerManager.hasPlayer(userCookie.public_id));
+
+  findRoomForUser(userCookie: ResponseUserDto): PongRoom | undefined {
+    return this.rooms.find((r) =>
+      r.PlayerManager.hasPlayer(userCookie.public_id),
+    );
   }
-  
+
   findOrCreateRoom(): PongRoom {
-    let room = this.rooms.find(r => !r.PlayerManager.isFull());
+    let room = this.rooms.find((r) => !r.PlayerManager.isFull());
     if (!room) {
       room = new PongRoom(this);
       this.rooms.push(room);
@@ -107,15 +117,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   closeRoom(room: PongRoom) {
-    const index = this.rooms.findIndex(r => r === room);
+    const index = this.rooms.findIndex((r) => r === room);
     const players = room.players;
-    players.forEach(player => {
+    players.forEach((player) => {
       player.client.emit('roomClosed');
       this.usersMap.delete(player.user.public_id);
     });
     if (index !== -1) {
-      if (this.rooms[index].isGameEnded)
-        this.rooms.splice(index, 1);
+      if (this.rooms[index].isGameEnded) this.rooms.splice(index, 1);
     }
   }
 
@@ -123,10 +132,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleMoveUp(client: Socket) {
     const userCookie = this.getUserWithCookie(client);
     if (userCookie) {
-      const room = this.rooms.find(r => r.PlayerManager.hasPlayer(userCookie.public_id));
+      const room = this.rooms.find((r) =>
+        r.PlayerManager.hasPlayer(userCookie.public_id),
+      );
       if (room) {
-        const player = room.players.find(p => p.client.id === client.id);
-        if (player) {
+        const player = room.players.find((p) => p.client.id === client.id);
+        if (player?.number) {
           room.moveUp(player.number);
         }
       }
@@ -137,10 +148,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleMoveDown(client: Socket) {
     const userCookie = this.getUserWithCookie(client);
     if (userCookie) {
-      const room = this.rooms.find(r => r.PlayerManager.hasPlayer(userCookie.public_id));
+      const room = this.rooms.find((r) =>
+        r.PlayerManager.hasPlayer(userCookie.public_id),
+      );
       if (room) {
-        const player = room.players.find(p => p.client.id === client.id);
-        if (player) {
+        const player = room.players.find((p) => p.client.id === client.id);
+        if (player?.number) {
           room.moveDown(player.number);
         }
       }
@@ -151,10 +164,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleStopMoving(client: Socket) {
     const userCookie = this.getUserWithCookie(client);
     if (userCookie) {
-      const room = this.rooms.find(r => r.PlayerManager.hasPlayer(userCookie.public_id));
+      const room = this.rooms.find((r) =>
+        r.PlayerManager.hasPlayer(userCookie.public_id),
+      );
       if (room) {
-        const player = room.players.find(p => p.client.id === client.id);
-        if (player) {
+        const player = room.players.find((p) => p.client.id === client.id);
+        if (player?.number) {
           room.stopMoving(player.number);
         }
       }
@@ -162,7 +177,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('newGame')
-  newGame(){
+  newGame() {
     console.log('new game');
   }
 }

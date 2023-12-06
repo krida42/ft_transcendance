@@ -5,8 +5,8 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.addColumn('Users', 'twoFactorEnable', {
       type: Sequelize.BOOLEAN,
-      allowNull: false,
-      defaultValue: false
+      allowNull: true,
+      defaultValue: null
     });
     await queryInterface.addColumn('Users', 'twoFactorSecret', {
       type: Sequelize.BLOB,

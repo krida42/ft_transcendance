@@ -1,6 +1,3 @@
-import { Mode } from "./mode";
+import { Mode } from './mode';
 
-export class ClassicMode extends Mode {
-	
-
-}
+export class ClassicMode extends Mode {}

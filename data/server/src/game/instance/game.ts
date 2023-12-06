@@ -7,15 +7,14 @@ import * as Matter from 'matter-js';
 export class Game {
   //game state engine
   running: boolean = false;
-  accelerationBallInterval: NodeJS.Timeout;
-
+  accelerationBallInterval!: NodeJS.Timeout;
 
   //game
   scorePlayer1: number = 0;
   scorePlayer2: number = 0;
   finished: boolean = false;
   remainingTime: number = 0;
-  timeEndGame: NodeJS.Timeout;
+  timeEndGame!: NodeJS.Timeout;
 
   //room and status
   static id: number = 0;
@@ -24,8 +23,8 @@ export class Game {
 
   //send
   lastTime: number = 0;
-  gameInterval: NodeJS.Timeout;
-  timeInterval: NodeJS.Timeout;
+  gameInterval!: NodeJS.Timeout;
+  timeInterval!: NodeJS.Timeout;
 
   constructor(PongRoom: PongRoom) {
     Game.id++;
@@ -113,7 +112,7 @@ export class Game {
     });
   }
 
-  updateScore(event) {
+  updateScore(event: any) {
     if (event.player === 1) this.scorePlayer1++;
     else if (event.player === 2) this.scorePlayer2++;
     const score: [number, number] = [this.scorePlayer1, this.scorePlayer2];

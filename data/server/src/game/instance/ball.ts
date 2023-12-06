@@ -4,9 +4,9 @@ import { PongWorld } from './world';
 import { randomInt } from 'crypto';
 
 export class PongBall {
-  ball: Matter.Body;
+  ball!: Matter.Body;
   acceleration: number = 0.1;
-  previousVelocity: Matter.Vector;
+  previousVelocity!: Matter.Vector;
 
   constructor(private pongWorld: PongWorld) {
     this.createBall();
@@ -19,8 +19,8 @@ export class PongBall {
       density: 0.01,
     });
     Matter.World.add(this.pongWorld.world, this.ball);
-    randomInt(0, 2) === 0 ? fX = 1 : fX = -1;
-    randomInt(0, 2) === 0 ? fY = 1 : fY = -1;
+    randomInt(0, 2) === 0 ? (fX = 1) : (fX = -1);
+    randomInt(0, 2) === 0 ? (fY = 1) : (fY = -1);
     const force = { x: fX, y: fY }; // y a changer a 0y
     Matter.Body.setVelocity(this.ball, force);
   }
@@ -35,13 +35,13 @@ export class PongBall {
   resetPosition() {
     Matter.Body.setAngularVelocity(this.ball, 0);
     this.previousVelocity = { x: 1, y: 1 };
-    
+
     let fX = 0;
     let fY = 0;
     setTimeout(() => {
       Matter.Body.setPosition(this.ball, { x: WIDTH / 2, y: HEIGHT / 2 });
-      randomInt(0, 2) === 0 ? fX = 1 : fX = -1;
-      randomInt(0, 2) === 0 ? fY = 1 : fY = -1;
+      randomInt(0, 2) === 0 ? (fX = 1) : (fX = -1);
+      randomInt(0, 2) === 0 ? (fY = 1) : (fY = -1);
       const force = { x: fX, y: fY };
       Matter.Body.applyForce(this.ball, this.ball.position, force);
     }, 10);
@@ -49,12 +49,12 @@ export class PongBall {
 
   startBallAcceleration() {
     const speedIncreasePerFrame = 0.001;
-  
+
     Matter.Events.on(this.pongWorld.engine, 'beforeUpdate', () => {
       // Sauvegarder la vitesse précédente
       this.previousVelocity = { ...this.ball.velocity };
     });
-  
+
     Matter.Events.on(this.pongWorld.engine, 'afterUpdate', () => {
       // Rétablir la vitesse de la balle à sa valeur précédente
       Matter.Body.setVelocity(this.ball, this.previousVelocity);

@@ -1,5 +1,3 @@
-import { Mode } from "./mode";
+import { Mode } from './mode';
 
-export class BoundMode extends Mode {
-
-}
+export class BoundMode extends Mode {}

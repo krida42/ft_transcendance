@@ -3,18 +3,18 @@ import { HEIGHT, WALL_THICKNESS, WIDTH } from '../const';
 import { GameState } from '../type';
 import { PongBall } from './ball';
 import { PongPaddle } from './paddle';
-
+//
 export class PongWorld {
   //engine
   world: Matter.World;
-  engine: Matter.Engine;
-  runner: Matter.Runner;
+  engine!: Matter.Engine;
+  runner!: Matter.Runner;
 
   //walls
-  topWall: Matter.Body;
-  bottomWall: Matter.Body;
-  leftWall: Matter.Body;
-  rightWall: Matter.Body;
+  topWall!: Matter.Body;
+  bottomWall!: Matter.Body;
+  leftWall!: Matter.Body;
+  rightWall!: Matter.Body;
 
   constructor() {
     this.createEngine();

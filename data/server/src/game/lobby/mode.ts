@@ -1,11 +1,11 @@
-import { Game } from "../instance/game";
+import { Game } from '../instance/game';
 
 export abstract class Mode {
-	game: Game;
-	
-  constructor(game: Game) {
-	  this.game = game;
- 	}
+  game: Game;
 
-	// Ajoutez d'autres méthodes nécessaires ici
+  constructor(game: Game) {
+    this.game = game;
   }
+
+  // Ajoutez d'autres méthodes nécessaires ici
+}

@@ -36,27 +36,38 @@
         src="@/assets/svg/right-arrow.svg"
       />
     </div>
-    <SearchUser mode="inviteFriendToPlay" />
+    <input
+      v-model="username"
+      placeholder="username..."
+      type="text"
+      minlength="3"
+      maxlength="15"
+      class="bg-black text-[1.5rem] border-2 border-[#828287] mx-[6rem] pl-[1rem]"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useFriendStore } from "@/stores/friend";
-import SearchUser from "@/components/SearchUser.vue";
 import { FriendsTransformer } from "@/utils/friendsTransformer";
 import { computed, ref } from "vue";
 const friendStore = useFriendStore();
 const currentPageId = ref(0);
+const username = ref("");
 
 (() => {
   friendStore.refreshFriendList();
 })();
 
-const friendsNestedArray = computed(() => {
-  return FriendsTransformer.divideFriendsByN(
+const listFilteredBySearch = computed(() => {
+  return FriendsTransformer.beginWithLetters(
     FriendsTransformer.toArray(friendStore.friends),
-    3
+    username.value
   );
+});
+
+const friendsNestedArray = computed(() => {
+  return FriendsTransformer.divideFriendsByN(listFilteredBySearch.value, 3);
 });
 
 function incrementPageId() {

@@ -14,12 +14,13 @@ export class PlayerManager {
   }
 
   addPlayer(player: Player) {
-    if (!this.canAddPlayer(player)) return;
+    if (!this.canAddPlayer(player)) return false;
     player.number = this.players.length;
     this.players.push(player);
     console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
     this.showPlayers();
     this.pongRoom.start();
+    return true;
   }
 
   isMaxPlayer() {

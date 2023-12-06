@@ -21,10 +21,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   rooms = new Array<PongRoom>();
   usersMap = new Map<string, Socket>();
 
-  getUserWithCookie(socket: Socket): ResponseUserDto {
+  getUserWithCookie(socket: Socket): ResponseUserDto | null {
     let cookie = socket.handshake.headers.cookie;
     if (!cookie) {
-      return;
+      return null;
     }
     cookie = cookie.split('=')[1];
     const user = jwt.decode(cookie) as ResponseUserDto;
@@ -34,7 +34,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return user;
   }
 
-  whichRoom(user: ResponseUserDto): PongRoom {
+  whichRoom(user: ResponseUserDto) {
     return this.rooms.find((r) => r.PlayerManager.hasPlayer(user.public_id));
   }
 
@@ -42,11 +42,12 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const client = this.usersMap.get(userCookie.public_id);
     if (!client) return false;
     client.emit('alreadyConnected');
-    this.whichRoom(userCookie).PlayerManager.addPlayer({
+    return this.whichRoom(userCookie)?.PlayerManager.addPlayer({
       user: userCookie,
       client,
-    });
-    return true;
+    })
+      ? true
+      : true;
   }
 
   handleConnection(client: Socket) {

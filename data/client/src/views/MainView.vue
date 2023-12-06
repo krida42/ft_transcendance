@@ -54,10 +54,7 @@
           svgName="message.svg"
           size="90px"
           class="bd-greedn float-right relative z-[100]"
-          @click="
-            toggleChatAccess();
-            console.log(chatAccessOpened);
-          "
+          @click="toggleChatAccess()"
         />
       </div>
       <!-- </router-link> -->

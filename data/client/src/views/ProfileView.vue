@@ -40,7 +40,7 @@
       />
       <p class="text-[2.2rem]">{{ username }}</p>
     </div>
-    <ProfileButttons mode="my-profile" />
+    <ProfileButttons :mode="mode" />
   </div>
 </template>
 
@@ -49,9 +49,11 @@ import WinrateChart from "@/components/profile/WinrateChart.vue";
 import MatchHistoryItem from "@/components/profile/MatchHistoryItem.vue";
 import MenuButton from "@/components/MenuButton.vue";
 import axios from "axios";
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, computed } from "vue";
 import { Match, Id } from "@/types";
 import ProfileButttons from "@/components/profile/ProfileButtons.vue";
+import { profileModes } from "@/types";
+import router from "@/router";
 
 const host = process.env.VUE_APP_API_URL;
 const rank = "beginner";
@@ -61,6 +63,13 @@ const displayWinrate = ref<boolean>(false);
 const matchHistory = ref<Match[]>([]);
 const username = ref<string>("");
 const avatar = ref<string>("");
+const mode = computed(() => {
+  if ((router.currentRoute.value.params.userId as string) !== undefined) {
+    return profileModes.otherProfile;
+  } else {
+    return profileModes.myProfile;
+  }
+});
 
 async function getWinrate(userId: Id) {
   axios
@@ -232,14 +241,6 @@ html {
       "achievements achievements"
       "buttons      buttons"
       "match-history match-history";
-  }
-  .buttons {
-    flex-direction: row;
-  }
-
-  .buttons > * {
-    width: calc(50% - 1.5 * var(--bento-gap));
-    height: calc(100% - 2 * var(--bento-gap));
   }
 }
 </style>

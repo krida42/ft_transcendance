@@ -76,3 +76,8 @@ export type NavItem = {
   category: string;
   route: string;
 };
+
+export enum profileModes {
+  myProfile = "myProfile",
+  otherProfile = "otherProfile",
+}

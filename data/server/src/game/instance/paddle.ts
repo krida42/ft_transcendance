@@ -51,20 +51,6 @@ export class PongPaddle {
       });
   }
 
-  resetXPosition() {
-    const position = this.paddle.position;
-    if (this.player === 1)
-      Matter.Body.setPosition(this.paddle, {
-        x: POSITION_PADDLE_1_x,
-        y: position.y,
-      });
-    else
-      Matter.Body.setPosition(this.paddle, {
-        x: POSITION_PADDLE_2_x,
-        y: position.y,
-      });
-  }
-
   whichPaddlePositionX() {
     if (this.player === 1) return POSITION_PADDLE_1_x;
     else return POSITION_PADDLE_2_x;

@@ -88,9 +88,8 @@
         class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap content-start gap-[1rem] p-[2rem] overflow-y-auto overflow-x-hidden"
       >
         <input
-          v-model="password"
+          v-model="search_input"
           type="text"
-          v-model="username"
           :placeholder="
             privacy === 'Private'
               ? 'search for friends...'
@@ -140,12 +139,12 @@ const props = defineProps({
 const privacy = ref(PrivacyType.Private); //change the initialization to get the privacy of the channel if it's an edit form
 const channelName = ref(""); //change the initialization to get the name of the channel if it's an edit form
 const channelLogo = ref(""); //change the initialization to get the logo of the channel if it's an edit form
-const username = ref("");
+const search_input = ref("");
 const friendStore = useFriendStore();
 const friendList = computed(() => {
   return FriendsTransformer.beginWithLetters(
     FriendsTransformer.toArray(friendStore.friends),
-    username.value
+    search_input.value
   );
 });
 const user = useUsersStore();
@@ -156,7 +155,6 @@ const channelId = computed(() => {
     ? (router.currentRoute.value.params.channelId as string)
     : "";
 });
-const password = ref("");
 
 let files: FileList | null = null;
 let file: File | null = null;
@@ -183,7 +181,7 @@ const createForm = async () => {
   const data = {
     chanName: channelName.value,
     chanType: privacy.value,
-    chanPassword: password.value,
+    chanPassword: search_input.value,
   };
   // fd.append("image", file, file.name);
   // fd.append("chanName", channelName.value);

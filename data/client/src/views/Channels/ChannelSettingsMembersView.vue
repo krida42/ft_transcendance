@@ -35,10 +35,6 @@ import router from "@/router";
 
 const channelsStore = useChannelsStore();
 
-() => {
-  channelsStore.refreshChannels();
-};
-
 const channelId = router.currentRoute.value.params.id as string;
 
 const currentChannel = computed(() => channelsStore.channel(channelId));

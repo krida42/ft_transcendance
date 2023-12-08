@@ -13,6 +13,7 @@ import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { FriendsService } from '../friends/friends.service';
+import { ChannelsUtilsService } from './channels-utils.service';
 
 enum ChanType {
   Direct = 'Direct',
@@ -35,9 +36,9 @@ enum UserStatus {
 // GET getDataChan(chanId: uuidv4): Promise<channelDto> OK
 
 // ---------- GET CHANNELS LIST (Sorted by user size)
-// GET getJoinedChan(current_id: uuidv4): Promise<channelDto[]> OK
-// GET getDirectChan(current_id: uuidv4): Promise<channelDto[]> OK
-// GET getUnjoinedChan(current_id: uuidv4, chanType: ChanType): Promise<channelDto[]> OK
+// GET getJoinedChan(currentId: uuidv4): Promise<channelDto[]> OK
+// GET getDirectChan(currentId: uuidv4): Promise<channelDto[]> OK
+// GET getUnjoinedChan(currentId: uuidv4, chanType: ChanType): Promise<channelDto[]> OK
 
 // ---------- GET USERS LIST
 // GET getUsersChan(chanId: uuidv4): Promise<PublicUserDto[]> OK
@@ -48,13 +49,6 @@ enum UserStatus {
 // GET getBansChan(chanId: uuidv4): Promise<PublicUserDto[]> OK
 // GET getOwnerChan(chanId: uuidv4): Promise<PublicUserDto[]> OK
 
-// ---------- UTILS
-// checkId(id: uuidv4): Promise<uuidv4> OK
-// findById(chanId: uuidv4): Promise<Channels> OK
-// fetchChannelDto(chanId: uuidv4): Promise<channelDto> OK
-// fetchChannelDtoArray(all: Channels[]): Promise<channelDto[]> OK
-// fetchChanUsersToChanDtoArray(all: ChannelsUsers[]): Promise<channelDto[]> OK
-
 @Injectable()
 export class ChannelsGetService {
   constructor(
@@ -62,6 +56,7 @@ export class ChannelsGetService {
     private readonly channelModel: typeof Channels,
     private readonly usersService: UsersService,
     private readonly friendsService: FriendsService,
+    private readonly utils: ChannelsUtilsService,
 
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
@@ -69,18 +64,18 @@ export class ChannelsGetService {
 
   // ---------- GET CHANNEL DATA
   async getDataChan(chanId: uuidv4): Promise<channelDto> {
-    return this.fetchChannelDto(chanId);
+    return this.utils.fetchChannelDto(chanId);
     // TODO add image
   }
 
   // ---------- GET CHANNELS LIST (Sorted by user size)
 
-  async getJoinedChan(current_id: uuidv4): Promise<channelDto[]> {
-    this.friendsService.checkId(current_id);
+  async getJoinedChan(currentId: uuidv4): Promise<channelDto[]> {
+    this.friendsService.checkId(currentId);
 
     const userChannels = await this.channelUsersModel.findAll({
       where: {
-        userId: current_id,
+        userId: currentId,
         [Op.or]: [
           { userStatus: UserStatus.User },
           { userStatus: UserStatus.Muted },
@@ -89,26 +84,26 @@ export class ChannelsGetService {
         ],
       },
     });
-    return this.fetchChanUsersToChanDtoArray(userChannels);
+    return this.utils.fetchChanUsersToChanDtoArray(userChannels);
   }
 
-  async getDirectChan(current_id: uuidv4): Promise<channelDto[]> {
-    this.friendsService.checkId(current_id);
+  async getDirectChan(currentId: uuidv4): Promise<channelDto[]> {
+    this.friendsService.checkId(currentId);
 
     const userChannels = await this.channelUsersModel.findAll({
       where: {
-        userId: current_id,
+        userId: currentId,
         userStatus: UserStatus.Direct,
       },
     });
-    return this.fetchChanUsersToChanDtoArray(userChannels);
+    return this.utils.fetchChanUsersToChanDtoArray(userChannels);
   }
 
   async getUnjoinedChan(
-    current_id: uuidv4,
+    currentId: uuidv4,
     chanType: ChanType,
   ): Promise<channelDto[]> {
-    this.friendsService.checkId(current_id);
+    this.friendsService.checkId(currentId);
 
     // public channels ids
     const pubChan = await this.channelModel.findAll({
@@ -119,7 +114,7 @@ export class ChannelsGetService {
     // current user channels joined ids
     const userChan = await this.channelUsersModel.findAll({
       where: {
-        userId: current_id,
+        userId: currentId,
         [Op.or]: [
           { userStatus: UserStatus.User },
           { userStatus: UserStatus.Muted },
@@ -138,13 +133,56 @@ export class ChannelsGetService {
     const availableChannels = await Channels.findAll({
       where: { chanId: availableChanIds },
     });
-    return this.fetchChannelDtoArray(availableChannels);
+    return this.utils.fetchChannelDtoArray(availableChannels);
   }
 
   // ---------- GET USERS LIST
 
   async getUsersChan(chanId: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(chanId);
+    const userStatuses = [
+      UserStatus.User,
+      UserStatus.Muted,
+      UserStatus.Admin,
+      UserStatus.Owner,
+    ];
+    return this.utils.getUsersByStatuses(chanId, userStatuses);
+  }
+
+  async getUsersOnlyChan(chanId: uuidv4): Promise<PublicUserDto[]> {
+    const userStatuses = [UserStatus.User, UserStatus.Muted];
+    return this.utils.getUsersByStatuses(chanId, userStatuses);
+  }
+
+  async getMutesChan(chanId: uuidv4): Promise<PublicUserDto[]> {
+    const userStatuses = [UserStatus.Muted];
+    return this.utils.getUsersByStatuses(chanId, userStatuses);
+  }
+
+  async getAdminsChan(chanId: uuidv4): Promise<PublicUserDto[]> {
+    const userStatuses = [UserStatus.Admin, UserStatus.Owner];
+    return this.utils.getUsersByStatuses(chanId, userStatuses);
+  }
+
+  async getInvitesChan(chanId: uuidv4): Promise<PublicUserDto[]> {
+    const userStatuses = [UserStatus.Invited];
+    return this.utils.getUsersByStatuses(chanId, userStatuses);
+  }
+
+  async getBansChan(chanId: uuidv4): Promise<PublicUserDto[]> {
+    const userStatuses = [UserStatus.Banned];
+    return this.utils.getUsersByStatuses(chanId, userStatuses);
+  }
+
+  async getOwnerChan(chanId: uuidv4): Promise<PublicUserDto[]> {
+    const userStatuses = [UserStatus.Owner];
+    return this.utils.getUsersByStatuses(chanId, userStatuses);
+  }
+
+  // ---------- GET USERS LIST DEPR
+
+  /* DEPRECATED
+  async getUsersChan(chanId: uuidv4): Promise<PublicUserDto[]> {
+    this.utils.checkId(chanId);
 
     const userChan = await this.channelUsersModel.findAll({
       where: {
@@ -157,11 +195,13 @@ export class ChannelsGetService {
         ],
       },
     });
-    return this.fetchUserDtoArray(userChan);
+    return this.utils.fetchUserDtoArray(userChan);
   }
+  */
 
+  /* DEPRECATED
   async getUsersOnlyChan(chanId: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(chanId);
+    this.utils.checkId(chanId);
 
     const userChan = await this.channelUsersModel.findAll({
       where: {
@@ -172,11 +212,13 @@ export class ChannelsGetService {
         ],
       },
     });
-    return this.fetchUserDtoArray(userChan);
+    return this.utils.fetchUserDtoArray(userChan);
   }
+  */
 
+  /* DEPRECATED
   async getMutesChan(chanId: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(chanId);
+    this.utils.checkId(chanId);
 
     const userChan = await this.channelUsersModel.findAll({
       where: {
@@ -184,11 +226,13 @@ export class ChannelsGetService {
         userStatus: UserStatus.Muted,
       },
     });
-    return this.fetchUserDtoArray(userChan);
+    return this.utils.fetchUserDtoArray(userChan);
   }
+  */
 
+  /* DEPRECATED
   async getAdminsChan(chanId: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(chanId);
+    this.utils.checkId(chanId);
 
     const userChan = await this.channelUsersModel.findAll({
       where: {
@@ -199,11 +243,13 @@ export class ChannelsGetService {
         ],
       },
     });
-    return this.fetchUserDtoArray(userChan);
+    return this.utils.fetchUserDtoArray(userChan);
   }
+  */
 
+  /* DEPRECATED
   async getInvitesChan(chanId: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(chanId);
+    this.utils.checkId(chanId);
 
     const userChan = await this.channelUsersModel.findAll({
       where: {
@@ -211,11 +257,13 @@ export class ChannelsGetService {
         userStatus: UserStatus.Invited,
       },
     });
-    return this.fetchUserDtoArray(userChan);
+    return this.utils.fetchUserDtoArray(userChan);
   }
+  */
 
+  /* DEPRECATED
   async getBansChan(chanId: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(chanId);
+    this.utils.checkId(chanId);
 
     const userChan = await this.channelUsersModel.findAll({
       where: {
@@ -223,11 +271,13 @@ export class ChannelsGetService {
         userStatus: UserStatus.Banned,
       },
     });
-    return this.fetchUserDtoArray(userChan);
+    return this.utils.fetchUserDtoArray(userChan);
   }
+  */
 
+  /* DEPRECATED
   async getOwnerChan(chanId: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(chanId);
+    this.utils.checkId(chanId);
 
     const userChan = await this.channelUsersModel.findAll({
       where: {
@@ -235,81 +285,8 @@ export class ChannelsGetService {
         userStatus: UserStatus.Owner,
       },
     });
-    return this.fetchUserDtoArray(userChan);
+    return this.utils.fetchUserDtoArray(userChan);
   }
+  */
 
-  // ---------- UTILS
-
-  async fetchUserDtoArray(userChan: ChannelsUsers[]): Promise<PublicUserDto[]> {
-    const userIds = userChan.map((userChan) => userChan.userId);
-    const users = await this.usersService.findByIds(userIds);
-    const publicUserDtoArray: PublicUserDto[] = [];
-    for (const user of users) {
-      const publicUserDto = new PublicUserDto(
-        user.public_id,
-        user.pseudo,
-        user.login,
-        user.avatar,
-      );
-      publicUserDtoArray.push(publicUserDto);
-    }
-    return publicUserDtoArray;
-  }
-
-  async checkId(id: uuidv4) {
-    if (!id) {
-      throw new HttpException('null uuidv4', HttpStatus.BAD_REQUEST);
-    }
-    if (!isUUID(id, 4)) {
-      throw new HttpException('format uuidv4', HttpStatus.BAD_REQUEST);
-    }
-    const chan = await Channels.findOne({ where: { chanId: id } });
-    if (!chan) {
-      throw new HttpException('channel uuidv4 not found', HttpStatus.NOT_FOUND);
-    }
-  }
-
-  async findById(chanId: uuidv4): Promise<Channels> {
-    const chan = await Channels.findOne({ where: { chanId: chanId } });
-    if (!chan) {
-      throw new HttpException('channel not found', HttpStatus.NOT_FOUND);
-    }
-    return chan;
-  }
-
-  async fetchChannelDto(chanId: uuidv4): Promise<channelDto> {
-    const chan = await this.findById(chanId);
-    const dto = new channelDto(
-      chan.chanId,
-      chan.chanName,
-      chan.chanType,
-      chan.ownerId,
-      chan.nbUser,
-    );
-    return dto;
-  }
-
-  async fetchChannelDtoArray(all: Channels[]): Promise<channelDto[]> {
-    all.sort((a, b) => b.nbUser - a.nbUser);
-    const channelDtoArray: channelDto[] = [];
-    for (const chan of all) {
-      const dto = new channelDto(
-        chan.chanId,
-        chan.chanName,
-        chan.chanType,
-        chan.ownerId,
-        chan.nbUser,
-      );
-      channelDtoArray.push(dto);
-    }
-    return channelDtoArray;
-  }
-
-  async fetchChanUsersToChanDtoArray(
-    all: ChannelsUsers[],
-  ): Promise<channelDto[]> {
-    const channelIds = all.map((userChannel) => userChannel.chanId);
-    const channels = await Channels.findAll({ where: { chanId: channelIds } });
-    return this.fetchChannelDtoArray(channels);
-  }
 }

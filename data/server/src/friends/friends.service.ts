@@ -23,10 +23,10 @@ enum FriendStatus {
 // DELETE unblockFriend(sender_id: uuidv4, receiver_id: uuidv4): Promise<PublicUserDto> OK
 
 // ---------- GET
-// GET getSentRequests(current_id: uuidv4): Promise<PublicUserDto[]> OK
-// GET getSentRequests(current_id: uuidv4): Promise<PublicUserDto[]> OK
-// GET getFriends(current_id: uuidv4): Promise<PublicUserDto[]> OK
-// GET getBlocked(current_id: uuidv4): Promise<PublicUserDto[]> OK
+// GET getSentRequests(currentId: uuidv4): Promise<PublicUserDto[]> OK
+// GET getSentRequests(currentId: uuidv4): Promise<PublicUserDto[]> OK
+// GET getFriends(currentId: uuidv4): Promise<PublicUserDto[]> OK
+// GET getBlocked(currentId: uuidv4): Promise<PublicUserDto[]> OK
 
 // ---------- UTILS
 // checkId(id: uuidv4): Promise<uuidv4> OK
@@ -36,7 +36,7 @@ enum FriendStatus {
 // heBlockYou(you_id: uuidv4, it_id: uuidv4): Promise<boolean> OK
 // isBlocked(you_id: uuidv4, he_id: uuidv4): Promise<boolean> OK
 // fetchPublicUserDto(id: uuidv4): Promise<PublicUserDto> OK
-// fetchUserDtoArrayFor(current_id: uuidv4, all: Friends[]): Promise<PublicUserDto[]> OK
+// fetchUserDtoArrayFor(currentId: uuidv4, all: Friends[]): Promise<PublicUserDto[]> OK
 
 @Injectable()
 export class FriendsService {
@@ -106,13 +106,13 @@ export class FriendsService {
   }
 
   async deleteFriend(
-    current_id: uuidv4,
+    currentId: uuidv4,
     friend_id: uuidv4,
   ): Promise<PublicUserDto> {
-    if (this.checkId(current_id) === this.checkId(friend_id)) {
+    if (this.checkId(currentId) === this.checkId(friend_id)) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
-    const friendship = await this.getFriendship(current_id, friend_id);
+    const friendship = await this.getFriendship(currentId, friend_id);
     if (!friendship) {
       throw new HttpException('relation not found', HttpStatus.NOT_FOUND);
     }
@@ -129,7 +129,7 @@ export class FriendsService {
     if (this.checkId(sender_id) === this.checkId(receiver_id)) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
-    if ( await this.youBlockIt(sender_id, receiver_id))
+    if (await this.youBlockIt(sender_id, receiver_id))
       throw new HttpException('user already blocked', HttpStatus.CONFLICT);
 
     try {
@@ -174,50 +174,50 @@ export class FriendsService {
 
   // ---------- GET
 
-  async getSentRequests(current_id: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(current_id);
+  async getSentRequests(currentId: uuidv4): Promise<PublicUserDto[]> {
+    this.checkId(currentId);
 
     const all = await Friends.findAll({
       where: {
-        sender_id: current_id,
+        sender_id: currentId,
         status: FriendStatus.Pending,
       },
     });
-    return this.fetchUserDtoArrayFor(current_id, all);
+    return this.fetchUserDtoArrayFor(currentId, all);
   }
 
-  async getReceivedRequests(current_id: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(current_id);
+  async getReceivedRequests(currentId: uuidv4): Promise<PublicUserDto[]> {
+    this.checkId(currentId);
 
     const all = await Friends.findAll({
       where: {
-        receiver_id: current_id,
+        receiver_id: currentId,
         status: FriendStatus.Pending,
       },
     });
-    return this.fetchUserDtoArrayFor(current_id, all);
+    return this.fetchUserDtoArrayFor(currentId, all);
   }
 
-  async getFriends(current_id: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(current_id);
+  async getFriends(currentId: uuidv4): Promise<PublicUserDto[]> {
+    this.checkId(currentId);
     const all = await Friends.findAll({
       where: {
-        [Op.or]: [{ sender_id: current_id }, { receiver_id: current_id }],
+        [Op.or]: [{ sender_id: currentId }, { receiver_id: currentId }],
         status: FriendStatus.Active,
       },
     });
-    return this.fetchUserDtoArrayFor(current_id, all);
+    return this.fetchUserDtoArrayFor(currentId, all);
   }
 
-  async getBlocked(current_id: uuidv4): Promise<PublicUserDto[]> {
-    this.checkId(current_id);
+  async getBlocked(currentId: uuidv4): Promise<PublicUserDto[]> {
+    this.checkId(currentId);
     const all = await Friends.findAll({
       where: {
-        sender_id: current_id,
+        sender_id: currentId,
         status: FriendStatus.Blocked,
       },
     });
-    return this.fetchUserDtoArrayFor(current_id, all);
+    return this.fetchUserDtoArrayFor(currentId, all);
   }
 
   // ---------- UTILS
@@ -260,7 +260,10 @@ export class FriendsService {
     else return false;
   }
 
-  async getFriendship(user1_id: uuidv4, user2_id: uuidv4): Promise<Friends | null> {
+  async getFriendship(
+    user1_id: uuidv4,
+    user2_id: uuidv4,
+  ): Promise<Friends | null> {
     return await Friends.findOne({
       where: {
         [Op.and]: [
@@ -320,13 +323,13 @@ export class FriendsService {
   }
 
   async fetchUserDtoArrayFor(
-    current_id: uuidv4,
+    currentId: uuidv4,
     all: Friends[],
   ): Promise<PublicUserDto[]> {
     const publicUserDtoArray: PublicUserDto[] = [];
     for (const relation of all) {
       let other_user = await this.usersService.findById(relation.sender_id);
-      if (relation.sender_id === current_id) {
+      if (relation.sender_id === currentId) {
         other_user = await this.usersService.findById(relation.receiver_id);
       }
       const publicUserDto = new PublicUserDto(

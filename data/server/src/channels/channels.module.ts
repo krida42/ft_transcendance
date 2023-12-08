@@ -1,6 +1,7 @@
 import { ChannelsService } from './channels.service';
 import { ChannelsGetService } from './channels-get.service';
 import { ChannelsOpService } from './channels-op.service';
+import { ChannelsUtilsService } from './channels-utils.service';
 import { ChannelsController } from './channels.controller';
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -17,7 +18,7 @@ import { ChannelsUsers } from 'db/models/channelsUsers';
         FriendsModule
     ],
     controllers: [ChannelsController],
-    providers: [ChannelsService, ChannelsGetService, ChannelsOpService],
+    providers: [ChannelsService, ChannelsGetService, ChannelsOpService, ChannelsUtilsService],
     exports: [ChannelsService],
 })
 export class ChannelsModule {}

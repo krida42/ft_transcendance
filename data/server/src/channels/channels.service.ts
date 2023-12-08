@@ -1,20 +1,26 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
-import { isUUID } from 'class-validator';
-import { DestroyOptions } from 'sequelize/types';
-import { uuidv4 } from 'src/types';
+import { BcryptService } from 'src/tools/bcrypt.service';
 
+import { uuidv4 } from 'src/types';
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
 import { EditChannelDto } from './dto/editChannel.dto';
+import { PasswordChannelDto } from './dto/passwordChannel.dto';
 import { channelDto } from './dto/channel.dto';
-import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
-import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { FriendsService } from '../friends/friends.service';
 import { ChannelsGetService } from '../channels/channels-get.service';
-import { BcryptService } from 'src/tools/bcrypt.service';
+import { ChannelsUtilsService } from './channels-utils.service';
+
+enum BadMsg {
+  createChannel = 'cc:',
+  updateChannel = 'uc:',
+  deleteChannel = 'dc:',
+  joinChannel = 'jc:',
+  quitChannel = 'qc:',
+}
 
 enum ChanType {
   Direct = 'Direct',
@@ -33,14 +39,12 @@ enum UserStatus {
   Invited = 'Invited',
 }
 
-// POST createChannel(current_id, editChannelDto): Promise<channelDto> OK
-// DELETE updateChannel(current_id, chanId, editChannelDto): Promise<channelDto> OK
-// PATCH deleteChannel(current_id, chanId): Promise<channelDto> OK
+// POST createChannel(currentId, editChannelDto): Promise<channelDto> OK
+// DELETE updateChannel(currentId, chanId, editChannelDto): Promise<channelDto> TO CHECK
+// PATCH deleteChannel(currentId, chanId): Promise<channelDto> OK
 // ---------- JOIN / QUIT
-// joinChannel(current_id, chanId): Promise<channelDto> FIXME
-// quitChannel(current_id, chanId): Promise<channelDto> FIXME
-// ---------- UTILS
-// fetchChannelDto(chanId: uuidv4): Promise<channelDto> OK
+// joinChannel(currentId, chanId): Promise<channelDto> OK
+// quitChannel(currentId, chanId): Promise<channelDto> OK
 
 @Injectable()
 export class ChannelsService {
@@ -50,16 +54,17 @@ export class ChannelsService {
     private readonly usersService: UsersService,
     private readonly friendsService: FriendsService,
     private readonly channelsGetService: ChannelsGetService,
+    private readonly utils: ChannelsUtilsService,
 
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
   ) {}
 
   async createChannel(
-    current_id: uuidv4,
+    currentId: uuidv4,
     editChannelDto: EditChannelDto,
   ): Promise<channelDto> {
-    this.friendsService.checkId(current_id);
+    this.friendsService.checkId(currentId);
 
     const chan = await this.channelModel.findOne({
       where: { chanName: editChannelDto.chanName },
@@ -84,7 +89,7 @@ export class ChannelsService {
     try {
       const chan = await this.channelModel.create({
         chanName: editChannelDto.chanName,
-        ownerId: current_id,
+        ownerId: currentId,
         chanType: editChannelDto.chanType,
         chanPassword: pass,
         nbUser: 1,
@@ -92,24 +97,25 @@ export class ChannelsService {
 
       await this.channelUsersModel.create({
         chanId: chan.chanId,
-        userId: current_id,
+        userId: currentId,
         userStatus: UserStatus.Owner,
       });
 
-      return this.fetchChannelDto(chan.chanId);
+      return this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
-      throw new HttpException('createChannel ' + error, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        BadMsg.joinChannel + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   async updateChannel(
-    current_id: uuidv4,
+    currentId: uuidv4,
     chanId: uuidv4,
     editChannelDto: EditChannelDto,
   ): Promise<channelDto> {
-    this.friendsService.checkId(current_id);
-
-    const chan = await this.channelsGetService.findById(chanId);
+    this.friendsService.checkId(currentId);
 
     const chanTestName = await this.channelModel.findOne({
       where: {
@@ -130,6 +136,7 @@ export class ChannelsService {
       throw new HttpException('password missing', HttpStatus.BAD_REQUEST);
     }
 
+    let chan = await this.utils.findById(chanId);
     if (!chan.chanPassword) {
       chan.chanPassword = 'nan';
     }
@@ -140,7 +147,7 @@ export class ChannelsService {
     const ownerChan = await this.channelUsersModel.findOne({
       where: {
         chanId: chanId,
-        userId: current_id,
+        userId: currentId,
         userStatus: UserStatus.Owner,
       },
     });
@@ -152,141 +159,132 @@ export class ChannelsService {
       chan.chanPassword = editChannelDto.chanPassword;
       // TODO BCRYPT PASSWORD
       await chan.save();
-      return this.fetchChannelDto(chan.chanId);
+      return this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
-      throw new HttpException('createChannel ' + error, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        BadMsg.updateChannel + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
-  async deleteChannel(current_id: uuidv4, chanId: uuidv4): Promise<channelDto> {
-    this.friendsService.checkId(current_id);
-
-    const chan = await this.channelsGetService.findById(chanId);
-
-    const ownerChan = await this.channelUsersModel.findOne({
-      where: {
-        chanId: chanId,
-        userId: current_id,
-        userStatus: UserStatus.Owner,
-      },
-    });
-    if (!ownerChan) throw new HttpException('not owner', HttpStatus.FORBIDDEN);
+  async deleteChannel(currentId: uuidv4, chanId: uuidv4): Promise<channelDto> {
+    this.friendsService.checkId(currentId);
+    const chan = await this.utils.findById(chanId);
+    this.utils.checkOwner(currentId, chanId);
 
     try {
       await this.channelUsersModel.destroy({
         where: { chanId: chanId },
       });
-
-      const dto = this.fetchChannelDto(chan.chanId);
+      const dto = this.utils.fetchChannelDto(chan.chanId);
       await chan.destroy();
       return dto;
     } catch (error) {
-      throw new HttpException('deleteChannel ' + error, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        BadMsg.deleteChannel + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   // ----------   JOIN / QUIT CHANNEL
 
-  async joinChannel(current_id: uuidv4, chanId: uuidv4): Promise<channelDto> {
-    this.friendsService.checkId(current_id);
+  async joinChannel(
+    currentId: uuidv4,
+    chanId: uuidv4,
+    passwordChannelDto: PasswordChannelDto,
+  ): Promise<channelDto> {
+    this.friendsService.checkId(currentId);
+    let chan = await this.utils.findById(chanId);
 
-    const chan = await this.channelsGetService.findById(chanId);
+    if (await this.utils.userIs(UserStatus.Banned, currentId, chanId))
+      throw new HttpException('you are banned', HttpStatus.FORBIDDEN);
 
-    try {
+    if (await this.utils.userIsInChannel(currentId, chanId))
+      throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
+
+    if (chan.chanType == ChanType.Protected) {
+      const pass = await BcryptService.hashPassword(passwordChannelDto.chanPassword);
+      if (pass != chan.chanPassword)
+        throw new HttpException('invalid password', HttpStatus.FORBIDDEN);
+    }
+
+    if (chan.chanType == ChanType.Private) {
       let user = await this.channelUsersModel.findOne({
         where: {
           chanId: chanId,
-          userId: current_id,
-          [Op.or]: [
-            { userStatus: UserStatus.User },
-            { userStatus: UserStatus.Muted },
-            { userStatus: UserStatus.Admin },
-            { userStatus: UserStatus.Owner },
-            { userStatus: UserStatus.Banned },
-          ],
+          userId: currentId,
+          userStatus: UserStatus.Invited,
         },
       });
-      if (user) {
-        if (user.userStatus == UserStatus.Banned) {
-          throw new HttpException('you are banned', HttpStatus.FORBIDDEN);
-        }
-        throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
-      }
-
-      if (chan.chanType == ChanType.Private) {
-        user = await this.channelUsersModel.findOne({
-          where: {
-            chanId: chanId,
-            userId: current_id,
-            userStatus: UserStatus.Invited,
-          },
-        });
-        if (!user) {
-          throw new HttpException('you need an invitation to join this channel', HttpStatus.FORBIDDEN);
-        }
+      if (!user)
+        throw new HttpException('need an invitation', HttpStatus.FORBIDDEN);
+      try {
         user.userStatus = UserStatus.User;
-        user.save();
-        return this.fetchChannelDto(chan.chanId);
+        user.save(); // CHECK or await user.save(); // ?
+        chan.nbUser++;
+        chan.save();
+        return this.utils.fetchChannelDto(chan.chanId);
+      } catch (error) {
+        throw new HttpException('jc', HttpStatus.BAD_REQUEST);
       }
-
-      // TODO check ADD PASSWORD AS PARAMETER AND CHECK IF PROTECTED
-      if (chan.chanType == ChanType.Protected) {
-      }
-
-      await this.channelUsersModel.create({
-        chanId: chanId,
-        userId: current_id,
-        userStatus: UserStatus.User,
-      });
-
-      return this.fetchChannelDto(chan.chanId);
-    } catch (error) {
-      throw new HttpException('joinChannel ' + error, HttpStatus.BAD_REQUEST);
     }
-  }
-
-  async quitChannel(current_id: uuidv4, chanId: uuidv4): Promise<channelDto> {
-    this.friendsService.checkId(current_id);
-
-    const chan = await this.channelsGetService.findById(chanId);
 
     try {
-      // TODO check current_id IS IN CHAN
-      // TODO SET NEW OWNER if current_id is owner
-
-      const destroyOptions: DestroyOptions = {
-        where: {
-          chanId: chanId,
-          userId: current_id,
-          [Op.or]: [
-            { userStatus: UserStatus.User },
-            { userStatus: UserStatus.Muted },
-            { userStatus: UserStatus.Admin },
-            { userStatus: UserStatus.Owner },
-          ],
-        },
-      };
-      await this.channelUsersModel.destroy(destroyOptions);
-
-      const dto = this.fetchChannelDto(chan.chanId);
-      // TODO DESTROY chanId if channel is empty
-      return dto;
+      await this.channelUsersModel.create({
+        chanId: chanId,
+        userId: currentId,
+        userStatus: UserStatus.User,
+      });
+      chan.nbUser++;
+      chan.save();
+      return this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
-      throw new HttpException('quitChannel ' + error, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        BadMsg.joinChannel + error,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
-  // ---------- UTILS
+  async quitChannel(currentId: uuidv4, chanId: uuidv4): Promise<channelDto> {
+    this.friendsService.checkId(currentId);
 
-  async fetchChannelDto(chanId: uuidv4): Promise<channelDto> {
-    const chan = await this.channelsGetService.findById(chanId);
-    const dto = new channelDto(
-      chan.chanId,
-      chan.chanName,
-      chan.chanType,
-      chan.ownerId,
-      chan.nbUser,
-    );
-    return dto;
+    let chan = await this.utils.findById(chanId);
+
+    if (false == (await this.utils.userIsInChannel(currentId, chanId)))
+      throw new HttpException('not in channel', HttpStatus.BAD_REQUEST);
+
+    try {
+      if (await this.utils.userIs(UserStatus.Owner, currentId, chanId)) {
+        const oldestNonOwner = await this.channelUsersModel.findOne({
+          where: {
+            chanId: chanId,
+            userStatus: { [Op.not]: UserStatus.Owner },
+          },
+          order: [['createdAt', 'ASC']],
+        });
+        if (oldestNonOwner) {
+          oldestNonOwner.userStatus = UserStatus.Owner;
+          oldestNonOwner.save();
+        }
+      }
+
+      const user = await this.utils.getUserInChannel(currentId, chanId);
+      user.destroy();
+      chan.nbUser--;
+      chan.save();
+      const dto = this.utils.fetchChannelDto(chan.chanId);
+      if (chan.nbUser == 0) {
+        this.deleteChannel(currentId, chanId);
+      }
+      return dto;
+    } catch (error) {
+      throw new HttpException(
+        BadMsg.quitChannel + error,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

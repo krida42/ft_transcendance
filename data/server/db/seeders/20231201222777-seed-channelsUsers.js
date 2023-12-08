@@ -27,7 +27,7 @@ module.exports = {
       },
       {
         chanId: '8f0708d2-3984-432f-b019-4152e47349fd',
-        userId: '791deadd-4703-4545-b5c3-cd9969b1a2d9', // lunk
+        userId: '791deadd-4703-4545-b5c3-cd9969b1a2d9', // link
         userStatus: 'User',
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),

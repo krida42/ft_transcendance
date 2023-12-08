@@ -10,7 +10,7 @@
       class="members-ctn min-h-[35rem] h-[80vh] w-[100%] px-[3rem] pb-[3rem]"
     >
       <div
-        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap overflow-y-scroll"
+        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap overflow-y-auto"
       >
         <ChannelSettingsMembers
           v-for="member in currentChannel?.members"

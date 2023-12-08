@@ -62,5 +62,13 @@ export const useChannelsStore = defineStore({
         }
       });
     },
+    async refreshBans(chanId: Id): Promise<void> {
+      return channelsApi.fetchBannedUsers(chanId).then((users) => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.bans = users;
+        }
+      });
+    },
   },
 });

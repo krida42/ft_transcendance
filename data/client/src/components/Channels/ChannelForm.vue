@@ -1,6 +1,6 @@
 <template>
   <form
-    @submit.prevent="createForm"
+    @submit.prevent="sendForm"
     class="create-channel min-h-[100vh] flex flex-col justify-evenly items-center"
   >
     <div
@@ -125,8 +125,8 @@ import { Channel } from "@/types";
 import unknownLogo from "@/assets/svg/unknown-img.svg";
 import UserAction from "@/components/UserAction.vue";
 import { PrivacyType } from "@/types";
+import { User } from "@/types";
 import router from "@/router";
-import axios from "axios";
 import { FriendsTransformer } from "@/utils//friendsTransformer";
 
 const props = defineProps({
@@ -176,40 +176,20 @@ const onFileSelected = (e: Event) => {
   };
 };
 
-// const createForm = async () => {
-//   //const fd = new FormData();
-//   const data = {
-//     chanName: channelName.value,
-//     chanType: privacy.value,
-//     chanPassword: search_input.value,
-//   };
-//   // fd.append("image", file, file.name);
-//   // fd.append("chanName", channelName.value);
-//   // fd.append("chanType", privacy.value);
-//   // fd.append("chanPassword", password.value);
-//   console.log(data);
-//   axios.post(`http://localhost:3001/channels`, data).then((res) => {
-//     console.log(res);
-//   });
-// };
-
 const createForm = async () => {
   const newChannel: Channel = {} as Channel;
   newChannel.chanName = channelName.value;
   newChannel.chanType = privacy.value;
   newChannel.chanPassword = search_input.value;
-  channel.createChannel(newChannel);
-  channel.refreshChannels();
-  console.log(channel.myChannels);
+  await channel.createChannel(newChannel);
+  router.push("/channels/my-channels");
 };
 
 const editForm = () => {
-  if (!file) return;
   let newChannel: Channel = {} as Channel;
   const fd = new FormData();
   // fd.append("name", channelName.value);
   // fd.append("privacy", privacy.value);
-  fd.append("image", file, file.name);
   // fd.append("owner", user.getUser().id); demander a Kevin comment recuperer l'id de l'utilisateur courant
   // fd.append("users", user.getUser().id); ajouter les users invites par l'utilisateur si privacy == private
   newChannel.chanId = "";

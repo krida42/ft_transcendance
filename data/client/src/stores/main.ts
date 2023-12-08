@@ -7,7 +7,7 @@ export const useMainStore = defineStore({
     userInfo: {
       email: "koko@gmail.com",
       pseudo: "koko",
-      id: "kevin",
+      id: "a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57",
       displayName: "Kokorico",
     },
   }),

@@ -40,10 +40,6 @@ const navItems: NavItem[] = [
     iconName: "blocked.svg",
   },
 ];
-
-onMounted(() => {
-  console.log(channelId);
-});
 </script>
 
 <style lang="scss" scoped>

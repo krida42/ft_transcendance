@@ -12,7 +12,7 @@
     <p>{{ channel?.name }}</p>
     <div class="members flex items-center gap-[0.5rem]">
       <img src="@/assets/svg/profile.svg" class="w-[1.6rem]" />
-      <p>{{ channel?.members.length }}</p>
+      <p>{{ channel?.nb_users }}</p>
     </div>
     <button
       class="rounded-[10px] px-[0.5rem] py-[0.4rem]"
@@ -44,15 +44,11 @@ const channel = defineProps({
     required: true,
   },
   logo: FormData,
-  members: {
-    type: Array,
-    required: true,
-  },
   is_owner: {
     type: Boolean,
     required: true,
   },
-  len: {
+  nb_users: {
     type: Number,
     required: true,
   },

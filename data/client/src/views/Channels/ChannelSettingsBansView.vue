@@ -1,4 +1,5 @@
 <template>
+  <p>{{ $route.params.channelId }}</p>
   <div
     class="channel-settings-bans min-h-[100vh] flex flex-col items-center justify-around gap-[3rem]"
   >
@@ -10,7 +11,7 @@
       class="members-ctn min-h-[35rem] h-[80vh] w-[100%] px-[3rem] pb-[3rem]"
     >
       <div
-        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap overflow-y-scroll"
+        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap overflow-y-auto"
       >
         <ChannelSettingsMembers
           v-for="member in currentChannel?.members"
@@ -30,16 +31,23 @@
 <script lang="ts" setup>
 import ChannelSettingsMembers from "@/components/Channels/ChannelSettingsMembers.vue";
 import { useChannelsStore } from "@/stores/channels";
-import { computed } from "vue";
+import { onBeforeMount, computed, watch } from "vue";
 import router from "@/router";
 
 const channelsStore = useChannelsStore();
-
-() => {
+onBeforeMount(() => {
   channelsStore.refreshChannels();
-};
+  watch(
+    () => router.currentRoute.value.params,
+    () => {
+      console.log("refresh bans");
+      channelsStore.refreshBans(
+        router.currentRoute.value.params.channelId as string
+      );
+    }
+  );
+});
 
-const channelId = router.currentRoute.value.params.id as string;
-
+const channelId = router.currentRoute.value.params.channelId as string;
 const currentChannel = computed(() => channelsStore.channel(channelId));
 </script>

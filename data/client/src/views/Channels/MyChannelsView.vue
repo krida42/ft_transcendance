@@ -10,18 +10,17 @@
       class="channels-ctn min-h-[35rem] h-[80vh] w-[100%] px-[3rem] pb-[3rem]"
     >
       <div
-        class="w-[100%] h-[100%] bg-green-light rounded-[15px] overflow-y-scroll"
+        class="w-[100%] h-[100%] bg-green-light rounded-[15px] overflow-y-auto"
       >
         <ul class="my-channels-list">
           <MyChannelItem
             v-for="channel in myChannelsList"
-            :key="channel.id"
-            :id="channel.id"
-            :name="channel.name"
+            :key="channel.chanId"
+            :id="channel.chanId"
+            :name="channel.chanName"
             :logo="channel?.logo"
-            :members="channel.members"
-            :is_owner="channelsStore.isOwner(channel.id, currentUserId)"
-            :len="myChannelsList.length"
+            :is_owner="channelsStore.isOwner(channel.chanId, currentUserId)"
+            :nb_users="channel.nbUser"
           />
         </ul>
       </div>
@@ -31,21 +30,19 @@
 
 <script lang="ts" setup>
 import MyChannelItem from "@/components/Channels/MyChannelItem.vue";
-import { ref } from "vue";
-import { Channel } from "@/types";
+import { onBeforeMount, computed } from "vue";
 import { useChannelsStore } from "@/stores/channels";
 import { useUsersStore } from "@/stores/users";
 
 const channelsStore = useChannelsStore();
 const usersStore = useUsersStore();
 
-() => {
+onBeforeMount(() => {
   channelsStore.refreshChannels();
-};
+});
 
 const currentUserId = usersStore.currentUser?.id;
-const myChannelsList = ref<Channel[]>([]);
-myChannelsList.value = channelsStore.myChannelsList;
+const myChannelsList = computed(() => channelsStore.myChannelsList);
 </script>
 
 <style lang="scss" scoped></style>

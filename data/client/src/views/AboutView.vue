@@ -57,6 +57,7 @@ import { User } from "@vicons/tabler";
 import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
 import TestComp from "@/components/TestComp.vue";
 import ChatUserActionPopup from "@/components/Chat/ChatUserActionPopup.vue";
+import axios from "axios";
 
 import { useUsersStore } from "@/stores/users";
 import { useFriendStore } from "@/stores/friend";
@@ -68,12 +69,28 @@ import { ref } from "vue";
 
 // import { state, socket } from "@/socket";
 
+axios
+  .patch("http://localhost:3001/users", {
+    pseudo: Math.random().toString(),
+  })
+  .then((res) => {
+    console.log("PATCH res", res);
+    console.log(
+      "PATCH res.data.email",
+      new Uint16Array(res.data.email.data).toString()
+    );
+  });
+
+axios.get("http://localhost:3001/auth/test").then((res) => {
+  console.log("res", res);
+});
+
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();
 
-usersStore.refreshUser("marine");
-usersStore.refreshUser("kevin");
-usersStore.refreshUser("vincent");
+// usersStore.refreshUser("marine");
+// usersStore.refreshUser("kevin");
+// usersStore.refreshUser("vincent");
 
 friendStore.refreshFriendList();
 

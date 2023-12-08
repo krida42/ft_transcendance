@@ -2,20 +2,20 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.addColumn('Users', 'twoFactorEnable', {
       type: Sequelize.BOOLEAN,
-      allowNull: false,
-      defaultValue: false
+      allowNull: true,
+      defaultValue: false,
     });
     await queryInterface.addColumn('Users', 'twoFactorSecret', {
       type: Sequelize.BLOB,
-      allowNull: true
-    })
+      allowNull: true,
+    });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.removeColumn('Users', 'twoFactorEnable');
     await queryInterface.removeColumn('Users', 'twoFactorSecret');
-  }
+  },
 };

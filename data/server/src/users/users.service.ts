@@ -150,13 +150,17 @@ export class UsersService {
         { ...updateUserDto },
         { where: { public_id: id }, individualHooks: true },
       );
-      if (user[0] === 0) return { message: user, user: null };
+      if (user[0] === 0)
+        throw new HttpException(
+          'Data to change is already the same as asked',
+          HttpStatus.CONFLICT,
+        );
       const UpdatedUser = await this.usersModel.findOne({
         where: { public_id: id },
         attributes: this.attributesToRetrieve,
       });
-      //  A REVOIR - - -- - 
-      return { message: user, user: await responseUser(UpdatedUser!) };
+      //  A REVOIR - - -- -
+      return await responseUser(UpdatedUser!);
     } catch (error) {
       console.error(error);
       throw new HttpException('', HttpStatus.CONFLICT);

@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -58,7 +59,9 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
-  @Patch(':id')
+  @Patch()
+  @UseGuards(AuthGuard('jwt'))
+  // @UseGuards(AuthGuard('jwt-refresh'))
   @ApiOperation({ summary: 'Update user' })
   @ApiParam({
     name: 'id',
@@ -67,10 +70,11 @@ export class UsersController {
     description: 'UUIDv4 of the user',
   })
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() req: Request & { user: any },
   ) {
-    return this.usersService.updateUser(id, updateUserDto);
+    console.log('update user, req.user.public_id:', req.user.public_id);
+    return this.usersService.updateUser(req.user.public_id, updateUserDto);
   }
 
   @Delete(':id')

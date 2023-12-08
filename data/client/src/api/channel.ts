@@ -21,6 +21,11 @@ export default {
     return res.data;
   },
 
+  async fetchBannedUsers(channelId: string) {
+    const res = await axios.get(`${host}/channels/${channelId}/bans`);
+    return res.data;
+  },
+
   async createChannel(channel: Channel) {
     const res = await axios.post(`${host}/channels`, channel);
     return res.data;

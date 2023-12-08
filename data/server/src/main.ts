@@ -8,6 +8,7 @@ import session from 'express-session';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import cookieParser from 'cookie-parser';
 import { CustomExceptionFilter } from './exceptions/exceptions.middleware';
+import { Achievement } from './game/achievements/achievements';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -58,6 +59,9 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new CustomExceptionFilter());
+
+  // create achievements from json file
+  Achievement.createAchievementsFromJSON('./src/game/achievements/achievements.json');
 
   await app.listen(3001);
   console.log(`Application is running on: ${await app.getUrl()}`);

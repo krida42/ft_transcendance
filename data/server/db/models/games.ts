@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { DataTypes } from 'sequelize';
 import {
   Column,

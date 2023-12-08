@@ -3,7 +3,7 @@ import { Player } from '../type';
 import { BEFORE_GAME } from '../const';
 import { PongGateway } from '../websocket/pong.gateway';
 import { PlayerManager } from './playerManager';
-import { GameDBManager } from './db';
+import { GameDBManager } from '../database/db';
 import { GameSave } from '../type';
 
 export class PongRoom {

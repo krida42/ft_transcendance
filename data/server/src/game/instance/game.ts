@@ -180,7 +180,7 @@ export class Game {
   sendTimeGame() {
     const time = this.calculateRemainingTime() / 1000;
     this.pongRoom.sendTime(time);
-    this.timeAtEnd = time;
+    this.timeAtEnd = TIME_END_GAME / 1000 - time;
     // console.log('time', time);
   }
 

@@ -2,12 +2,12 @@
 
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('Game', {
+    await queryInterface.createTable('Games', {
       id: {
         primaryKey: true,
         allowNull: false,
         type: Sequelize.INTEGER,
-        defaultValue: Sequelize.INTEGER,
+        autoIncrement: true,
       },
       player1_id: {
         foreignKey: true,
@@ -58,6 +58,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('Game');
+    await queryInterface.dropTable('Games');
   }
 };

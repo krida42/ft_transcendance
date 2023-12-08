@@ -85,10 +85,11 @@
     <div class="chan-options min-h-[25rem] h-[50vh] w-[100%] px-[3rem]">
       <div
         :class="privacy === 'public' ? 'hidden' : 'block'"
-        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap gap-[1rem] p-[2rem] overflow-y-auto overflow-x-hidden"
+        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap content-start gap-[1rem] p-[2rem] overflow-y-auto overflow-x-hidden"
       >
         <input
           type="text"
+          v-model="username"
           :placeholder="
             privacy === 'private'
               ? 'search for friends...'
@@ -98,7 +99,7 @@
         />
         <user-action
           :class="privacy === 'private' ? 'block' : 'hidden'"
-          v-for="[, user] in friendList"
+          v-for="user in friendList"
           :key="user.id"
           :uuid="user.id"
           :mode="'channel'"
@@ -126,6 +127,7 @@ import unknownLogo from "@/assets/svg/unknown-img.svg";
 import UserAction from "@/components/UserAction.vue";
 import { PrivacyType } from "@/types";
 import router from "@/router";
+import { FriendsTransformer } from "@/utils//friendsTransformer";
 
 const props = defineProps({
   formType: {
@@ -137,8 +139,14 @@ const props = defineProps({
 const privacy = ref(PrivacyType.Private); //change the initialization to get the privacy of the channel if it's an edit form
 const channelName = ref(""); //change the initialization to get the name of the channel if it's an edit form
 const channelLogo = ref(""); //change the initialization to get the logo of the channel if it's an edit form
+const username = ref("");
 const friendStore = useFriendStore();
-const friendList = computed(() => friendStore.friends);
+const friendList = computed(() => {
+  return FriendsTransformer.beginWithLetters(
+    FriendsTransformer.toArray(friendStore.friends),
+    username.value
+  );
+});
 const user = useUsersStore();
 const userId = computed(() => user.currentUser.id);
 const channel = useChannelsStore();

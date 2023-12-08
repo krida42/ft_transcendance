@@ -55,13 +55,6 @@ export class ChannelsService {
     private readonly channelUsersModel: typeof ChannelsUsers,
   ) {}
 
-  USERS_STATUS_IN_CHANNEL = [
-    UserStatus.User,
-    UserStatus.Muted,
-    UserStatus.Admin,
-    UserStatus.Owner,
-  ];
-
   async createChannel(
     current_id: uuidv4,
     editChannelDto: EditChannelDto,
@@ -222,7 +215,12 @@ export class ChannelsService {
         where: {
           chanId: chanId,
           userId: current_id,
-          userStatus: { [Op.in]: [this.USERS_STATUS_IN_CHANNEL] },
+        [Op.or]: [
+          { userStatus: UserStatus.User },
+          { userStatus: UserStatus.Muted },
+          { userStatus: UserStatus.Admin },
+          { userStatus: UserStatus.Owner },
+        ],
         },
       };
       await this.channelUsersModel.destroy(destroyOptions);

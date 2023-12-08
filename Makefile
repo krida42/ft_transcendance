@@ -9,7 +9,7 @@ down:
 
 re: down up
 
-up_and_clean: clean_all_with_db up
+up_with_clean: clean_all_with_db up
 
 # Clean all containers and volumes, it's useful when you want to start from scratch
 clean_all_with_db:

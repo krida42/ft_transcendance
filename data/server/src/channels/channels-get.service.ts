@@ -74,12 +74,6 @@ export class ChannelsGetService {
   }
 
   // ---------- GET CHANNELS LIST (Sorted by user size)
-  USERS_STATUS_IN_CHANNEL = [
-    UserStatus.User,
-    UserStatus.Muted,
-    UserStatus.Admin,
-    UserStatus.Owner,
-  ];
 
   async getJoinedChan(current_id: uuidv4): Promise<channelDto[]> {
     this.friendsService.checkId(current_id);
@@ -126,7 +120,12 @@ export class ChannelsGetService {
     const userChan = await this.channelUsersModel.findAll({
       where: {
         userId: current_id,
-        userStatus: { [Op.in]: [this.USERS_STATUS_IN_CHANNEL] },
+        [Op.or]: [
+          { userStatus: UserStatus.User },
+          { userStatus: UserStatus.Muted },
+          { userStatus: UserStatus.Admin },
+          { userStatus: UserStatus.Owner },
+        ],
       },
     });
     const userChanIds = userChan.map((userChan) => userChan.chanId);
@@ -150,7 +149,12 @@ export class ChannelsGetService {
     const userChan = await this.channelUsersModel.findAll({
       where: {
         chanId: chanId,
-        userStatus: { [Op.in]: [this.USERS_STATUS_IN_CHANNEL] },
+        [Op.or]: [
+          { userStatus: UserStatus.User },
+          { userStatus: UserStatus.Muted },
+          { userStatus: UserStatus.Admin },
+          { userStatus: UserStatus.Owner },
+        ],
       },
     });
     return this.fetchUserDtoArray(userChan);

@@ -33,9 +33,9 @@ enum UserStatus {
   Invited = 'Invited',
 }
 
-// POST createChannel(current_id, editChannelDto): Promise<channelDto> FIXME
-// DELETE updateChannel(current_id, chanId, editChannelDto): Promise<channelDto> FIXME
-// PATCH deleteChannel(current_id, chanId): Promise<channelDto> FIXME
+// POST createChannel(current_id, editChannelDto): Promise<channelDto> OK
+// DELETE updateChannel(current_id, chanId, editChannelDto): Promise<channelDto> OK
+// PATCH deleteChannel(current_id, chanId): Promise<channelDto> OK
 // ---------- JOIN / QUIT
 // joinChannel(current_id, chanId): Promise<channelDto> FIXME
 // quitChannel(current_id, chanId): Promise<channelDto> FIXME
@@ -72,7 +72,7 @@ export class ChannelsService {
     if (pass == null || pass.length < 6) {
       if (editChannelDto.chanType == ChanType.Protected) {
         throw new HttpException(
-          'password missing or too short',
+          'password missing or too short: < 6 characters',
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -137,7 +137,14 @@ export class ChannelsService {
     if (editChannelDto.chanType == ChanType.Direct)
       throw new HttpException('invalid channel type', HttpStatus.BAD_REQUEST);
 
-    // TODO check current_id is OWNER of the channel
+    const ownerChan = await this.channelUsersModel.findOne({
+      where: {
+        chanId: chanId,
+        userId: current_id,
+        userStatus: UserStatus.Owner,
+      },
+    });
+    if (!ownerChan) throw new HttpException('not owner', HttpStatus.FORBIDDEN);
 
     try {
       chan.chanName = editChannelDto.chanName;
@@ -163,17 +170,18 @@ export class ChannelsService {
         userStatus: UserStatus.Owner,
       },
     });
-    if (!ownerChan)
-      throw new HttpException('not owner', HttpStatus.BAD_REQUEST);
+    if (!ownerChan) throw new HttpException('not owner', HttpStatus.FORBIDDEN);
 
     try {
-      // TODO DELETE ALL USERSCHANNEL with chanId
+      await this.channelUsersModel.destroy({
+        where: { chanId: chanId },
+      });
 
       const dto = this.fetchChannelDto(chan.chanId);
       await chan.destroy();
       return dto;
     } catch (error) {
-      throw new HttpException('createChannel ' + error, HttpStatus.BAD_REQUEST);
+      throw new HttpException('deleteChannel ' + error, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -185,10 +193,45 @@ export class ChannelsService {
     const chan = await this.channelsGetService.findById(chanId);
 
     try {
-      // TODO check current_id NOT IN CHAN
-      // TODO check current_id NOT BANNED
-      // TODO check PASSWORD IF PROTECTED
-      // TODO check current_id is INVITED IF PRIVATE
+      let user = await this.channelUsersModel.findOne({
+        where: {
+          chanId: chanId,
+          userId: current_id,
+          [Op.or]: [
+            { userStatus: UserStatus.User },
+            { userStatus: UserStatus.Muted },
+            { userStatus: UserStatus.Admin },
+            { userStatus: UserStatus.Owner },
+            { userStatus: UserStatus.Banned },
+          ],
+        },
+      });
+      if (user) {
+        if (user.userStatus == UserStatus.Banned) {
+          throw new HttpException('you are banned', HttpStatus.FORBIDDEN);
+        }
+        throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
+      }
+
+      if (chan.chanType == ChanType.Private) {
+        user = await this.channelUsersModel.findOne({
+          where: {
+            chanId: chanId,
+            userId: current_id,
+            userStatus: UserStatus.Invited,
+          },
+        });
+        if (!user) {
+          throw new HttpException('you need an invitation to join this channel', HttpStatus.FORBIDDEN);
+        }
+        user.userStatus = UserStatus.User;
+        user.save();
+        return this.fetchChannelDto(chan.chanId);
+      }
+
+      // TODO check ADD PASSWORD AS PARAMETER AND CHECK IF PROTECTED
+      if (chan.chanType == ChanType.Protected) {
+      }
 
       await this.channelUsersModel.create({
         chanId: chanId,
@@ -215,12 +258,12 @@ export class ChannelsService {
         where: {
           chanId: chanId,
           userId: current_id,
-        [Op.or]: [
-          { userStatus: UserStatus.User },
-          { userStatus: UserStatus.Muted },
-          { userStatus: UserStatus.Admin },
-          { userStatus: UserStatus.Owner },
-        ],
+          [Op.or]: [
+            { userStatus: UserStatus.User },
+            { userStatus: UserStatus.Muted },
+            { userStatus: UserStatus.Admin },
+            { userStatus: UserStatus.Owner },
+          ],
         },
       };
       await this.channelUsersModel.destroy(destroyOptions);

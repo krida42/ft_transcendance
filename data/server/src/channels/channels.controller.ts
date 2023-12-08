@@ -70,9 +70,9 @@ export class ChannelsController {
     }
   }
 
-  // @Post('/channels') FIXME
+  // @Post('/channels') OK
   // @Patch('/channels/:chanId') FIXME
-  // @Delete('/channels/:chanId') FIXME
+  // @Delete('/channels/:chanId') OK
 
   // ---------- JOIN / QUIT
   // @Post('/channels/:chanId/join') FIXME
@@ -106,7 +106,7 @@ export class ChannelsController {
   // @Get('/channels-unjoined-protect') OK
   // @Get('/channels-unjoined-private') OK
 
-  // ---------- GET USERS LIST
+  // ---------- GET USERS LIST // TODO BLOCK ACCESS IF NOT IN CHANNEL PRIVATE OR PROTECt
   // @Get('/channels/:chanId/users') OK
   // @Get('/channels/:chanId/users-only') OK
   // @Get('/channels/:chanId/mutes') OK

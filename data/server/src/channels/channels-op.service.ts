@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { isUUID } from 'class-validator';
-import { uuidv4} from 'src/types';
+import { uuidv4 } from 'src/types';
 import { DestroyOptions } from 'sequelize/types';
 
 import { Channels } from 'db/models/channels';
@@ -66,7 +66,6 @@ export class ChannelsOpService {
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
   ) {}
-
 
   // ---------- ADMIN
   async addAdmin(
@@ -158,7 +157,6 @@ export class ChannelsOpService {
     }
   }
 
-
   // ---------- BAN
   async banUser(
     current_id: uuidv4,
@@ -203,7 +201,6 @@ export class ChannelsOpService {
       );
     }
   }
-
 
   // ---------- MUTE
   // temps de mute 5 min / 1h / 3h
@@ -272,5 +269,4 @@ export class ChannelsOpService {
     );
     return publicUserDto;
   }
-
 }

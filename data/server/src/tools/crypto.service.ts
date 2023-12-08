@@ -16,11 +16,6 @@ export class CryptoService {
     const cipher = createCipheriv(algorithm, key, iv);
 
     const encryptedText = Buffer.concat([cipher.update(text), cipher.final()]);
-    console.log('encryptedText vincent: ', encryptedText.toString());
-    console.log(
-      'decryptedText vincent: ',
-      this.decrypt(encryptedText).toString(),
-    );
     return encryptedText;
   }
 

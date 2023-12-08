@@ -1,6 +1,1 @@
-export const DEVS: string[] = [
-  'vbarbier',
-  'sloquet',
-  'mvue',
-  'kisikaya',
-];
+export const DEVS: string[] = ['vbarbier', 'sloquet', 'mvue', 'kisikaya'];

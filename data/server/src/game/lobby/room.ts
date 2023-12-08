@@ -3,6 +3,8 @@ import { Player } from '../type';
 import { BEFORE_GAME } from '../const';
 import { PongGateway } from '../websocket/pong.gateway';
 import { PlayerManager } from './playerManager';
+import { GameDBManager } from './db';
+import { GameSave } from '../type';
 
 export class PongRoom {
   //game
@@ -18,6 +20,8 @@ export class PongRoom {
   totalPauseTime: number = 0;
   //players
   PlayerManager: PlayerManager = new PlayerManager(this);
+  //save
+  gameSaved:boolean = false;
 
   constructor(PongGateway: PongGateway) {
     this.pongGateway = PongGateway;
@@ -28,19 +32,25 @@ export class PongRoom {
     return this.PlayerManager.players;
   }
 
-  start() {
+  async start() {
     if (!this.PlayerManager.isMaxPlayer()) return;
     console.log('Game started id:', Game.id);
     this.PlayerManager.showPlayers();
     this.started = true;
-    setTimeout(() => this.game.start(), BEFORE_GAME);
+    setTimeout(async() => await this.game.start(), BEFORE_GAME);
   }
 
-  end() {
-    if (!this.started) return;
-    console.log('Game ended');
-    this.started = false;
-    this.game.endGame();
+  async save() {
+    if (this.gameSaved) return;
+    const gameSave: GameSave = {
+      player1_id: this.players[0].user.public_id,
+      player2_id: this.players[1].user.public_id,
+      score1: this.GameState.score[0],
+      score2: this.GameState.score[1],
+      time: this.game.timeAtEnd,
+    };
+    this.gameSaved = true;
+    await GameDBManager.saveGame(gameSave);
   }
 
   pause() {

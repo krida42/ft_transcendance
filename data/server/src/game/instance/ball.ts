@@ -21,20 +21,14 @@ export class PongBall {
     Matter.World.add(this.pongWorld.world, this.ball);
     randomInt(0, 2) === 0 ? (fX = 1) : (fX = -1);
     randomInt(0, 2) === 0 ? (fY = 1) : (fY = -1);
-    const force = { x: fX, y: fY }; // y a changer a 0y
+    const force = { x: fX, y: fY };
     Matter.Body.setVelocity(this.ball, force);
-  }
-
-  update() {
-    // this.acceleration += 0.0001;
-    // const vX = this.ball.velocity.x + (this.ball.velocity.x > 0 ? this.acceleration : -this.acceleration);
-    // const vY = this.ball.velocity.y + (this.ball.velocity.y > 0 ? this.acceleration : -this.acceleration);
-    // Matter.Body.setVelocity(this.ball, { x: vX, y: vY });
   }
 
   resetPosition() {
     Matter.Body.setAngularVelocity(this.ball, 0);
     this.previousVelocity = { x: 1, y: 1 };
+    Matter.Body.setVelocity(this.ball, { x: 1, y: 1 });
 
     let fX = 0;
     let fY = 0;

@@ -1,5 +1,4 @@
 import { Expose } from 'class-transformer';
-// A completer avec ApiProperty
 export class ResponseUserDto {
   @Expose({ name: 'public_id' })
   public_id!: string;

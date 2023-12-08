@@ -33,20 +33,16 @@ export class RealtimeGateway
   @WebSocketServer() server!: Server;
   //   private logger: Logger = new Logger('AppGateway');
 
-  afterInit(server: Server) {
-  }
+  afterInit(server: Server) {}
 
   handleConnection(client: Socket) {
-
     client.data.user = this.getUserWithCookie(client);
     client.join(
       this.roomService.getUserPersonalRoom(client.data.user.public_id),
     );
-
   }
 
-  handleDisconnect(client: Socket) {
-  }
+  handleDisconnect(client: Socket) {}
 
   getUserWithCookie(socket: Socket): ResponseUserDto | null {
     let cookie = socket.handshake.headers.cookie;
@@ -55,7 +51,6 @@ export class RealtimeGateway
     }
     cookie = cookie.split('=')[1];
     const user = jwt.decode(cookie) as ResponseUserDto;
-    console.log(user);
     if (!user) {
       return null;
     }

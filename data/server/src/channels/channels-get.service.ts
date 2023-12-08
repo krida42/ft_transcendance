@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { isUUID } from 'class-validator';
-import { uuidv4} from 'src/types';
+import { uuidv4 } from 'src/types';
 import { DestroyOptions } from 'sequelize/types';
 
 import { Channels } from 'db/models/channels';
@@ -229,7 +229,6 @@ export class ChannelsGetService {
     return this.fetchUserDtoArray(userChan);
   }
 
-
   // ---------- UTILS
 
   async fetchUserDtoArray(userChan: ChannelsUsers[]): Promise<PublicUserDto[]> {
@@ -261,7 +260,6 @@ export class ChannelsGetService {
     }
   }
 
-
   async findById(chanId: uuidv4): Promise<Channels> {
     const chan = await Channels.findOne({ where: { chanId: chanId } });
     if (!chan) {
@@ -269,7 +267,6 @@ export class ChannelsGetService {
     }
     return chan;
   }
-
 
   async fetchChannelDto(chanId: uuidv4): Promise<channelDto> {
     const chan = await this.findById(chanId);
@@ -299,7 +296,6 @@ export class ChannelsGetService {
     return channelDtoArray;
   }
 
-
   async fetchChanUsersToChanDtoArray(
     all: ChannelsUsers[],
   ): Promise<channelDto[]> {
@@ -307,5 +303,4 @@ export class ChannelsGetService {
     const channels = await Channels.findAll({ where: { chanId: channelIds } });
     return this.fetchChannelDtoArray(channels);
   }
-
 }

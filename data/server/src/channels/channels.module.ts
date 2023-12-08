@@ -11,13 +11,13 @@ import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
 
 @Module({
-    imports: [
-        SequelizeModule.forFeature([Channels, ChannelsUsers]),
-        UsersModule,
-        FriendsModule
-    ],
-    controllers: [ChannelsController],
-    providers: [ChannelsService, ChannelsGetService, ChannelsOpService],
-    exports: [ChannelsService],
+  imports: [
+    SequelizeModule.forFeature([Channels, ChannelsUsers]),
+    UsersModule,
+    FriendsModule,
+  ],
+  controllers: [ChannelsController],
+  providers: [ChannelsService, ChannelsGetService, ChannelsOpService],
+  exports: [ChannelsService],
 })
 export class ChannelsModule {}

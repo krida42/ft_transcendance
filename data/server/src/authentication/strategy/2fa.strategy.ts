@@ -9,22 +9,19 @@ export class Jwt2faStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
   constructor(private readonly UsersService: UsersService) {
     super({
       jwtFromRequest: cookieExtractor,
-      secretOrKey: process.env.JWT_SECRET ,
+      secretOrKey: process.env.JWT_SECRET,
     });
   }
 
   async validate(payload: any) {
-    try
-    {
+    try {
       const user = await this.UsersService.findById(payload.public_id);
       if (!user.twoFactorEnable) {
         return user;
-      }
-      else if (payload.twoFactorAuthenticated) {
+      } else if (payload.twoFactorAuthenticated) {
         return user;
       }
-    }catch(error)
-    {
+    } catch (error) {
       console.error('Error validation token 2fa: ', error);
       return null;
     }

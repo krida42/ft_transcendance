@@ -110,7 +110,6 @@ export class PongWorld {
         (bodyA === ball && bodyB === wall) ||
         (bodyB === ball && bodyA === wall)
       ) {
-        console.log(`Collision avec le mur ${wallName}`);
         if (wallName === 'bas') {
           const downVelocity = Matter.Vector.create(
             ball.velocity.x,

@@ -1,13 +1,20 @@
 <template>
-  <div class="buttons"><button>Settings</button><button>Logout</button></div>
+  <div class="buttons">
+    <button>
+      {{
+        mode === profileModes.myProfile ? "Settings" : "Add as friend"
+      }}</button
+    ><button>{{ mode === profileModes.myProfile ? "Logout" : "Block" }}</button>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { PropType, defineProps } from "vue";
+import { profileModes } from "@/types";
 
 defineProps({
   mode: {
-    type: String,
+    type: String as PropType<profileModes>,
     required: true,
   },
 });
@@ -35,5 +42,16 @@ defineProps({
 
 .buttons > *:hover {
   box-shadow: inset 3px 5px 4px -3px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 680px) {
+  .buttons {
+    flex-direction: row;
+  }
+
+  .buttons > * {
+    width: calc(50% - 1.5 * var(--bento-gap));
+    height: calc(100% - 2 * var(--bento-gap));
+  }
 }
 </style>

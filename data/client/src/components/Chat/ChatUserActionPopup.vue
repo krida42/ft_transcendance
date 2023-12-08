@@ -7,11 +7,13 @@
         <img
           :src="user?.avatar"
           alt="avatar"
-          class="rounded-full w-[92%] mx-auto"
+          class="rounded-full w-[92%] mx-auto cursor-pointer"
+          @click="() => router.push(`/profile/${user?.id}`)"
         />
       </div>
       <p
-        class="user-name dbd-blue truncate col-span-8 self-center px-3 text-start"
+        class="user-name dbd-blue truncate col-span-8 self-center px-3 text-start cursor-pointer"
+        @click="() => router.push(`/profile/${user?.id}`)"
       >
         {{ user?.pseudo }}
       </p>
@@ -76,6 +78,7 @@ import { computed, defineEmits, defineProps, ref } from "vue";
 import { useFriendStore } from "@/stores/friend";
 import { useUsersStore } from "@/stores/users";
 import friend from "@/api/friend";
+import router from "@/router";
 
 const props = defineProps({
   test: {

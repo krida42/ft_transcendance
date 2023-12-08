@@ -53,7 +53,11 @@
       }"
     >
       <div class="header flex justify-between" v-if="!solo">
-        <span class="pseudo bd-redd text-red-700">{{ props.pseudo }}</span>
+        <span
+          class="pseudo bd-redd text-red-700 cursor-pointer"
+          @click="emits('click-avatar')"
+          >{{ props.pseudo }}</span
+        >
         <span
           class="date text-xs bd-redd"
           :class="{

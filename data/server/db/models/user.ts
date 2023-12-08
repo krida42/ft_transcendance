@@ -158,7 +158,6 @@ export class User extends Model {
   static async decryptText(user: User) {
     if (!user) return;
     if (user.email) {
-      console.log("decrypttext mec user.email: ",user.email.toString());
       // user.email = await CryptoService.decrypt(user.email);
     }
     if (user.refreshToken)

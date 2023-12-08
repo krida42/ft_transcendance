@@ -22,7 +22,7 @@ module.exports = {
         ownerId: '90aeb920-0ebd-4361-83a6-01a9a8748f32', // ben
         chanType: 'Public',
         chanPassword: 'nannan',
-        nbUser: 1,
+        nbUser: 3,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
@@ -33,7 +33,7 @@ module.exports = {
         ownerId: '90aeb920-0ebd-4361-83a6-01a9a8748f32', // ben
         chanType: 'Public',
         chanPassword: 'nannan',
-        nbUser: 1,
+        nbUser: 2,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
@@ -44,7 +44,7 @@ module.exports = {
         ownerId: '90aeb920-0ebd-4361-83a6-01a9a8748f32', // ben
         chanType: 'Public',
         chanPassword: 'nannan',
-        nbUser: 1,
+        nbUser: 2,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
@@ -66,7 +66,7 @@ module.exports = {
         ownerId: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
         chanType: 'Public',
         chanPassword: 'nannan',
-        nbUser: 1,
+        nbUser: 10,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },

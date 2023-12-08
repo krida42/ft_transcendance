@@ -10,7 +10,6 @@ export const useChannelsStore = defineStore({
     myChannels: new Map<Id, Channel>(),
   }),
   getters: {
-    Channels: (state) => new Map<Id, Channel>(state.myChannels),
     myChannelsList: (state) => {
       const myChannels: Channel[] = [];
       state.myChannels.forEach((channel) => {
@@ -18,19 +17,19 @@ export const useChannelsStore = defineStore({
       });
       return myChannels;
     },
-    channel: (state) => (channelId: Id) => state.myChannels.get(channelId),
-    isOwner: (state) => (channelId: Id, userId: Id) => {
-      const channel = state.myChannels.get(channelId);
+    channel: (state) => (chanId: Id) => state.myChannels.get(chanId),
+    isOwner: (state) => (chanId: Id, userId: Id) => {
+      const channel = state.myChannels.get(chanId);
       if (!channel) return false;
-      return channel.owner.id === userId;
+      return channel.ownerId === userId;
     },
-    isBanned: (state) => (channelId: Id, userId: Id) => {
-      const channel = state.myChannels.get(channelId);
+    isBanned: (state) => (chanId: Id, userId: Id) => {
+      const channel = state.myChannels.get(chanId);
       if (!channel) return false;
       return channel.bans.some((user) => user.id === userId);
     },
-    isAdmin: (state) => (channelId: Id, userId: Id) => {
-      const channel = state.myChannels.get(channelId);
+    isAdmin: (state) => (chanId: Id, userId: Id) => {
+      const channel = state.myChannels.get(chanId);
       if (!channel) return false;
       return channel.admins.some((user) => user.id === userId);
     },
@@ -39,23 +38,23 @@ export const useChannelsStore = defineStore({
     async refreshChannels(): Promise<void> {
       return channelsApi.fetchMyChannels().then((channels) => {
         channels.forEach((channel: Channel) => {
-          this.myChannels.set(channel.id, channel);
+          this.myChannels.set(channel.chanId, channel);
         });
       });
     },
     async createChannel(channel: Channel): Promise<void> {
       return channelsApi.createChannel(channel).then((channel) => {
-        this.myChannels.set(channel.id, channel);
+        this.myChannels.set(channel.chanId, channel);
       });
     },
-    async deleteChannel(channelId: Id): Promise<void> {
-      return channelsApi.deleteChannel(channelId).then(() => {
-        this.myChannels.delete(channelId);
+    async deleteChannel(chanId: Id): Promise<void> {
+      return channelsApi.deleteChannel(chanId).then(() => {
+        this.myChannels.delete(chanId);
       });
     },
-    async leaveChannel(channelId: Id, userId: Id): Promise<void> {
-      return channelsApi.leaveChannel(channelId).then(() => {
-        const channel = this.myChannels.get(channelId);
+    async leaveChannel(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.leaveChannel(chanId).then(() => {
+        const channel = this.myChannels.get(chanId);
         if (channel) {
           channel.members = channel.members.filter(
             (user) => user.id !== userId

@@ -7,8 +7,6 @@ const host = "http://localhost:3001";
 
 export default {
   async fetchFriendList(): Promise<Friend[]> {
-    console.log("cuicui: ", host);
-    console.log("heyhey: ", process.env);
     return axios.get(`${host}/friends`).then((res) => res.data);
   },
 

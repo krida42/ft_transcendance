@@ -55,14 +55,16 @@ export type Match = {
 };
 
 export type Channel = {
-  id: Id;
-  name: string;
-  owner: User;
+  chanId: Id;
+  ownerId: Id;
+  chanName: string;
+  chanType: PrivacyType;
+  logo?: FormData;
+  chanPassword?: string;
   members: User[];
   admins: User[];
   bans: User[];
-  privacy: PrivacyType;
-  logo?: FormData;
+  nbUser: number;
 };
 
 export enum PrivacyType {

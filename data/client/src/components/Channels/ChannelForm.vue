@@ -176,21 +176,31 @@ const onFileSelected = (e: Event) => {
   };
 };
 
+// const createForm = async () => {
+//   //const fd = new FormData();
+//   const data = {
+//     chanName: channelName.value,
+//     chanType: privacy.value,
+//     chanPassword: search_input.value,
+//   };
+//   // fd.append("image", file, file.name);
+//   // fd.append("chanName", channelName.value);
+//   // fd.append("chanType", privacy.value);
+//   // fd.append("chanPassword", password.value);
+//   console.log(data);
+//   axios.post(`http://localhost:3001/channels`, data).then((res) => {
+//     console.log(res);
+//   });
+// };
+
 const createForm = async () => {
-  //const fd = new FormData();
-  const data = {
-    chanName: channelName.value,
-    chanType: privacy.value,
-    chanPassword: search_input.value,
-  };
-  // fd.append("image", file, file.name);
-  // fd.append("chanName", channelName.value);
-  // fd.append("chanType", privacy.value);
-  // fd.append("chanPassword", password.value);
-  console.log(data);
-  axios.post(`http://localhost:3001/channels`, data).then((res) => {
-    console.log(res);
-  });
+  const newChannel: Channel = {} as Channel;
+  newChannel.chanName = channelName.value;
+  newChannel.chanType = privacy.value;
+  newChannel.chanPassword = search_input.value;
+  channel.createChannel(newChannel);
+  channel.refreshChannels();
+  console.log(channel.myChannels);
 };
 
 const editForm = () => {
@@ -202,9 +212,9 @@ const editForm = () => {
   fd.append("image", file, file.name);
   // fd.append("owner", user.getUser().id); demander a Kevin comment recuperer l'id de l'utilisateur courant
   // fd.append("users", user.getUser().id); ajouter les users invites par l'utilisateur si privacy == private
-  newChannel.id = "";
-  newChannel.name = channelName.value;
-  newChannel.privacy = privacy.value;
+  newChannel.chanId = "";
+  newChannel.chanName = channelName.value;
+  newChannel.chanType = privacy.value;
   newChannel.logo = fd;
   channel.createChannel(newChannel);
 };

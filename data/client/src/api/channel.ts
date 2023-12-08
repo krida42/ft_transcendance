@@ -17,7 +17,7 @@ export default {
   },
 
   async fetchMyChannels() {
-    const res = await axios.get(`${host}/channels/my-channels`);
+    const res = await axios.get(`${host}/channels-joined`);
     return res.data;
   },
 

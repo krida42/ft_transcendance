@@ -71,7 +71,7 @@ import { ref } from "vue";
 
 axios
   .patch("http://localhost:3001/users", {
-    pseudo: Math.random().toString(),
+    pseudo: "popo",
   })
   .then((res) => {
     console.log("PATCH res", res);

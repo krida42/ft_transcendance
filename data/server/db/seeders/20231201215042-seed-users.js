@@ -11,7 +11,8 @@ module.exports = {
         email: 'apple@gmail.42com',
         login: 'apple',
         pseudo: 'Apple',
-        avatar: 'https://thispersondoesnotexist.com/',
+        avatar:
+          'https://cdn1.vectorstock.com/i/1000x1000/37/55/apple-logo-brand-phone-symbol-with-name-white-vector-46213755.jpg',
         phone: '0642424242',
         twoFactorEnable: false,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -51,7 +52,8 @@ module.exports = {
         email: 'humma@gmail.42com',
         login: 'humma',
         pseudo: 'Humma',
-        avatar: 'https://thispersondoesnotexist.com/',
+        avatar:
+          'https://logos.textgiraffe.com/logos/logo-name/Humma-designstyle-soccer-m.png',
         phone: '0642424242',
         twoFactorEnable: false,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -78,7 +80,8 @@ module.exports = {
         email: 'ford@gmail.42com',
         login: 'ford',
         pseudo: 'Ford',
-        avatar: 'https://thispersondoesnotexist.com/',
+        avatar:
+          'https://cdn4.vectorstock.com/i/1000x1000/18/28/ford-brand-logo-symbol-name-blue-design-car-usa-vector-46021828.jpg',
         phone: '0642424242',
         twoFactorEnable: false,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -91,7 +94,8 @@ module.exports = {
         email: 'art@gmail.42com',
         login: 'art',
         pseudo: 'Art',
-        avatar: 'https://thispersondoesnotexist.com/',
+        avatar:
+          'https://cdn1.vectorstock.com/i/1000x1000/72/80/art-colored-rainbow-word-text-suitable-for-logo-vector-22337280.jpg',
         phone: '0642424242',
         twoFactorEnable: false,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -104,7 +108,8 @@ module.exports = {
         email: 'tri@gmail.42com',
         login: 'tri',
         pseudo: 'Tri',
-        avatar: 'https://thispersondoesnotexist.com/',
+        avatar:
+          'https://logos.textgiraffe.com/logos/logo-name/Tri-designstyle-jungle-m.png',
         phone: '0642424242',
         twoFactorEnable: false,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -117,7 +122,8 @@ module.exports = {
         email: 'zap@gmail.42com',
         login: 'zap',
         pseudo: 'Zap',
-        avatar: 'https://thispersondoesnotexist.com/',
+        avatar:
+          'https://www.shutterstock.com/image-vector/zap-comic-speech-bubble-cartoon-260nw-180152516.jpg',
         phone: '0642424242',
         twoFactorEnable: false,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -130,7 +136,8 @@ module.exports = {
         email: 'pixel@gmail.42com',
         login: 'pixel',
         pseudo: 'Pixel',
-        avatar: 'https://thispersondoesnotexist.com/',
+        avatar:
+          'https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/e8590726623499.5635803c08df8.png',
         phone: '0642424242',
         twoFactorEnable: false,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),

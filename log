@@ -1,0 +1,837 @@
+docker-compose up --build
+#1 [client internal] load .dockerignore
+#1 transferring context: 2B done
+#1 DONE 0.0s
+
+#2 [server internal] load .dockerignore
+#2 transferring context: 2B done
+#2 DONE 0.0s
+
+#3 [postgres internal] load build definition from Dockerfile
+#3 transferring dockerfile: 255B done
+#3 DONE 0.0s
+
+#4 [client internal] load build definition from Dockerfile
+#4 transferring dockerfile: 234B done
+#4 DONE 0.0s
+
+#5 [postgres internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [server internal] load build definition from Dockerfile
+#6 transferring dockerfile: 234B done
+#6 DONE 0.0s
+
+#7 [server internal] load metadata for docker.io/library/node:18-bookworm
+#7 DONE 0.6s
+
+#8 [server internal] load build context
+#8 transferring context: 136B done
+#8 DONE 0.0s
+
+#9 [server 1/3] FROM docker.io/library/node:18-bookworm@sha256:7a4282663db6f22326c03618eef4320fa3cf70c5c3715546f9779858dc0ed3fd
+#9 DONE 0.0s
+
+#10 [server 3/3] COPY entrypoint.sh /
+#10 CACHED
+
+#11 [client internal] load build context
+#11 transferring context: 136B done
+#11 DONE 0.0s
+
+#12 [server] exporting to image
+#12 exporting layers done
+#12 writing image sha256:b15964b05360bcb6d1ddae455baae627bcc951f2f2f58640248e4994016a8a6c done
+#12 naming to docker.io/library/server done
+#12 DONE 0.0s
+
+#13 [client 2/3] WORKDIR /app
+#13 CACHED
+
+#14 [client 3/3] COPY entrypoint.sh /
+#14 CACHED
+
+#15 [client] exporting to image
+#15 exporting layers done
+#15 writing image sha256:04af0102b2a6994bb80c60c9a3d8ed7143512dcdb3ecd785077b97a9826fbf5e done
+#15 naming to docker.io/library/client done
+#15 DONE 0.0s
+
+#16 [postgres internal] load metadata for docker.io/library/postgres:15-bookworm
+#16 DONE 0.6s
+
+#17 [postgres 1/2] FROM docker.io/library/postgres:15-bookworm@sha256:79aff09d6a4051942be9f2b0288d15a1b23626f2e69200c2fceee4027c13374b
+#17 DONE 0.0s
+
+#18 [postgres internal] load build context
+#18 transferring context: 266B done
+#18 DONE 0.0s
+
+#19 [postgres 2/2] COPY tools/myinit.sql /docker-entrypoint-initdb.d/
+#19 CACHED
+
+#20 [postgres] exporting to image
+#20 exporting layers done
+#20 writing image sha256:4814891b1619597b1977b4c62248da2e8e85fc9f54067458795a2fc5343ca5c2 done
+#20 naming to docker.io/library/postgres done
+#20 DONE 0.0s
+Attaching to client, postgres, server
+postgres  | 
+postgres  | PostgreSQL Database directory appears to contain a database; Skipping initialization
+postgres  | 
+client    | 
+client    | up to date, audited 1568 packages in 1s
+client    | 
+client    | 153 packages are looking for funding
+client    |   run `npm fund` for details
+client    | 
+client    | 8 vulnerabilities (7 moderate, 1 critical)
+client    | 
+client    | To address issues that do not require attention, run:
+client    |   npm audit fix
+client    | 
+client    | To address all issues (including breaking changes), run:
+client    |   npm audit fix --force
+client    | 
+client    | Run `npm audit` for details.
+client    | 
+client    | > frontend@0.1.0 serve
+client    | > npm run prepare:scss-vars && vue-cli-service serve
+client    | 
+server    | 
+server    | up to date, audited 1862 packages in 1s
+server    | 
+server    | 195 packages are looking for funding
+server    |   run `npm fund` for details
+server    | 
+server    | 3 vulnerabilities (2 moderate, 1 high)
+server    | 
+server    | To address all issues, run:
+server    |   npm audit fix
+server    | 
+server    | Run `npm audit` for details.
+client    | 
+client    | > frontend@0.1.0 prepare:scss-vars
+client    | > node ./config/scripts/update-scss-variables.js
+client    | 
+server    | 
+server    | > server@0.0.1 db:migrate
+server    | > ts-node node_modules/.bin/sequelize db:migrate
+server    | 
+server    | 
+server    | [4mSequelize CLI [Node: 18.19.0, CLI: 6.6.1, ORM: 6.32.1][24m
+server    | 
+server    | postgres
+server    | mdp
+server    | database_development
+server    | postgres
+server    | Loaded configuration file "db_config/database.js".
+server    | Using environment "development".
+client    |  INFO  Starting development server...
+server    | No migrations were executed, database schema was already up to date.
+server    | 
+server    | > server@0.0.1 db:seed-dev
+server    | > ts-node node_modules/.bin/sequelize db:seed:all
+server    | 
+server    | 
+server    | [4mSequelize CLI [Node: 18.19.0, CLI: 6.6.1, ORM: 6.32.1][24m
+server    | 
+server    | postgres
+server    | mdp
+server    | database_development
+server    | postgres
+server    | Loaded configuration file "db_config/database.js".
+server    | Using environment "development".
+server    | No seeders found.
+server    | 
+server    | > server@0.0.1 start:dev
+server    | > nest start --watch
+server    | 
+client    | [3%] setup (watch run)
+client    | [2K[1A[2K[G[3%] setup (watch run vue-loader-plugin)
+client    | [2K[1A[2K[G[3%] setup (watch run ESLintWebpackPlugin_1)
+client    | [2K[1A[2K[G[3%] setup (watch run ForkTsCheckerWebpackPlugin)
+client    | [2K[1A[2K[G[3%] setup (watch run webpack-shell-plugin-next)
+client    | [2K[1A[2K[G[3%] setup (watch run webpack-dev-middleware)
+client    | [2K[1A[2K[G[3%] setup (watch run)
+client    | [2K[1A[2K[G[4%] setup (normal module factory)
+client    | [2K[1A[2K[G[4%] setup (normal module factory CaseSensitivePathsPlugin)
+client    | [2K[1A[2K[G[4%] setup (normal module factory)
+client    | [2K[1A[2K[G[5%] setup (context module factory)
+client    | [2K[1A[2K[G[6%] setup (before compile)
+client    | [2K[1A[2K[G[6%] setup (before compile ProgressPlugin)
+client    | [2K[1A[2K[G[6%] setup (before compile)
+client    | [2K[1A[2K[G[7%] setup (compile)
+client    | [2K[1A[2K[G[7%] setup (compile ExternalsPlugin)
+client    | [2K[1A[2K[G[7%] setup (compile)
+client    | [2K[1A[2K[G[8%] setup (compilation)
+client    | [2K[1A[2K[G[8%] setup (compilation CopyPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation ArrayPushCallbackChunkFormatPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation JsonpChunkLoadingPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation StartupChunkDependenciesPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation ImportScriptsChunkLoadingPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation FetchCompileWasmPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation FetchCompileAsyncWasmPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation WorkerPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation SplitChunksPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation ResolverCachePlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation HtmlWebpackPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation)
+client    | [2K[1A[2K[G[9%] setup (compilation)
+client    | [2K[1A[2K[G[9%] setup (compilation vue-loader-plugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DefinePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ForkTsCheckerWebpackPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ProgressPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation webpack-shell-plugin-next)
+client    | Executing pre-build scripts
+client    | [2K[1A[2K[G[9%] setup (compilation EntryPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ChunkPrefetchPreloadPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ModuleInfoHeaderPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation EvalSourceMapDevToolPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation JavascriptModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation JsonModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation AssetModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation EntryPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RuntimePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation InferAsyncModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DataUriPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation FileUriPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation CompatibilityPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation HarmonyModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation AMDPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RequireJsStuffPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation CommonJsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation LoaderPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation NodeStuffPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation APIPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ExportsInfoApiPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation WebpackIsIncludedPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ConstPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation UseStrictPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RequireIncludePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RequireEnsurePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RequireContextPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ImportPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ImportMetaContextPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation SystemPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ImportMetaPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation URLPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DefaultStatsFactoryPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DefaultStatsPresetPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DefaultStatsPrinterPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation JavascriptMetaInfoPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation EnsureChunkConditionsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RemoveEmptyChunksPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation MergeDuplicateChunksPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation SideEffectsFlagPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation FlagDependencyExportsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation NamedModuleIdsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation NamedChunkIdsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DefinePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation TemplatedPathPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RecordIdsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation WarnCaseSensitiveModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation EntryPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ProvidePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation HotModuleReplacementPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ProgressPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ESLintWebpackPlugin_1)
+client    | [2K[1A[2K[G[9%] setup (compilation)
+client    | [2K[1A[2K[G[10%] building 
+client    | [2K[1A[2K[G[10%] building (0/0 modules)
+server    | c[[90m3:28:56 PM[0m] Starting compilation in watch mode...
+server    | 
+client    | Executing pre-build scripts
+client    | [2K[1A[2K[G[10%] building (import loader babel-loader/lib/index.js)
+client    | [2K[1A[2K[G[10%] building (import loader ts-loader/index.js)
+client    | [2K[1A[2K[G[10%] building (0/1 modules)
+client    | [2K[1A[2K[G[24%] building (1/4 modules)
+client    | [2K[1A[2K[G[24%] building (import loader vue-loader/dist/index.js)
+client    | [2K[1A[2K[G[24%] building (3/17 modules)
+client    | [2K[1A[2K[G[24%] building (import loader vue-style-loader/index.js)
+client    | [2K[1A[2K[G[24%] building (import loader css-loader/dist/cjs.js)
+client    | [2K[1A[2K[G[24%] building (import loader postcss-loader/dist/cjs.js)
+client    | [2K[1A[2K[G[24%] building (import loader sass-loader/dist/cjs.js)
+client    | [2K[1A[2K[G[24%] building (3/18 modules)
+client    | [2K[1A[2K[G[24%] building (import loader vue-loader/dist/pitcher.js)
+client    | [2K[1A[2K[G[24%] building (6/21 modules)
+client    | [2K[1A[2K[G[24%] building (import loader vue-loader/dist/templateLoader.js)
+client    | [2K[1A[2K[G[24%] building (7/24 modules)
+client    | [2K[1A[2K[G[24%] building (import loader vue-loader/dist/stylePostLoader.js)
+client    | [2K[1A[2K[G[24%] building (7/36 modules)
+client    | [2K[1A[2K[G[24%] building (17/197 modules)
+client    | [2K[1A[2K[G[38%] building (128/329 modules)
+client    | [2K[1A[2K[G[38%] building (190/428 modules)
+client    | [2K[1A[2K[G[38%] building (238/586 modules)
+client    | [2K[1A[2K[G[38%] building (251/1999 modules)
+server    | [[90m3:29:00 PM[0m] Found 0 errors. Watching for file changes.
+server    | 
+client    | [2K[1A[2K[G[38%] building (820/2024 modules)
+client    | [2K[1A[2K[G[38%] building (1418/2025 modules)
+client    | [2K[1A[2K[G[51%] building (1948/2058 modules)
+client    | [2K[1A[2K[G[51%] building (2058/2101 modules)
+client    | [2K[1A[2K[G[65%] building (2128/2128 modules)
+client    | [2K[1A[2K[G[65%] building 
+client    | [2K[1A[2K[G[69%] building (finish)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph ResolverCachePlugin)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph InferAsyncModulesPlugin)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph FlagDependencyExportsPlugin)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph ESLintWebpackPlugin_1)
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSequelizeModule dependencies initialized[39m[38;5;3m +87ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRealtimeModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGameModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSequelizeCoreModule dependencies initialized[39m[38;5;3m +30ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSequelizeModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSequelizeModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSequelizeModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFriendsModule dependencies initialized[39m[38;5;3m +3ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mChannelsModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mPongGateway subscribed to the "moveUp" message[39m[38;5;3m +33ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mPongGateway subscribed to the "moveDown" message[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mPongGateway subscribed to the "stopMoving" message[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mPongGateway subscribed to the "newGame" message[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mRealtimeGateway subscribed to the "cuicui" message[39m[38;5;3m +1ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/}:[39m[38;5;3m +2ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/users}:[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/:id, GET} route[39m[38;5;3m +1ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/:id, PATCH} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users/:id, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/users, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mChannelsController {/}:[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels, POST} route[39m[38;5;3m +1ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId, PATCH} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/join, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/quit, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/admin/:userId, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/admin/:userId, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/invite/:userId, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/invite/:userId, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/ban/:userId, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/ban/:userId, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/mute/:userId, PATCH} route[39m[38;5;3m +1ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/kick/:userId, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels-joined, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels-direct, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels-available, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels-unjoined-protect, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels-unjoined-private, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/users, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/users-only, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/mutes, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/admins, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/invites, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/bans, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/channels/:chanId/owner, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFriendsController {/}:[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/friends/:userId/add, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/friends/:userId/accept, PATCH} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/friends/:userId/decline, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/friends/:userId/cancel, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/friends/:userId/delete, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/friends/:userId/block, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/friends/:userId/unblock, DELETE} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/friends-sent, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/friends-received, GET} route[39m[38;5;3m +1ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/friends, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/blocked, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/auth}:[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/42, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/callback, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/test, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/2fa/turn-on, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/2fa/turn-off, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/2fa/setup, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/2fa/authenticate, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/refresh, POST} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/auth/error, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mGameController {/game}:[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/game/pause, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/game/search, GET} route[39m[38;5;3m +0ms[39m
+server    | [32m[Nest] 87  - [39m12/08/2023, 3:29:03 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +2ms[39m
+server    | Application is running on: http://[::1]:3001
+client    | [2K[1A[2K[G[70%] sealing (finish module graph)
+client    | [2K[1A[2K[G[71%] sealing (plugins)
+client    | [2K[1A[2K[G[71%] sealing (plugins WarnCaseSensitiveModulesPlugin)
+client    | [2K[1A[2K[G[71%] sealing (plugins)
+client    | [2K[1A[2K[G[71%] sealing (dependencies optimization)
+client    | [2K[1A[2K[G[71%] sealing (dependencies optimization SideEffectsFlagPlugin)
+client    | [2K[1A[2K[G[71%] sealing (dependencies optimization)
+client    | [2K[1A[2K[G[72%] sealing (after dependencies optimization)
+client    | [2K[1A[2K[G[73%] sealing (chunk graph)
+client    | [2K[1A[2K[G[73%] sealing (after chunk graph)
+client    | [2K[1A[2K[G[74%] sealing (optimizing)
+client    | [2K[1A[2K[G[74%] sealing (module optimization)
+client    | [2K[1A[2K[G[75%] sealing (after module optimization)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization EnsureChunkConditionsPlugin)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization RemoveEmptyChunksPlugin)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization MergeDuplicateChunksPlugin)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization SplitChunksPlugin)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization RemoveEmptyChunksPlugin)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization)
+client    | [2K[1A[2K[G[76%] sealing (after chunk optimization)
+client    | [2K[1A[2K[G[77%] sealing (module and chunk tree optimization)
+client    | [2K[1A[2K[G[77%] sealing (module and chunk tree optimization PersistentChildCompilerSinglet
+client    | onPlugin)
+client    | [2K[1A[2K[1A[2K[G[77%] sealing (module and chunk tree optimization)
+client    | [2K[1A[2K[G[78%] sealing (after module and chunk tree optimization)
+client    | [2K[1A[2K[G[78%] sealing (chunk modules optimization)
+client    | [2K[1A[2K[G[79%] sealing (after chunk modules optimization)
+client    | [2K[1A[2K[G[80%] sealing (module reviving)
+client    | [2K[1A[2K[G[80%] sealing (module reviving RecordIdsPlugin)
+client    | [2K[1A[2K[G[80%] sealing (module reviving)
+client    | [2K[1A[2K[G[80%] sealing (before module ids)
+client    | [2K[1A[2K[G[81%] sealing (module ids)
+client    | [2K[1A[2K[G[81%] sealing (module ids NamedModuleIdsPlugin)
+client    | [2K[1A[2K[G[81%] sealing (module ids)
+client    | [2K[1A[2K[G[82%] sealing (module id optimization)
+client    | [2K[1A[2K[G[82%] sealing (module id optimization)
+client    | [2K[1A[2K[G[83%] sealing (chunk reviving)
+client    | [2K[1A[2K[G[83%] sealing (chunk reviving RecordIdsPlugin)
+client    | [2K[1A[2K[G[83%] sealing (chunk reviving)
+client    | [2K[1A[2K[G[83%] sealing (before chunk ids)
+client    | [2K[1A[2K[G[84%] sealing (chunk ids)
+client    | [2K[1A[2K[G[84%] sealing (chunk ids NamedChunkIdsPlugin)
+client    | [2K[1A[2K[G[84%] sealing (chunk ids)
+client    | [2K[1A[2K[G[85%] sealing (chunk id optimization)
+client    | [2K[1A[2K[G[85%] sealing (after chunk id optimization)
+client    | [2K[1A[2K[G[86%] sealing (record modules)
+client    | [2K[1A[2K[G[86%] sealing (record modules RecordIdsPlugin)
+client    | [2K[1A[2K[G[86%] sealing (record modules)
+client    | [2K[1A[2K[G[87%] sealing (record chunks)
+client    | [2K[1A[2K[G[87%] sealing (record chunks RecordIdsPlugin)
+client    | [2K[1A[2K[G[87%] sealing (record chunks)
+client    | [2K[1A[2K[G[87%] sealing (module hashing)
+client    | [2K[1A[2K[G[88%] sealing (code generation)
+client    | [2K[1A[2K[G[89%] sealing (runtime requirements)
+client    | [2K[1A[2K[G[89%] sealing (hashing)
+client    | [2K[1A[2K[G[90%] sealing (after hashing)
+client    | [2K[1A[2K[G[91%] sealing (record hash)
+client    | [2K[1A[2K[G[91%] sealing (module assets processing)
+client    | [2K[1A[2K[G[92%] sealing (chunk assets processing)
+client    | [2K[1A[2K[G[92%] sealing (asset processing)
+client    | [2K[1A[2K[G[92%] sealing (asset processing copy-webpack-plugin)
+client    | [2K[1A[2K[G[92%] sealing (asset processing HotModuleReplacementPlugin)
+client    | [2K[1A[2K[G[92%] sealing (asset processing ESLintWebpackPlugin_1)
+client    | [2K[1A[2K[G[92%] sealing (asset processing PersistentChildCompilerSingletonPlugin)
+client    | [2K[1A[2K[G[92%] sealing (asset processing HtmlWebpackPlugin)
+client    | [2K[1A[2K[G[92%] sealing (asset processing)
+client    | [2K[1A[2K[G[93%] sealing (after asset optimization)
+client    | [2K[1A[2K[G[94%] sealing (recording)
+client    | [2K[1A[2K[G[94%] sealing (recording HotModuleReplacementPlugin)
+client    | [2K[1A[2K[G[94%] sealing (recording)
+client    | [2K[1A[2K[G[94%] sealing (after seal)
+client    | [2K[1A[2K[G[95%] emitting (emit)
+client    | [2K[1A[2K[G[98%] emitting (after emit)
+client    | [2K[1A[2K[G[98%] emitting (after emit webpack-shell-plugin-next)
+client    | [2K[1A[2K[G[98%] emitting (after emit)
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[G WARNING  Compiled with 1 warning3:29:04 PM
+client    | 
+client    | [eslint] 
+client    | /app/src/api/friend.ts
+client    |   34:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    | 
+client    | /app/src/components/Channels/ChannelForm.vue
+client    |   212:7  warning  'sendForm' is assigned a value but never used  @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/components/Channels/MyChannelItem.vue
+client    |   34:7  warning  'channelsStore' is assigned a value but never used  @typescript-eslint/no-unused-vars
+client    |   35:7  warning  'userStore' is assigned a value but never used      @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/components/Chat/ChatMsgList.vue
+client    |   248:35  warning  'onMounted' is defined but never used  @typescript-eslint/no-unused-vars
+client    |   248:46  warning  'watch' is defined but never used      @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/components/Chat/ChatUserActionPopup.vue
+client    |   77:46  warning  'ref' is defined but never used     @typescript-eslint/no-unused-vars
+client    |   80:8   warning  'friend' is defined but never used  @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/components/TestComp.vue
+client    |   15:7  warning  'cuicui' is assigned a value but never used  @typescript-eslint/no-unused-vars
+client    |   17:7  warning  'props' is assigned a value but never used   @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/game/game.ts
+client    |   6:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    | 
+client    | /app/src/game/scenes/BootScene.ts
+client    |   7:8  warning  'io' is defined but never used  @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/game/scenes/PlayScene.ts
+client    |     5:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |     8:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |     9:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    10:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    11:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    12:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    13:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    15:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    18:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    21:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    25:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    26:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    27:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    28:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   151:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   156:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   161:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   166:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   170:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   174:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    | 
+client    | /app/src/main.ts
+client    |   6:8  warning  'axios' is defined but never used  @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/stores/chat.ts
+client    |   75:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    | 
+client    | /app/src/stores/friend.ts
+client    |   71:33  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+client    |   85:33  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+client    | 
+client    | /app/src/views/AuthScreen/AuthMainView.vue
+client    |   13:8  warning  'router' is defined but never used  @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/views/FriendsView.vue
+client    |   197:25  warning  'Menu2' is defined but never used                @typescript-eslint/no-unused-vars
+client    |   208:7   warning  'usersStore' is assigned a value but never used  @typescript-eslint/no-unused-vars
+client    |   254:68  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+client    |   258:64  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+client    |   270:34  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+client    |   319:29  warning  'e' is defined but never used                    @typescript-eslint/no-unused-vars
+client    | 
+client    | ✖ 43 problems (0 errors, 43 warnings)
+client    | 
+client    | 
+client    | You may use special comments to disable some warnings.
+client    | Use // eslint-disable-next-line to ignore the next line.
+client    | Use /* eslint-disable */ to ignore all warnings in a file.
+client    | Build finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[G
+client    |   App running at:
+client    |   - Local:   http://localhost:8080/ 
+client    |   - Network: unavailable
+client    | 
+client    |   Note that the development build is not optimized.
+client    |   To create a production build, run npm run build.
+client    | 
+client    | Build finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:04 by 0.000s
+client    | [2K[1A[2K[GNo issues found.
+client    |  WAIT  Compiling...3:29:04 PM
+client    | 
+client    | Compiling...
+client    | 
+client    | [2K[1A[2K[G[1%] cache (end idle)
+client    | [2K[1A[2K[G[3%] setup (watch run)
+client    | [2K[1A[2K[G[3%] setup (watch run vue-loader-plugin)
+client    | [2K[1A[2K[G[3%] setup (watch run ESLintWebpackPlugin_1)
+client    | [2K[1A[2K[G[3%] setup (watch run ForkTsCheckerWebpackPlugin)
+client    | [2K[1A[2K[G[3%] setup (watch run webpack-shell-plugin-next)
+client    | [2K[1A[2K[G[3%] setup (watch run webpack-dev-middleware)
+client    | [2K[1A[2K[G[3%] setup (watch run)
+client    | [2K[1A[2K[G[4%] setup (normal module factory)
+client    | [2K[1A[2K[G[4%] setup (normal module factory CaseSensitivePathsPlugin)
+client    | [2K[1A[2K[G[4%] setup (normal module factory)
+client    | [2K[1A[2K[G[5%] setup (context module factory)
+client    | [2K[1A[2K[G[6%] setup (before compile)
+client    | [2K[1A[2K[G[6%] setup (before compile ProgressPlugin)
+client    | [2K[1A[2K[G[6%] setup (before compile)
+client    | [2K[1A[2K[G[7%] setup (compile)
+client    | [2K[1A[2K[G[7%] setup (compile ExternalsPlugin)
+client    | [2K[1A[2K[G[7%] setup (compile)
+client    | [2K[1A[2K[G[8%] setup (compilation)
+client    | [2K[1A[2K[G[8%] setup (compilation CopyPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation ArrayPushCallbackChunkFormatPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation JsonpChunkLoadingPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation StartupChunkDependenciesPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation ImportScriptsChunkLoadingPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation FetchCompileWasmPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation FetchCompileAsyncWasmPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation WorkerPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation SplitChunksPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation ResolverCachePlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation HtmlWebpackPlugin)
+client    | [2K[1A[2K[G[8%] setup (compilation)
+client    | [2K[1A[2K[G[9%] setup (compilation)
+client    | [2K[1A[2K[G[9%] setup (compilation vue-loader-plugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DefinePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ForkTsCheckerWebpackPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ProgressPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation webpack-shell-plugin-next)
+client    | [2K[1A[2K[G[9%] setup (compilation EntryPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ChunkPrefetchPreloadPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ModuleInfoHeaderPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation EvalSourceMapDevToolPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation JavascriptModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation JsonModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation AssetModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation EntryPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RuntimePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation InferAsyncModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DataUriPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation FileUriPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation CompatibilityPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation HarmonyModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation AMDPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RequireJsStuffPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation CommonJsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation LoaderPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation NodeStuffPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation APIPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ExportsInfoApiPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation WebpackIsIncludedPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ConstPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation UseStrictPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RequireIncludePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RequireEnsurePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RequireContextPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ImportPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ImportMetaContextPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation SystemPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ImportMetaPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation URLPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DefaultStatsFactoryPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DefaultStatsPresetPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DefaultStatsPrinterPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation JavascriptMetaInfoPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation EnsureChunkConditionsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RemoveEmptyChunksPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation MergeDuplicateChunksPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation SideEffectsFlagPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation FlagDependencyExportsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation NamedModuleIdsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation NamedChunkIdsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation DefinePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation TemplatedPathPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation RecordIdsPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation WarnCaseSensitiveModulesPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation EntryPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ProvidePlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation HotModuleReplacementPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ProgressPlugin)
+client    | [2K[1A[2K[G[9%] setup (compilation ESLintWebpackPlugin_1)
+client    | [2K[1A[2K[G[9%] setup (compilation)
+client    | [2K[1A[2K[G[10%] building 
+client    | [2K[1A[2K[G[10%] building (0/0 modules)
+client    | [2K[1A[2K[G[24%] building (1/4 modules)
+client    | [2K[1A[2K[G[38%] building (32/35 modules)
+client    | [2K[1A[2K[G[38%] building (import loader css-loader/dist/cjs.js)
+client    | [2K[1A[2K[G[38%] building (import loader postcss-loader/dist/cjs.js)
+client    | [2K[1A[2K[G[38%] building (import loader sass-loader/dist/cjs.js)
+client    | [2K[1A[2K[G[38%] building (33/35 modules)
+client    | [2K[1A[2K[G[38%] building (import loader vue-loader/dist/stylePostLoader.js)
+client    | [2K[1A[2K[G[38%] building (import loader vue-loader/dist/index.js)
+client    | [2K[1A[2K[G[38%] building (108/158 modules)
+client    | [2K[1A[2K[G[51%] building (179/171 modules)
+client    | [2K[1A[2K[G[65%] building (2128/362 modules)
+client    | [2K[1A[2K[G[65%] building 
+client    | [2K[1A[2K[G[69%] building (finish)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph ResolverCachePlugin)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph InferAsyncModulesPlugin)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph FlagDependencyExportsPlugin)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph ESLintWebpackPlugin_1)
+client    | [2K[1A[2K[G[70%] sealing (finish module graph)
+client    | [2K[1A[2K[G[71%] sealing (plugins)
+client    | [2K[1A[2K[G[71%] sealing (plugins WarnCaseSensitiveModulesPlugin)
+client    | [2K[1A[2K[G[71%] sealing (plugins)
+client    | [2K[1A[2K[G[71%] sealing (dependencies optimization)
+client    | [2K[1A[2K[G[71%] sealing (dependencies optimization SideEffectsFlagPlugin)
+client    | [2K[1A[2K[G[71%] sealing (dependencies optimization)
+client    | [2K[1A[2K[G[72%] sealing (after dependencies optimization)
+client    | [2K[1A[2K[G[73%] sealing (chunk graph)
+client    | [2K[1A[2K[G[73%] sealing (after chunk graph)
+client    | [2K[1A[2K[G[74%] sealing (optimizing)
+client    | [2K[1A[2K[G[74%] sealing (module optimization)
+client    | [2K[1A[2K[G[75%] sealing (after module optimization)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization EnsureChunkConditionsPlugin)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization RemoveEmptyChunksPlugin)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization MergeDuplicateChunksPlugin)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization SplitChunksPlugin)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization RemoveEmptyChunksPlugin)
+client    | [2K[1A[2K[G[76%] sealing (chunk optimization)
+client    | [2K[1A[2K[G[76%] sealing (after chunk optimization)
+client    | [2K[1A[2K[G[77%] sealing (module and chunk tree optimization)
+client    | [2K[1A[2K[G[77%] sealing (module and chunk tree optimization PersistentChildCompilerSinglet
+client    | onPlugin)
+client    | [2K[1A[2K[1A[2K[G[77%] sealing (module and chunk tree optimization)
+client    | [2K[1A[2K[G[78%] sealing (after module and chunk tree optimization)
+client    | [2K[1A[2K[G[78%] sealing (chunk modules optimization)
+client    | [2K[1A[2K[G[79%] sealing (after chunk modules optimization)
+client    | [2K[1A[2K[G[80%] sealing (module reviving)
+client    | [2K[1A[2K[G[80%] sealing (module reviving RecordIdsPlugin)
+client    | [2K[1A[2K[G[80%] sealing (module reviving)
+client    | [2K[1A[2K[G[80%] sealing (before module ids)
+client    | [2K[1A[2K[G[81%] sealing (module ids)
+client    | [2K[1A[2K[G[81%] sealing (module ids NamedModuleIdsPlugin)
+client    | [2K[1A[2K[G[81%] sealing (module ids)
+client    | [2K[1A[2K[G[82%] sealing (module id optimization)
+client    | [2K[1A[2K[G[82%] sealing (module id optimization)
+client    | [2K[1A[2K[G[83%] sealing (chunk reviving)
+client    | [2K[1A[2K[G[83%] sealing (chunk reviving RecordIdsPlugin)
+client    | [2K[1A[2K[G[83%] sealing (chunk reviving)
+client    | [2K[1A[2K[G[83%] sealing (before chunk ids)
+client    | [2K[1A[2K[G[84%] sealing (chunk ids)
+client    | [2K[1A[2K[G[84%] sealing (chunk ids NamedChunkIdsPlugin)
+client    | [2K[1A[2K[G[84%] sealing (chunk ids)
+client    | [2K[1A[2K[G[85%] sealing (chunk id optimization)
+client    | [2K[1A[2K[G[85%] sealing (after chunk id optimization)
+client    | [2K[1A[2K[G[86%] sealing (record modules)
+client    | [2K[1A[2K[G[86%] sealing (record modules RecordIdsPlugin)
+client    | [2K[1A[2K[G[86%] sealing (record modules)
+client    | [2K[1A[2K[G[87%] sealing (record chunks)
+client    | [2K[1A[2K[G[87%] sealing (record chunks RecordIdsPlugin)
+client    | [2K[1A[2K[G[87%] sealing (record chunks)
+client    | [2K[1A[2K[G[87%] sealing (module hashing)
+client    | [2K[1A[2K[G[88%] sealing (code generation)
+client    | [2K[1A[2K[G[89%] sealing (runtime requirements)
+client    | [2K[1A[2K[G[89%] sealing (hashing)
+client    | [2K[1A[2K[G[90%] sealing (after hashing)
+client    | [2K[1A[2K[G[91%] sealing (record hash)
+client    | [2K[1A[2K[G[91%] sealing (module assets processing)
+client    | [2K[1A[2K[G[92%] sealing (chunk assets processing)
+client    | [2K[1A[2K[G[92%] sealing (asset processing)
+client    | [2K[1A[2K[G[92%] sealing (asset processing copy-webpack-plugin)
+client    | [2K[1A[2K[G[92%] sealing (asset processing HotModuleReplacementPlugin)
+client    | [2K[1A[2K[G[92%] sealing (asset processing ESLintWebpackPlugin_1)
+client    | [2K[1A[2K[G[92%] sealing (asset processing PersistentChildCompilerSingletonPlugin)
+client    | [2K[1A[2K[G[92%] sealing (asset processing HtmlWebpackPlugin)
+client    | [2K[1A[2K[G[92%] sealing (asset processing)
+client    | [2K[1A[2K[G[93%] sealing (after asset optimization)
+client    | [2K[1A[2K[G[94%] sealing (recording)
+client    | [2K[1A[2K[G[94%] sealing (recording HotModuleReplacementPlugin)
+client    | [2K[1A[2K[G[94%] sealing (recording)
+client    | [2K[1A[2K[G[94%] sealing (after seal)
+client    | [2K[1A[2K[G[95%] emitting (emit)
+client    | [2K[1A[2K[G[98%] emitting (after emit)
+client    | [2K[1A[2K[G[98%] emitting (after emit webpack-shell-plugin-next)
+client    | [2K[1A[2K[G[98%] emitting (after emit)
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[G WARNING  Compiled with 1 warning3:29:05 PM
+client    | 
+client    | [eslint] 
+client    | /app/src/api/friend.ts
+client    |   34:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    | 
+client    | /app/src/components/Channels/ChannelForm.vue
+client    |   212:7  warning  'sendForm' is assigned a value but never used  @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/components/Channels/MyChannelItem.vue
+client    |   34:7  warning  'channelsStore' is assigned a value but never used  @typescript-eslint/no-unused-vars
+client    |   35:7  warning  'userStore' is assigned a value but never used      @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/components/Chat/ChatMsgList.vue
+client    |   248:35  warning  'onMounted' is defined but never used  @typescript-eslint/no-unused-vars
+client    |   248:46  warning  'watch' is defined but never used      @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/components/Chat/ChatUserActionPopup.vue
+client    |   77:46  warning  'ref' is defined but never used     @typescript-eslint/no-unused-vars
+client    |   80:8   warning  'friend' is defined but never used  @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/components/TestComp.vue
+client    |   15:7  warning  'cuicui' is assigned a value but never used  @typescript-eslint/no-unused-vars
+client    |   17:7  warning  'props' is assigned a value but never used   @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/game/game.ts
+client    |   6:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    | 
+client    | /app/src/game/scenes/BootScene.ts
+client    |   7:8  warning  'io' is defined but never used  @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/game/scenes/PlayScene.ts
+client    |     5:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |     8:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |     9:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    10:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    11:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    12:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    13:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    15:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    18:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    21:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    25:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    26:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    27:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |    28:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   151:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   156:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   161:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   166:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   170:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    |   174:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    | 
+client    | /app/src/main.ts
+client    |   6:8  warning  'axios' is defined but never used  @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/stores/chat.ts
+client    |   75:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+client    | 
+client    | /app/src/stores/friend.ts
+client    |   71:33  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+client    |   85:33  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+client    | 
+client    | /app/src/views/AuthScreen/AuthMainView.vue
+client    |   13:8  warning  'router' is defined but never used  @typescript-eslint/no-unused-vars
+client    | 
+client    | /app/src/views/FriendsView.vue
+client    |   197:25  warning  'Menu2' is defined but never used                @typescript-eslint/no-unused-vars
+client    |   208:7   warning  'usersStore' is assigned a value but never used  @typescript-eslint/no-unused-vars
+client    |   254:68  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+client    |   258:64  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+client    |   270:34  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+client    |   319:29  warning  'e' is defined but never used                    @typescript-eslint/no-unused-vars
+client    | 
+client    | ✖ 43 problems (0 errors, 43 warnings)
+client    | 
+client    | 
+client    | You may use special comments to disable some warnings.
+client    | Use // eslint-disable-next-line to ignore the next line.
+client    | Use /* eslint-disable */ to ignore all warnings in a file.
+client    | Build finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[G
+client    |   App running at:
+client    |   - Local:   http://localhost:8080/ 
+client    |   - Network: unavailable
+client    | 
+client    | Build finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GBuild finished at 15:29:05 by 0.000s
+client    | [2K[1A[2K[GNo issues found.

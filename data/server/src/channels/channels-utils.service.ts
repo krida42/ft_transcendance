@@ -21,6 +21,8 @@ import { FriendsService } from '../friends/friends.service';
 // userIs(status: UserStatus, currentId, chanId): Promise< boolean > OK
 // userIsInChannel(currentId, chanId): Promise< boolean > OK
 // getUserInChannel(currentId, chanId): Promise< ChannelsUsers > OK
+// getBannedUser(currentId, chanId): Promise< ChannelsUsers > OK
+// getInvitedUser(currentId, chanId): Promise< ChannelsUsers > OK
 // checkOwner(currentId, chanId ) OK
 // checkAdmin(currentId, chanId ) OK
 // getUsersByStatuses(chanId, userStatuses: string[]): Promise< PublicUserDto[] > OK
@@ -166,6 +168,48 @@ export class ChannelsUtilsService {
     if (!chanUser)
       throw new HttpException(
         'getUserInChannel *should never append*',
+        HttpStatus.BAD_REQUEST,
+      );
+    return chanUser;
+  }
+
+  async getBannedUser(
+    currentId: uuidv4,
+    chanId: uuidv4,
+  ): Promise<ChannelsUsers> {
+    const chanUser = await this.channelUsersModel.findOne({
+      where: {
+        chanId: chanId,
+        userId: currentId,
+        [Op.or]: [
+          { userStatus: UserStatus.Banned },
+        ],
+      },
+    });
+    if (!chanUser)
+      throw new HttpException(
+        'getBannedUser *should never append*',
+        HttpStatus.BAD_REQUEST,
+      );
+    return chanUser;
+  }
+
+  async getInvitedUser(
+    currentId: uuidv4,
+    chanId: uuidv4,
+  ): Promise<ChannelsUsers> {
+    const chanUser = await this.channelUsersModel.findOne({
+      where: {
+        chanId: chanId,
+        userId: currentId,
+        [Op.or]: [
+          { userStatus: UserStatus.Invited },
+        ],
+      },
+    });
+    if (!chanUser)
+      throw new HttpException(
+        'getInvitedUser *should never append*',
         HttpStatus.BAD_REQUEST,
       );
     return chanUser;

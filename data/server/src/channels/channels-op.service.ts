@@ -149,7 +149,7 @@ export class ChannelsOpService {
       throw new HttpException('user not invited', HttpStatus.BAD_REQUEST);
 
     try {
-      const user = await this.utils.getUserInChannel(userId, chanId);
+      const user = await this.utils.getInvitedUser(userId, chanId);
       user.destroy();
       return this.utils.fetchPublicUserDto(userId);
     } catch (error) {
@@ -212,7 +212,7 @@ export class ChannelsOpService {
       throw new HttpException('user not banned', HttpStatus.BAD_REQUEST);
 
     try {
-      const user = await this.utils.getUserInChannel(userId, chanId);
+      const user = await this.utils.getBannedUser(userId, chanId);
       user.destroy();
       return this.utils.fetchPublicUserDto(userId);
     } catch (error) {

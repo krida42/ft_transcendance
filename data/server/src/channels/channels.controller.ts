@@ -59,7 +59,7 @@ export class ChannelsController {
   }
 
   // @Post('/channels') OK
-  // @Patch('/channels/:chanId') TOCHECK
+  // @Patch('/channels/:chanId') FIXME
   // @Delete('/channels/:chanId') OK
 
   // ---------- JOIN / QUIT
@@ -116,6 +116,7 @@ export class ChannelsController {
     );
   }
 
+  /* // FIXME PATCH CHANNEL
   @ApiOperation({ summary: 'Update a channel (dto)' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Patch('/channels/:chanId')
@@ -130,6 +131,7 @@ export class ChannelsController {
       editChannelDto,
     );
   }
+  */
 
   @ApiOperation({ summary: 'Delete a channel' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))

@@ -58,7 +58,7 @@ export class ChannelsService {
       }
     }
 
-    if (editChannelDto.chanType == ChanType.Protected)
+    if (pass != null && editChannelDto.chanType == ChanType.Protected)
       pass = await BcryptService.hashPassword(pass);
     else pass = 'nannan';
     try {
@@ -85,6 +85,7 @@ export class ChannelsService {
     }
   }
 
+  /* // FIXME
   async updateChannel(
     currentId: uuidv4,
     chanId: uuidv4,
@@ -141,7 +142,7 @@ export class ChannelsService {
         HttpStatus.BAD_REQUEST,
       );
     }
-  }
+  } */
 
   async deleteChannel(currentId: uuidv4, chanId: uuidv4): Promise<channelDto> {
     this.friendsService.checkId(currentId);

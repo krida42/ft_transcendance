@@ -9,7 +9,6 @@ import {
   Default,
   Length,
 } from 'sequelize-typescript';
-import { MaxLength, MinLength, IsAlphanumeric } from 'class-validator';
 
 @Table
 export class Channels extends Model {
@@ -23,9 +22,6 @@ export class Channels extends Model {
   })
   public chanId!: string;
  
-  @MinLength(3, { message: 'Channel name is too short (min 3 characters)' })
-  @MaxLength(20, { message: 'Channel name is too long (max 20 characters)' })
-  @IsAlphanumeric('en-US', { message: 'Invalid characters in channel name' })
   @Column({
     type: DataTypes.STRING,
     allowNull: false,
@@ -53,10 +49,6 @@ export class Channels extends Model {
   })
   public chanType!: string;
 
-  @MinLength(6, { message: 'Channel password is too short (min 6 characters)' })
-  @MaxLength(128, {
-    message: 'Channel password is too long (max 128 characters)',
-   })
   @Column({
     unique: false,
     allowNull: false,

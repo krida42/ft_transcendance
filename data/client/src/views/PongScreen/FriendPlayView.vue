@@ -7,10 +7,10 @@
         class="w-[3rem] rotate-180 cursor-pointer"
         src="@/assets/svg/right-arrow.svg"
       />
-      <div class="friend-list w-[80%] normal-case">
+      <div class="friend-list w-[75%] normal-case">
         <ul class="self-center">
           <li
-            class="py-[0.3rem] pr-[1rem] text-left cursor-pointer"
+            class="py-[0.3rem] text-left cursor-pointer"
             v-for="friend in friendsNestedArray[currentPageId]"
             :key="friend.id"
           >
@@ -36,21 +36,15 @@
         src="@/assets/svg/right-arrow.svg"
       />
     </div>
-    <div class="input-wrap relative">
-      <input
-        v-model="username"
-        placeholder="search a friend..."
-        type="text"
-        minlength="3"
-        maxlength="15"
-        class="bg-black text-[1.5rem] border-2 border-[#828287] mx-[8rem] pl-[1rem]"
-        @keydown="resetPageId"
-      />
-      <img
-        src="@/assets/svg/search-icon.svg"
-        class="w-[2.5rem] absolute top-0 right-[75px]"
-      />
-    </div>
+    <input
+      v-model="username"
+      placeholder="search a friend..."
+      type="text"
+      minlength="3"
+      maxlength="15"
+      class="bg-black text-[1.5rem] border-2 border-[#828287] mx-[8rem] pl-[1rem]"
+      @keydown="resetPageId"
+    />
   </div>
 </template>
 

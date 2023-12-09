@@ -1,6 +1,6 @@
 <template>
   <div
-    class="settings-members w-[10rem] flex flex-col gap-[0.5rem] justify-center items-center"
+    class="settings-members w-[10rem] flex flex-col gap-[0.5rem] justify-center items-center pb-[1rem]"
     v-if="!isUnbanned"
   >
     <div class="w-[5rem] h-[5rem] rounded-full overflow-hidden">
@@ -85,7 +85,6 @@ button {
   background-color: $green-bg;
   padding: 0.2rem 0.5rem 0.2rem 0.5rem;
   border-radius: 10px;
-  border: 1px solid black;
 }
 
 button:hover {

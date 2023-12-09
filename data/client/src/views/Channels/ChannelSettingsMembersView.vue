@@ -10,17 +10,17 @@
       class="members-ctn min-h-[35rem] h-[80vh] w-[100%] px-[3rem] pb-[3rem]"
     >
       <div
-        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap overflow-y-auto"
+        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap content-start overflow-y-auto py-[1rem]"
       >
         <ChannelSettingsMembers
-          v-for="member in currentChannel?.members"
+          v-for="member in members"
           :key="member.id"
           :mode="'members'"
           :userId="member.id"
           :username="member.pseudo"
           :avatar="member.avatar"
-          :isBanned="channelsStore.isBanned(member.id, channelId)"
           :isAdmin="channelsStore.isAdmin(member.id, channelId)"
+          :chanId="channelId"
         />
       </div>
     </div>
@@ -30,12 +30,21 @@
 <script lang="ts" setup>
 import ChannelSettingsMembers from "@/components/Channels/ChannelSettingsMembers.vue";
 import { useChannelsStore } from "@/stores/channels";
-import { computed } from "vue";
+import { ref, onBeforeMount } from "vue";
 import router from "@/router";
 
+const channelId = router.currentRoute.value.params.channelId as string;
 const channelsStore = useChannelsStore();
 
-const channelId = router.currentRoute.value.params.id as string;
+let members = ref(channelsStore.channel(channelId)?.members);
 
-const currentChannel = computed(() => channelsStore.channel(channelId));
+async function refreshMembers() {
+  await channelsStore.refreshChannels();
+  await channelsStore.refreshMembers(channelId);
+  members.value = channelsStore.channel(channelId)?.members;
+}
+
+onBeforeMount(() => {
+  refreshMembers();
+});
 </script>

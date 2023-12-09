@@ -9,7 +9,6 @@ import {
 import { Is } from 'sequelize-typescript';
 
 export class PublicUserDto {
-
   @IsNotEmpty()
   id: string;
 
@@ -36,16 +35,10 @@ export class PublicUserDto {
   })
   avatar: string;
 
-  constructor(
-    id: string,
-    login: string,
-    pseudo: string,
-    avatar: string,
-  ) {
+  constructor(id: string, login: string, pseudo: string, avatar: string) {
     this.id = id;
     this.login = login;
     this.pseudo = pseudo;
     this.avatar = avatar;
   }
-
 }

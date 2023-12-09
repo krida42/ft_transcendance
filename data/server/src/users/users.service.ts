@@ -155,7 +155,7 @@ export class UsersService {
         where: { public_id: id },
         attributes: this.attributesToRetrieve,
       });
-      //  A REVOIR - - -- - 
+      //  A REVOIR - - -- -
       return { message: user, user: await responseUser(UpdatedUser!) };
     } catch (error) {
       console.error(error);

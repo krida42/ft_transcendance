@@ -131,6 +131,7 @@ export class FriendsService {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
     if (await this.youBlockIt(sender_id, receiver_id))
+    if (await this.youBlockIt(sender_id, receiver_id))
       throw new HttpException('user already blocked', HttpStatus.CONFLICT);
 
     try {
@@ -261,6 +262,10 @@ export class FriendsService {
     else return false;
   }
 
+  async getFriendship(
+    user1_id: uuidv4,
+    user2_id: uuidv4,
+  ): Promise<Friends | null> {
   async getFriendship(
     user1_id: uuidv4,
     user2_id: uuidv4,

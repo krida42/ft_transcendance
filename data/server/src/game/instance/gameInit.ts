@@ -20,6 +20,7 @@ export class GameInit {
       pongBall: new PongBall(pongWorldInstance),
       pongPaddle1: new PongPaddle(pongWorldInstance, 1),
       pongPaddle2: new PongPaddle(pongWorldInstance, 2),
+      timeAtEnd: 0,
     };
     pongWorldInstance.setupCollisions(newGameState);
     return newGameState;

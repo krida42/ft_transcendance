@@ -208,6 +208,7 @@ export class ChannelsController {
     @Param('userId') userId: string,
   ) {
     return this.channelOpService.uninvite(this.public_id, chanId, userId);
+    return this.channelOpService.uninvite(this.public_id, chanId, userId);
   }
 
   // ---------- BAN

@@ -21,4 +21,13 @@ export type GameState = {
   pongBall: PongBall;
   pongPaddle1: PongPaddle;
   pongPaddle2: PongPaddle;
+  timeAtEnd: number;
+};
+
+export type GameSave = {
+  player1_id: string;
+  player2_id: string;
+  score1: number;
+  score2: number;
+  time: number;
 };

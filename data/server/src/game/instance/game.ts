@@ -3,7 +3,6 @@ import { PongRoom } from '../lobby/room';
 import { GameState } from '../type';
 import { GameInit } from './gameInit';
 import * as Matter from 'matter-js';
-
 export class Game {
   //game state engine
   running: boolean = false;
@@ -26,6 +25,9 @@ export class Game {
   gameInterval!: NodeJS.Timeout;
   timeInterval!: NodeJS.Timeout;
 
+  //save into db
+  timeAtEnd: number = 0;
+
   constructor(PongRoom: PongRoom) {
     Game.id++;
     this.pongRoom = PongRoom;
@@ -33,21 +35,21 @@ export class Game {
     this.setupScoreEvent();
   }
 
-  setupTimeEndGame(timeEndGame: number = TIME_END_GAME) {
-    this.timeEndGame = setTimeout(() => {
+  async setupTimeEndGame(timeEndGame: number = TIME_END_GAME) {
+    this.timeEndGame = setTimeout(async () => {
       this.running = false;
       this.declareWinner();
-      this.endGame();
+      await this.endGame();
     }, timeEndGame);
   }
 
-  start() {
+  async start() {
     this.gameState.pongWorld.run();
     this.gameState.pongBall.startBallAcceleration();
     this.running = true;
     if (this.pongRoom.startTime === 0) this.pongRoom.startTime = Date.now();
     this.setupIntervals();
-    this.setupTimeEndGame();
+    await this.setupTimeEndGame();
   }
 
   pause() {
@@ -79,11 +81,11 @@ export class Game {
     return remainingTime;
   }
 
-  resumeTime() {
+  async resumeTime() {
     const pauseDuration = Date.now() - this.pongRoom.pauseTime;
     this.pongRoom.totalPauseTime += pauseDuration;
 
-    this.setupTimeEndGame(this.calculateRemainingTime());
+    await this.setupTimeEndGame(this.calculateRemainingTime());
   }
 
   end() {
@@ -92,10 +94,10 @@ export class Game {
     this.gameState.pongWorld.end();
   }
 
-  endGame() {
+  async endGame() {
     this.pongRoom.isGameEnded = true;
     this.running = false;
-    this.pongRoom.close();
+    await this.pongRoom.close();
     this.end();
   }
 
@@ -131,11 +133,6 @@ export class Game {
   setupIntervals() {
     this.gameInterval = setInterval(() => this.sendStatusGameClient(), 1);
     this.timeInterval = setInterval(() => this.sendTimeGame(), 100);
-    // this.accelerationBallInterval = setInterval(() => this.accelerationBall(), 1000);
-  }
-
-  accelerationBall() {
-    this.gameState.pongBall.update();
   }
 
   clearIntervals() {
@@ -181,6 +178,7 @@ export class Game {
   sendTimeGame() {
     const time = this.calculateRemainingTime() / 1000;
     this.pongRoom.sendTime(time);
+    this.timeAtEnd = TIME_END_GAME / 1000 - time;
     // console.log('time', time);
   }
 

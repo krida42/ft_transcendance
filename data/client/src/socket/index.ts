@@ -17,15 +17,12 @@ export const socket = io(URL, {
 });
 
 socket.on("connect", () => {
-  console.log("Connected to server");
   state.connected = true;
   socket.emit("cuicui", { msg: "Hello from client" }, (response: any) => {
-    console.log("cuicu acknowledged: ", response);
   });
 });
 
 socket.on("disconnect", () => {
-  console.log("Disconnected from server");
   state.connected = false;
 });
 

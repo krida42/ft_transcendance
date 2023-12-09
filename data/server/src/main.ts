@@ -8,6 +8,7 @@ import session from 'express-session';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import cookieParser from 'cookie-parser';
 import { CustomExceptionFilter } from './exceptions/exceptions.middleware';
+import { Achievement } from './game/achievements/achievements';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

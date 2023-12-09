@@ -13,13 +13,13 @@ export class PlayerManager {
     this.pongRoom = pongRoom;
   }
 
-  addPlayer(player: Player) {
+  async addPlayer(player: Player) {
     if (!this.canAddPlayer(player)) return false;
     player.number = this.players.length;
     this.players.push(player);
     console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
     this.showPlayers();
-    this.pongRoom.start();
+    await this.pongRoom.start();
     return true;
   }
 
@@ -61,7 +61,7 @@ export class PlayerManager {
   endGameIfNoPlayers() {
     if (this.players.length === 0) {
       console.log('No more players in room');
-      this.pongRoom.end();
+      this.pongRoom.game.endGame();     
     }
   }
 
@@ -81,14 +81,14 @@ export class PlayerManager {
     return !!this.players.find((p) => p.user.public_id === public_id);
   }
 
-  removeDisconnectedPlayer(player: Player, client: Socket) {
+  async removeDisconnectedPlayer(player: Player, client: Socket) {
     this.disconnectPlayers.set(
       player.client.id,
-      setTimeout(() => {
+      setTimeout(async () => {
         const index = this.getPlayerIndex(client);
         console.log(`Client disconnected: ${player.user.login}`);
         this.players[index].disconnected = true;
-        this.endGameIfNoPlayers();
+        await this.endGameIfNoPlayers();
         this.pauseGameIfNotEnoughPlayers();
 
         const otherPlayerIndex = this.players.findIndex((p) => p !== player);
@@ -118,9 +118,13 @@ export class PlayerManager {
     console.log(
       `Player ${player.user.login} disconnected from room: ${PongRoom.id}`,
     );
+    if (this.isAllPlayersDisconnected()) {
+      console.log('All players disconnected');
+      this.pongRoom.game.declareAbandon();
+    }
   }
 
-  reconnectPlayer(oldPlayer: Player, newPlayer: Player) {
+  async reconnectPlayer(oldPlayer: Player, newPlayer: Player) {
     clearTimeout(this.disconnectPlayers.get(oldPlayer.client.id));
     this.disconnectPlayers.delete(oldPlayer.client.id);
     oldPlayer.client = newPlayer.client;
@@ -144,7 +148,7 @@ export class PlayerManager {
     if (this.pongRoom.started && !this.pongRoom.isGameEnded) {
       this.pongRoom.resume();
     } else if (this.players.length === this.playersMax) {
-      this.pongRoom.start();
+      await this.pongRoom.start();
     }
   }
 
@@ -152,6 +156,10 @@ export class PlayerManager {
     return !!this.pongRoom.pongGateway.rooms.find((r) =>
       r.PlayerManager.hasPlayer(player.user.public_id),
     );
+  }
+
+  isAllPlayersDisconnected(): boolean {
+    return this.players.every((p) => p.disconnected);
   }
 
   showPlayers() {

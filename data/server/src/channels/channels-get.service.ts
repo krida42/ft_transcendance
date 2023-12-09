@@ -48,7 +48,7 @@ export class ChannelsGetService {
   // ---------- GET CHANNELS LIST (Sorted by user size)
 
   async getJoinedChan(currentId: uuidv4): Promise<channelDto[]> {
-    this.friendsService.checkId(currentId);
+    await this.friendsService.checkId(currentId);
 
     const userChannels = await this.channelUsersModel.findAll({
       where: {
@@ -65,7 +65,7 @@ export class ChannelsGetService {
   }
 
   async getDirectChan(currentId: uuidv4): Promise<channelDto[]> {
-    this.friendsService.checkId(currentId);
+    await this.friendsService.checkId(currentId);
 
     const userChannels = await this.channelUsersModel.findAll({
       where: {
@@ -80,7 +80,7 @@ export class ChannelsGetService {
     currentId: uuidv4,
     chanType: ChanType,
   ): Promise<channelDto[]> {
-    this.friendsService.checkId(currentId);
+    await this.friendsService.checkId(currentId);
 
     // public channels ids
     const pubChan = await this.channelModel.findAll({

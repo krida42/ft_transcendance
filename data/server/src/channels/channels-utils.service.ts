@@ -231,6 +231,7 @@ export class ChannelsUtilsService {
     userStatuses: string[],
   ): Promise<PublicUserDto[]> {
     this.checkId(chanId);
+
     const userChan = await this.channelUsersModel.findAll({
       where: {
         chanId: chanId,

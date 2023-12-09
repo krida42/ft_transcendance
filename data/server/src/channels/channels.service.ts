@@ -39,7 +39,7 @@ export class ChannelsService {
     currentId: uuidv4,
     editChannelDto: EditChannelDto,
   ): Promise<channelDto> {
-    this.friendsService.checkId(currentId);
+    await this.friendsService.checkId(currentId);
 
     const chan = await this.channelModel.findOne({
       where: { chanName: editChannelDto.chanName },
@@ -91,7 +91,7 @@ export class ChannelsService {
     chanId: uuidv4,
     editChannelDto: EditChannelDto,
   ): Promise<channelDto> {
-    this.friendsService.checkId(currentId);
+    await this.friendsService.checkId(currentId);
 
     const chanTestName = await this.channelModel.findOne({
       where: {
@@ -145,7 +145,7 @@ export class ChannelsService {
   } */
 
   async deleteChannel(currentId: uuidv4, chanId: uuidv4): Promise<channelDto> {
-    this.friendsService.checkId(currentId);
+    await this.friendsService.checkId(currentId);
     const chan = await this.utils.findById(chanId);
     this.utils.checkOwner(currentId, chanId);
 
@@ -171,7 +171,7 @@ export class ChannelsService {
     chanId: uuidv4,
     passwordChannelDto: PasswordChannelDto,
   ): Promise<channelDto> {
-    this.friendsService.checkId(currentId);
+    await this.friendsService.checkId(currentId);
     let chan = await this.utils.findById(chanId);
 
     if (await this.utils.userIs(UserStatus.Banned, currentId, chanId))
@@ -227,7 +227,7 @@ export class ChannelsService {
   }
 
   async quitChannel(currentId: uuidv4, chanId: uuidv4): Promise<channelDto> {
-    this.friendsService.checkId(currentId);
+    await this.friendsService.checkId(currentId);
 
     let chan = await this.utils.findById(chanId);
 

@@ -48,9 +48,9 @@ export class ChannelsOpService {
     chanId: uuidv4,
     userId: uuidv4,
   ): Promise<PublicUserDto> {
-    this.utils.checkId(chanId);
-    this.utils.checkUserIds(currentId, userId);
-    this.utils.checkOwner(currentId, chanId);
+    await this.utils.checkId(chanId);
+    await this.utils.checkUserIds(currentId, userId);
+    await this.utils.checkOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
       throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
@@ -79,9 +79,9 @@ export class ChannelsOpService {
     chanId: uuidv4,
     userId: uuidv4,
   ): Promise<PublicUserDto> {
-    this.utils.checkId(chanId);
-    this.utils.checkUserIds(currentId, userId);
-    this.utils.checkOwner(currentId, chanId);
+    await this.utils.checkId(chanId);
+    await this.utils.checkUserIds(currentId, userId);
+    await this.utils.checkOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
       throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
@@ -108,8 +108,8 @@ export class ChannelsOpService {
     chanId: uuidv4,
     userId: uuidv4,
   ): Promise<PublicUserDto> {
-    this.utils.checkId(chanId);
-    this.utils.checkUserIds(currentId, userId);
+    await this.utils.checkId(chanId);
+    await this.utils.checkUserIds(currentId, userId);
     this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (await this.utils.userIsInChannel(userId, chanId))
@@ -141,8 +141,8 @@ export class ChannelsOpService {
     chanId: uuidv4,
     userId: uuidv4,
   ): Promise<PublicUserDto> {
-    this.utils.checkId(chanId);
-    this.utils.checkUserIds(currentId, userId);
+    await this.utils.checkId(chanId);
+    await this.utils.checkUserIds(currentId, userId);
     this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIs(UserStatus.Invited, userId, chanId)))
@@ -166,8 +166,8 @@ export class ChannelsOpService {
     chanId: uuidv4,
     userId: uuidv4,
   ): Promise<PublicUserDto> {
-    this.utils.checkId(chanId);
-    this.utils.checkUserIds(currentId, userId);
+    await this.utils.checkId(chanId);
+    await this.utils.checkUserIds(currentId, userId);
     this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (await this.utils.userIs(UserStatus.Banned, userId, chanId))
@@ -207,8 +207,8 @@ export class ChannelsOpService {
     chanId: uuidv4,
     userId: uuidv4,
   ): Promise<PublicUserDto> {
-    this.utils.checkId(chanId);
-    this.utils.checkUserIds(currentId, userId);
+    await this.utils.checkId(chanId);
+    await this.utils.checkUserIds(currentId, userId);
     this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIs(UserStatus.Banned, userId, chanId)))
@@ -233,8 +233,8 @@ export class ChannelsOpService {
     chanId: uuidv4,
     userId: uuidv4,
   ): Promise<PublicUserDto> {
-    this.utils.checkId(chanId);
-    this.utils.checkUserIds(currentId, userId);
+    await this.utils.checkId(chanId);
+    await this.utils.checkUserIds(currentId, userId);
     this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
@@ -266,8 +266,8 @@ export class ChannelsOpService {
     chanId: uuidv4,
     userId: uuidv4,
   ): Promise<PublicUserDto> {
-    this.utils.checkId(chanId);
-    this.utils.checkUserIds(currentId, userId);
+    await this.utils.checkId(chanId);
+    await this.utils.checkUserIds(currentId, userId);
     this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))

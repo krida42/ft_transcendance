@@ -1,7 +1,7 @@
 <template>
   <div
-    class="settings-members w-[10rem] flex flex-col gap-[0.5rem] justify-center items-center pb-[1rem]"
-    v-if="!isUnbanned"
+    class="settings-members w-[10rem] flex flex-col gap-[0.5rem] justify-top items-center pb-[1rem]"
+    v-if="!isUnbanned && !isMyself"
   >
     <div class="w-[5rem] h-[5rem] rounded-full overflow-hidden">
       <img
@@ -37,6 +37,7 @@
 <script lang="ts" setup>
 import { defineProps, toRef, ref } from "vue";
 import { useChannelsStore } from "@/stores/channels";
+import { useUsersStore } from "@/stores/users";
 
 const props = defineProps({
   mode: {
@@ -66,8 +67,17 @@ const props = defineProps({
 });
 
 const channelsStore = useChannelsStore();
+const userStore = useUsersStore();
 const isAdminR = toRef(props, "isAdmin");
 const isUnbanned = ref(false);
+const isMyself = ref(false);
+
+(() => {
+  const myId = userStore.currentUser.id;
+  if (props.userId === myId) {
+    isMyself.value = true;
+  }
+})();
 
 const unbanUser = () => {
   isUnbanned.value = true;

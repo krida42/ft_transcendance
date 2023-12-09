@@ -70,6 +70,14 @@ export const useChannelsStore = defineStore({
         }
       });
     },
+    async refreshAdmins(chanId: Id): Promise<void> {
+      return channelsApi.fetchChannelAdmins(chanId).then((users) => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.admins = users;
+        }
+      });
+    },
     async refreshBans(chanId: Id): Promise<void> {
       return channelsApi.fetchBannedUsers(chanId).then((users) => {
         const channel = this.myChannels.get(chanId);

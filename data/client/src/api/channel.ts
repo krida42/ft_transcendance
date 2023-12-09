@@ -35,6 +35,13 @@ export default {
     return res.data;
   },
 
+  async fetchChannelAdmins(channelId: string) {
+    const res = await axios.get(`${host}/channels/${channelId}/admins`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
   async fetchBannedUsers(channelId: string) {
     const res = await axios.get(`${host}/channels/${channelId}/bans`, {
       withCredentials: true,

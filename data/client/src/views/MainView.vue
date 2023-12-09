@@ -89,8 +89,8 @@ async function checkFriends() {
 const chatStore = useChatStore();
 
 friendStore.refreshFriendList();
-usersStore.refreshUser("marine");
-usersStore.refreshUser("someone");
+// usersStore.refreshUser("marine");
+// usersStore.refreshUser("someone");
 
 let chatAccessOpened = ref(false);
 

@@ -1,57 +1,32 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
-import { DestroyOptions } from 'sequelize/types';
 
-import { uuidv4 } from 'src/types';
+import { uuidv4, ChanType, UserStatus, ErrorMsg } from 'src/types';
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
-import { EditChannelDto } from './dto/editChannel.dto';
-import { channelDto } from './dto/channel.dto';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { UsersService } from '../users/users.service';
 import { ChannelsGetService } from '../channels/channels-get.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 import { FriendsService } from '../friends/friends.service';
 
-enum BadMsg {
-  createChannel = 'cc:', // TODO
-}
-
-enum ChanType {
-  Direct = 'Direct',
-  Public = 'Public',
-  Protected = 'Protected',
-  Private = 'Private',
-}
-
-enum UserStatus {
-  Direct = 'Direct',
-  Owner = 'Owner',
-  Admin = 'Admin',
-  User = 'User',
-  Muted = 'Muted',
-  Banned = 'Banned',
-  Invited = 'Invited',
-}
-
 // ---------- ADMIN
-// POST addAdmin(currentId, chanId, userId): Promise<PublicUserDto> FIXME
-// DELETE delAdmin(currentId, chanId, userId): Promise<PublicUserDto> FIXME
+// POST addAdmin(currentId, chanId, userId): Promise<PublicUserDto> OK
+// DELETE delAdmin(currentId, chanId, userId): Promise<PublicUserDto> OK
 
 // ---------- INVITE
-// POST invite(currentId, chanId, userId): Promise<PublicUserDto> FIXME
-// DELETE uninvite(currentId, chanId, userId): Promise<PublicUserDto> FIXME
+// POST invite(currentId, chanId, userId): Promise<PublicUserDto> OK
+// DELETE uninvite(currentId, chanId, userId): Promise<PublicUserDto> OK
 
 // ---------- BAN
-// POST ban(currentId, chanId, userId): Promise<PublicUserDto> FIXME
-// DELETE unban(currentId, chanId, userId): Promise<PublicUserDto> FIXME
+// POST ban(currentId, chanId, userId): Promise<PublicUserDto> OK
+// DELETE unban(currentId, chanId, userId): Promise<PublicUserDto> OK
 
 // ---------- MUTE
-// PATCH mute(currentId, chanId, userId): Promise<PublicUserDto> FIXME
+// PATCH mute(currentId, chanId, userId): Promise<PublicUserDto> OK FIXME TIMER
 
 // ---------- KICK
-// DELETE kick(currentId, chanId, userId): Promise<PublicUserDto> FIXME
+// DELETE kick(currentId, chanId, userId): Promise<PublicUserDto> OK
 
 @Injectable()
 export class ChannelsOpService {
@@ -75,16 +50,25 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     this.utils.checkId(chanId);
     this.utils.checkUserIds(currentId, userId);
+    this.utils.checkOwner(currentId, chanId);
 
-    // TODO check currentId is admin / owner of the channel
+    if (await this.utils.userIs(UserStatus.Admin, userId, chanId))
+      throw new HttpException('is already admin', HttpStatus.BAD_REQUEST);
+
+    if (false == (await this.utils.userIsInChannel(userId, chanId)))
+      throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
+
+    if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
+      throw new HttpException('owner cannot be admin', HttpStatus.FORBIDDEN);
 
     try {
-      // TODO SET userId to admin
-
+      let user = await this.utils.getUserInChannel(userId, chanId);
+      user.userStatus = UserStatus.Admin;
+      user.save();
       return this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
-        'createFriendRequest ' + error,
+        ErrorMsg.addAdminUser + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -97,16 +81,22 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     this.utils.checkId(chanId);
     this.utils.checkUserIds(currentId, userId);
+    this.utils.checkOwner(currentId, chanId);
 
-    // TODO check currentId is admin / owner of the channel
+    if (false == (await this.utils.userIsInChannel(userId, chanId)))
+      throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
+
+    if (false == (await this.utils.userIs(UserStatus.Admin, userId, chanId)))
+      throw new HttpException('user not admin', HttpStatus.BAD_REQUEST);
 
     try {
-      // TODO UNSET userId to admin
-
+      let user = await this.utils.getUserInChannel(userId, chanId);
+      user.userStatus = UserStatus.User;
+      user.save();
       return this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
-        'createFriendRequest ' + error,
+        ErrorMsg.delAdminUser + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -120,16 +110,27 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     this.utils.checkId(chanId);
     this.utils.checkUserIds(currentId, userId);
+    this.utils.checkAdminOrOwner(currentId, chanId);
 
-    // TODO check currentId is admin / owner of the channel
+    if (await this.utils.userIs(UserStatus.Invited, userId, chanId))
+      throw new HttpException('user already invited', HttpStatus.BAD_REQUEST);
+
+    if (await this.utils.userIsInChannel(userId, chanId))
+      throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
+
+    if (await this.utils.userIs(UserStatus.Banned, userId, chanId))
+      throw new HttpException('user banned', HttpStatus.FORBIDDEN);
 
     try {
-      // TODO create invite for userId
-
+      await this.channelUsersModel.create({
+        chanId: chanId,
+        userId: userId,
+        userStatus: UserStatus.Invited,
+      });
       return this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
-        'createFriendRequest ' + error,
+        ErrorMsg.inviteUser + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -142,16 +143,18 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     this.utils.checkId(chanId);
     this.utils.checkUserIds(currentId, userId);
+    this.utils.checkAdminOrOwner(currentId, chanId);
 
-    // TODO check currentId is admin / owner of the channel
+    if (false == (await this.utils.userIs(UserStatus.Invited, userId, chanId)))
+      throw new HttpException('user not invited', HttpStatus.BAD_REQUEST);
 
     try {
-      // TODO remove invite for userId
-
+      const user = await this.utils.getUserInChannel(userId, chanId);
+      user.destroy();
       return this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
-        'createFriendRequest ' + error,
+        ErrorMsg.uninviteUser + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -165,21 +168,26 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     this.utils.checkId(chanId);
     this.utils.checkUserIds(currentId, userId);
-    // check owner or admin
+    this.utils.checkAdminOrOwner(currentId, chanId);
+
+    if (await this.utils.userIs(UserStatus.Banned, userId, chanId))
+      throw new HttpException('user already banned', HttpStatus.BAD_REQUEST);
 
     if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
       throw new HttpException('owner cannot be banned', HttpStatus.FORBIDDEN);
 
-    const chan = await this.utils.findById(chanId);
+    let chan = await this.utils.findById(chanId);
 
     try {
       if (await this.utils.userIsInChannel(userId, chanId)) {
         let user = await this.utils.getUserInChannel(userId, chanId);
         user.userStatus = UserStatus.Banned;
         user.save();
+        chan.nbUser--;
+        chan.save();
       } else {
         await this.channelUsersModel.create({
-          chanId: chan.chanId,
+          chanId: chanId,
           userId: userId,
           userStatus: UserStatus.Banned,
         });
@@ -187,7 +195,7 @@ export class ChannelsOpService {
 
       return this.utils.fetchPublicUserDto(userId);
     } catch (error) {
-      throw new HttpException('banUser ' + error, HttpStatus.BAD_REQUEST);
+      throw new HttpException(ErrorMsg.banUser + error, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -198,22 +206,18 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     this.utils.checkId(chanId);
     this.utils.checkUserIds(currentId, userId);
-    // TODO check owner or admin
+    this.utils.checkAdminOrOwner(currentId, chanId);
 
-    const chan = await this.utils.findById(chanId);
+    if (false == (await this.utils.userIs(UserStatus.Banned, userId, chanId)))
+      throw new HttpException('user not banned', HttpStatus.BAD_REQUEST);
 
     try {
-      if (await this.utils.userIs(UserStatus.Banned, userId, chanId)) {
-        let user = await this.utils.getUserInChannel(userId, chanId);
-        user.userStatus = UserStatus.User;
-        user.save();
-        return this.utils.fetchPublicUserDto(userId);
-      } else {
-        throw new HttpException('user not ban', HttpStatus.BAD_REQUEST);
-      }
+      const user = await this.utils.getUserInChannel(userId, chanId);
+      user.destroy();
+      return this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
-        'createFriendRequest ' + error,
+        ErrorMsg.unbanUser + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -228,16 +232,19 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     this.utils.checkId(chanId);
     this.utils.checkUserIds(currentId, userId);
+    this.utils.checkAdminOrOwner(currentId, chanId);
 
-    // TODO check currentId is admin / owner of the channel
+    if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
+      throw new HttpException('owner cannot be muted', HttpStatus.FORBIDDEN);
 
     try {
-      // TODO MUTE for LIMITED TIME userId
-
+      let user = await this.utils.getUserInChannel(userId, chanId);
+      user.userStatus = UserStatus.Muted; // TODO LIMITED TIME
+      user.save();
       return this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
-        'createFriendRequest ' + error,
+        ErrorMsg.muteUser + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -251,16 +258,25 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     this.utils.checkId(chanId);
     this.utils.checkUserIds(currentId, userId);
+    this.utils.checkAdminOrOwner(currentId, chanId);
 
-    // TODO check currentId is admin / owner of the channel
+    if (false == (await this.utils.userIsInChannel(userId, chanId)))
+      throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
+
+    if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
+      throw new HttpException('owner cannot be kicked', HttpStatus.FORBIDDEN);
+
+    let chan = await this.utils.findById(chanId);
 
     try {
-      // TODO KICK userId
-
+      const user = await this.utils.getUserInChannel(userId, chanId);
+      user.destroy();
+      chan.nbUser--;
+      chan.save();
       return this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
-        'createFriendRequest ' + error,
+        ErrorMsg.kickUser + error,
         HttpStatus.BAD_REQUEST,
       );
     }

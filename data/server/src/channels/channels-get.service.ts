@@ -1,71 +1,48 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
-import { isUUID } from 'class-validator';
-import { uuidv4 } from 'src/types';
-import { DestroyOptions } from 'sequelize/types';
 
+import { uuidv4, ChanType, UserStatus } from 'src/types';
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
-import { EditChannelDto } from './dto/editChannel.dto';
 import { channelDto } from './dto/channel.dto';
-import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { FriendsService } from '../friends/friends.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 
-enum ChanType {
-  Direct = 'Direct',
-  Public = 'Public',
-  Protected = 'Protected',
-  Private = 'Private',
-}
-
-enum UserStatus {
-  Direct = 'Direct',
-  Owner = 'Owner',
-  Admin = 'Admin',
-  User = 'User',
-  Muted = 'Muted',
-  Banned = 'Banned',
-  Invited = 'Invited',
-}
-
 // ---------- GET CHANNEL DATA
-// GET getDataChan(chanId: uuidv4): Promise<channelDto> OK
+// GET getDataChan(chanId): Promise< channelDto > OK
 
 // ---------- GET CHANNELS LIST (Sorted by user size)
-// GET getJoinedChan(currentId: uuidv4): Promise<channelDto[]> OK
-// GET getDirectChan(currentId: uuidv4): Promise<channelDto[]> OK
-// GET getUnjoinedChan(currentId: uuidv4, chanType: ChanType): Promise<channelDto[]> OK
+// GET getJoinedChan(currentUserId): Promise< channelDto[] > OK
+// GET getDirectChan(currentUserId): Promise< channelDto[] > OK
+// GET getUnjoinedChan(currentUserId, chanType): Promise< channelDto[] > OK
 
 // ---------- GET USERS LIST
-// GET getUsersChan(chanId: uuidv4): Promise<PublicUserDto[]> OK
-// GET getUsersOnlyChan(chanId: uuidv4): Promise<PublicUserDto[]> OK
-// GET getMutesChan(chanId: uuidv4): Promise<PublicUserDto[]> OK
-// GET getAdminsChan(chanId: uuidv4): Promise<PublicUserDto[]> OK
-// GET getInvitesChan(chanId: uuidv4): Promise<PublicUserDto[]> OK
-// GET getBansChan(chanId: uuidv4): Promise<PublicUserDto[]> OK
-// GET getOwnerChan(chanId: uuidv4): Promise<PublicUserDto[]> OK
+// GET get...(chanId): Promise< PublicUserDto[] >
+// GET getUsersChan(chanId): Promise< PublicUserDto[] > OK
+// GET getUsersOnlyChan(chanId): Promise< PublicUserDto[] > OK
+// GET getMutesChan(chanId): Promise< PublicUserDto[] > OK
+// GET getAdminsChan(chanId): Promise< PublicUserDto[] > OK
+// GET getInvitesChan(chanId): Promise< PublicUserDto[] > OK
+// GET getBansChan(chanId): Promise< PublicUserDto[] > OK
+// GET getOwnerChan(chanId): Promise< PublicUserDto[] > OK
 
 @Injectable()
 export class ChannelsGetService {
   constructor(
-    @InjectModel(Channels)
-    private readonly channelModel: typeof Channels,
-    private readonly usersService: UsersService,
     private readonly friendsService: FriendsService,
     private readonly utils: ChannelsUtilsService,
-
+    @InjectModel(Channels)
+    private readonly channelModel: typeof Channels,
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
   ) {}
 
   // ---------- GET CHANNEL DATA
   async getDataChan(chanId: uuidv4): Promise<channelDto> {
-    return this.utils.fetchChannelDto(chanId);
-    // TODO add image
+    return this.utils.fetchChannelDto(chanId); // TODO add image
   }
 
   // ---------- GET CHANNELS LIST (Sorted by user size)
@@ -288,5 +265,4 @@ export class ChannelsGetService {
     return this.utils.fetchUserDtoArray(userChan);
   }
   */
-
 }

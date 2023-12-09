@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import { isUUID } from 'class-validator';
 import { DestroyOptions } from 'sequelize/types';
 
-import { uuidv4 } from 'src/types';
+import { uuidv4, ChanType, UserStatus, ErrorMsg } from 'src/types';
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
 import { channelDto } from './dto/channel.dto';
@@ -12,36 +12,20 @@ import { UsersService } from '../users/users.service';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { FriendsService } from '../friends/friends.service';
 
-enum ChanType {
-  Direct = 'Direct',
-  Public = 'Public',
-  Protected = 'Protected',
-  Private = 'Private',
-}
-
-enum UserStatus {
-  Direct = 'Direct',
-  Owner = 'Owner',
-  Admin = 'Admin',
-  User = 'User',
-  Muted = 'Muted',
-  Banned = 'Banned',
-  Invited = 'Invited',
-}
-
 // ---------- UTILS
-// checkId(id: uuidv4): Promise<uuidv4> OK
-// findById(chanId: uuidv4): Promise<Channels> OK
-// fetchChannelDto(chanId: uuidv4): Promise<channelDto> OK
-// fetchChannelDtoArray(all: Channels[]): Promise<channelDto[]> OK
-// fetchChanUsersToChanDtoArray(all: ChannelsUsers[]): Promise<channelDto[]> OK
-// userIs(status: UserStatus, currentId: uuidv4, chanId: uuidv4): Promise<boolean> OK
-// userIsInChannel(currentId, chanId): Promise<boolean> OK
-// getUserInChannel(currentId, chanId): Promise<ChannelsUsers> OK
-// checkOwner(currentId, chanId) OK
-// getUsersByStatuses(chanId, userStatuses: string[]): Promise<PublicUserDto[]> OK
-// checkUserIds(currentId: uuidv4, userId: uuidv4) OK
-// fetchPublicUserDto(id: uuidv4): Promise<PublicUserDto> OK
+// checkId(id): Promise< uuidv4 > OK
+// findById(chanId): Promise< Channels > OK
+// fetchChannelDto(chanId): Promise< channelDto > OK
+// fetchChannelDtoArray(all: Channels[]): Promise< channelDto[] > OK
+// fetchChanUsersToChanDtoArray(all: ChannelsUsers[]): Promise< channelDto[] > OK
+// userIs(status: UserStatus, currentId, chanId): Promise< boolean > OK
+// userIsInChannel(currentId, chanId): Promise< boolean > OK
+// getUserInChannel(currentId, chanId): Promise< ChannelsUsers > OK
+// checkOwner(currentId, chanId ) OK
+// checkAdmin(currentId, chanId ) OK
+// getUsersByStatuses(chanId, userStatuses: string[]): Promise< PublicUserDto[] > OK
+// checkUserIds(currentId, userId ) OK
+// fetchPublicUserDto(id): Promise< PublicUserDto > OK
 
 @Injectable()
 export class ChannelsUtilsService {
@@ -188,8 +172,14 @@ export class ChannelsUtilsService {
   }
 
   async checkOwner(currentId: uuidv4, chanId: uuidv4) {
-    if (false == (await this.userIs(UserStatus.Owner, currentId, chanId)))
-      throw new HttpException('you are not owner', HttpStatus.FORBIDDEN);
+    if (await this.userIs(UserStatus.Owner, currentId, chanId)) return;
+    throw new HttpException('you are not owner', HttpStatus.FORBIDDEN);
+  }
+
+  async checkAdminOrOwner(currentId: uuidv4, chanId: uuidv4) {
+    if (await this.userIs(UserStatus.Owner, currentId, chanId)) return;
+    if (await this.userIs(UserStatus.Admin, currentId, chanId)) return;
+    throw new HttpException('you are not admin/owner', HttpStatus.FORBIDDEN);
   }
 
   async getUsersByStatuses(

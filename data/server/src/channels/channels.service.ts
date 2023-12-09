@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { BcryptService } from 'src/tools/bcrypt.service';
 
-import { uuidv4 } from 'src/types';
+import { uuidv4, ChanType, UserStatus, ErrorMsg } from 'src/types';
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
 import { EditChannelDto } from './dto/editChannel.dto';
@@ -14,34 +14,9 @@ import { FriendsService } from '../friends/friends.service';
 import { ChannelsGetService } from '../channels/channels-get.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 
-enum BadMsg {
-  createChannel = 'cc:',
-  updateChannel = 'uc:',
-  deleteChannel = 'dc:',
-  joinChannel = 'jc:',
-  quitChannel = 'qc:',
-}
-
-enum ChanType {
-  Direct = 'Direct',
-  Public = 'Public',
-  Protected = 'Protected',
-  Private = 'Private',
-}
-
-enum UserStatus {
-  Direct = 'Direct',
-  Owner = 'Owner',
-  Admin = 'Admin',
-  User = 'User',
-  Muted = 'Muted',
-  Banned = 'Banned',
-  Invited = 'Invited',
-}
-
 // POST createChannel(currentId, editChannelDto): Promise<channelDto> OK
-// DELETE updateChannel(currentId, chanId, editChannelDto): Promise<channelDto> TO CHECK
-// PATCH deleteChannel(currentId, chanId): Promise<channelDto> OK
+// PATCH updateChannel(currentId, chanId, editChannelDto): Promise<channelDto> TO CHECK
+// DELETE deleteChannel(currentId, chanId): Promise<channelDto> OK
 // ---------- JOIN / QUIT
 // joinChannel(currentId, chanId): Promise<channelDto> OK
 // quitChannel(currentId, chanId): Promise<channelDto> OK
@@ -104,7 +79,7 @@ export class ChannelsService {
       return this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException(
-        BadMsg.joinChannel + error,
+        ErrorMsg.joinChannel + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -162,7 +137,7 @@ export class ChannelsService {
       return this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException(
-        BadMsg.updateChannel + error,
+        ErrorMsg.updateChannel + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -182,7 +157,7 @@ export class ChannelsService {
       return dto;
     } catch (error) {
       throw new HttpException(
-        BadMsg.deleteChannel + error,
+        ErrorMsg.deleteChannel + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -205,7 +180,9 @@ export class ChannelsService {
       throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
 
     if (chan.chanType == ChanType.Protected) {
-      const pass = await BcryptService.hashPassword(passwordChannelDto.chanPassword);
+      const pass = await BcryptService.hashPassword(
+        passwordChannelDto.chanPassword,
+      );
       if (pass != chan.chanPassword)
         throw new HttpException('invalid password', HttpStatus.FORBIDDEN);
     }
@@ -222,7 +199,7 @@ export class ChannelsService {
         throw new HttpException('need an invitation', HttpStatus.FORBIDDEN);
       try {
         user.userStatus = UserStatus.User;
-        user.save(); // CHECK or await user.save(); // ?
+        user.save();
         chan.nbUser++;
         chan.save();
         return this.utils.fetchChannelDto(chan.chanId);
@@ -242,7 +219,7 @@ export class ChannelsService {
       return this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException(
-        BadMsg.joinChannel + error,
+        ErrorMsg.joinChannel + error,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -282,7 +259,7 @@ export class ChannelsService {
       return dto;
     } catch (error) {
       throw new HttpException(
-        BadMsg.quitChannel + error,
+        ErrorMsg.quitChannel + error,
         HttpStatus.BAD_REQUEST,
       );
     }

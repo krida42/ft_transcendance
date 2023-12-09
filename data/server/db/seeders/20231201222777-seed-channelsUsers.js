@@ -30,7 +30,7 @@ module.exports = {
       },
       {
         chanId: 'e1a21913-9371-4a5d-9513-d486995b468e',
-        userId: '791deadd-4703-4545-b5c3-cd9969b1a2d9', // link
+        userId: '791deadd-4703-4545-b5c3-cd9969b1a2d9', // sid
         userStatus: 'User',
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -101,7 +101,7 @@ module.exports = {
       },
       {
         chanId: '8f0708d2-3984-432f-b019-4152e47349fd',
-        userId: '791deadd-4703-4545-b5c3-cd9969b1a2d9', // link
+        userId: '791deadd-4703-4545-b5c3-cd9969b1a2d9', // sid
         userStatus: 'User',
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),

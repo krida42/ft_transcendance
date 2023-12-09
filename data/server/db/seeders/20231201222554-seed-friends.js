@@ -19,7 +19,7 @@ module.exports = {
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       {
-        sender_id: '791deadd-4703-4545-b5c3-cd9969b1a2d9', // link
+        sender_id: '791deadd-4703-4545-b5c3-cd9969b1a2d9', // sid
         receiver_id: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
         status: 'Pending',
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),

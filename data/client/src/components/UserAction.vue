@@ -1,7 +1,7 @@
 <template>
   <div class="user-action w-[10rem] h-[5srem] bd-redd">
-    <div class="avatar bd-redd mx-auto w-[60%]">
-      <img :src="user?.avatar" alt="user image" class="rounded-full" />
+    <div class="avatar w-[5rem] h-[5rem] mx-auto rounded-full overflow-hidden">
+      <img :src="user?.avatar" alt="user image" />
     </div>
     <div class="user-info text-xl font-medium">
       <p class="username truncate bd-redd">

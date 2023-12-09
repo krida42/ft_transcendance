@@ -10,7 +10,7 @@
       class="members-ctn min-h-[35rem] h-[80vh] w-[100%] px-[3rem] pb-[3rem]"
     >
       <div
-        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap gap-[1rem] content-start overflow-y-auto pt-[1rem]"
+        class="w-[100%] h-[100%] bg-green-light rounded-[15px] flex flex-wrap content-start overflow-y-auto py-[1rem]"
       >
         <ChannelSettingsMembers
           v-for="member in bans"
@@ -19,7 +19,7 @@
           :userId="member.id"
           :username="member.pseudo"
           :avatar="member.avatar"
-          :isAdmin="channelsStore.isAdmin(member.id, channelId)"
+          :isAdmin="false"
           :chanId="channelId"
         />
       </div>

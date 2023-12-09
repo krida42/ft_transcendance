@@ -58,6 +58,7 @@ import { User } from "@vicons/tabler";
 import ChatMsgList from "@/components/Chat/ChatMsgList.vue";
 import TestComp from "@/components/TestComp.vue";
 import ChatUserActionPopup from "@/components/Chat/ChatUserActionPopup.vue";
+import axios from "axios";
 
 import { useUsersStore } from "@/stores/users";
 import { useFriendStore } from "@/stores/friend";
@@ -69,24 +70,31 @@ import ChatAccessList from "@/components/Chat/ChatAccessList.vue";
 import { ref } from "vue";
 
 import { state, socket } from "@/socket";
-import axios from "axios";
 
 const mainStore = useMainStore();
+
+axios
+  .patch("http://localhost:3001/users", {
+    pseudo: Math.random().toString(),
+  })
+  .then((res) => {
+    console.log("PATCH res", res);
+  });
+
+axios.get("http://localhost:3001/auth/test").then((res) => {
+  console.log("res", res);
+});
 
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();
 
-usersStore.refreshUser("marine");
-usersStore.refreshUser("kevin");
-usersStore.refreshUser("vincent");
+// usersStore.refreshUser("marine");
+// usersStore.refreshUser("kevin");
+// usersStore.refreshUser("vincent");
 
 friendStore.refreshFriendList();
 
 const puipui = ref("Je fais puiui");
-
-axios.patch("http://localhost:3001/users", {
-  pseudo: "cuicui",
-});
 
 class TestClass {
   name: string;

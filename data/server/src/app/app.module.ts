@@ -49,7 +49,7 @@ import { RealtimeModule } from 'src/realtime/realtime.module';
     AuthModule,
     HttpModule,
     GameModule,
-    RealtimeModule,
+    // RealtimeModule,
   ],
   controllers: [AppController],
   providers: [JwtService, BcryptService, AppService],

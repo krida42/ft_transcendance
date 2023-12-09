@@ -56,10 +56,13 @@ export class UsersController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async create(@Body() createUserDto: CreateUserDto) {
+    console.log('create user - - - - - - ');
     return this.usersService.createUser(createUserDto);
   }
 
   @Patch()
+  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  // @UseGuards(AuthGuard('jwt-refresh'))
   @ApiOperation({ summary: 'Update user' })
   @ApiParam({
     name: 'id',
@@ -67,13 +70,12 @@ export class UsersController {
     format: 'uuid',
     description: 'UUIDv4 of the user',
   })
-  async update(@Body() updateUserDto: UpdateUserDto, @Req() req) {
-    console.log('this.public_id: ', this.public_id);
-    console.log(
-      'new ParseUUIDPipe(req.user.id): ',
-      new ParseUUIDPipe(this.public_id as uuidv4),
-    );
-    return this.usersService.updateUser(this.public_id, updateUserDto);
+  async update(
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() req: Request & { user: any },
+  ) {
+    console.log('update user, req.user.public_id:', req.user.public_id);
+    return this.usersService.updateUser(req.user.public_id, updateUserDto);
   }
 
   @Delete(':id')

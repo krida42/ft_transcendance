@@ -27,6 +27,7 @@ export const socket = io(URL, {
 socket.on("connect", () => {
   state.connected = true;
   socket.emit("cuicui", { msg: "Hello from client" }, (response: any) => {
+    console.log("cuicui acknowledged: ", response);
   });
   console.log("emit status");
   socket.emit("status", Status.Online, (response: any) => {

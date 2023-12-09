@@ -146,20 +146,25 @@ export class UsersService {
   async updateUser(id: uuidv4, updateUserDto: UpdateUserDto) {
     if (!isUUID(id)) throw new InvalidUUIDException();
     try {
-      const user = await this.usersModel.update(
+      const retUpdateNotSafe = await this.usersModel.update(
         { ...updateUserDto },
         { where: { public_id: id }, individualHooks: true },
       );
-      if (user[0] === 0) return { message: user, user: null };
-      const UpdatedUser = await this.usersModel.findOne({
+      if (retUpdateNotSafe[0] === 0)
+        throw new HttpException(
+          'Data to change is already the same as asked',
+          HttpStatus.NOT_MODIFIED,
+        );
+      const updatedUser = await this.usersModel.findOne({
         where: { public_id: id },
         attributes: this.attributesToRetrieve,
       });
-      //  A REVOIR - - -- -
-      return { message: user, user: await responseUser(UpdatedUser!) };
+
+      return await responseUser(updatedUser!);
     } catch (error) {
       console.error(error);
-      throw new HttpException('', HttpStatus.CONFLICT);
+      if (error instanceof HttpException) throw error;
+      throw new HttpException('Cant update user', HttpStatus.BAD_REQUEST);
     }
   }
 

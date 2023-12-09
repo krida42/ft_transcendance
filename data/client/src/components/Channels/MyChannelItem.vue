@@ -27,12 +27,7 @@
 <script lang="ts" setup>
 import { defineProps } from "vue";
 import { computed } from "vue";
-import { useChannelsStore } from "@/stores/channels";
-import { useUsersStore } from "@/stores/users";
 import router from "@/router";
-
-const channelsStore = useChannelsStore();
-const userStore = useUsersStore();
 
 const channel = defineProps({
   id: {
@@ -58,15 +53,19 @@ const button_text = computed(() => {
   return channel.is_owner ? "settings" : "leave";
 });
 
-const optionsChannel = (channelId: string) => {
+const optionsChannel = async (channelId: string) => {
   if (channel.is_owner) {
-    router.push(`/channels/${channelId}/settings/general`);
+    // await channelsStore.refreshMembers(channelId);
+    // await channelsStore.refreshBans(channelId);
+    await router.push(`/channels/${channelId}/settings/general`);
   } else {
     console.log("leave");
     //channelsStore.removeUserFromChannel(userStore.currentUser.id, channelId);
     //not working until connected to backend
   }
 };
+
+const channelId = router.currentRoute.value.params.channelId as string;
 </script>
 
 <style lang="scss" scoped>

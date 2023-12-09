@@ -1,10 +1,7 @@
 <template>
   <div
-    class="settings-members w-[10rem] flex flex-col gap-[0.5rem] justify-center items-center"
-    v-if="
-      (mode === 'members' && isBannedR === false) ||
-      (mode === 'bans' && isBannedR === true)
-    "
+    class="settings-members w-[10rem] flex flex-col gap-[0.5rem] justify-center items-center pb-[1rem]"
+    v-if="!isUnbanned"
   >
     <div class="w-[5rem] h-[5rem] rounded-full overflow-hidden">
       <img
@@ -32,13 +29,14 @@
       </div>
     </div>
     <div class="buttons-banned" v-if="mode === 'bans'">
-      <button class="unban">Unban</button>
+      <button class="unban" @click="unbanUser">Unban</button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineProps, toRef } from "vue";
+import { defineProps, toRef, ref } from "vue";
+import { useChannelsStore } from "@/stores/channels";
 
 const props = defineProps({
   mode: {
@@ -57,17 +55,24 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  isBanned: {
-    type: Boolean,
-    required: true,
-  },
   isAdmin: {
     type: Boolean,
     required: true,
   },
+  chanId: {
+    type: String,
+    required: true,
+  },
 });
+
+const channelsStore = useChannelsStore();
 const isAdminR = toRef(props, "isAdmin");
-const isBannedR = toRef(props, "isBanned");
+const isUnbanned = ref(false);
+
+const unbanUser = () => {
+  isUnbanned.value = true;
+  channelsStore.unbanUser(props.chanId, props.userId);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -80,7 +85,6 @@ button {
   background-color: $green-bg;
   padding: 0.2rem 0.5rem 0.2rem 0.5rem;
   border-radius: 10px;
-  border: 1px solid black;
 }
 
 button:hover {

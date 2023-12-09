@@ -3,3 +3,4 @@ data/server/node_modules
 data/server/dist
 data/client/node_modules
 data/client/dist
+data/node_modules

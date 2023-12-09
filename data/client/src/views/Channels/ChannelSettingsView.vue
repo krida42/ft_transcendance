@@ -17,11 +17,12 @@
 <script lang="ts" setup>
 import router from "@/router";
 import { NavItem } from "@/types";
-import { onMounted } from "vue";
 import NavBar from "@/components/NavBar.vue";
 import MenuButton from "@/components/MenuButton.vue";
+import { useChannelsStore } from "@/stores/channels";
 
-const channelId = router.currentRoute.value.params.channelId;
+const channelId = router.currentRoute.value.params.channelId as string;
+const channelsStore = useChannelsStore();
 
 const navItems: NavItem[] = [
   {

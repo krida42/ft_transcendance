@@ -62,11 +62,40 @@ export const useChannelsStore = defineStore({
         }
       });
     },
+    async refreshMembers(chanId: Id): Promise<void> {
+      return channelsApi.fetchChannelMembers(chanId).then((users) => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.members = users;
+        }
+      });
+    },
     async refreshBans(chanId: Id): Promise<void> {
       return channelsApi.fetchBannedUsers(chanId).then((users) => {
         const channel = this.myChannels.get(chanId);
         if (channel) {
           channel.bans = users;
+        }
+      });
+    },
+    async banUser(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.banUser(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.bans.push(
+            channel.members.find((user) => user.id === userId)!
+          );
+          channel.members = channel.members.filter(
+            (user) => user.id !== userId
+          );
+        }
+      });
+    },
+    async unbanUser(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.unbanUser(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.bans = channel.bans.filter((user) => user.id !== userId);
         }
       });
     },

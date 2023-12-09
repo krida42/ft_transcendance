@@ -26,11 +26,13 @@ export const useChannelsStore = defineStore({
     isBanned: (state) => (chanId: Id, userId: Id) => {
       const channel = state.myChannels.get(chanId);
       if (!channel) return false;
+      if (!channel.bans) return false;
       return channel.bans.some((user) => user.id === userId);
     },
     isAdmin: (state) => (chanId: Id, userId: Id) => {
       const channel = state.myChannels.get(chanId);
       if (!channel) return false;
+      if (!channel.admins) return false;
       return channel.admins.some((user) => user.id === userId);
     },
   },
@@ -67,6 +69,14 @@ export const useChannelsStore = defineStore({
         const channel = this.myChannels.get(chanId);
         if (channel) {
           channel.members = users;
+        }
+      });
+    },
+    async refreshAdmins(chanId: Id): Promise<void> {
+      return channelsApi.fetchChannelAdmins(chanId).then((users) => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.admins = users;
         }
       });
     },

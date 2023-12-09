@@ -19,7 +19,7 @@
           :userId="member.id"
           :username="member.pseudo"
           :avatar="member.avatar"
-          :isAdmin="channelsStore.isAdmin(member.id, channelId)"
+          :isAdmin="channelsStore.isAdmin(channelId, member.id)"
           :chanId="channelId"
         />
       </div>
@@ -39,8 +39,11 @@ const channelsStore = useChannelsStore();
 let members = ref(channelsStore.channel(channelId)?.members);
 
 async function refreshMembers() {
+  await router.isReady();
   await channelsStore.refreshChannels();
+  await channelsStore.refreshAdmins(channelId);
   await channelsStore.refreshMembers(channelId);
+  await channelsStore.refreshBans(channelId);
   members.value = channelsStore.channel(channelId)?.members;
 }
 

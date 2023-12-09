@@ -29,7 +29,9 @@ export default {
   },
 
   async fetchChannelMembers(channelId: string) {
-    const res = await axios.get(`${host}/channels/${channelId}/users`);
+    const res = await axios.get(`${host}/channels/${channelId}/users`, {
+      withCredentials: true,
+    });
     return res.data;
   },
 
@@ -62,18 +64,26 @@ export default {
   },
 
   async joinChannel(channelId: Id) {
-    const res = await axios.post(`${host}/channels/${channelId}/join`);
+    const res = await axios.post(`${host}/channels/${channelId}/join`, {
+      withCredentials: true,
+    });
     return res.data;
   },
 
   async banUser(channelId: Id, userId: Id) {
-    const res = await axios.post(`${host}/channels/${channelId}/ban/${userId}`);
+    const res = await axios.post(
+      `${host}/channels/${channelId}/ban/${userId}`, {
+        withCredentials: true,
+      }
+    );
     return res.data;
   },
 
   async unbanUser(channelId: Id, userId: Id) {
     const res = await axios.delete(
-      `${host}/channels/${channelId}/ban/${userId}`
+      `${host}/channels/${channelId}/ban/${userId}`, {
+        withCredentials: true,
+      }
     );
     return res.data;
   },

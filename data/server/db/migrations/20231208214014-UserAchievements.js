@@ -9,7 +9,7 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true,
       },
-      user_id: {
+      public_id: {
         type: Sequelize.UUID,
         foreignKey: true,
         allowNull: false,
@@ -22,8 +22,8 @@ module.exports = {
       },
       achievement_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         foreignKey: true,
+        allowNull: false,
         references: {
           model: 'Achievements',
           key: 'id',

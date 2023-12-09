@@ -5,6 +5,8 @@ import { PongGateway } from '../websocket/pong.gateway';
 import { PlayerManager } from './playerManager';
 import { GameDBManager } from '../database/db';
 import { GameSave } from '../type';
+import { Achievement } from '../achievements/achievements';
+import { User } from 'db/models/user';
 
 export class PongRoom {
   //game
@@ -63,7 +65,15 @@ export class PongRoom {
     this.game.resume();
   }
 
-  close() {
+  async close() {
+    await this.save();
+    const user1 = await User.findOne({ where: { public_id: this.players[0].user.public_id } });
+    const achievement = new Achievement();
+    if (user1)
+      await achievement.checkAchievements(user1);
+    const user2 = await User.findOne({ where: { public_id: this.players[1].user.public_id } });
+    if (user2)
+      await achievement.checkAchievements(user2);
     this.pongGateway.closeRoom(this);
   }
 
@@ -126,4 +136,5 @@ export class PongRoom {
       player.client.emit('resume');
     });
   }
+
 }

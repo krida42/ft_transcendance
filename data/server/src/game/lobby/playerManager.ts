@@ -118,6 +118,10 @@ export class PlayerManager {
     console.log(
       `Player ${player.user.login} disconnected from room: ${PongRoom.id}`,
     );
+    if (this.isAllPlayersDisconnected()) {
+      console.log('All players disconnected');
+      this.pongRoom.game.declareAbandon();
+    }
   }
 
   async reconnectPlayer(oldPlayer: Player, newPlayer: Player) {
@@ -152,6 +156,10 @@ export class PlayerManager {
     return !!this.pongRoom.pongGateway.rooms.find((r) =>
       r.PlayerManager.hasPlayer(player.user.public_id),
     );
+  }
+
+  isAllPlayersDisconnected(): boolean {
+    return this.players.every((p) => p.disconnected);
   }
 
   showPlayers() {

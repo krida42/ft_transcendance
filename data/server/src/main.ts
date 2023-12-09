@@ -60,9 +60,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new CustomExceptionFilter());
 
-  // create achievements from json file
-  Achievement.createAchievementsFromJSON('./src/game/achievements/achievements.json');
-
   await app.listen(3001);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

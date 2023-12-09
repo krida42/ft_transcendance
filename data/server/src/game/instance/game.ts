@@ -90,7 +90,6 @@ export class Game {
 
   end() {
     this.finished = true;
-    
     this.clearIntervals();
     this.gameState.pongWorld.end();
   }
@@ -98,8 +97,7 @@ export class Game {
   async endGame() {
     this.pongRoom.isGameEnded = true;
     this.running = false;
-    this.pongRoom.close();
-    await this.pongRoom.save();
+    await this.pongRoom.close();
     this.end();
   }
 

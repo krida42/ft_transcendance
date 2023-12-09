@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import {
-	BelongsToMany, 
+  BelongsTo,
   Column,
   ForeignKey,
   Model,
@@ -24,7 +24,7 @@ export class UserAchievements extends Model {
 
   @ForeignKey(() => User)
   @Column({
-	type: DataTypes.UUID,
+    type: DataTypes.UUID,
     allowNull: false,
     field: 'public_id',
   })
@@ -32,15 +32,15 @@ export class UserAchievements extends Model {
 
   @ForeignKey(() => Achievements)
   @Column({
-	type: DataTypes.INTEGER,
-	allowNull: false,
+    type: DataTypes.INTEGER,
+    allowNull: false,
     field: 'achievement_id',
   })
   public achievement_id!: number;
-  
-  @BelongsToMany(() => User, { through: () => UserAchievements })
-  public users!: User[];
 
-  @BelongsToMany(() => Achievements, { through: () => UserAchievements })
-  public achievements!: Achievements[];
+  @BelongsTo(() => User, 'public_id')
+  public user?: User;
+
+  @BelongsTo(() => Achievements, 'achievement_id')
+  public achievement?: Achievements;
 }

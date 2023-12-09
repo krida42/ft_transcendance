@@ -72,7 +72,8 @@ export default {
 
   async banUser(channelId: Id, userId: Id) {
     const res = await axios.post(
-      `${host}/channels/${channelId}/ban/${userId}`, {
+      `${host}/channels/${channelId}/ban/${userId}`,
+      {
         withCredentials: true,
       }
     );
@@ -81,7 +82,8 @@ export default {
 
   async unbanUser(channelId: Id, userId: Id) {
     const res = await axios.delete(
-      `${host}/channels/${channelId}/ban/${userId}`, {
+      `${host}/channels/${channelId}/ban/${userId}`,
+      {
         withCredentials: true,
       }
     );

@@ -1,7 +1,7 @@
 <template>
   <div
     class="settings-members w-[10rem] flex flex-col gap-[0.5rem] justify-top items-center pb-[1rem]"
-    v-if="!isUnbanned && !isMyself"
+    v-if="!isUnbanned && !isMyself && !isBanned"
   >
     <div class="w-[5rem] h-[5rem] rounded-full overflow-hidden">
       <img
@@ -25,7 +25,7 @@
       </button>
       <div class="flex gap-[0.5rem] text-red-my" v-if="!isAdminR">
         <button class="kick">Kick</button>
-        <button class="ban">Ban</button>
+        <button class="ban" @click="banUser">Ban</button>
       </div>
     </div>
     <div class="buttons-banned" v-if="mode === 'bans'">
@@ -69,6 +69,7 @@ const props = defineProps({
 const channelsStore = useChannelsStore();
 const userStore = useUsersStore();
 const isAdminR = toRef(props, "isAdmin");
+const isBanned = ref(false);
 const isUnbanned = ref(false);
 const isMyself = ref(false);
 
@@ -82,6 +83,11 @@ const isMyself = ref(false);
 const unbanUser = () => {
   isUnbanned.value = true;
   channelsStore.unbanUser(props.chanId, props.userId);
+};
+
+const banUser = () => {
+  isBanned.value = true;
+  channelsStore.banUser(props.chanId, props.userId);
 };
 </script>
 

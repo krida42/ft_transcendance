@@ -39,9 +39,11 @@ const channelsStore = useChannelsStore();
 let members = ref(channelsStore.channel(channelId)?.members);
 
 async function refreshMembers() {
+  await router.isReady();
   await channelsStore.refreshChannels();
   await channelsStore.refreshAdmins(channelId);
   await channelsStore.refreshMembers(channelId);
+  await channelsStore.refreshBans(channelId);
   members.value = channelsStore.channel(channelId)?.members;
 }
 

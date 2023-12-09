@@ -13,7 +13,8 @@ import { PlayerManager } from '../lobby/playerManager';
     methods: ['GET', 'POST'],
     credentials: true,
   },
-  transports: ['websocket'],
+  // transports: ['websocket'],
+  namespace: 'game',
 })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()

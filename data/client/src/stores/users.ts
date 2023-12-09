@@ -29,7 +29,7 @@ export const useUsersStore = defineStore({
       return {
         id: mainStore.userInfo.id,
         pseudo: mainStore.userInfo.pseudo,
-        displayName: mainStore.userInfo.displayName,
+        login: mainStore.userInfo.login,
       };
     },
   },

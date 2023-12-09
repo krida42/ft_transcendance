@@ -32,7 +32,9 @@ export default class PlayScene extends Scene {
   }
 
   preload() {
-    const socket = io("ws://localhost:3001", { transports: ["websocket"] });
+    const socket = io("http://localhost:3001/game", {
+      withCredentials: true,
+    });
     this.socket = socket;
 
     this.ballPosition = [300, 300];

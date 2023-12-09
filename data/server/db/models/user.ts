@@ -156,9 +156,8 @@ export class User extends Model {
   static async decryptText(user: User) {
     if (!user) return;
     if (user.email) {
-      user.email = await CryptoService.decrypt(
-        Buffer.from(user.email),
-        );
+      console.log('decrypttext mec user.email: ', user.email.toString());
+      // user.email = await CryptoService.decrypt(user.email);
     }
     if (user.refreshToken)
       user.refreshToken = await CryptoService.decrypt(
@@ -179,5 +178,4 @@ export class User extends Model {
   static setDevRole = async (user: User) => {
     if (DEVS.includes(user.login)) user.roles = ['user', 'admin', 'dev'];
   };
-
 }

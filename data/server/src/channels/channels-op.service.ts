@@ -52,11 +52,11 @@ export class ChannelsOpService {
     this.utils.checkUserIds(currentId, userId);
     this.utils.checkOwner(currentId, chanId);
 
-    if (await this.utils.userIs(UserStatus.Admin, userId, chanId))
-      throw new HttpException('is already admin', HttpStatus.BAD_REQUEST);
-
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
       throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
+
+    if (await this.utils.userIs(UserStatus.Admin, userId, chanId))
+      throw new HttpException('is already admin', HttpStatus.BAD_REQUEST);
 
     if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
       throw new HttpException('owner cannot be admin', HttpStatus.FORBIDDEN);
@@ -112,11 +112,11 @@ export class ChannelsOpService {
     this.utils.checkUserIds(currentId, userId);
     this.utils.checkAdminOrOwner(currentId, chanId);
 
-    if (await this.utils.userIs(UserStatus.Invited, userId, chanId))
-      throw new HttpException('user already invited', HttpStatus.BAD_REQUEST);
-
     if (await this.utils.userIsInChannel(userId, chanId))
       throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
+
+    if (await this.utils.userIs(UserStatus.Invited, userId, chanId))
+      throw new HttpException('user already invited', HttpStatus.BAD_REQUEST);
 
     if (await this.utils.userIs(UserStatus.Banned, userId, chanId))
       throw new HttpException('user banned', HttpStatus.FORBIDDEN);
@@ -176,6 +176,9 @@ export class ChannelsOpService {
     if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
       throw new HttpException('owner cannot be banned', HttpStatus.FORBIDDEN);
 
+    if (await this.utils.userIs(UserStatus.Admin, userId, chanId))
+      throw new HttpException('admin cannot be banned', HttpStatus.FORBIDDEN);
+
     let chan = await this.utils.findById(chanId);
 
     try {
@@ -234,12 +237,19 @@ export class ChannelsOpService {
     this.utils.checkUserIds(currentId, userId);
     this.utils.checkAdminOrOwner(currentId, chanId);
 
+    if (false == (await this.utils.userIsInChannel(userId, chanId)))
+      throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
+
     if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
       throw new HttpException('owner cannot be muted', HttpStatus.FORBIDDEN);
 
+    if (await this.utils.userIs(UserStatus.Admin, userId, chanId))
+      throw new HttpException('admin cannot be muted', HttpStatus.FORBIDDEN);
+
     try {
       let user = await this.utils.getUserInChannel(userId, chanId);
-      user.userStatus = UserStatus.Muted; // TODO LIMITED TIME
+      user.userStatus = UserStatus.Muted;
+      // TODO LIMITED MUTED TIME THEN SET UserStatus.User;
       user.save();
       return this.utils.fetchPublicUserDto(userId);
     } catch (error) {
@@ -265,6 +275,9 @@ export class ChannelsOpService {
 
     if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
       throw new HttpException('owner cannot be kicked', HttpStatus.FORBIDDEN);
+
+    if (await this.utils.userIs(UserStatus.Admin, userId, chanId))
+      throw new HttpException('admin cannot be kicked', HttpStatus.FORBIDDEN);
 
     let chan = await this.utils.findById(chanId);
 

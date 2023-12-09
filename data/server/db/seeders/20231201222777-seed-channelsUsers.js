@@ -108,6 +108,13 @@ module.exports = {
       },
       {
         chanId: '8f0708d2-3984-432f-b019-4152e47349fd',
+        userId: '2a5adbd2-f8f0-48cb-b55e-f9ea937477d5', // sid2
+        userStatus: 'Admin',
+        createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
+        updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      {
+        chanId: '8f0708d2-3984-432f-b019-4152e47349fd',
         userId: '5c0e1ee2-5589-43a6-b0b9-50044a080422', // humma
         userStatus: 'Muted',
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),

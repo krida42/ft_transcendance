@@ -66,7 +66,7 @@ module.exports = {
         ownerId: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
         chanType: 'Public',
         chanPassword: 'nannan',
-        nbUser: 10,
+        nbUser: 7,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },

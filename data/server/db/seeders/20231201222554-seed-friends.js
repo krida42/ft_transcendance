@@ -47,6 +47,13 @@ module.exports = {
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       {
+        sender_id: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
+        receiver_id: '2a5adbd2-f8f0-48cb-b55e-f9ea937477d5', // sid2
+        status: 'Active',
+        createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
+        updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      {
         sender_id: 'ee301078-2e9d-457d-9fd8-c9fbbdf42a12', // ford
         receiver_id: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
         status: 'Active',

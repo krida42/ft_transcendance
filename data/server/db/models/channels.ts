@@ -22,7 +22,6 @@ export class Channels extends Model {
     field: 'chanId',
   })
   public chanId!: string;
-
  
   @MinLength(3, { message: 'Channel name is too short (min 3 characters)' })
   @MaxLength(20, { message: 'Channel name is too long (max 20 characters)' })

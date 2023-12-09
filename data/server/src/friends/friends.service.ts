@@ -37,6 +37,7 @@ enum FriendStatus {
 // isBlocked(you_id: uuidv4, he_id: uuidv4): Promise<boolean> OK
 // fetchPublicUserDto(id: uuidv4): Promise<PublicUserDto> OK
 // fetchUserDtoArrayFor(currentId: uuidv4, all: Friends[]): Promise<PublicUserDto[]> OK
+// isFriendship(user1_id: uuidv4, user2_id: uuidv4): Promise<boolean> OK
 
 @Injectable()
 export class FriendsService {
@@ -341,5 +342,20 @@ export class FriendsService {
       publicUserDtoArray.push(publicUserDto);
     }
     return publicUserDtoArray;
+  }
+
+  async isFriendship(user1_id: uuidv4, user2_id: uuidv4): Promise<boolean> {
+    const existingFriendship = await Friends.findOne({
+      where: {
+          status: FriendStatus.Active,
+            [Op.or]: [
+              { sender_id: user1_id, receiver_id: user2_id },
+              { sender_id: user2_id, receiver_id: user1_id },
+            ],
+      },
+    });
+
+    if (existingFriendship) return true;
+    else return false;
   }
 }

@@ -11,16 +11,25 @@ import { User } from './user';
 import { Channels } from './channels';
 
 @Table
-export class Messages extends Model {
+export class Message extends Model {
   @ApiProperty()
   @PrimaryKey
   @Column({
     unique: true,
     autoIncrement: true,
     type: DataTypes.INTEGER,
+    field: 'confidentialId',
+  })
+  public confidentialId!: number;
+
+  @Column({
+    unique: true,
+    allowNull: false,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     field: 'msgId',
   })
-  public msgId!: number;
+  public msgId!: string;
 
   @ApiProperty()
   @ForeignKey(() => Channels)

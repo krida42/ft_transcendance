@@ -56,11 +56,12 @@ export class UsersController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async create(@Body() createUserDto: CreateUserDto) {
+    console.log('create user - - - - - - ');
     return this.usersService.createUser(createUserDto);
   }
 
   @Patch()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   // @UseGuards(AuthGuard('jwt-refresh'))
   @ApiOperation({ summary: 'Update user' })
   @ApiParam({

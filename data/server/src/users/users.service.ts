@@ -159,12 +159,12 @@ export class UsersService {
         where: { public_id: id },
         attributes: this.attributesToRetrieve,
       });
-      //  A REVOIR - - -- -
+
       return await responseUser(updatedUser!);
     } catch (error) {
       console.error(error);
       if (error instanceof HttpException) throw error;
-      throw new HttpException('', HttpStatus.CONFLICT);
+      throw new HttpException('Cant update user', HttpStatus.CONFLICT);
     }
   }
 

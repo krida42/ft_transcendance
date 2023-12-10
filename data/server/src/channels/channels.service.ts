@@ -255,7 +255,7 @@ export class ChannelsService {
       chan.save();
       const dto = this.utils.fetchChannelDto(chan.chanId);
       if (chan.nbUser == 0) {
-        this.deleteChannel(currentId, chanId);
+        await this.deleteChannel(currentId, chanId);
       }
       return dto;
     } catch (error) {

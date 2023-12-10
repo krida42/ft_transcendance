@@ -110,7 +110,7 @@ export class ChannelsController {
     @Req() req: ReqU,
     @Body() editChannelDto: EditChannelDto,
   ) {
-    return this.channelService.createChannel(
+    return await this.channelService.createChannel(
       this.public_id,
       editChannelDto,
     );
@@ -125,7 +125,7 @@ export class ChannelsController {
     @Param('chanId') chanId: uuidv4,
     @Body() editChannelDto: EditChannelDto,
   ) {
-    return this.channelService.updateChannel(
+    return await this.channelService.updateChannel(
       this.public_id,
       chanId,
       editChannelDto,
@@ -137,7 +137,7 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Delete('/channels/:chanId')
   async deleteChannel(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelService.deleteChannel(this.public_id, chanId);
+    return await this.channelService.deleteChannel(this.public_id, chanId);
   }
 
   // ---------- JOIN / QUIT
@@ -150,7 +150,7 @@ export class ChannelsController {
     @Param('chanId') chanId: uuidv4,
     @Body() passwordChannelDto: PasswordChannelDto,
   ) {
-    return this.channelService.joinChannel(
+    return await this.channelService.joinChannel(
       this.public_id,
       chanId,
       passwordChannelDto,
@@ -161,7 +161,7 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Delete('/channels/:chanId/quit')
   async quitChannel(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelService.quitChannel(this.public_id, chanId);
+    return await this.channelService.quitChannel(this.public_id, chanId);
   }
 
   // ---------- ADMIN
@@ -173,7 +173,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.addAdmin(this.public_id, chanId, userId);
+    return await this.channelOpService.addAdmin(this.public_id, chanId, userId);
   }
 
   @ApiOperation({ summary: 'Delete admin userId' })
@@ -184,7 +184,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.delAdmin(this.public_id, chanId, userId);
+    return await this.channelOpService.delAdmin(this.public_id, chanId, userId);
   }
 
   // ---------- INVITE
@@ -196,7 +196,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.invite(this.public_id, chanId, userId);
+    return await this.channelOpService.invite(this.public_id, chanId, userId);
   }
 
   @ApiOperation({ summary: 'Cancel userId invitation to channel' })
@@ -207,8 +207,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.uninvite(this.public_id, chanId, userId);
-    return this.channelOpService.uninvite(this.public_id, chanId, userId);
+    return await this.channelOpService.uninvite(this.public_id, chanId, userId);
   }
 
   // ---------- BAN
@@ -220,7 +219,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.banUser(this.public_id, chanId, userId);
+    return await this.channelOpService.banUser(this.public_id, chanId, userId);
   }
 
   @ApiOperation({ summary: 'Unban userId from channel' })
@@ -231,7 +230,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.unbanUser(this.public_id, chanId, userId);
+    return await this.channelOpService.unbanUser(this.public_id, chanId, userId);
   }
 
   // ---------- MUTE
@@ -243,7 +242,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.mute(this.public_id, chanId, userId);
+    return await this.channelOpService.mute(this.public_id, chanId, userId);
   }
 
   // ---------- KICK
@@ -255,7 +254,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.kick(this.public_id, chanId, userId);
+    return await this.channelOpService.kick(this.public_id, chanId, userId);
   }
 
   // ---------- GET CHANNEL DATA
@@ -264,7 +263,7 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId')
   async getDataChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getDataChan(chanId);
+    return await this.channelGetService.getDataChan(chanId);
   }
 
   // ---------- GET CHANNELS LIST (for current user, sorted by user size)

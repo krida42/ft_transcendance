@@ -109,7 +109,7 @@ export class UsersService {
     const user = await this.findByLogin(userData.login);
     if (!user) {
       const createUserDto = await this.userDataToCreateUserDto(userData);
-      return this.createUser(createUserDto);
+      return await this.createUser(createUserDto);
     }
     // else
     // console.log('find :', user.dataValues);

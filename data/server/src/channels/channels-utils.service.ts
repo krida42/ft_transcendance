@@ -113,7 +113,7 @@ export class ChannelsUtilsService {
   ): Promise<channelDto[]> {
     const channelIds = all.map((userChannel) => userChannel.chanId);
     const channels = await Channels.findAll({ where: { chanId: channelIds } });
-    return this.fetchChannelDtoArray(channels);
+    return await this.fetchChannelDtoArray(channels);
   }
 
   // status: ('Direct', 'Owner', 'Admin', 'User', 'Muted', 'Banned', 'Invited'),
@@ -240,7 +240,7 @@ export class ChannelsUtilsService {
         },
       },
     });
-    return this.fetchUserDtoArray(userChan);
+    return await this.fetchUserDtoArray(userChan);
   }
 
   async checkUserIds(currentId: uuidv4, userId: uuidv4) {

@@ -76,7 +76,7 @@ export class ChannelsService {
         userStatus: UserStatus.Owner,
       });
 
-      return this.utils.fetchChannelDto(chan.chanId);
+      return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException(
         ErrorMsg.joinChannel + error,
@@ -135,7 +135,7 @@ export class ChannelsService {
       chan.chanPassword = editChannelDto.chanPassword;
       // TODO BCRYPT PASSWORD
       await chan.save();
-      return this.utils.fetchChannelDto(chan.chanId);
+      return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException(
         ErrorMsg.updateChannel + error,
@@ -147,13 +147,13 @@ export class ChannelsService {
   async deleteChannel(currentId: uuidv4, chanId: uuidv4): Promise<channelDto> {
     await this.friendsService.checkId(currentId);
     const chan = await this.utils.findById(chanId);
-    this.utils.checkOwner(currentId, chanId);
+    await this.utils.checkOwner(currentId, chanId);
 
     try {
       await this.channelUsersModel.destroy({
         where: { chanId: chanId },
       });
-      const dto = this.utils.fetchChannelDto(chan.chanId);
+      const dto = await this.utils.fetchChannelDto(chan.chanId);
       await chan.destroy();
       return dto;
     } catch (error) {
@@ -200,10 +200,10 @@ export class ChannelsService {
         throw new HttpException('need an invitation', HttpStatus.FORBIDDEN);
       try {
         user.userStatus = UserStatus.User;
-        user.save();
+        await user.save();
         chan.nbUser++;
-        chan.save();
-        return this.utils.fetchChannelDto(chan.chanId);
+        await chan.save();
+        return await this.utils.fetchChannelDto(chan.chanId);
       } catch (error) {
         throw new HttpException('jc', HttpStatus.BAD_REQUEST);
       }
@@ -216,8 +216,8 @@ export class ChannelsService {
         userStatus: UserStatus.User,
       });
       chan.nbUser++;
-      chan.save();
-      return this.utils.fetchChannelDto(chan.chanId);
+      await chan.save();
+      return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException(
         ErrorMsg.joinChannel + error,
@@ -245,15 +245,15 @@ export class ChannelsService {
         });
         if (oldestNonOwner) {
           oldestNonOwner.userStatus = UserStatus.Owner;
-          oldestNonOwner.save();
+          await oldestNonOwner.save();
         }
       }
 
       const user = await this.utils.getUserInChannel(currentId, chanId);
       user.destroy();
       chan.nbUser--;
-      chan.save();
-      const dto = this.utils.fetchChannelDto(chan.chanId);
+      await chan.save();
+      const dto = await this.utils.fetchChannelDto(chan.chanId);
       if (chan.nbUser == 0) {
         await this.deleteChannel(currentId, chanId);
       }

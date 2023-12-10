@@ -6,3 +6,8 @@ const invertedVelocity = Matter.Vector.create(
 const encryptedText = Buffer.concat([cipher.update(text), cipher.final()]);
 decipher.update(encryptedData),
 console.error(
+this.setcurrentId(); // DEPR
+this.setCurrentId();
+start() {
+pause() {
+.pause();

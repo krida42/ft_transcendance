@@ -44,8 +44,8 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return the user.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBadRequestResponse({ description: 'User not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: uuidv4): Promise<User> {
-    return this.usersService.findById(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: uuidv4): Promise<User> {
+    return await this.usersService.findById(id);
   }
 
   @Post()
@@ -57,7 +57,7 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async create(@Body() createUserDto: CreateUserDto) {
     console.log('create user - - - - - - ');
-    return this.usersService.createUser(createUserDto);
+    return await this.usersService.createUser(createUserDto);
   }
 
   @Patch()
@@ -75,7 +75,7 @@ export class UsersController {
     @Req() req: Request & { user: any },
   ) {
     console.log('update user, req.user.public_id:', req.user.public_id);
-    return this.usersService.updateUser(req.user.public_id, updateUserDto);
+    return await this.usersService.updateUser(req.user.public_id, updateUserDto);
   }
 
   @Delete(':id')
@@ -87,7 +87,7 @@ export class UsersController {
     description: 'UUIDv4 of the user',
   })
   async deleteUser(@Param('id', ParseUUIDPipe) id: string): Promise<number> {
-    return this.usersService.deleteUser(id);
+    return await this.usersService.deleteUser(id);
   }
 
   @Delete()
@@ -100,6 +100,6 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async deleteAllUsers(): Promise<number> {
     console.log('delete all users');
-    return this.usersService.deleteAllUsers();
+    return await this.usersService.deleteAllUsers();
   }
 }

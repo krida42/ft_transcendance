@@ -61,7 +61,7 @@ export class ChannelsGetService {
         ],
       },
     });
-    return this.utils.fetchChanUsersToChanDtoArray(userChannels);
+    return await this.utils.fetchChanUsersToChanDtoArray(userChannels);
   }
 
   async getDirectChan(currentId: uuidv4): Promise<channelDto[]> {
@@ -73,7 +73,7 @@ export class ChannelsGetService {
         userStatus: UserStatus.Direct,
       },
     });
-    return this.utils.fetchChanUsersToChanDtoArray(userChannels);
+    return await this.utils.fetchChanUsersToChanDtoArray(userChannels);
   }
 
   async getUnjoinedChan(
@@ -110,7 +110,7 @@ export class ChannelsGetService {
     const availableChannels = await Channels.findAll({
       where: { chanId: availableChanIds },
     });
-    return this.utils.fetchChannelDtoArray(availableChannels);
+    return await this.utils.fetchChannelDtoArray(availableChannels);
   }
 
   // ---------- GET USERS LIST
@@ -122,37 +122,37 @@ export class ChannelsGetService {
       UserStatus.Admin,
       UserStatus.Owner,
     ];
-    return this.utils.getUsersByStatuses(chanId, userStatuses);
+    return await this.utils.getUsersByStatuses(chanId, userStatuses);
   }
 
   async getUsersOnlyChan(chanId: uuidv4): Promise<PublicUserDto[]> {
     const userStatuses = [UserStatus.User, UserStatus.Muted];
-    return this.utils.getUsersByStatuses(chanId, userStatuses);
+    return await this.utils.getUsersByStatuses(chanId, userStatuses);
   }
 
   async getMutesChan(chanId: uuidv4): Promise<PublicUserDto[]> {
     const userStatuses = [UserStatus.Muted];
-    return this.utils.getUsersByStatuses(chanId, userStatuses);
+    return await this.utils.getUsersByStatuses(chanId, userStatuses);
   }
 
   async getAdminsChan(chanId: uuidv4): Promise<PublicUserDto[]> {
     const userStatuses = [UserStatus.Admin, UserStatus.Owner];
-    return this.utils.getUsersByStatuses(chanId, userStatuses);
+    return await this.utils.getUsersByStatuses(chanId, userStatuses);
   }
 
   async getInvitesChan(chanId: uuidv4): Promise<PublicUserDto[]> {
     const userStatuses = [UserStatus.Invited];
-    return this.utils.getUsersByStatuses(chanId, userStatuses);
+    return await this.utils.getUsersByStatuses(chanId, userStatuses);
   }
 
   async getBansChan(chanId: uuidv4): Promise<PublicUserDto[]> {
     const userStatuses = [UserStatus.Banned];
-    return this.utils.getUsersByStatuses(chanId, userStatuses);
+    return await this.utils.getUsersByStatuses(chanId, userStatuses);
   }
 
   async getOwnerChan(chanId: uuidv4): Promise<PublicUserDto[]> {
     const userStatuses = [UserStatus.Owner];
-    return this.utils.getUsersByStatuses(chanId, userStatuses);
+    return await this.utils.getUsersByStatuses(chanId, userStatuses);
   }
 
 }

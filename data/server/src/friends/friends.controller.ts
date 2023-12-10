@@ -71,7 +71,7 @@ export class FriendsController {
     @Param('userId') userId: uuidv4,
   ) {
     // console.log('req.user.login:', req.user.login);
-    return this.friendsService.createFriend(this.public_id, userId);
+    return await this.friendsService.createFriend(this.public_id, userId);
   }
 
   @ApiOperation({ summary: 'Accept a friend request' })
@@ -80,7 +80,7 @@ export class FriendsController {
     @Req() req: Request,
     @Param('userId') userId: uuidv4,
   ) {
-    return this.friendsService.acceptFriend(this.public_id, userId);
+    return await this.friendsService.acceptFriend(this.public_id, userId);
   }
 
   @ApiOperation({ summary: 'Decline a friend request' })
@@ -89,7 +89,7 @@ export class FriendsController {
     @Req() req: Request,
     @Param('userId') userId: uuidv4,
   ) {
-    return this.friendsService.deleteFriend(this.public_id, userId);
+    return await this.friendsService.deleteFriend(this.public_id, userId);
   }
 
   @ApiOperation({ summary: 'Cancel a friend request' })
@@ -98,13 +98,13 @@ export class FriendsController {
     @Req() req: Request,
     @Param('userId') userId: uuidv4,
   ) {
-    return this.friendsService.deleteFriend(this.public_id, userId);
+    return await this.friendsService.deleteFriend(this.public_id, userId);
   }
 
   @ApiOperation({ summary: 'Delete friend or unblock user' })
   @Delete('/friends/:userId/delete')
   async deleteFriend(@Req() req: Request, @Param('userId') userId: uuidv4) {
-    return this.friendsService.deleteFriend(this.public_id, userId);
+    return await this.friendsService.deleteFriend(this.public_id, userId);
   }
 
   // ---------- BLOCK / UNBLOCK
@@ -112,13 +112,13 @@ export class FriendsController {
   @ApiOperation({ summary: 'Block someone' })
   @Post('/friends/:userId/block')
   async blockFriend(@Req() req: Request, @Param('userId') userId: uuidv4) {
-    return this.friendsService.blockFriend(this.public_id, userId);
+    return await this.friendsService.blockFriend(this.public_id, userId);
   }
 
   @ApiOperation({ summary: 'Unblock someone' })
   @Delete('/friends/:userId/unblock')
   async unblockFriend(@Req() req: Request, @Param('userId') userId: uuidv4) {
-    return this.friendsService.unblockFriend(this.public_id, userId);
+    return await this.friendsService.unblockFriend(this.public_id, userId);
   }
 
   // ---------- GET
@@ -126,24 +126,24 @@ export class FriendsController {
   @ApiOperation({ summary: 'Get friend requests you have sent' })
   @Get('/friends-sent')
   async getSentRequests(@Req() req: Request) {
-    return this.friendsService.getSentRequests(this.public_id);
+    return await this.friendsService.getSentRequests(this.public_id);
   }
 
   @ApiOperation({ summary: 'Get friend requests you have received' })
   @Get('/friends-received')
   async getReceivedRequests(@Req() req: Request) {
-    return this.friendsService.getReceivedRequests(this.public_id);
+    return await this.friendsService.getReceivedRequests(this.public_id);
   }
 
   @ApiOperation({ summary: 'Get your active friends list' })
   @Get('/friends')
   async getFriends(@Req() req: Request) {
-    return this.friendsService.getFriends(this.public_id);
+    return await this.friendsService.getFriends(this.public_id);
   }
 
   @ApiOperation({ summary: 'Get your blocked list' })
   @Get('/blocked')
   async getBlocked(@Req() req: Request) {
-    return this.friendsService.getBlocked(this.public_id);
+    return await this.friendsService.getBlocked(this.public_id);
   }
 }

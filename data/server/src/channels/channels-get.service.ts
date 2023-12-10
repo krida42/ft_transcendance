@@ -42,7 +42,7 @@ export class ChannelsGetService {
 
   // ---------- GET CHANNEL DATA
   async getDataChan(chanId: uuidv4): Promise<channelDto> {
-    return this.utils.fetchChannelDto(chanId); // TODO add image
+    return await this.utils.fetchChannelDto(chanId); // TODO add image
   }
 
   // ---------- GET CHANNELS LIST (Sorted by user size)

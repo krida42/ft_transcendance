@@ -275,21 +275,21 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-joined')
   async getJoinedChan(@Req() req: ReqU) {
-    return this.channelGetService.getJoinedChan(this.public_id);
+    return await this.channelGetService.getJoinedChan(this.public_id);
   }
 
   @ApiOperation({ summary: 'Get direct joined channels (sorted)' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-direct')
   async getDirectChan(@Req() req: ReqU) {
-    return this.channelGetService.getDirectChan(this.public_id);
+    return await this.channelGetService.getDirectChan(this.public_id);
   }
 
   @ApiOperation({ summary: 'Get available channels (sorted)' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-available')
   async getAvailableChan(@Req() req: ReqU) {
-    return this.channelGetService.getUnjoinedChan(
+    return await this.channelGetService.getUnjoinedChan(
       this.public_id,
       ChanType.Public,
     );
@@ -299,7 +299,7 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-unjoined-protect')
   async getProtectedChan(@Req() req: ReqU) {
-    return this.channelGetService.getUnjoinedChan(
+    return await this.channelGetService.getUnjoinedChan(
       this.public_id,
       ChanType.Protected,
     );
@@ -309,7 +309,7 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-unjoined-private')
   async getPrivateChan(@Req() req: ReqU) {
-    return this.channelGetService.getUnjoinedChan(
+    return await this.channelGetService.getUnjoinedChan(
       this.public_id,
       ChanType.Private,
     );
@@ -323,42 +323,42 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/users')
   async getUsersChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getUsersChan(chanId);
+    return await this.channelGetService.getUsersChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get only users/muted list' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/users-only')
   async getUsersOnlyChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getUsersOnlyChan(chanId);
+    return await this.channelGetService.getUsersOnlyChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get mutes list' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/mutes')
   async getMutesChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getMutesChan(chanId);
+    return await this.channelGetService.getMutesChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get admins (owner include) list' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/admins')
   async getAdminsChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getAdminsChan(chanId);
+    return await this.channelGetService.getAdminsChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get invites list' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/invites')
   async getInvitesChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getInvitesChan(chanId);
+    return await this.channelGetService.getInvitesChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get bans list' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/bans')
   async getBansChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getBansChan(chanId);
+    return await this.channelGetService.getBansChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get owner' })
@@ -366,6 +366,6 @@ export class ChannelsController {
   @Get('/channels/:chanId/owner')
   async getOwnerChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
     const userStatuses = [UserStatus.Owner];
-    return this.utils.getUsersByStatuses(chanId, userStatuses);
+    return await this.utils.getUsersByStatuses(chanId, userStatuses);
   }
 }

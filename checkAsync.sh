@@ -82,7 +82,7 @@ find $rep -name "*.ts" -exec grep -nH "async" {} + \
 		while [ ${#tff} -lt 32 ]; do
     		tff="$tff "
 		done
-	echo -en "\x1B[36m$tff \x1B[0m";
+	echo -en "        \x1B[36m $tff \x1B[0m";
 
     w2=$(echo "$ln" | awk '{print $2}')
     w3=$(echo "$ln" | awk '{print $3}')

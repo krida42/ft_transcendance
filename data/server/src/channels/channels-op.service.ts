@@ -110,7 +110,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (await this.utils.userIsInChannel(userId, chanId))
       throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
@@ -143,7 +143,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIs(UserStatus.Invited, userId, chanId)))
       throw new HttpException('user not invited', HttpStatus.BAD_REQUEST);
@@ -168,7 +168,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (await this.utils.userIs(UserStatus.Banned, userId, chanId))
       throw new HttpException('user already banned', HttpStatus.BAD_REQUEST);
@@ -209,7 +209,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIs(UserStatus.Banned, userId, chanId)))
       throw new HttpException('user not banned', HttpStatus.BAD_REQUEST);
@@ -235,7 +235,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
       throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
@@ -268,7 +268,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
       throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);

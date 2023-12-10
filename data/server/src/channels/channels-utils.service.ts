@@ -13,8 +13,8 @@ import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { FriendsService } from '../friends/friends.service';
 
 // ---------- UTILS
-// checkId(id): Promise< uuidv4 > OK
-// findById(chanId): Promise< Channels > OK
+// await checkId(id): Promise< uuidv4 > OK
+// await findById(chanId): Promise< Channels > OK
 // fetchChannelDto(chanId): Promise< channelDto > OK
 // fetchChannelDtoArray(all: Channels[]): Promise< channelDto[] > OK
 // fetchChanUsersToChanDtoArray(all: ChannelsUsers[]): Promise< channelDto[] > OK
@@ -230,7 +230,7 @@ export class ChannelsUtilsService {
     chanId: uuidv4,
     userStatuses: string[],
   ): Promise<PublicUserDto[]> {
-    this.checkId(chanId);
+    await this.checkId(chanId);
 
     const userChan = await this.channelUsersModel.findAll({
       where: {
@@ -245,8 +245,8 @@ export class ChannelsUtilsService {
 
   async checkUserIds(currentId: uuidv4, userId: uuidv4) {
     if (
-      this.friendsService.checkId(currentId) ===
-      this.friendsService.checkId(userId)
+      await this.friendsService.checkId(currentId) ===
+      await this.friendsService.checkId(userId)
     ) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }

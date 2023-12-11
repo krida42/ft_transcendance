@@ -67,6 +67,33 @@ export class Channels extends Model {
   public nbUser!: number;
 
   @Column({
+    unique: false,
+    allowNull: true,
+    type: DataTypes.STRING,
+    defaultValue: 'default',
+    field: 'imgName',
+  })
+  public imgName!: string;
+
+  @Column({
+    unique: false,
+    allowNull: true,
+    type: DataTypes.STRING,
+    defaultValue: 'default',
+    field: 'imgType',
+  })
+  public imgType!: string;
+
+  @Column({
+    unique: false,
+    allowNull: true,
+    type: DataTypes.BLOB('long'),
+    defaultValue: 'default',
+    field: 'imgData',
+  })
+  public imgData!: Blob;
+
+  @Column({
     type: DataTypes.DATE,
     allowNull: false,
     field: 'createdAt',

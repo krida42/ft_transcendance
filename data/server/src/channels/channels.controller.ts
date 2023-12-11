@@ -9,6 +9,7 @@ import {
   Req,
   Query,
   UseGuards,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -23,7 +24,8 @@ import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
 import { PasswordChannelDto } from './dto/passwordChannel.dto';
 import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
-
+import { AddMessageDto } from 'src/message/dto/addMessage.dto';
+import { MessageService } from 'src/message/message.service';
 
 @ApiTags('channels v3 (jwt OFF)')
 @Controller('')
@@ -37,11 +39,13 @@ export class ChannelsController {
     private readonly channelOpService: ChannelsOpService,
     private readonly utils: ChannelsUtilsService,
     private readonly usersService: UsersService,
+    private readonly messageService: MessageService,
   ) {
     this.setcurrentId(); // DEPR
   }
 
-  async setcurrentId() { // DEPR
+  async setcurrentId() {
+    // DEPR
     // TEMP
     let user: User | null;
     if (ChannelsController.isFirstUserConnected === true) {
@@ -110,10 +114,7 @@ export class ChannelsController {
     @Req() req: ReqU,
     @Body() editChannelDto: EditChannelDto,
   ) {
-    return this.channelService.createChannel(
-      this.public_id,
-      editChannelDto,
-    );
+    return this.channelService.createChannel(this.public_id, editChannelDto);
   }
 
   /* // FIXME PATCH CHANNEL
@@ -367,5 +368,20 @@ export class ChannelsController {
   async getOwnerChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
     const userStatuses = [UserStatus.Owner];
     return this.utils.getUsersByStatuses(chanId, userStatuses);
+  }
+
+  @ApiOperation({ summary: 'Send a message' })
+  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @Post('/channels/:chanId/messages')
+  async sendMessage(
+    @Req() req: ReqU,
+    @Param('chanId', ParseUUIDPipe) chanId: string,
+    @Body() addMessageDto: AddMessageDto,
+  ) {
+    return this.messageService.addMessage(
+      chanId,
+      addMessageDto.content,
+      req.user.public_id,
+    );
   }
 }

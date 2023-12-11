@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from '../users/users.module';
 import { FriendsModule } from '../friends/friends.module';
@@ -15,15 +15,22 @@ import { ChannelsService } from './channels.service';
 import { ChannelsGetService } from './channels-get.service';
 import { ChannelsOpService } from './channels-op.service';
 import { ChannelsUtilsService } from './channels-utils.service';
+import { MessageModule } from 'src/message/message.module';
 
 @Module({
-    imports: [
-        SequelizeModule.forFeature([Channels, ChannelsUsers]),
-        UsersModule,
-        FriendsModule
-    ],
-    controllers: [ChannelsController],
-    providers: [ChannelsService, ChannelsGetService, ChannelsOpService, ChannelsUtilsService],
-    exports: [ChannelsService],
+  imports: [
+    SequelizeModule.forFeature([Channels, ChannelsUsers]),
+    FriendsModule,
+    forwardRef(() => UsersModule),
+    forwardRef(() => MessageModule),
+  ],
+  controllers: [ChannelsController],
+  providers: [
+    ChannelsService,
+    ChannelsGetService,
+    ChannelsOpService,
+    ChannelsUtilsService,
+  ],
+  exports: [ChannelsService, ChannelsUtilsService],
 })
 export class ChannelsModule {}

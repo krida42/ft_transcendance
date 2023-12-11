@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator';
 
-export class AddMsgDto {
+export class AddMessageDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(255)

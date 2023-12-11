@@ -22,6 +22,7 @@ import { BcryptService } from 'src/tools/bcrypt.service';
 import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
 
 import { RealtimeModule } from 'src/realtime/realtime.module';
+import { MessageModule } from 'src/message/message.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { RealtimeModule } from 'src/realtime/realtime.module';
     AuthModule,
     HttpModule,
     GameModule,
+    MessageModule,
     // RealtimeModule,
   ],
   controllers: [AppController],

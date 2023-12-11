@@ -14,6 +14,7 @@ import {
 } from 'src/exceptions/exceptions';
 import { plainToClass } from 'class-transformer';
 import { ResponseUserDto } from './dto/responseUser.dto';
+import { PublicUserDto } from './dto/publicUser.dto';
 
 export async function responseUser(user: User) {
   const userDto = plainToClass(ResponseUserDto, user, {
@@ -21,12 +22,20 @@ export async function responseUser(user: User) {
   });
   return userDto;
 }
+
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User)
     private usersModel: typeof User,
   ) {}
+
+  static async userModelToPublicUserDto(user: User) {
+    const userDto = plainToClass(PublicUserDto, user, {
+      excludeExtraneousValues: true,
+    });
+    return userDto;
+  }
 
   private attributesToRetrieve = [
     'public_id',

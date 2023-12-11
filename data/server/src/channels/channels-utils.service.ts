@@ -11,6 +11,7 @@ import { channelDto } from './dto/channel.dto';
 import { UsersService } from '../users/users.service';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { FriendsService } from '../friends/friends.service';
+import { InvalidUUIDException } from 'src/exceptions/exceptions';
 
 // ---------- UTILS
 // checkId(id): Promise< uuidv4 > OK
@@ -73,6 +74,8 @@ export class ChannelsUtilsService {
   }
 
   async findById(chanId: uuidv4): Promise<Channels> {
+    if (!isUUID(chanId)) new InvalidUUIDException();
+
     const chan = await Channels.findOne({ where: { chanId: chanId } });
     if (!chan) {
       throw new HttpException('channel not found', HttpStatus.NOT_FOUND);
@@ -181,9 +184,7 @@ export class ChannelsUtilsService {
       where: {
         chanId: chanId,
         userId: currentId,
-        [Op.or]: [
-          { userStatus: UserStatus.Banned },
-        ],
+        [Op.or]: [{ userStatus: UserStatus.Banned }],
       },
     });
     if (!chanUser)
@@ -202,9 +203,7 @@ export class ChannelsUtilsService {
       where: {
         chanId: chanId,
         userId: currentId,
-        [Op.or]: [
-          { userStatus: UserStatus.Invited },
-        ],
+        [Op.or]: [{ userStatus: UserStatus.Invited }],
       },
     });
     if (!chanUser)

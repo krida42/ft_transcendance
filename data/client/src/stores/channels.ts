@@ -54,14 +54,14 @@ export const useChannelsStore = defineStore({
         this.myChannels.delete(chanId);
       });
     },
-    async leaveChannel(chanId: Id, userId: Id): Promise<void> {
+    async leaveChannel(chanId: Id): Promise<void> {
       return channelsApi.leaveChannel(chanId).then(() => {
-        const channel = this.myChannels.get(chanId);
-        if (channel) {
-          channel.members = channel.members.filter(
-            (user) => user.id !== userId
-          );
-        }
+        this.myChannels.delete(chanId);
+      });
+    },
+    async joinChannel(chanId: Id): Promise<void> {
+      return channelsApi.joinChannel(chanId).then((channel) => {
+        this.myChannels.set(channel.chanId, channel);
       });
     },
     async refreshMembers(chanId: Id): Promise<void> {

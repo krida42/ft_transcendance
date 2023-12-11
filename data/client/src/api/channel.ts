@@ -28,6 +28,13 @@ export default {
     return res.data;
   },
 
+  async fetchAvailableChannels() {
+    const res = await axios.get(`${host}/channels-available`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
   async fetchChannelMembers(channelId: string) {
     const res = await axios.get(`${host}/channels/${channelId}/users`, {
       withCredentials: true,

@@ -1,5 +1,5 @@
 <template>
-  <div class="user-action w-[10rem] h-[5srem] bd-redd">
+  <div class="user-action w-[8rem] h-[5srem] bd-redd">
     <div class="avatar w-[5rem] h-[5rem] mx-auto rounded-full overflow-hidden">
       <img :src="user?.avatar" alt="user image" />
     </div>
@@ -17,7 +17,7 @@
         >{{ user?.pseudo }}
       </p>
     </div>
-    <div class="actions bd-redd flex justify-around mt-1">
+    <div class="actions bd-redd flex justify-center gap-[0.5rem] mt-1">
       <button
         class="accept-btn text-green-dark hover:bg-green-dark hover:text-white hover:border-white"
         @click="acceptFriendRequest(uuid)"

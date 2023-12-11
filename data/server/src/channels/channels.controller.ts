@@ -114,7 +114,6 @@ export class ChannelsController {
   async createChannel(
     @Req() req: ReqU,
     @Body() editChannelDto: EditChannelDto,
-    @Body() setImageDto: SetImageDto,
   ) {
     return await this.channelService.createChannel(
       this.public_id,

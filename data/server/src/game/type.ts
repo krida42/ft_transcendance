@@ -14,9 +14,8 @@ export type Player = {
 };
 
 export type GameState = {
-  scoreToWin: number; // score to win the game
-  score1: number; // score P1
-  score2: number; // score P2
+  scoreToWin: number;
+  score: [number, number];
   pongWorld: PongWorld;
   pongBall: PongBall;
   pongPaddle1: PongPaddle;

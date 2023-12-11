@@ -13,7 +13,7 @@ export class PongRoom {
   pongGateway: PongGateway;
   static id: number = 0;
   game: Game = new Game(this);
-  GameState: { score: [number, number] };
+
   started = false;
   isGameEnded: boolean = false;
   //pause
@@ -27,7 +27,6 @@ export class PongRoom {
 
   constructor(PongGateway: PongGateway) {
     this.pongGateway = PongGateway;
-    this.GameState = { score: [0, 0] };
   }
 
   get players(): Player[] {
@@ -44,11 +43,12 @@ export class PongRoom {
 
   async save() {
     if (this.gameSaved) return;
+    console.log('Game saved', "score1:", this.game.gameState.score[0], "score2:", this.game.gameState.score[1]);
     const gameSave: GameSave = {
       player1_id: this.players[0].user.public_id,
       player2_id: this.players[1].user.public_id,
-      score1: this.GameState.score[0],
-      score2: this.GameState.score[1],
+      score1: this.game.gameState.score[0],
+      score2: this.game.gameState.score[1],
       time: this.game.timeAtEnd,
     };
     this.gameSaved = true;
@@ -67,6 +67,11 @@ export class PongRoom {
 
   async close() {
     await this.save();
+    this.pongGateway.closeRoom(this);
+  }
+
+  async closeWithAchievement() {
+    await this.close();
     const user1 = await User.findOne({ where: { public_id: this.players[0].user.public_id } });
     const achievement = new Achievement();
     if (user1)
@@ -74,6 +79,9 @@ export class PongRoom {
     const user2 = await User.findOne({ where: { public_id: this.players[1].user.public_id } });
     if (user2)
       await achievement.checkAchievements(user2);
+  }
+
+  closeWithoutSave() {
     this.pongGateway.closeRoom(this);
   }
 

@@ -22,6 +22,8 @@ import { BcryptService } from 'src/tools/bcrypt.service';
 import { RefreshMiddleware } from 'src/authentication/refresh.middleware';
 
 import { RealtimeModule } from 'src/realtime/realtime.module';
+import { JwtAuthGuard } from 'src/authentication/guards/jwt.guard';
+import { Jwt2faAuthGuard } from 'src/authentication/guards/2fa.guard';
 
 @Module({
   imports: [
@@ -52,17 +54,13 @@ import { RealtimeModule } from 'src/realtime/realtime.module';
     // RealtimeModule,
   ],
   controllers: [AppController],
-  providers: [JwtService, BcryptService, AppService],
+  providers: [JwtService, BcryptService, AppService, JwtAuthGuard, Jwt2faAuthGuard],
   exports: [SequelizeModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(RefreshMiddleware)
-      .exclude({
-        path: 'auth/logout',
-        method: RequestMethod.POST,
-      })
       .forRoutes('*');
   }
 }

@@ -11,17 +11,19 @@ import {
 import { AuthService } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
+import { Public } from './guards/public.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private AuthService: AuthService) {}
 
+  @Public()
   @UseGuards(AuthGuard('42'))
   @Get('42')
   async fortyTwoLogin(@Res() res: Response) {}
 
+  @Public()
   @UseGuards(AuthGuard('42'))
   @Get('callback')
   @ApiTags('callback')
@@ -38,7 +40,7 @@ export class AuthController {
   }
 
   @Get('test')
-  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @Public()
   @ApiTags('test')
   @ApiParam({ name: 'token' })
   async data(@Req() req: Request & { user: any }, @Res() res: Response) {

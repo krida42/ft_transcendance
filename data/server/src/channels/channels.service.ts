@@ -14,9 +14,13 @@ import { FriendsService } from '../friends/friends.service';
 import { ChannelsGetService } from '../channels/channels-get.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 
-// POST createChannel(currentId, editChannelDto): Promise<channelDto> OK
-// PATCH updateChannel(currentId, chanId, editChannelDto): Promise<channelDto> TO CHECK
+// POST createChannel(currentId, editChannelDto, setImageDto): Promise<channelDto> OK
+// PATCH updateChannel(currentId, chanId, editChannelDto, setImageDto): Promise<channelDto> OK
 // DELETE deleteChannel(currentId, chanId): Promise<channelDto> OK
+
+// ---------- PATCH IMAGE
+// uploadImage(currentId,chanId, file: Express.Multer.File): Promise<channelDto> OK
+
 // ---------- JOIN / QUIT
 // joinChannel(currentId, chanId): Promise<channelDto> OK
 // quitChannel(currentId, chanId): Promise<channelDto> OK
@@ -61,6 +65,7 @@ export class ChannelsService {
     if (pass != null && editChannelDto.chanType == ChanType.Protected)
       pass = await BcryptService.hashPassword(pass);
     else pass = 'nannan';
+
     try {
       const chan = await this.channelModel.create({
         chanName: editChannelDto.chanName,
@@ -85,13 +90,14 @@ export class ChannelsService {
     }
   }
 
-  /* // FIXME
   async updateChannel(
     currentId: uuidv4,
     chanId: uuidv4,
     editChannelDto: EditChannelDto,
   ): Promise<channelDto> {
     await this.friendsService.checkId(currentId);
+    await this.utils.checkId(chanId);
+    await this.utils.checkOwner(currentId, chanId);
 
     const chanTestName = await this.channelModel.findOne({
       where: {
@@ -105,35 +111,28 @@ export class ChannelsService {
       throw new HttpException('name already exist', HttpStatus.CONFLICT);
     }
 
-    if (
-      editChannelDto.chanPassword == null &&
-      editChannelDto.chanType == ChanType.Protected
-    ) {
-      throw new HttpException('password missing', HttpStatus.BAD_REQUEST);
-    }
-
-    let chan = await this.utils.findById(chanId);
-    if (!chan.chanPassword) {
-      chan.chanPassword = 'nan';
-    }
-
     if (editChannelDto.chanType == ChanType.Direct)
       throw new HttpException('invalid channel type', HttpStatus.BAD_REQUEST);
 
-    const ownerChan = await this.channelUsersModel.findOne({
-      where: {
-        chanId: chanId,
-        userId: currentId,
-        userStatus: UserStatus.Owner,
-      },
-    });
-    if (!ownerChan) throw new HttpException('not owner', HttpStatus.FORBIDDEN);
+    let pass = editChannelDto.chanPassword;
+    if (pass == null || pass.length < 6) {
+      if (editChannelDto.chanType == ChanType.Protected) {
+        throw new HttpException(
+          'password missing or too short: < 6 characters',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
+    if (pass != null && editChannelDto.chanType == ChanType.Protected)
+      pass = await BcryptService.hashPassword(pass);
+    else pass = 'nannan';
 
     try {
+      let chan = await this.utils.findById(chanId);
       chan.chanName = editChannelDto.chanName;
       chan.chanType = editChannelDto.chanType;
-      chan.chanPassword = editChannelDto.chanPassword;
-      // TODO BCRYPT PASSWORD
+      chan.chanPassword = pass,
       await chan.save();
       return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
@@ -142,7 +141,49 @@ export class ChannelsService {
         HttpStatus.BAD_REQUEST,
       );
     }
-  } */
+  }
+
+// ---------- PATCH IMAGE
+
+
+  async uploadImage(
+    currentId: uuidv4,
+    chanId: uuidv4,
+    file: Express.Multer.File,
+  ): Promise<channelDto> {
+    await this.friendsService.checkId(currentId);
+    let chan = await this.utils.findById(chanId);
+    await this.utils.checkOwner(currentId, chanId);
+
+    if (!file) {
+      return await this.utils.fetchChannelDto(chan.chanId);
+    }
+
+    console.log('file:', file);
+    const fileType = await import('file-type');
+    const imageType = await fileType.fileTypeFromBuffer(file.buffer);
+
+    if (!imageType || !imageType.mime.startsWith('image/')) {
+      throw new HttpException('invalid image', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const { originalname, mimetype, buffer } = file;
+
+      console.log('imgName:', originalname);
+      console.log('imgType:', mimetype);
+      console.log('imgData:', buffer);
+
+      chan.imgName = originalname;
+      chan.imgType = mimetype;
+      chan.imgData = buffer;
+
+      await chan.save();
+      return await this.utils.fetchChannelDto(chan.chanId);
+    } catch (error) {
+      throw new HttpException('uploadImage: ' + error, HttpStatus.BAD_REQUEST);
+    }
+  }
 
   async deleteChannel(currentId: uuidv4, chanId: uuidv4): Promise<channelDto> {
     await this.friendsService.checkId(currentId);
@@ -249,12 +290,14 @@ export class ChannelsService {
         }
       }
 
-      const user = await this.utils.getUserInChannel(currentId, chanId);
-      user.destroy();
       chan.nbUser--;
       await chan.save();
       const dto = await this.utils.fetchChannelDto(chan.chanId);
-      if (chan.nbUser == 0) {
+
+      if (chan.nbUser > 0) {
+        const user = await this.utils.getUserInChannel(currentId, chanId);
+        user.destroy();
+      } else {
         await this.deleteChannel(currentId, chanId);
       }
       return dto;

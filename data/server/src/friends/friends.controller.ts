@@ -17,7 +17,7 @@ import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
 import { ReqU } from 'src/types';
 
-@ApiTags('friends v3 (jwt OFF)')
+@ApiTags('friends v4 (jwt ON)')
 @Controller('')
 export class FriendsController {
   // private public_id: string | null = null; // TEMP

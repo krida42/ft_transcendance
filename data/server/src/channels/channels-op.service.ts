@@ -227,7 +227,6 @@ export class ChannelsOpService {
   }
 
   // ---------- MUTE
-  // temps de mute 5 min / 1h / 3h
   async mute(
     currentId: uuidv4,
     chanId: uuidv4,
@@ -249,8 +248,14 @@ export class ChannelsOpService {
     try {
       let user = await this.utils.getUserInChannel(userId, chanId);
       user.userStatus = UserStatus.Muted;
-      // TODO LIMITED MUTED TIME THEN SET UserStatus.User;
       await user.save();
+
+      const min = 1; // TODO TEST ME
+      setTimeout(async () => {
+        user.userStatus = UserStatus.User;
+        await user.save();
+      }, min * 60 * 1000);
+
       return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(

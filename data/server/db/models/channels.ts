@@ -91,7 +91,7 @@ export class Channels extends Model {
     defaultValue: 'default',
     field: 'imgData',
   })
-  public imgData!: Blob;
+  public imgData!: Buffer;
 
   @Column({
     type: DataTypes.DATE,

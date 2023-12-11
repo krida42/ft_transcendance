@@ -88,6 +88,9 @@ export class ChannelsUtilsService {
       chan.chanType,
       chan.ownerId,
       chan.nbUser,
+      chan.imgName,
+      chan.imgType,
+      chan.imgData,
     );
     return dto;
   }
@@ -102,6 +105,9 @@ export class ChannelsUtilsService {
         chan.chanType,
         chan.ownerId,
         chan.nbUser,
+        chan.imgName,
+        chan.imgType,
+        chan.imgData,
       );
       channelDtoArray.push(dto);
     }
@@ -181,9 +187,7 @@ export class ChannelsUtilsService {
       where: {
         chanId: chanId,
         userId: currentId,
-        [Op.or]: [
-          { userStatus: UserStatus.Banned },
-        ],
+        [Op.or]: [{ userStatus: UserStatus.Banned }],
       },
     });
     if (!chanUser)
@@ -202,9 +206,7 @@ export class ChannelsUtilsService {
       where: {
         chanId: chanId,
         userId: currentId,
-        [Op.or]: [
-          { userStatus: UserStatus.Invited },
-        ],
+        [Op.or]: [{ userStatus: UserStatus.Invited }],
       },
     });
     if (!chanUser)
@@ -245,8 +247,8 @@ export class ChannelsUtilsService {
 
   async checkUserIds(currentId: uuidv4, userId: uuidv4) {
     if (
-      await this.friendsService.checkId(currentId) ===
-      await this.friendsService.checkId(userId)
+      (await this.friendsService.checkId(currentId)) ===
+      (await this.friendsService.checkId(userId))
     ) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }

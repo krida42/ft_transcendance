@@ -56,7 +56,6 @@ const availableChannelsList = ref<Channel[]>([]);
 onBeforeMount(() => {
   channelsApi.fetchAvailableChannels().then((res) => {
     availableChannelsList.value = res;
-    //console.log(availableChannelsList.value);
   });
 });
 

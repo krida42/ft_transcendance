@@ -71,7 +71,7 @@ export default {
   },
 
   async leaveChannel(channelId: Id) {
-    const res = await axios.delete(`${host}/channels/${channelId}/quit}`, {
+    const res = await axios.delete(`${host}/channels/${channelId}/quit`, {
       withCredentials: true,
     });
     return res.data;
@@ -97,6 +97,36 @@ export default {
   async unbanUser(channelId: Id, userId: Id) {
     const res = await axios.delete(
       `${host}/channels/${channelId}/ban/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  },
+
+  async kickUser(channelId: Id, userId: Id) {
+    const res = await axios.delete(
+      `${host}/channels/${channelId}/kick/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  },
+
+  async addAdmin(channelId: Id, userId: Id) {
+    const res = await axios.post(
+      `${host}/channels/${channelId}/admin/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  },
+
+  async removeAdmin(channelId: Id, userId: Id) {
+    const res = await axios.delete(
+      `${host}/channels/${channelId}/admin/${userId}`,
       {
         withCredentials: true,
       }

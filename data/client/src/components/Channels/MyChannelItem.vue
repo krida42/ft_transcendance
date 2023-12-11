@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="isJoined === false"
     class="channel-item relative text-[1.2rem] pt-[1rem] pb-[1rem]"
     :class="channel.mode === 'my_channels' ? 'my_channels' : 'explore_channels'"
   >
@@ -35,8 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
-import { computed } from "vue";
+import { defineProps, computed, ref } from "vue";
 import router from "@/router";
 import { useChannelsStore } from "@/stores/channels";
 
@@ -65,6 +65,8 @@ const channel = defineProps({
 });
 
 const channelsStore = useChannelsStore();
+const channelId = router.currentRoute.value.params.channelId as string;
+const isJoined = ref(false);
 const button_text = computed(() => {
   return channel.mode === "my_channels"
     ? channel.is_owner
@@ -84,10 +86,9 @@ const optionsChannel = async (channelId: string) => {
   } else {
     console.log("join channel");
     channelsStore.joinChannel(channelId);
+    isJoined.value = true;
   }
 };
-
-const channelId = router.currentRoute.value.params.channelId as string;
 </script>
 
 <style lang="scss" scoped>

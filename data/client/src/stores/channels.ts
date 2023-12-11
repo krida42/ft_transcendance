@@ -109,5 +109,33 @@ export const useChannelsStore = defineStore({
         }
       });
     },
+    async kickUser(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.kickUser(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.members = channel.members.filter(
+            (user) => user.id !== userId
+          );
+        }
+      });
+    },
+    async addAdmin(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.addAdmin(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.admins.push(
+            channel.members.find((user) => user.id === userId)!
+          );
+        }
+      });
+    },
+    async removeAdmin(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.removeAdmin(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.admins = channel.admins.filter((user) => user.id !== userId);
+        }
+      });
+    },
   },
 });

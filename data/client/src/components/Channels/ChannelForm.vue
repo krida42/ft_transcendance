@@ -39,12 +39,10 @@
       </div>
       <div
         class="leave-buttons-container flex flex-col gap-[1rem] ml-auto mr-[1rem]"
-        :class="$props.formType === 'edit' ? 'block' : 'hidden'"
+        v-if="$props.formType === 'edit'"
       >
-        <button @click="() => channel.leaveChannel(channelId, userId)">
-          Leave
-        </button>
-        <button @click="() => channel.deleteChannel(channelId)">Delete</button>
+        <div @click="leaveChannel(channelId)">Leave</div>
+        <div @click="() => channel.deleteChannel(channelId)">Delete</div>
       </div>
     </div>
     <div class="privacy-status flex gap-[2rem] self-start ml-[3rem]">
@@ -108,6 +106,7 @@
     </div>
     <div class="submit-btn w-[90%] flex justify-end">
       <button
+        type="submit"
         class="bg-yellow-hover rounded-[15px] px-[1rem] h-[3rem] text-[1.5rem] text-black uppercase"
       >
         {{ props.formType === "create" ? "create" : "save" }}
@@ -200,6 +199,11 @@ const editForm = () => {
 };
 
 const sendForm = props.formType === "create" ? createForm : editForm;
+
+async function leaveChannel(channelId: string) {
+  await channel.leaveChannel(channelId);
+  router.push("/channels/my-channels");
+}
 </script>
 
 <style lang="scss" scoped>

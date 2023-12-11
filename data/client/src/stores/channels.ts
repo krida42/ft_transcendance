@@ -47,6 +47,7 @@ export const useChannelsStore = defineStore({
     async createChannel(channel: Channel): Promise<Channel | void> {
       return channelsApi.createChannel(channel).then((channel) => {
         this.myChannels.set(channel.chanId, channel);
+        return channel;
       });
     },
     async deleteChannel(chanId: Id): Promise<void> {
@@ -158,6 +159,11 @@ export const useChannelsStore = defineStore({
             channel.members.find((user) => user.id === userId)!
           );
         }
+      });
+    },
+    async uploadChannelLogo(chanId: Id, file: File): Promise<void> {
+      return channelsApi.uploadChannelLogo(chanId, file).then((channel) => {
+        this.myChannels.set(channel.chanId, channel);
       });
     },
   },

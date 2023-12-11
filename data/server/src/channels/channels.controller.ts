@@ -9,10 +9,7 @@ import {
   Req,
   Query,
   UseGuards,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -22,12 +19,13 @@ import { ChannelsGetService } from './channels-get.service';
 import { ChannelsOpService } from './channels-op.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 import { EditChannelDto } from './dto/editChannel.dto';
-import { SetImageDto } from './dto/setImage.dto';
 import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
 import { PasswordChannelDto } from './dto/passwordChannel.dto';
+import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 
-@ApiTags('channels v4 (jwt OFF)')
+
+@ApiTags('channels v3 (jwt OFF)')
 @Controller('')
 export class ChannelsController {
   private public_id: string | null = null; // DEPR
@@ -43,8 +41,8 @@ export class ChannelsController {
     this.setcurrentId(); // DEPR
   }
 
-  /// DEPR
-  async setcurrentId() {
+  async setcurrentId() { // DEPR
+    // TEMP
     let user: User | null;
     if (ChannelsController.isFirstUserConnected === true) {
       user = await this.usersService.findByLogin('marvin');
@@ -61,11 +59,8 @@ export class ChannelsController {
   }
 
   // @Post('/channels') OK
-  // @Patch('/channels/:chanId') OK
+  // @Patch('/channels/:chanId') FIXME
   // @Delete('/channels/:chanId') OK
-
-  // ---------- PATCH IMG
-  // @Patch('/channels/:chanId/image') OK
 
   // ---------- JOIN / QUIT
   // @Post('/channels/:chanId/join') OK
@@ -84,7 +79,7 @@ export class ChannelsController {
   // @Delete('/channels/:chanId/ban/:userId') OK
 
   // ---------- MUTE
-  // @Patch('/channels/:chanId/mute/:userId') OK
+  // @Patch('/channels/:chanId/mute/:userId') OK FIXME TIMER
 
   // ---------- KICK
   // @Delete('/channels/:chanId/kick/:userId') OK
@@ -99,7 +94,7 @@ export class ChannelsController {
   // @Get('/channels-unjoined-protect') OK
   // @Get('/channels-unjoined-private') OK
 
-  // ---------- GET USERS LIST
+  // ---------- GET USERS LIST // TODO BLOCK ACCESS IF NOT IN CHANNEL PRIVATE OR PROTECt
   // @Get('/channels/:chanId/users') OK
   // @Get('/channels/:chanId/users-only') OK
   // @Get('/channels/:chanId/mutes') OK
@@ -121,6 +116,7 @@ export class ChannelsController {
     );
   }
 
+  /* // FIXME PATCH CHANNEL
   @ApiOperation({ summary: 'Update a channel (dto)' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Patch('/channels/:chanId')
@@ -135,26 +131,13 @@ export class ChannelsController {
       editChannelDto,
     );
   }
+  */
 
   @ApiOperation({ summary: 'Delete a channel' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Delete('/channels/:chanId')
   async deleteChannel(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
     return await this.channelService.deleteChannel(this.public_id, chanId);
-  }
-
-  // ---------- PATCH IMG
-
-  @ApiOperation({ summary: 'Change channel image' })
-  // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
-  @UseInterceptors(FileInterceptor('image'))
-  @Patch('/channels/:chanId/image')
-  async uploadImage(
-    @Req() req: ReqU,
-    @Param('chanId') chanId: uuidv4,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    return await this.channelService.uploadImage(this.public_id, chanId, file);
   }
 
   // ---------- JOIN / QUIT
@@ -247,11 +230,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return await this.channelOpService.unbanUser(
-      this.public_id,
-      chanId,
-      userId,
-    );
+    return await this.channelOpService.unbanUser(this.public_id, chanId, userId);
   }
 
   // ---------- MUTE

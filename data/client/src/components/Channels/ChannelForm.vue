@@ -171,7 +171,7 @@ const initChannel = async () => {
   chanMembers.value = currentChannel.value.members;
   channelName.value = currentChannel.value.chanName;
   privacy.value = currentChannel.value.chanType;
-  //channelLogo.value = currentChannel.value.logo;
+  //channelLogo.value = currentChannel.value.logo as string;
 
   for (const invite of currentChannel.value.invites) {
     usersInvited.push(invite.id);
@@ -195,24 +195,27 @@ const onFileSelected = (e: Event) => {
   reader.readAsDataURL(file);
   reader.onload = (e) => {
     channelLogo.value = e.target?.result as string;
-    console.log(channelLogo.value);
+    //console.log(channelLogo.value);
   };
 };
 
 const createForm = async () => {
   const newChannel: Channel = {} as Channel;
-  let channelCreated: Channel | void;
   newChannel.chanName = channelName.value;
   newChannel.chanType = privacy.value;
-  if (privacy.value !== PrivacyType.Private && !search_input.value)
+  if (privacy.value !== PrivacyType.Protected && !search_input.value)
     search_input.value = "password";
   newChannel.chanPassword = search_input.value;
-  channelCreated = await channel.createChannel(newChannel);
-  if (channelCreated) {
-    for (const userId of usersInvited) {
-      channel.inviteUser(userId, channelCreated.chanId);
+
+  channel.createChannel(newChannel).then((chan) => {
+    if (chan) {
+      console.log(file);
+      if (file) channel.uploadChannelLogo(chan.chanId, file);
+      for (const userId of usersInvited) {
+        channel.inviteUser(userId, chan.chanId);
+      }
     }
-  }
+  });
   router.push("/channels/my-channels");
 };
 

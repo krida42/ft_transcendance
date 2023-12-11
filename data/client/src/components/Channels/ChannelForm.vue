@@ -95,12 +95,19 @@
           "
           class="w-[100%] h-[3rem] rounded-[15px] bg-yellow-hover text-black text-[1.2rem] pl-[1rem]"
         />
-        <user-action
+        <ChannelSettingsMembers
+          @invite="inviteUser($event)"
           :class="privacy === 'Private' ? 'block' : 'hidden'"
           v-for="user in friendList"
           :key="user.id"
-          :uuid="user.id"
-          :mode="'channel'"
+          :mode="'invite'"
+          :userId="user.id"
+          :username="user.pseudo"
+          :avatar="user.avatar"
+          :isAdmin="false"
+          :chanId="channelId"
+          :members="chanMembers"
+          :invites="usersInvited"
         />
       </div>
     </div>
@@ -118,14 +125,14 @@
 <script lang="ts" setup>
 import { useChannelsStore } from "@/stores/channels";
 import { useFriendStore } from "@/stores/friend";
-import { useUsersStore } from "@/stores/users";
 import { ref, computed, defineProps, onBeforeMount } from "vue";
 import { Channel } from "@/types";
 import unknownLogo from "@/assets/svg/unknown-img.svg";
-import UserAction from "@/components/UserAction.vue";
+import ChannelSettingsMembers from "@/components/Channels/ChannelSettingsMembers.vue";
 import { PrivacyType } from "@/types";
 import router from "@/router";
 import { FriendsTransformer } from "@/utils//friendsTransformer";
+import { User } from "@/types";
 
 const props = defineProps({
   formType: {
@@ -139,6 +146,7 @@ const privacy = ref(PrivacyType.Private);
 const channelName = ref("");
 const channelLogo = ref("");
 const search_input = ref("");
+let usersInvited: string[] = [];
 const friendStore = useFriendStore();
 const friendList = computed(() => {
   return FriendsTransformer.beginWithLetters(
@@ -146,8 +154,7 @@ const friendList = computed(() => {
     search_input.value
   );
 });
-const user = useUsersStore();
-const userId = computed(() => user.currentUser.id);
+const chanMembers = ref([] as User[]);
 const channel = useChannelsStore();
 const channelId = ref("");
 
@@ -159,9 +166,17 @@ const initChannel = async () => {
   channelId.value = router.currentRoute.value.params.channelId as string;
   currentChannel.value = channel.channel(channelId.value);
   if (!currentChannel.value) return;
+  await channel.refreshMembers(currentChannel.value.chanId);
+  await channel.refreshInvites(currentChannel.value.chanId);
+  chanMembers.value = currentChannel.value.members;
   channelName.value = currentChannel.value.chanName;
   privacy.value = currentChannel.value.chanType;
   //channelLogo.value = currentChannel.value.logo;
+
+  for (const invite of currentChannel.value.invites) {
+    usersInvited.push(invite.id);
+  }
+  console.log(usersInvited);
 };
 
 onBeforeMount(() => {
@@ -186,12 +201,18 @@ const onFileSelected = (e: Event) => {
 
 const createForm = async () => {
   const newChannel: Channel = {} as Channel;
+  let channelCreated: Channel | void;
   newChannel.chanName = channelName.value;
   newChannel.chanType = privacy.value;
   if (privacy.value !== PrivacyType.Private && !search_input.value)
     search_input.value = "password";
   newChannel.chanPassword = search_input.value;
-  await channel.createChannel(newChannel);
+  channelCreated = await channel.createChannel(newChannel);
+  if (channelCreated) {
+    for (const userId of usersInvited) {
+      channel.inviteUser(userId, channelCreated.chanId);
+    }
+  }
   router.push("/channels/my-channels");
 };
 
@@ -216,6 +237,14 @@ async function leaveChannel(channelId: string) {
 async function deleteChannel(channelId: string) {
   await channel.deleteChannel(channelId);
   router.push("/channels/my-channels");
+}
+
+async function inviteUser(userId: string) {
+  if (usersInvited.includes(userId)) {
+    usersInvited = usersInvited.filter((id) => id !== userId);
+  } else {
+    usersInvited.push(userId);
+  }
 }
 </script>
 
@@ -264,7 +293,7 @@ input[type="radio"]:checked:after {
   width: 13px;
   height: 13px;
   border-radius: 15px;
-  top: -9px;
+  top: -10px;
   left: 0px;
   position: relative;
   background-color: $yellow-hover;

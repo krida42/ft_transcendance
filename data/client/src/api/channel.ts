@@ -49,6 +49,13 @@ export default {
     return res.data;
   },
 
+  async fetchChannelInvites(channelId: string) {
+    const res = await axios.get(`${host}/channels/${channelId}/invites`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
   async fetchBannedUsers(channelId: string) {
     const res = await axios.get(`${host}/channels/${channelId}/bans`, {
       withCredentials: true,
@@ -134,6 +141,16 @@ export default {
   async removeAdmin(channelId: Id, userId: Id) {
     const res = await axios.delete(
       `${host}/channels/${channelId}/admin/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  },
+
+  async inviteUser(channelId: Id, userId: Id) {
+    const res = await axios.post(
+      `${host}/channels/${channelId}/invite/${userId}`,
       {
         withCredentials: true,
       }

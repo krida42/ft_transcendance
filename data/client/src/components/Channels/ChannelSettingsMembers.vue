@@ -1,11 +1,13 @@
 <template>
   <div
-    class="settings-members w-[10rem] flex flex-col gap-[0.5rem] justify-top items-center pb-[1rem]"
-    v-if="!isUnbanned && !isMyself && !isBanned"
+    class="settings-members flex flex-col gap-[0.5rem] justify-top items-center pb-[1rem]"
+    :class="props.mode === 'invite' ? 'w-[7rem]' : 'w-[10rem]'"
+    v-if="!isUnbanned && !isMyself && !isBanned && !isInChannel"
   >
     <div class="w-[5rem] h-[5rem] rounded-full overflow-hidden">
       <img
-        src="@/assets/svg/profile.svg"
+        :src="props.avatar"
+        alt="user image"
         class="w-[100%] h-[5rem] object-cover"
       />
     </div>
@@ -32,13 +34,30 @@
     <div class="buttons-banned" v-if="mode === 'bans'">
       <button class="unban" @click="unbanUser">Unban</button>
     </div>
+    <div
+      :class="isInvited ? 'buttons-invited' : 'buttons-invite'"
+      v-if="mode === 'invite'"
+    >
+      <div
+        class="invite"
+        @click="
+          () => {
+            $emit('invite', userId);
+            isInvited = !isInvited;
+          }
+        "
+      >
+        {{ isInvited ? "Invited" : "Invite" }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineProps, toRef, ref } from "vue";
+import { defineProps, toRef, ref, computed } from "vue";
 import { useChannelsStore } from "@/stores/channels";
 import { useUsersStore } from "@/stores/users";
+import { User } from "@/types";
 
 const props = defineProps({
   mode: {
@@ -65,6 +84,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  members: {
+    type: Object as () => User[],
+    required: false,
+  },
+  invites: {
+    type: Object as () => string[],
+    required: false,
+  },
 });
 
 const channelsStore = useChannelsStore();
@@ -73,6 +100,15 @@ const isAdminR = toRef(props, "isAdmin");
 const isBanned = ref(false);
 const isUnbanned = ref(false);
 const isMyself = ref(false);
+const isInvited = ref(
+  props.invites ? props.invites.includes(props.userId) : false
+);
+const isInChannel = computed(() => {
+  if (props.members) {
+    return props.members.some((member) => member.id === props.userId);
+  }
+  return false;
+});
 
 (() => {
   const myId = userStore.currentUser.id;
@@ -120,5 +156,23 @@ button {
 
 button:hover {
   background-color: $yellow-hover;
+}
+
+.buttons-invite {
+  cursor: pointer;
+  background-color: $green-bg;
+  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+  border-radius: 10px;
+}
+
+.buttons-invite:hover {
+  background-color: $yellow-hover;
+}
+
+.buttons-invited {
+  cursor: pointer;
+  background-color: $yellow-hover;
+  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+  border-radius: 10px;
 }
 </style>

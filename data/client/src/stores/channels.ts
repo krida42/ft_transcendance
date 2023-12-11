@@ -44,7 +44,7 @@ export const useChannelsStore = defineStore({
         });
       });
     },
-    async createChannel(channel: Channel): Promise<void> {
+    async createChannel(channel: Channel): Promise<Channel | void> {
       return channelsApi.createChannel(channel).then((channel) => {
         this.myChannels.set(channel.chanId, channel);
       });
@@ -74,6 +74,14 @@ export const useChannelsStore = defineStore({
         const channel = this.myChannels.get(chanId);
         if (channel) {
           channel.members = users;
+        }
+      });
+    },
+    async refreshInvites(chanId: Id): Promise<void> {
+      return channelsApi.fetchChannelInvites(chanId).then((users) => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.invites = users;
         }
       });
     },
@@ -139,6 +147,16 @@ export const useChannelsStore = defineStore({
         const channel = this.myChannels.get(chanId);
         if (channel) {
           channel.admins = channel.admins.filter((user) => user.id !== userId);
+        }
+      });
+    },
+    async inviteUser(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.inviteUser(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.invites.push(
+            channel.members.find((user) => user.id === userId)!
+          );
         }
       });
     },

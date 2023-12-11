@@ -42,7 +42,7 @@
         v-if="$props.formType === 'edit'"
       >
         <div @click="leaveChannel(channelId)">Leave</div>
-        <div @click="() => channel.deleteChannel(channelId)">Delete</div>
+        <div @click="deleteChannel(channelId)">Delete</div>
       </div>
     </div>
     <div class="privacy-status flex gap-[2rem] self-start ml-[3rem]">
@@ -119,12 +119,11 @@
 import { useChannelsStore } from "@/stores/channels";
 import { useFriendStore } from "@/stores/friend";
 import { useUsersStore } from "@/stores/users";
-import { ref, computed, defineProps } from "vue";
+import { ref, computed, defineProps, onBeforeMount } from "vue";
 import { Channel } from "@/types";
 import unknownLogo from "@/assets/svg/unknown-img.svg";
 import UserAction from "@/components/UserAction.vue";
 import { PrivacyType } from "@/types";
-import { User } from "@/types";
 import router from "@/router";
 import { FriendsTransformer } from "@/utils//friendsTransformer";
 
@@ -135,9 +134,10 @@ const props = defineProps({
   },
 });
 
-const privacy = ref(PrivacyType.Private); //change the initialization to get the privacy of the channel if it's an edit form
-const channelName = ref(""); //change the initialization to get the name of the channel if it's an edit form
-const channelLogo = ref(""); //change the initialization to get the logo of the channel if it's an edit form
+const currentChannel = ref({} as Channel | undefined);
+const privacy = ref(PrivacyType.Private);
+const channelName = ref("");
+const channelLogo = ref("");
 const search_input = ref("");
 const friendStore = useFriendStore();
 const friendList = computed(() => {
@@ -149,18 +149,27 @@ const friendList = computed(() => {
 const user = useUsersStore();
 const userId = computed(() => user.currentUser.id);
 const channel = useChannelsStore();
-const channelId = computed(() => {
-  return props.formType === "edit"
-    ? (router.currentRoute.value.params.channelId as string)
-    : "";
-});
+const channelId = ref("");
 
 let files: FileList | null = null;
 let file: File | null = null;
 
-(() => {
+const initChannel = async () => {
+  await channel.refreshChannels();
+  channelId.value = router.currentRoute.value.params.channelId as string;
+  currentChannel.value = channel.channel(channelId.value);
+  if (!currentChannel.value) return;
+  channelName.value = currentChannel.value.chanName;
+  privacy.value = currentChannel.value.chanType;
+  //channelLogo.value = currentChannel.value.logo;
+};
+
+onBeforeMount(() => {
   friendStore.refreshFriendList();
-})();
+  if (props.formType === "edit") {
+    initChannel();
+  }
+});
 
 const onFileSelected = (e: Event) => {
   if (e) e.preventDefault();
@@ -179,29 +188,33 @@ const createForm = async () => {
   const newChannel: Channel = {} as Channel;
   newChannel.chanName = channelName.value;
   newChannel.chanType = privacy.value;
+  if (privacy.value !== PrivacyType.Private && !search_input.value)
+    search_input.value = "password";
   newChannel.chanPassword = search_input.value;
   await channel.createChannel(newChannel);
   router.push("/channels/my-channels");
 };
 
-const editForm = () => {
+const editForm = async () => {
   let newChannel: Channel = {} as Channel;
   const fd = new FormData();
-  // fd.append("name", channelName.value);
-  // fd.append("privacy", privacy.value);
-  // fd.append("owner", user.getUser().id); demander a Kevin comment recuperer l'id de l'utilisateur courant
-  // fd.append("users", user.getUser().id); ajouter les users invites par l'utilisateur si privacy == private
-  newChannel.chanId = "";
+  newChannel.chanId = channelId.value;
   newChannel.chanName = channelName.value;
   newChannel.chanType = privacy.value;
   newChannel.logo = fd;
-  channel.createChannel(newChannel);
+  await channel.editChannel(newChannel);
+  router.push("/channels/my-channels");
 };
 
 const sendForm = props.formType === "create" ? createForm : editForm;
 
 async function leaveChannel(channelId: string) {
   await channel.leaveChannel(channelId);
+  router.push("/channels/my-channels");
+}
+
+async function deleteChannel(channelId: string) {
+  await channel.deleteChannel(channelId);
   router.push("/channels/my-channels");
 }
 </script>

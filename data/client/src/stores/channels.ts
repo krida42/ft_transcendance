@@ -54,6 +54,11 @@ export const useChannelsStore = defineStore({
         this.myChannels.delete(chanId);
       });
     },
+    async editChannel(channel: Channel): Promise<void> {
+      return channelsApi.editChannel(channel).then((channel) => {
+        this.myChannels.set(channel.chanId, channel);
+      });
+    },
     async leaveChannel(chanId: Id): Promise<void> {
       return channelsApi.leaveChannel(chanId).then(() => {
         this.myChannels.delete(chanId);

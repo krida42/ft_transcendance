@@ -70,6 +70,13 @@ export default {
     return res.data;
   },
 
+  async editChannel(channel: Channel) {
+    const res = await axios.put(`${host}/channels/${channel.chanId}`, channel, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
   async leaveChannel(channelId: Id) {
     const res = await axios.delete(`${host}/channels/${channelId}/quit`, {
       withCredentials: true,

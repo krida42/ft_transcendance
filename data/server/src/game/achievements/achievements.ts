@@ -1,12 +1,17 @@
 import { Achievements } from "db/models/achievements";
+import { Friends } from "db/models/friends";
 import { Games } from "db/models/games";
 import { User } from "db/models/user";
 import { UserAchievements } from "db/models/userAchievements";
+import { use } from "passport";
 import { Op, Sequelize } from "sequelize";
+import { FriendsService } from "src/friends/friends.service";
+import { UsersService } from "src/users/users.service";
 
 export class Achievement {
   tabCheckAchievements: ((user: User) => void)[] = [];
-
+  friendsService: FriendsService = new FriendsService(Friends, new UsersService(User));
+  
   constructor() {
     this.tabCheckAchievements.push(this.checkFirstGame);
     this.tabCheckAchievements.push(this.checkFirstWin);
@@ -212,6 +217,15 @@ export class Achievement {
       console.log(err);
     }
   }
- 
-  //Man hunter to add
+
+  async checkManHunter(user1: User | null, user2: User | null): Promise<void> {
+    if (!user1 || !user2) return;
+    if (await this.friendsService.isFriendship(user1.public_id, user2.public_id)) {
+      const achievement = await Achievements.findOne({ where: { name: 'Manhunter' } });
+      if (achievement) {
+        await this.unlock(user1, achievement);
+        await this.unlock(user2, achievement);
+      }
+    }
+  }
 }

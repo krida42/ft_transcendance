@@ -12,8 +12,8 @@ export class PongRoom {
   //game
   pongGateway: PongGateway;
   static id: number = 0;
-  game: Game = new Game(this);
 
+  game: Game = new Game(this);
   started = false;
   isGameEnded: boolean = false;
   //pause
@@ -24,7 +24,7 @@ export class PongRoom {
   PlayerManager: PlayerManager = new PlayerManager(this);
   //save
   gameSaved:boolean = false;
-
+  
   constructor(PongGateway: PongGateway) {
     this.pongGateway = PongGateway;
   }
@@ -79,6 +79,7 @@ export class PongRoom {
     const user2 = await User.findOne({ where: { public_id: this.players[1].user.public_id } });
     if (user2)
       await achievement.checkAchievements(user2);
+    await achievement.checkManHunter(user1, user2);
   }
 
   closeWithoutSave() {

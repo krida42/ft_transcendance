@@ -54,14 +54,14 @@ export const useChannelsStore = defineStore({
         this.myChannels.delete(chanId);
       });
     },
-    async leaveChannel(chanId: Id, userId: Id): Promise<void> {
+    async leaveChannel(chanId: Id): Promise<void> {
       return channelsApi.leaveChannel(chanId).then(() => {
-        const channel = this.myChannels.get(chanId);
-        if (channel) {
-          channel.members = channel.members.filter(
-            (user) => user.id !== userId
-          );
-        }
+        this.myChannels.delete(chanId);
+      });
+    },
+    async joinChannel(chanId: Id): Promise<void> {
+      return channelsApi.joinChannel(chanId).then((channel) => {
+        this.myChannels.set(channel.chanId, channel);
       });
     },
     async refreshMembers(chanId: Id): Promise<void> {
@@ -106,6 +106,34 @@ export const useChannelsStore = defineStore({
         const channel = this.myChannels.get(chanId);
         if (channel) {
           channel.bans = channel.bans.filter((user) => user.id !== userId);
+        }
+      });
+    },
+    async kickUser(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.kickUser(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.members = channel.members.filter(
+            (user) => user.id !== userId
+          );
+        }
+      });
+    },
+    async addAdmin(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.addAdmin(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.admins.push(
+            channel.members.find((user) => user.id === userId)!
+          );
+        }
+      });
+    },
+    async removeAdmin(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.removeAdmin(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.admins = channel.admins.filter((user) => user.id !== userId);
         }
       });
     },

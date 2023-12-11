@@ -20,11 +20,12 @@
       <button
         class="admin mb-[0.5rem]"
         :class="isAdminR ? 'text-red-my' : 'text-black'"
+        @click="adminButton"
       >
         {{ isAdminR ? "Remove admin" : "Set admin" }}
       </button>
       <div class="flex gap-[0.5rem] text-red-my" v-if="!isAdminR">
-        <button class="kick">Kick</button>
+        <button class="kick" @click="kickUser">Kick</button>
         <button class="ban" @click="banUser">Ban</button>
       </div>
     </div>
@@ -88,6 +89,20 @@ const unbanUser = () => {
 const banUser = () => {
   isBanned.value = true;
   channelsStore.banUser(props.chanId, props.userId);
+};
+
+const kickUser = () => {
+  isBanned.value = true;
+  channelsStore.kickUser(props.chanId, props.userId);
+};
+
+const adminButton = () => {
+  if (isAdminR.value) {
+    channelsStore.removeAdmin(props.chanId, props.userId);
+  } else {
+    channelsStore.addAdmin(props.chanId, props.userId);
+  }
+  isAdminR.value = !isAdminR.value;
 };
 </script>
 

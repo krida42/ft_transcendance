@@ -17,6 +17,7 @@
             v-for="channel in myChannelsList"
             :key="channel.chanId"
             :id="channel.chanId"
+            :mode="'my_channels'"
             :name="channel.chanName"
             :logo="channel?.logo"
             :is_owner="channelsStore.isOwner(channel.chanId, currentUserId)"

@@ -80,11 +80,9 @@ const optionsChannel = async (channelId: string) => {
     if (channel.is_owner) {
       await router.push(`/channels/${channelId}/settings/general`);
     } else {
-      console.log("leave channel");
       await channelsStore.leaveChannel(channelId);
     }
   } else {
-    console.log("join channel");
     channelsStore.joinChannel(channelId);
     isJoined.value = true;
   }

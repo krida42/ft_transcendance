@@ -21,7 +21,7 @@ module.exports = {
       },
       email: {
         type: Sequelize.BLOB,
-        allowNull: false,
+        allowNull: true,
         unique: true,
         validate: { isEmail: true },
       },

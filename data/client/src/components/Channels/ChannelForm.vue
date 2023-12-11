@@ -42,7 +42,7 @@
         v-if="$props.formType === 'edit'"
       >
         <div @click="leaveChannel(channelId)">Leave</div>
-        <div @click="() => channel.deleteChannel(channelId)">Delete</div>
+        <div @click="deleteChannel(channelId)">Delete</div>
       </div>
     </div>
     <div class="privacy-status flex gap-[2rem] self-start ml-[3rem]">
@@ -95,12 +95,19 @@
           "
           class="w-[100%] h-[3rem] rounded-[15px] bg-yellow-hover text-black text-[1.2rem] pl-[1rem]"
         />
-        <user-action
+        <ChannelSettingsMembers
+          @invite="inviteUser($event)"
           :class="privacy === 'Private' ? 'block' : 'hidden'"
           v-for="user in friendList"
           :key="user.id"
-          :uuid="user.id"
-          :mode="'channel'"
+          :mode="'invite'"
+          :userId="user.id"
+          :username="user.pseudo"
+          :avatar="user.avatar"
+          :isAdmin="false"
+          :chanId="channelId"
+          :members="chanMembers"
+          :invites="usersInvited"
         />
       </div>
     </div>
@@ -118,15 +125,14 @@
 <script lang="ts" setup>
 import { useChannelsStore } from "@/stores/channels";
 import { useFriendStore } from "@/stores/friend";
-import { useUsersStore } from "@/stores/users";
-import { ref, computed, defineProps } from "vue";
+import { ref, computed, defineProps, onBeforeMount } from "vue";
 import { Channel } from "@/types";
 import unknownLogo from "@/assets/svg/unknown-img.svg";
-import UserAction from "@/components/UserAction.vue";
+import ChannelSettingsMembers from "@/components/Channels/ChannelSettingsMembers.vue";
 import { PrivacyType } from "@/types";
-import { User } from "@/types";
 import router from "@/router";
 import { FriendsTransformer } from "@/utils//friendsTransformer";
+import { User } from "@/types";
 
 const props = defineProps({
   formType: {
@@ -135,10 +141,12 @@ const props = defineProps({
   },
 });
 
-const privacy = ref(PrivacyType.Private); //change the initialization to get the privacy of the channel if it's an edit form
-const channelName = ref(""); //change the initialization to get the name of the channel if it's an edit form
-const channelLogo = ref(""); //change the initialization to get the logo of the channel if it's an edit form
+const currentChannel = ref({} as Channel | undefined);
+const privacy = ref(PrivacyType.Private);
+const channelName = ref("");
+const channelLogo = ref("");
 const search_input = ref("");
+let usersInvited: string[] = [];
 const friendStore = useFriendStore();
 const friendList = computed(() => {
   return FriendsTransformer.beginWithLetters(
@@ -146,21 +154,37 @@ const friendList = computed(() => {
     search_input.value
   );
 });
-const user = useUsersStore();
-const userId = computed(() => user.currentUser.id);
+const chanMembers = ref([] as User[]);
 const channel = useChannelsStore();
-const channelId = computed(() => {
-  return props.formType === "edit"
-    ? (router.currentRoute.value.params.channelId as string)
-    : "";
-});
+const channelId = ref("");
 
 let files: FileList | null = null;
 let file: File | null = null;
 
-(() => {
+const initChannel = async () => {
+  await channel.refreshChannels();
+  channelId.value = router.currentRoute.value.params.channelId as string;
+  currentChannel.value = channel.channel(channelId.value);
+  if (!currentChannel.value) return;
+  await channel.refreshMembers(currentChannel.value.chanId);
+  await channel.refreshInvites(currentChannel.value.chanId);
+  chanMembers.value = currentChannel.value.members;
+  channelName.value = currentChannel.value.chanName;
+  privacy.value = currentChannel.value.chanType;
+  //channelLogo.value = currentChannel.value.logo;
+
+  for (const invite of currentChannel.value.invites) {
+    usersInvited.push(invite.id);
+  }
+  console.log(usersInvited);
+};
+
+onBeforeMount(() => {
   friendStore.refreshFriendList();
-})();
+  if (props.formType === "edit") {
+    initChannel();
+  }
+});
 
 const onFileSelected = (e: Event) => {
   if (e) e.preventDefault();
@@ -177,25 +201,30 @@ const onFileSelected = (e: Event) => {
 
 const createForm = async () => {
   const newChannel: Channel = {} as Channel;
+  let channelCreated: Channel | void;
   newChannel.chanName = channelName.value;
   newChannel.chanType = privacy.value;
+  if (privacy.value !== PrivacyType.Private && !search_input.value)
+    search_input.value = "password";
   newChannel.chanPassword = search_input.value;
-  await channel.createChannel(newChannel);
+  channelCreated = await channel.createChannel(newChannel);
+  if (channelCreated) {
+    for (const userId of usersInvited) {
+      channel.inviteUser(userId, channelCreated.chanId);
+    }
+  }
   router.push("/channels/my-channels");
 };
 
-const editForm = () => {
+const editForm = async () => {
   let newChannel: Channel = {} as Channel;
   const fd = new FormData();
-  // fd.append("name", channelName.value);
-  // fd.append("privacy", privacy.value);
-  // fd.append("owner", user.getUser().id); demander a Kevin comment recuperer l'id de l'utilisateur courant
-  // fd.append("users", user.getUser().id); ajouter les users invites par l'utilisateur si privacy == private
-  newChannel.chanId = "";
+  newChannel.chanId = channelId.value;
   newChannel.chanName = channelName.value;
   newChannel.chanType = privacy.value;
   newChannel.logo = fd;
-  channel.createChannel(newChannel);
+  await channel.editChannel(newChannel);
+  router.push("/channels/my-channels");
 };
 
 const sendForm = props.formType === "create" ? createForm : editForm;
@@ -203,6 +232,19 @@ const sendForm = props.formType === "create" ? createForm : editForm;
 async function leaveChannel(channelId: string) {
   await channel.leaveChannel(channelId);
   router.push("/channels/my-channels");
+}
+
+async function deleteChannel(channelId: string) {
+  await channel.deleteChannel(channelId);
+  router.push("/channels/my-channels");
+}
+
+async function inviteUser(userId: string) {
+  if (usersInvited.includes(userId)) {
+    usersInvited = usersInvited.filter((id) => id !== userId);
+  } else {
+    usersInvited.push(userId);
+  }
 }
 </script>
 
@@ -251,7 +293,7 @@ input[type="radio"]:checked:after {
   width: 13px;
   height: 13px;
   border-radius: 15px;
-  top: -9px;
+  top: -10px;
   left: 0px;
   position: relative;
   background-color: $yellow-hover;

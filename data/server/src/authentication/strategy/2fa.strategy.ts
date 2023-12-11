@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Response } from '@nestjs/common';
 import { UsersService } from '../../users/users.service';
 import { cookieExtractor } from './jwt.strategy';
 
@@ -13,9 +13,11 @@ export class Jwt2faStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: any, res: Response) {
     try {
       const user = await this.UsersService.findById(payload.public_id);
+      if (!user)
+        return new UnauthorizedException('User not found');
       if (!user.twoFactorEnable) {
         return user;
       } else if (payload.twoFactorAuthenticated) {

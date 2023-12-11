@@ -9,15 +9,5 @@ export class GameService {
     private gameModel: typeof Games,
   ) {}
 
-  start() {
-    console.log('Game started id:');
-  }
 
-  pause() {
-    console.log('Game paused');
-  }
-
-  search() {
-    console.log('Game searched');
-  }
 }

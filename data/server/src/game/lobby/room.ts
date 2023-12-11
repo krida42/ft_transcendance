@@ -38,7 +38,13 @@ export class PongRoom {
     console.log('Game started id:', Game.id);
     this.PlayerManager.showPlayers();
     this.started = true;
-    setTimeout(async() => await this.game.start(), BEFORE_GAME);
+    setTimeout(async() => {
+      try {
+        await this.game.start();
+      } catch (err) {
+        console.log(err);
+      }
+    }, BEFORE_GAME);
   }
 
   async save() {
@@ -52,34 +58,54 @@ export class PongRoom {
       time: this.game.timeAtEnd,
     };
     this.gameSaved = true;
-    await GameDBManager.saveGame(gameSave);
+    try {
+      await GameDBManager.saveGame(gameSave);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   pause() {
     console.log('Game paused');
-    this.game.pause();
+    try {
+      this.game.pause();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   resume() {
     console.log('Game resumed');
-    this.game.resume();
+    try {
+      this.game.resume();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async close() {
-    await this.save();
-    this.pongGateway.closeRoom(this);
+    try {
+      await this.save();
+      this.pongGateway.closeRoom(this);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async closeWithAchievement() {
-    await this.close();
-    const user1 = await User.findOne({ where: { public_id: this.players[0].user.public_id } });
-    const achievement = new Achievement();
-    if (user1)
-      await achievement.checkAchievements(user1);
-    const user2 = await User.findOne({ where: { public_id: this.players[1].user.public_id } });
-    if (user2)
-      await achievement.checkAchievements(user2);
-    await achievement.checkManHunter(user1, user2);
+    try {
+      await this.close();
+      const user1 = await User.findOne({ where: { public_id: this.players[0].user.public_id } });
+      const achievement = new Achievement();
+      if (user1)
+        await achievement.checkAchievements(user1);
+      const user2 = await User.findOne({ where: { public_id: this.players[1].user.public_id } });
+      if (user2)
+        await achievement.checkAchievements(user2);
+      await achievement.checkManHunter(user1, user2);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   closeWithoutSave() {
@@ -89,61 +115,96 @@ export class PongRoom {
   moveDown(player: number) {
     // console.log('moveDown', player);
     if (!this.started) return;
-    this.game.moveDown(player);
+    try {
+      this.game.moveDown(player);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   moveUp(player: number) {
     // console.log('moveUp', player);
     if (!this.started) return;
-    this.game.moveUp(player);
+    try {
+      this.game.moveUp(player);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   stopMoving(player: number) {
     // console.log('stopMoving', player);
     if (!this.started) return;
-    this.game.stopMoving(player);
+    try {
+      this.game.stopMoving(player);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   sendBallPosition(ball: Matter.Vector) {
     // console.log('Ball position sent to clients:', ball);
-    this.players.forEach((player) => {
-      player.client.emit('ball', ball);
-    });
+    try {
+      this.players.forEach((player) => {
+        player.client.emit('ball', ball);
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   sendPaddlePosition(paddle: [number, number], playerNumber: number) {
     // console.log(`Paddle${playerNumber} position sent to clients:`, paddle);
-    this.players.forEach((player) => {
-      player.client.emit(`paddle${playerNumber}`, paddle);
-    });
+    try {
+      this.players.forEach((player) => {
+        player.client.emit(`paddle${playerNumber}`, paddle);
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   sendScore(score: [number, number]) {
     console.log('Score sent to clients:', score);
-    this.players.forEach((player) => {
-      player.client.emit('score', score);
-    });
+    try {
+      this.players.forEach((player) => {
+        player.client.emit('score', score);
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   sendTime(time: number) {
     // console.log('Time sent to clients:', time);
-    this.players.forEach((player) => {
-      player.client.emit('time', Math.floor(time));
-    });
+    try {
+      this.players.forEach((player) => {
+        player.client.emit('time', Math.floor(time));
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   sendGamePaused() {
     console.log('Game paused sent to clients');
-    this.players.forEach((player) => {
-      player.client.emit('pause');
-    });
+    try {
+      this.players.forEach((player) => {
+        player.client.emit('pause');
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   sendGameResumed() {
     console.log('Game resumed sent to clients');
-    this.players.forEach((player) => {
-      player.client.emit('resume');
-    });
+    try {
+      this.players.forEach((player) => {
+        player.client.emit('resume');
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
-
 }

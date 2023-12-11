@@ -3,7 +3,6 @@ import { Friends } from "db/models/friends";
 import { Games } from "db/models/games";
 import { User } from "db/models/user";
 import { UserAchievements } from "db/models/userAchievements";
-import { use } from "passport";
 import { Op, Sequelize } from "sequelize";
 import { FriendsService } from "src/friends/friends.service";
 import { UsersService } from "src/users/users.service";
@@ -39,14 +38,14 @@ export class Achievement {
   async unlock(user: User, achievement: Achievements): Promise<boolean> {
     try {
       if (await this.isUnlock(user, achievement)) {
-        console.log('Achievement already unlocked for user:', user.public_id);
+        console.log('Achievement already unlocked for user:', user.public_id, 'achievement:', achievement.name);
         return true;
       }
       await UserAchievements.create({
         public_id: user.public_id,
         achievement_id: achievement.id,
       });
-      console.log('Achievement saved for user:', user.public_id);
+      console.log('Achievement saved for user:', user.public_id, 'achievement:', achievement.name);
       return true;
     } catch (err) {
       console.log(err);

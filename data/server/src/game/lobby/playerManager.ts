@@ -14,13 +14,18 @@ export class PlayerManager {
   }
 
   async addPlayer(player: Player) {
-    if (!this.canAddPlayer(player)) return false;
-    player.number = this.players.length;
-    this.players.push(player);
-    console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
-    this.showPlayers();
-    await this.pongRoom.start();
-    return true;
+    try {
+      if (!this.canAddPlayer(player)) return false;
+      player.number = this.players.length;
+      this.players.push(player);
+      console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
+      this.showPlayers();
+      await this.pongRoom.start();
+      return true;
+    } catch (error) {
+      console.error('Error adding player:', error);
+      return false;
+    }
   }
 
   isMaxPlayer() {
@@ -44,13 +49,17 @@ export class PlayerManager {
   }
 
   removePlayer(client: Socket) {
-    const player = this.players.find((p) => p.client.id === client.id);
-    if (!player) return;
-    if (!this.pongRoom.started)
-      this.players.splice(this.players.indexOf(player), 1);
-    else {
-      this.disconnectPlayer(player);
-      this.removeDisconnectedPlayer(player, client);
+    try {
+      const player = this.players.find((p) => p.client.id === client.id);
+      if (!player) return;
+      if (!this.pongRoom.started)
+        this.players.splice(this.players.indexOf(player), 1);
+      else {
+        this.disconnectPlayer(player);
+        this.removeDisconnectedPlayer(player, client);
+      }
+    } catch (error) {
+      console.error('Error removing player:', error);
     }
   }
 
@@ -59,17 +68,25 @@ export class PlayerManager {
   }
 
   endGameIfNoPlayers() {
-    if (this.players.length === 0) {
-      console.log('No more players in room');
-      this.pongRoom.game.endGame();     
+    try {
+      if (this.players.length === 0) {
+        console.log('No more players in room');
+        this.pongRoom.game.endGame();
+      }
+    } catch (error) {
+      console.error('Error ending game:', error);
     }
   }
 
   pauseGameIfNotEnoughPlayers() {
-    if (this.disconnectPlayers.size >= 1) {
-      console.log('Not enough players in room');
-      this.pongRoom.started = false;
-      this.pongRoom.pause();
+    try {
+      if (this.disconnectPlayers.size >= 1) {
+        console.log('Not enough players in room');
+        this.pongRoom.started = false;
+        this.pongRoom.pause();
+      }
+    } catch (error) {
+      console.error('Error pausing game:', error);
     }
   }
 
@@ -82,76 +99,82 @@ export class PlayerManager {
   }
 
   async removeDisconnectedPlayer(player: Player, client: Socket) {
-    const timeout = setTimeout(async () => {
-      if (!this.disconnectPlayers.has(player.client.id)) {
-        return; // Sortie de la fonction si le timeout a été annulé
-      }
-    
-      const index = this.getPlayerIndex(client);
-      console.log(`Client disconnected: ${player.user.login}`);
-      this.players[index].disconnected = true;
-      await this.endGameIfNoPlayers();
-      this.pauseGameIfNotEnoughPlayers();
-    
-      const otherPlayerIndex = this.players.findIndex((p) => p !== player);
-      if (
-        otherPlayerIndex !== -1 &&
-        !this.players[otherPlayerIndex].disconnected
-      ) {
-        console.log('Other player won');
-        this.pongRoom.game.declarePlayerWinnerForDeconnection(
-          otherPlayerIndex,
-        );
-        this.players.splice(index, 1);
-      }
-    }, TIMEOUT_RECONNECT);
+    try {
+      const timeout = setTimeout(async () => {
+        if (!this.disconnectPlayers.has(player.client.id)) {
+          return; // Sortie de la fonction si le timeout a été annulé
+        }
 
-    this.disconnectPlayers.set(player.client.id, timeout);
-    if (this.isAllPlayersDisconnected()) {
-      console.log('All players disconnected');
-      await this.pongRoom.game.endGame();
+        const index = this.getPlayerIndex(client);
+        console.log(`Client disconnected: ${player.user.login}`);
+        this.players[index].disconnected = true;
+        await this.endGameIfNoPlayers();
+        this.pauseGameIfNotEnoughPlayers();
+
+        const otherPlayerIndex = this.players.findIndex((p) => p !== player);
+        if (
+          otherPlayerIndex !== -1 &&
+          !this.players[otherPlayerIndex].disconnected
+        ) {
+          console.log('Other player won');
+          this.pongRoom.game.declarePlayerWinnerForDeconnection(
+            otherPlayerIndex,
+          );
+          this.players.splice(index, 1);
+        }
+      }, TIMEOUT_RECONNECT);
+
+      this.disconnectPlayers.set(player.client.id, timeout);
+      if (this.isAllPlayersDisconnected()) {
+        console.log('All players disconnected');
+        await this.pongRoom.game.endGame();
+      }
+    } catch (error) {
+      console.error('Error removing disconnected player:', error);
     }
   }
 
   async disconnectPlayer(player: Player) {
-    this.pongRoom.pause();
-    player.disconnected = true;
-    console.log(
-      `Player ${player.user.login} disconnected from room: ${PongRoom.id}`,
-    );
-    if (this.isAllPlayersDisconnected()) {
-      console.log('All players disconnected');
-      await this.pongRoom.game.endGame();
+    try {
+      this.pongRoom.pause();
+      player.disconnected = true;
+      console.log(
+        `Player ${player.user.login} disconnected from room: ${PongRoom.id}`,
+      );
+      if (this.isAllPlayersDisconnected()) {
+        console.log('All players disconnected');
+        await this.pongRoom.game.endGame();
+      }
+    } catch (error) {
+      console.error('Error disconnecting player:', error);
     }
   }
-
+  
   async reconnectPlayer(oldPlayer: Player, newPlayer: Player) {
-    clearTimeout(this.disconnectPlayers.get(oldPlayer.client.id));
-    this.disconnectPlayers.delete(oldPlayer.client.id);
-    oldPlayer.client = newPlayer.client;
-    oldPlayer.disconnected = false;
-    console.log(`Client reconnected: ${oldPlayer.user.login}`);
-
-    oldPlayer.client.emit('gameState', this.pongRoom.game.gameState);
-
-    oldPlayer.client.on('moveUp', () => {
-      if (oldPlayer.number != 0 && oldPlayer.number != 1)
-        throw new Error('reconnectPlayer move up' + oldPlayer.number);
-      this.pongRoom.moveUp(oldPlayer.number);
-    });
-
-    oldPlayer.client.on('moveDown', () => {
-      if (oldPlayer.number != 0 && oldPlayer.number != 1)
-        throw new Error('reconnectPlayer move down' + oldPlayer.number);
-      this.pongRoom.moveDown(oldPlayer.number);
-    });
-
-    if (this.pongRoom.started && !this.pongRoom.isGameEnded) {
-      this.pongRoom.resume();
-    } else if (this.players.length === this.playersMax) {
-      await this.pongRoom.start();
+    try {
+      clearTimeout(this.disconnectPlayers.get(oldPlayer.client.id));
+      this.disconnectPlayers.delete(oldPlayer.client.id);
+      oldPlayer.client = newPlayer.client;
+      oldPlayer.disconnected = false;
+      console.log(`Client reconnected: ${oldPlayer.user.login}`);
+  
+      oldPlayer.client.emit('gameState', this.pongRoom.game.gameState);
+  
+      oldPlayer.client.on('moveUp', () => {
+        if (oldPlayer.number !== 0 && oldPlayer.number !== 1) {
+          throw new Error('reconnectPlayer move up' + oldPlayer.number);
+        }
+        if (!oldPlayer.disconnected) {
+          this.pongRoom.moveUp(oldPlayer.number);
+        }
+      });
+  
+      // Vous pouvez également émettre d'autres événements ou effectuer des actions supplémentaires ici
+    } catch (error) {
+      console.error('Error reconnecting player:', error);
     }
   }
+  
 
   isPlayerInARoom(player: Player): boolean {
     return !!this.pongRoom.pongGateway.rooms.find((r) =>

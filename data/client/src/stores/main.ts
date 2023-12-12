@@ -1,5 +1,14 @@
 import { defineStore } from "pinia";
-import { User, Status } from "@/types";
+import {
+  User,
+  Status,
+  UserResponse,
+  MyUserResponse,
+  MyUserResponseSchema,
+} from "@/types";
+import { UserResponseSchema } from "@/types";
+import userApi from "@/api/user";
+import { AxiosError } from "axios";
 
 export const useMainStore = defineStore({
   id: "main",
@@ -10,11 +19,9 @@ export const useMainStore = defineStore({
   } => ({
     loggedIn: false,
     userInfo: {
-      email: "koko@gmail.com",
-      pseudo: "koko",
-      id: "a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57",
-      login: "Kokorico",
-      avatar: "https://i.pravatar.cc/300",
+      id: "",
+      pseudo: "",
+      avatar: "",
     },
     status: Status.Offline,
   }),
@@ -25,6 +32,31 @@ export const useMainStore = defineStore({
     },
     logout() {
       this.loggedIn = false;
+    },
+    refreshUserInfo() {
+      userApi
+        .fetchUser("me")
+        .then((user: MyUserResponse) => {
+          console.log("user", user);
+          const { public_id, login, pseudo, avatar, email, phone, roles } =
+            MyUserResponseSchema.parse(user);
+          this.userInfo = {
+            id: public_id,
+            login,
+            pseudo,
+            avatar,
+            email,
+            phone,
+            roles,
+          };
+          this.login();
+        })
+        .catch((err: AxiosError) => {
+          if (err.response?.status === 401) {
+            this.logout();
+            console.log("Tu n est pas connecté pour recuperer tes infos");
+          }
+        });
     },
   },
 });

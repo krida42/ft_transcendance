@@ -378,10 +378,10 @@ export class ChannelsController {
     @Param('chanId', ParseUUIDPipe) chanId: string,
     @Body() addMessageDto: AddMessageDto,
   ) {
-    return this.messageService.addMessage(
-      chanId,
-      addMessageDto.content,
+    return this.messageService.sendMessageToChannel(
       req.user.public_id,
+      chanId,
+      addMessageDto,
     );
   }
 }

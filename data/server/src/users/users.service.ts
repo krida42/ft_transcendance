@@ -159,20 +159,16 @@ export class UsersService {
         { ...updateUserDto },
         { where: { public_id: id }, individualHooks: true },
       );
-      if (retUpdateNotSafe[0] === 0)
-        throw new HttpException(
-          'Data to change is already the same as asked',
-          HttpStatus.NOT_MODIFIED,
-        );
+
+      if (retUpdateNotSafe[0] === 0) return [false, null];
       const updatedUser = await this.usersModel.findOne({
         where: { public_id: id },
         attributes: this.attributesToRetrieve,
       });
 
-      return await responseUser(updatedUser!);
+      return [true, await responseUser(updatedUser!)];
     } catch (error) {
       console.error(error);
-      if (error instanceof HttpException) throw error;
       throw new HttpException('Cant update user', HttpStatus.BAD_REQUEST);
     }
   }

@@ -11,6 +11,12 @@ import { MessageDto } from './dto/message.dto';
 import { Op } from 'sequelize';
 import { UsersService } from 'src/users/users.service';
 import { ChannelsUtilsService } from 'src/channels/channels-utils.service';
+import { v4 } from 'uuid';
+import { AddMessageDto } from './dto/addMessage.dto';
+import { AddMessageResponseDto } from './dto/addMessageResponse.dto';
+import { ChatGateway } from 'src/realtime/chat.gateway';
+import { ChanType } from 'src/types';
+import { ChannelsGetService } from 'src/channels/channels-get.service';
 
 @Injectable()
 export class MessageService {
@@ -20,8 +26,9 @@ export class MessageService {
 
     // @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-
     private readonly channelsUtilsService: ChannelsUtilsService,
+    private readonly channelsGetService: ChannelsGetService,
+    private readonly chatGateway: ChatGateway,
   ) {}
 
   private attributesToRetrieve = ['msgId', 'content', 'createdAt', 'userId'];
@@ -82,23 +89,96 @@ export class MessageService {
 
     return messagesDto;
   }
-  async addMessage(channelId: string, content: string, userId: string) {
+  private async insertMessage(
+    senderId: string,
+    channelId: string,
+    content: string,
+  ) {
     try {
       //make sure user and channel exists, it will throw an error if not
-      await this.usersService.findById(userId);
+      await this.usersService.findById(senderId);
       await this.channelsUtilsService.findById(channelId);
       console.log('message: ', content);
-      const msg = await this.messageModel.create({
+      const retMsg = await this.messageModel.create({
         content: content,
         chanId: channelId,
-        userId: userId,
+        userId: senderId,
       });
-      console.log('msg: ', msg);
-      return new MessageDto(msg.content, msg.msgId, msg.userId, msg.createdAt);
+      console.log('msg: ', retMsg);
+      return new MessageDto(
+        retMsg.content,
+        retMsg.msgId,
+        retMsg.userId,
+        retMsg.createdAt,
+      );
     } catch (error) {
       if (error instanceof HttpException) throw error;
       console.log('error: ', error);
       throw new HttpException('Cant create message', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  async sendMessage(
+    channelId: string,
+    senderId: string,
+    addMessageDto: AddMessageDto,
+    chanType: ChanType,
+  ) {
+    const insertedMsg = await this.insertMessage(
+      senderId,
+      channelId,
+      // receiver_id,
+      addMessageDto.content,
+      // sender_id,
+    );
+
+    if (chanType === ChanType.Direct) {
+      this.chatGateway.transmitMessageOfUserToUser(
+        senderId,
+        channelId,
+        insertedMsg,
+      );
+    }
+    return new AddMessageResponseDto(addMessageDto.msgId, insertedMsg.msgId);
+  }
+
+  async sendMessageToChannel(
+    senderId: string,
+    channelId: string,
+    addMessageDto: AddMessageDto,
+  ) {
+    const insertedMsg = await this.insertMessage(
+      senderId,
+      channelId,
+      addMessageDto.content,
+    );
+
+    await this.chatGateway.transmitMessageOfUserToChannel(
+      senderId,
+      channelId,
+      insertedMsg,
+    );
+    return new AddMessageResponseDto(addMessageDto.msgId, insertedMsg.msgId);
+  }
+
+  async sendMessageToFriend(
+    senderId: string,
+    receiverId: string,
+    addMessageDto: AddMessageDto,
+  ) {
+    throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED);
+    // const chanId = await this.channelsGetService.getDirectChan(senderId);
+    const insertedMsg = await this.insertMessage(
+      senderId,
+      'L ID du chan direct',
+      addMessageDto.content,
+    );
+
+    this.chatGateway.transmitMessageOfUserToUser(
+      senderId,
+      receiverId,
+      insertedMsg,
+    );
+    return new AddMessageResponseDto(addMessageDto.msgId, insertedMsg.msgId);
   }
 }

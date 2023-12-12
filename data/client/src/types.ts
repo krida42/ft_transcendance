@@ -11,13 +11,21 @@ export enum Status {
 export const StatusSchema = z.nativeEnum(Status);
 
 export const UserResponseSchema = z.object({
-  id: z.string(),
+  public_id: z.string(),
   login: z.string(),
   pseudo: z.string(),
   avatar: z.string(),
 });
 
 export type UserResponse = z.infer<typeof UserResponseSchema>;
+
+export const MyUserResponseSchema = UserResponseSchema.extend({
+  email: z.string(),
+  phone: z.string().nullable(),
+  roles: z.array(z.string()),
+});
+
+export type MyUserResponse = z.infer<typeof UserResponseSchema>;
 
 export type User = {
   id: Id;

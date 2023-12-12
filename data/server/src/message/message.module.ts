@@ -5,12 +5,14 @@ import { MessageService } from './message.service';
 
 import { UsersModule } from 'src/users/users.module';
 import { ChannelsModule } from 'src/channels/channels.module';
+import { RealtimeModule } from 'src/realtime/realtime.module';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([MessageModel]),
     forwardRef(() => UsersModule),
     forwardRef(() => ChannelsModule),
+    RealtimeModule,
   ],
   controllers: [],
   providers: [MessageService],

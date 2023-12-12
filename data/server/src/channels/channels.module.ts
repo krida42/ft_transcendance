@@ -31,6 +31,6 @@ import { MessageModule } from 'src/message/message.module';
     ChannelsOpService,
     ChannelsUtilsService,
   ],
-  exports: [ChannelsService, ChannelsUtilsService],
+  exports: [ChannelsService, ChannelsUtilsService, ChannelsGetService],
 })
 export class ChannelsModule {}

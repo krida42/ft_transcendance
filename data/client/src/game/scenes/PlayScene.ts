@@ -1,5 +1,6 @@
 import { Scene } from "phaser";
 import io from "socket.io-client";
+import { socketGame as socket } from "@/socket/index";
 export default class PlayScene extends Scene {
   // socket = "player"
   socket: any;
@@ -32,9 +33,9 @@ export default class PlayScene extends Scene {
   }
 
   preload() {
-    const socket = io("http://localhost:3001/game", {
-      withCredentials: true,
-    });
+    // const socket = io("http://localhost:3001/game", {
+    //   withCredentials: true,
+    // });
     this.socket = socket;
 
     this.ballPosition = [300, 300];

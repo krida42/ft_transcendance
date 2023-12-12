@@ -10,6 +10,7 @@
       <div class="friend-list w-[75%] normal-case">
         <ul class="self-center">
           <li
+            @click="inviteFriend(friend.id)"
             class="py-[0.3rem] text-left cursor-pointer"
             v-for="friend in friendsNestedArray[currentPageId]"
             :key="friend.id"
@@ -22,6 +23,7 @@
         />
         <ul class="self-center pl-[1rem]">
           <li
+            @click="inviteFriend(friend.id)"
             class="py-[0.3rem] text-left cursor-pointer"
             v-for="friend in friendsNestedArray[currentPageId + 1]"
             :key="friend.id"
@@ -85,6 +87,10 @@ function decrementPageId() {
 
 function resetPageId() {
   currentPageId.value = 0;
+}
+
+function inviteFriend(friendId: string) {
+  console.log("Inviting friend", friendId);
 }
 </script>
 

@@ -1,4 +1,10 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  forwardRef,
+  Inject,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { BcryptService } from 'src/tools/bcrypt.service';
@@ -9,9 +15,7 @@ import { ChannelsUsers } from 'db/models/channelsUsers';
 import { EditChannelDto } from './dto/editChannel.dto';
 import { PasswordChannelDto } from './dto/passwordChannel.dto';
 import { channelDto } from './dto/channel.dto';
-import { UsersService } from '../users/users.service';
 import { FriendsService } from '../friends/friends.service';
-import { ChannelsGetService } from '../channels/channels-get.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 import { UploadDto } from './dto/setImage.dto';
 
@@ -31,9 +35,7 @@ export class ChannelsService {
   constructor(
     @InjectModel(Channels)
     private readonly channelModel: typeof Channels,
-    private readonly usersService: UsersService,
     private readonly friendsService: FriendsService,
-    private readonly channelsGetService: ChannelsGetService,
     private readonly utils: ChannelsUtilsService,
 
     @InjectModel(ChannelsUsers)
@@ -49,7 +51,7 @@ export class ChannelsService {
     const chan = await this.channelModel.findOne({
       where: {
         chanName: editChannelDto.chanName,
-         [Op.not]: { ChanType: ChanType.Direct },
+        [Op.not]: { ChanType: ChanType.Direct },
       },
     });
     if (chan) {
@@ -155,7 +157,6 @@ export class ChannelsService {
     chanId: uuidv4,
     uploadDto: UploadDto,
   ): Promise<channelDto> {
-
     await this.friendsService.checkId(currentId);
     let chan = await this.utils.findById(chanId);
     await this.utils.checkOwner(currentId, chanId);
@@ -179,9 +180,9 @@ export class ChannelsService {
     */
 
     try {
-      console.log("-----");
+      console.log('-----');
       console.log(uploadDto.file.buffer);
-      console.log("-----");
+      console.log('-----');
       console.log(uploadDto);
       // const { originalname, mimetype, buffer } = file;
 
@@ -315,46 +316,6 @@ export class ChannelsService {
     } catch (error) {
       throw new HttpException(
         ErrorMsg.quitChannel + error,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  async createDirectChannel(user1_id: uuidv4, user2_id: uuidv4) {
-    if (
-      (await this.friendsService.checkId(user1_id)) ===
-      (await this.friendsService.checkId(user2_id))
-    ) {
-      throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
-    }
-
-    const name = [
-      await this.usersService.findById(user1_id),
-      await this.usersService.findById(user2_id),
-    ];
-
-    try {
-      const chan = await this.channelModel.create({
-        chanName: name[0].login + ' & ' + name[1].login,
-        ownerId: user1_id,
-        chanType: ChanType.Direct,
-        chanPassword: 'nannan',
-        nbUser: 2,
-      });
-
-      await this.channelUsersModel.create({
-        chanId: chan.chanId,
-        userId: user1_id,
-        userStatus: UserStatus.Direct,
-      });
-      await this.channelUsersModel.create({
-        chanId: chan.chanId,
-        userId: user2_id,
-        userStatus: UserStatus.Direct,
-      });
-    } catch (error) {
-      throw new HttpException(
-        'createDirectChannel ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }

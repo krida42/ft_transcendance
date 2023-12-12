@@ -1,13 +1,22 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { isUUID } from 'class-validator';
 import { uuidv4 } from 'src/types';
+import { ChanType } from 'src/types';
+import { UserStatus } from 'src/types';
 
 import { Friends } from 'db/models/friends';
 import { UsersService } from '../users/users.service';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
-import { ChannelsService } from 'src/channels/channels.service';
+import { Channels } from 'db/models/channels';
+import { ChannelsUsers } from 'db/models/channelsUsers';
 
 enum FriendStatus {
   Pending = 'Pending',
@@ -45,15 +54,19 @@ export class FriendsService {
   constructor(
     @InjectModel(Friends)
     private readonly friendsModel: typeof Friends,
+    @Inject(UsersService)
     private readonly usersService: UsersService,
-    private readonly channelsService: ChannelsService,
+    @InjectModel(Channels)
+    private readonly channelModel: typeof Channels,
+    @InjectModel(ChannelsUsers)
+    private readonly channelUsersModel: typeof ChannelsUsers,
   ) {}
 
   async createFriend(
     sender_id: uuidv4,
     receiver_id: uuidv4,
   ): Promise<PublicUserDto> {
-    if (await this.checkId(sender_id) === await this.checkId(receiver_id)) {
+    if ((await this.checkId(sender_id)) === (await this.checkId(receiver_id))) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
     if (await this.friendExists(sender_id, receiver_id)) {
@@ -85,7 +98,7 @@ export class FriendsService {
     receiver_id: uuidv4,
     sender_id: uuidv4,
   ): Promise<PublicUserDto> {
-    if (await this.checkId(sender_id) === await this.checkId(receiver_id)) {
+    if ((await this.checkId(sender_id)) === (await this.checkId(receiver_id))) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
     const pendingFriend = await this.friendsModel.findOne({
@@ -105,7 +118,7 @@ export class FriendsService {
     }
     pendingFriend.status = FriendStatus.Active;
     await pendingFriend.save();
-    this.channelsService.createDirectChannel(sender_id, receiver_id);
+    this.createDirectChannel(sender_id, receiver_id);
     return await this.fetchPublicUserDto(sender_id);
   }
 
@@ -113,7 +126,7 @@ export class FriendsService {
     currentId: uuidv4,
     friend_id: uuidv4,
   ): Promise<PublicUserDto> {
-    if (await this.checkId(currentId) === await this.checkId(friend_id)) {
+    if ((await this.checkId(currentId)) === (await this.checkId(friend_id))) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
     const friendship = await this.getFriendship(currentId, friend_id);
@@ -130,7 +143,7 @@ export class FriendsService {
     sender_id: uuidv4,
     receiver_id: uuidv4,
   ): Promise<PublicUserDto> {
-    if (await this.checkId(sender_id) === await this.checkId(receiver_id)) {
+    if ((await this.checkId(sender_id)) === (await this.checkId(receiver_id))) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
     if (await this.youBlockIt(sender_id, receiver_id))
@@ -161,7 +174,7 @@ export class FriendsService {
     sender_id: uuidv4,
     receiver_id: uuidv4,
   ): Promise<PublicUserDto> {
-    if (await this.checkId(sender_id) === await this.checkId(receiver_id)) {
+    if ((await this.checkId(sender_id)) === (await this.checkId(receiver_id))) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
     const youBlock = await Friends.findOne({
@@ -313,7 +326,10 @@ export class FriendsService {
   }
 
   async isBlocked(you_id: uuidv4, he_id: uuidv4): Promise<boolean> {
-    return await this.youBlockIt(you_id, he_id) || await this.heBlockYou(you_id, he_id);
+    return (
+      (await this.youBlockIt(you_id, he_id)) ||
+      (await this.heBlockYou(you_id, he_id))
+    );
   }
 
   async fetchPublicUserDto(id: uuidv4): Promise<PublicUserDto> {
@@ -361,5 +377,42 @@ export class FriendsService {
 
     if (existingFriendship) return true;
     else return false;
+  }
+
+  async createDirectChannel(user1_id: uuidv4, user2_id: uuidv4) {
+    if ((await this.checkId(user1_id)) === (await this.checkId(user2_id))) {
+      throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
+    }
+
+    const name = [
+      await this.usersService.findById(user1_id),
+      await this.usersService.findById(user2_id),
+    ];
+
+    try {
+      const chan = await this.channelModel.create({
+        chanName: name[0].login + ' & ' + name[1].login,
+        ownerId: user1_id,
+        chanType: ChanType.Direct,
+        chanPassword: 'nannan',
+        nbUser: 2,
+      });
+
+      await this.channelUsersModel.create({
+        chanId: chan.chanId,
+        userId: user1_id,
+        userStatus: UserStatus.Direct,
+      });
+      await this.channelUsersModel.create({
+        chanId: chan.chanId,
+        userId: user2_id,
+        userStatus: UserStatus.Direct,
+      });
+    } catch (error) {
+      throw new HttpException(
+        'createDirectChannel ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

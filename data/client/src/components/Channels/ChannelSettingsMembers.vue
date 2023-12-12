@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, toRef, ref, computed } from "vue";
+import { defineProps, toRef, ref, computed, onBeforeUpdate } from "vue";
 import { useChannelsStore } from "@/stores/channels";
 import { useUsersStore } from "@/stores/users";
 import { User } from "@/types";
@@ -117,6 +117,11 @@ const isInChannel = computed(() => {
   }
 })();
 
+onBeforeUpdate(() => {
+  if (props.invites) {
+    isInvited.value = props.invites.includes(props.userId);
+  }
+});
 const unbanUser = () => {
   isUnbanned.value = true;
   channelsStore.unbanUser(props.chanId, props.userId);

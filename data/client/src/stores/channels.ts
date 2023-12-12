@@ -82,7 +82,10 @@ export const useChannelsStore = defineStore({
       return channelsApi.fetchChannelInvites(chanId).then((users) => {
         const channel = this.myChannels.get(chanId);
         if (channel) {
-          channel.invites = users;
+          channel.invites = [];
+          for (const user of users) {
+            channel.invites.push(user.id);
+          }
         }
       });
     },
@@ -154,10 +157,8 @@ export const useChannelsStore = defineStore({
     async inviteUser(chanId: Id, userId: Id): Promise<void> {
       return channelsApi.inviteUser(chanId, userId).then(() => {
         const channel = this.myChannels.get(chanId);
-        if (channel) {
-          channel.invites.push(
-            channel.members.find((user) => user.id === userId)!
-          );
+        if (channel && channel.invites) {
+          channel.invites.push(userId);
         }
       });
     },

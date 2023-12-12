@@ -77,7 +77,7 @@ export type Channel = {
   members: User[];
   admins: User[];
   bans: User[];
-  invites: User[];
+  invites: Id[];
   nbUser: number;
 };
 

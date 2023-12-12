@@ -171,10 +171,10 @@ const initChannel = async () => {
   chanMembers.value = currentChannel.value.members;
   channelName.value = currentChannel.value.chanName;
   privacy.value = currentChannel.value.chanType;
-  //channelLogo.value = currentChannel.value.logo as string;
+  console.log(currentChannel.value.imgData);
 
   for (const invite of currentChannel.value.invites) {
-    console.log(invite);
+    //console.log(invite);
     usersInvited.push(invite);
   }
 };
@@ -225,7 +225,7 @@ const editForm = async () => {
   newChannel.chanId = channelId.value;
   newChannel.chanName = channelName.value;
   newChannel.chanType = privacy.value;
-  newChannel.logo = fd;
+  //newChannel.logo = fd;
   await channel.editChannel(newChannel);
   router.push("/channels/my-channels");
 };
@@ -248,7 +248,7 @@ async function inviteUser(userId: string) {
   } else {
     usersInvited.push(userId);
   }
-  console.log(usersInvited);
+  //console.log(usersInvited);
 }
 </script>
 

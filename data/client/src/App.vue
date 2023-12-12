@@ -29,6 +29,7 @@ nav {
 
 <script lang="ts" setup>
 import { useMainStore } from "@/stores/main";
+import("@/socket");
 
 const mainStore = useMainStore();
 

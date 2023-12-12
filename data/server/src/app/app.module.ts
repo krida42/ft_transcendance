@@ -51,7 +51,7 @@ import { MessageModule } from 'src/message/message.module';
     HttpModule,
     GameModule,
     MessageModule,
-    // RealtimeModule,
+    RealtimeModule,
   ],
   controllers: [AppController],
   providers: [JwtService, BcryptService, AppService],

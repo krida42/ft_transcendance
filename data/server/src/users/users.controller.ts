@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Inject,
   Param,
   ParseUUIDPipe,
@@ -35,6 +37,7 @@ import { AddMessageResponseDto } from 'src/message/dto/addMessageResponse.dto';
 import { PublicUserDto } from './dto/publicUser.dto';
 import { isUUID } from 'class-validator';
 import { InvalidUUIDException } from 'src/exceptions/exceptions';
+import { ChannelsUtilsService } from 'src/channels/channels-utils.service';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -43,6 +46,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly messageService: MessageService,
+    private readonly channelsUtilsService: ChannelsUtilsService,
   ) {}
 
   @Get(':id')
@@ -141,19 +145,38 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Send a message' })
-  // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
-  @Post(':userId/messages')
+  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @Post(':receiverId/messages')
   async sendMessage(
     @Req() req: ReqU,
-    @Param('userId', ParseUUIDPipe) channelId: string,
+    @Param('receiverId', ParseUUIDPipe) receiverId: string,
     @Body() addMessageDto: AddMessageDto,
   ): Promise<AddMessageResponseDto> {
     // const sender_id = 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57';
     // const receiver_id = '6743cbee-7aa2-4ea2-a909-9b0181db4651';
     return this.messageService.sendMessageToFriend(
       req.user.public_id,
-      channelId,
+      receiverId,
       addMessageDto,
     );
+  }
+
+  @ApiOperation({ summary: 'Get all messages' })
+  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @Get(':userId/messages')
+  async getAllMessages(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Req() req: ReqU,
+  ): Promise<MessageDto[]> {
+    const chanId = await this.channelsUtilsService.getDirectChanId(
+      userId,
+      req.user.public_id,
+    );
+    console.log('sendmessage to frind chanId: ', chanId);
+    if (!chanId) {
+      throw new HttpException('No direct channel', HttpStatus.NOT_FOUND);
+    }
+
+    return this.messageService.findForChannel(chanId);
   }
 }

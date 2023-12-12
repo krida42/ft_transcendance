@@ -274,7 +274,10 @@ export class ChannelsUtilsService {
     sender_id: uuidv4,
     receiver_id: uuidv4,
   ): Promise<uuidv4> {
-    if ((await this.checkId(sender_id)) === (await this.checkId(receiver_id))) {
+    if (
+      (await this.friendsService.checkId(sender_id)) ===
+      (await this.friendsService.checkId(receiver_id))
+    ) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
 

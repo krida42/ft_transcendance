@@ -35,12 +35,12 @@ export class ChatGateway {
     toUserId: string,
     message: unknown,
   ) {
-    throw new Error('Method not implemented.');
+    // throw new Error('Method not implemented.');
     const socket = await this.realtimeGateway.findSocketByUserId(fromUserId);
 
     socket
       .to(this.roomService.getUserPersonalRoom(toUserId))
-      .emit('message', message);
+      .emit('messageDirect', message);
   }
 
   async transmitMessageOfUserToChannel(

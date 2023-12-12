@@ -50,7 +50,7 @@ export class MessageService {
 
   async findForChannel(channelId: string, limit = 50) {
     let messages = await this.messageModel.findAll({
-      where: { channelId },
+      where: { chanId: channelId },
       limit: limit,
     });
 
@@ -77,7 +77,10 @@ export class MessageService {
       throw new HttpException('Message ID doesnt exists', HttpStatus.NOT_FOUND);
 
     let messages = await this.messageModel.findAll({
-      where: { channelId, confidentialId: { [Op.lt]: beforeConfidentialId } },
+      where: {
+        chanId: channelId,
+        confidentialId: { [Op.lt]: beforeConfidentialId },
+      },
       limit: limit,
       attributes: this.attributesToRetrieve,
     });
@@ -104,7 +107,7 @@ export class MessageService {
         chanId: channelId,
         userId: senderId,
       });
-      console.log('msg: ', retMsg);
+      // console.log('msg: ', retMsg);
       return new MessageDto(
         retMsg.content,
         retMsg.msgId,
@@ -143,10 +146,12 @@ export class MessageService {
     addMessageDto: AddMessageDto,
   ) {
     // throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED);
+    console.log('sendmessage to friend BEFORE');
     const chanId = await this.channelsUtilsService.getDirectChanId(
       senderId,
       receiverId,
     );
+    console.log('sendmessage to frind chanId: ', chanId);
     if (!chanId) {
       throw new HttpException('No direct channel', HttpStatus.NOT_FOUND);
     }
@@ -156,7 +161,7 @@ export class MessageService {
       addMessageDto.content,
     );
 
-    this.chatGateway.transmitMessageOfUserToUser(
+    await this.chatGateway.transmitMessageOfUserToUser(
       senderId,
       receiverId,
       insertedMsg,

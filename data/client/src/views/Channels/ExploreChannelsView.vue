@@ -6,11 +6,22 @@
       class="relative bg-yellow-hover rounded-[15px] w-[90%] h-[2rem] mt-[2rem]"
     >
       <input
+        @keypress.enter="joinChannel"
         v-model="channelName"
         placeholder="search for channel..."
         type="text"
         minlength="3"
-        maxlength="15"
+        maxlength="20"
+        class="w-[100%] h-[100%] rounded-[15px] bg-transparent text-black text-[1.2rem] pl-[1rem]"
+      />
+      <p v-if="isProtected">
+        This channel is protected, please enter the password
+      </p>
+      <input
+        v-if="isProtected"
+        v-model="password"
+        placeholder="password..."
+        type="text"
         class="w-[100%] h-[100%] rounded-[15px] bg-transparent text-black text-[1.2rem] pl-[1rem]"
       />
       <img
@@ -34,13 +45,19 @@
             :id="channel.chanId"
             :mode="'explore'"
             :name="channel.chanName"
-            :logo="channel?.logo"
+            :logo="channel?.imgData"
             :nb_users="channel.nbUser"
           />
         </ul>
       </div>
     </div>
   </div>
+  <ErrorPopup
+    v-if="isErr"
+    :statusCode="error.statusCode"
+    :message="error.message"
+    @close="isErr = false"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -49,18 +66,82 @@ import MyChannelItem from "@/components/Channels/MyChannelItem.vue";
 import { onBeforeMount } from "vue";
 import channelsApi from "@/api/channel";
 import { Channel } from "@/types";
+import { useChannelsStore } from "@/stores/channels";
+import ErrorPopup from "@/components/ErrorPopup.vue";
+import { ErrorPop } from "@/types";
+import { Axios, AxiosError } from "axios";
 
 const channelName = ref("");
+const password = ref("");
+const isProtected = ref(false);
 const availableChannelsList = ref<Channel[]>([]);
+const protectedChannelsList = ref<Channel[]>([]);
+const channelsStore = useChannelsStore();
+const isErr = ref(false);
+const error = ref<ErrorPop>({ statusCode: 0, message: "" });
 
-onBeforeMount(() => {
+const fetchChannels = async () => {
   channelsApi.fetchAvailableChannels().then((res) => {
     availableChannelsList.value = res;
   });
+  channelsApi.fetchUnjoinedProtectedChannels().then((res) => {
+    protectedChannelsList.value = res;
+  });
+};
+
+onBeforeMount(() => {
+  fetchChannels();
 });
 
 const sendForm = () => {
   //console.log(channelName.value);
+};
+
+const joinChannel = () => {
+  if (channelName.value.length < 3) {
+    isErr.value = true;
+    error.value = {
+      statusCode: 400,
+      message: "Channel name must be at least 3 characters long",
+    };
+    return;
+  }
+  if (channelName.value.length > 20) {
+    isErr.value = true;
+    error.value = {
+      statusCode: 400,
+      message: "Channel name must be at most 20 characters long",
+    };
+    return;
+  }
+  const chanFound = availableChannelsList.value.find(
+    (chan) => chan.chanName === channelName.value
+  );
+  if (chanFound) {
+    channelsStore
+      .joinChannel(chanFound.chanId)
+      .then()
+      .catch((err: AxiosError) => {
+        isErr.value = true;
+        error.value = {
+          statusCode: err.response?.status,
+          message: err.response?.data,
+        };
+      });
+  } else {
+    const chanFound = protectedChannelsList.value.find(
+      (chan) => chan.chanName === channelName.value
+    );
+    if (chanFound) {
+      isProtected.value = true;
+    } else {
+      isErr.value = true;
+      error.value = {
+        statusCode: 404,
+        message: "Channel not found",
+      };
+    }
+  }
 };
 </script>
 

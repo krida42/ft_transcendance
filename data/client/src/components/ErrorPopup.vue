@@ -1,7 +1,7 @@
 <template>
   <div class="grey-overlay absolute top-0 left-0 w-[100%] h-[100%] z-10">
     <div
-      class="error-popup absolute top-[25%] left-[27%] w-[40%] h-[40%] bg-green-bg opacity-90 z-100 flex flex-col justify-center items-center gap-[15%] rounded-[15px]"
+      class="error-popup absolute top-[25%] left-[27%] w-[40%] h-[40%] bg-green-bg opacity-90 z-100 flex flex-col justify-center items-center gap-[15%] rounded-[15px] p-[1rem]"
     >
       <img
         @click="$emit('close')"

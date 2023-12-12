@@ -19,7 +19,7 @@
             :id="channel.chanId"
             :mode="'my_channels'"
             :name="channel.chanName"
-            :logo="channel?.logo"
+            :logo="channel?.imgData"
             :is_owner="channelsStore.isOwner(channel.chanId, currentUserId)"
             :nb_users="channel.nbUser"
           />

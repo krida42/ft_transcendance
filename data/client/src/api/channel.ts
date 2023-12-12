@@ -35,6 +35,13 @@ export default {
     return res.data;
   },
 
+  async fetchUnjoinedProtectedChannels() {
+    const res = await axios.get(`${host}/channels-unjoined-protect`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
   async fetchChannelMembers(channelId: string) {
     const res = await axios.get(`${host}/channels/${channelId}/users`, {
       withCredentials: true,

@@ -72,7 +72,7 @@ export type Channel = {
   ownerId: Id;
   chanName: string;
   chanType: PrivacyType;
-  imgData?: File;
+  imgData?: FormData;
   chanPassword?: string;
   members: User[];
   admins: User[];

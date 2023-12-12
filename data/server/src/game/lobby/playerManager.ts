@@ -158,23 +158,17 @@ export class PlayerManager {
       oldPlayer.disconnected = false;
       console.log(`Client reconnected: ${oldPlayer.user.login}`);
   
-      oldPlayer.client.emit('gameState', this.pongRoom.game.gameState);
+      const gameState = {
+        score: this.pongRoom.game.gameState.score,
+        time: this.pongRoom.game.gameState.timeAtEnd,
+      }
+      oldPlayer.client.emit('gameState', gameState);
   
-      oldPlayer.client.on('moveUp', () => {
-        if (oldPlayer.number !== 0 && oldPlayer.number !== 1) {
-          throw new Error('reconnectPlayer move up' + oldPlayer.number);
-        }
-        if (!oldPlayer.disconnected) {
-          this.pongRoom.moveUp(oldPlayer.number);
-        }
-      });
-  
-      // Vous pouvez également émettre d'autres événements ou effectuer des actions supplémentaires ici
+      this.pongRoom.game.resume();  
     } catch (error) {
       console.error('Error reconnecting player:', error);
     }
   }
-  
 
   isPlayerInARoom(player: Player): boolean {
     return !!this.pongRoom.pongGateway.rooms.find((r) =>

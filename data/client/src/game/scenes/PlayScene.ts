@@ -15,7 +15,7 @@ export default class PlayScene extends Scene {
   timer: any;
   timerText!: Phaser.GameObjects.Text; // Add the '!' operator to indicate that this property will be initialized later
 
-  score: any;
+  score: [number, number] = [0, 0];
   scoreText!: Phaser.GameObjects.Text;
 
   pause: any;

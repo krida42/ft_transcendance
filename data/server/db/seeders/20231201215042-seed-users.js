@@ -171,6 +171,20 @@ module.exports = {
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
+      {
+        confidential_id: 22,
+        fortyTwo_id: 4222,
+        public_id: 'f447442d-f5ab-4e8d-848b-ea49490823bc',
+        email: 'blob@gmail.42com',
+        login: 'blob',
+        pseudo: 'Blob',
+        avatar:
+          'https://blobstar.fr/wp-content/uploads/2023/01/Blob-qui-fait-peur2.png',
+        phone: '0642424242',
+        twoFactorEnable: false,
+        createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
+        updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
     ]);
   },
   down: (queryInterface, Sequelize) => {

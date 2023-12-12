@@ -64,8 +64,8 @@ export class ChannelsOpService {
     try {
       let user = await this.utils.getUserInChannel(userId, chanId);
       user.userStatus = UserStatus.Admin;
-      user.save();
-      return this.utils.fetchPublicUserDto(userId);
+      await user.save();
+      return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
         ErrorMsg.addAdminUser + error,
@@ -92,8 +92,8 @@ export class ChannelsOpService {
     try {
       let user = await this.utils.getUserInChannel(userId, chanId);
       user.userStatus = UserStatus.User;
-      user.save();
-      return this.utils.fetchPublicUserDto(userId);
+      await user.save();
+      return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
         ErrorMsg.delAdminUser + error,
@@ -110,7 +110,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (await this.utils.userIsInChannel(userId, chanId))
       throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
@@ -127,7 +127,7 @@ export class ChannelsOpService {
         userId: userId,
         userStatus: UserStatus.Invited,
       });
-      return this.utils.fetchPublicUserDto(userId);
+      return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
         ErrorMsg.inviteUser + error,
@@ -143,7 +143,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIs(UserStatus.Invited, userId, chanId)))
       throw new HttpException('user not invited', HttpStatus.BAD_REQUEST);
@@ -151,7 +151,7 @@ export class ChannelsOpService {
     try {
       const user = await this.utils.getInvitedUser(userId, chanId);
       user.destroy();
-      return this.utils.fetchPublicUserDto(userId);
+      return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
         ErrorMsg.uninviteUser + error,
@@ -168,7 +168,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (await this.utils.userIs(UserStatus.Banned, userId, chanId))
       throw new HttpException('user already banned', HttpStatus.BAD_REQUEST);
@@ -185,9 +185,9 @@ export class ChannelsOpService {
       if (await this.utils.userIsInChannel(userId, chanId)) {
         let user = await this.utils.getUserInChannel(userId, chanId);
         user.userStatus = UserStatus.Banned;
-        user.save();
+        await user.save();
         chan.nbUser--;
-        chan.save();
+        await chan.save();
       } else {
         await this.channelUsersModel.create({
           chanId: chanId,
@@ -196,7 +196,7 @@ export class ChannelsOpService {
         });
       }
 
-      return this.utils.fetchPublicUserDto(userId);
+      return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(ErrorMsg.banUser + error, HttpStatus.BAD_REQUEST);
     }
@@ -209,7 +209,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIs(UserStatus.Banned, userId, chanId)))
       throw new HttpException('user not banned', HttpStatus.BAD_REQUEST);
@@ -217,7 +217,7 @@ export class ChannelsOpService {
     try {
       const user = await this.utils.getBannedUser(userId, chanId);
       user.destroy();
-      return this.utils.fetchPublicUserDto(userId);
+      return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
         ErrorMsg.unbanUser + error,
@@ -227,7 +227,6 @@ export class ChannelsOpService {
   }
 
   // ---------- MUTE
-  // temps de mute 5 min / 1h / 3h
   async mute(
     currentId: uuidv4,
     chanId: uuidv4,
@@ -235,7 +234,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
       throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
@@ -249,9 +248,15 @@ export class ChannelsOpService {
     try {
       let user = await this.utils.getUserInChannel(userId, chanId);
       user.userStatus = UserStatus.Muted;
-      // TODO LIMITED MUTED TIME THEN SET UserStatus.User;
-      user.save();
-      return this.utils.fetchPublicUserDto(userId);
+      await user.save();
+
+      const min = 1; // TODO TEST ME
+      setTimeout(async () => {
+        user.userStatus = UserStatus.User;
+        await user.save();
+      }, min * 60 * 1000);
+
+      return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
         ErrorMsg.muteUser + error,
@@ -268,7 +273,7 @@ export class ChannelsOpService {
   ): Promise<PublicUserDto> {
     await this.utils.checkId(chanId);
     await this.utils.checkUserIds(currentId, userId);
-    this.utils.checkAdminOrOwner(currentId, chanId);
+    await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
       throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
@@ -283,10 +288,10 @@ export class ChannelsOpService {
 
     try {
       const user = await this.utils.getUserInChannel(userId, chanId);
-      user.destroy();
+      await user.destroy();
       chan.nbUser--;
-      chan.save();
-      return this.utils.fetchPublicUserDto(userId);
+      await chan.save();
+      return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
         ErrorMsg.kickUser + error,

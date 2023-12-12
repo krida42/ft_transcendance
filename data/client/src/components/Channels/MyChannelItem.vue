@@ -1,10 +1,15 @@
 <template>
-  <div class="my-channel-item relative text-[1.2rem] pt-[1rem] pb-[1rem]">
+  <div
+    v-if="isJoined === false"
+    class="channel-item relative text-[1.2rem] pt-[1rem] pb-[1rem]"
+    :class="channel.mode === 'my_channels' ? 'my_channels' : 'explore_channels'"
+  >
     <img
       src="@/assets/svg/unknown-img.svg"
       class="unknown-logo w-[2.4rem] aspect-square"
     />
     <img
+      v-if="channel.mode === 'my_channels'"
       src="@/assets/svg/crown.svg"
       class="crown w-[1.6rem] aspect-square"
       :class="channel.is_owner ? 'visible' : 'invisible'"
@@ -16,8 +21,14 @@
     </div>
     <button
       class="rounded-[10px] px-[0.5rem] py-[0.4rem]"
-      :class="channel.is_owner ? 'owner-style' : 'classic-style'"
-      @click="optionsChannel(channel.id)"
+      :class="
+        channel.mode === 'my_channels'
+          ? channel.is_owner
+            ? 'owner-style'
+            : 'classic-style'
+          : 'owner-style'
+      "
+      @click.stop="optionsChannel(channel.id)"
     >
       {{ button_text }}
     </button>
@@ -25,12 +36,16 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
-import { computed } from "vue";
+import { defineProps, computed, ref } from "vue";
 import router from "@/router";
+import { useChannelsStore } from "@/stores/channels";
 
 const channel = defineProps({
   id: {
+    type: String,
+    required: true,
+  },
+  mode: {
     type: String,
     required: true,
   },
@@ -41,7 +56,7 @@ const channel = defineProps({
   logo: FormData,
   is_owner: {
     type: Boolean,
-    required: true,
+    required: false,
   },
   nb_users: {
     type: Number,
@@ -49,35 +64,37 @@ const channel = defineProps({
   },
 });
 
+const channelsStore = useChannelsStore();
+const channelId = router.currentRoute.value.params.channelId as string;
+const isJoined = ref(false);
 const button_text = computed(() => {
-  return channel.is_owner ? "settings" : "leave";
+  return channel.mode === "my_channels"
+    ? channel.is_owner
+      ? "settings"
+      : "leave"
+    : "join";
 });
 
 const optionsChannel = async (channelId: string) => {
-  if (channel.is_owner) {
-    // await channelsStore.refreshMembers(channelId);
-    // await channelsStore.refreshBans(channelId);
-    await router.push(`/channels/${channelId}/settings/general`);
+  if (channel.mode === "my_channels") {
+    if (channel.is_owner) {
+      await router.push(`/channels/${channelId}/settings/general`);
+    } else {
+      await channelsStore.leaveChannel(channelId);
+    }
   } else {
-    console.log("leave");
-    //channelsStore.removeUserFromChannel(userStore.currentUser.id, channelId);
-    //not working until connected to backend
+    channelsStore.joinChannel(channelId);
+    isJoined.value = true;
   }
 };
-
-const channelId = router.currentRoute.value.params.channelId as string;
 </script>
 
 <style lang="scss" scoped>
-.my-channel-item {
+.channel-item {
   font-family: "Baumans", cursive;
-  display: grid;
-  grid-template-columns: 1fr 0.5fr 2fr 1fr 1fr;
-  grid-template-rows: 1fr;
-  justify-items: center;
 }
 
-.my-channel-item::after {
+.channel-item::after {
   content: "";
   bottom: 0;
   position: absolute;
@@ -86,6 +103,22 @@ const channelId = router.currentRoute.value.params.channelId as string;
   border-bottom: 1px solid black;
 }
 
+.my_channels {
+  display: grid;
+  grid-template-columns: 1fr 0.5fr 2fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  justify-items: center;
+}
+
+.explore_channels {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  justify-items: center;
+}
+.explorer-style {
+  background-color: $green-bg;
+}
 .owner-style {
   background-color: $yellow-hover;
 }

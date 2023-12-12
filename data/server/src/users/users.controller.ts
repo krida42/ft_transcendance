@@ -88,7 +88,7 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async create(@Body() createUserDto: CreateUserDto) {
     console.log('create user - - - - - - ');
-    return this.usersService.createUser(createUserDto);
+    return await this.usersService.createUser(createUserDto);
   }
 
   @Patch()
@@ -106,7 +106,10 @@ export class UsersController {
     @Req() req: Request & { user: any },
   ): Promise<Array<boolean | null> | Array<boolean | ResponseUserDto>> {
     console.log('update user, req.user.public_id:', req.user.public_id);
-    return this.usersService.updateUser(req.user.public_id, updateUserDto);
+    return await this.usersService.updateUser(
+      req.user.public_id,
+      updateUserDto,
+    );
   }
 
   @Delete(':id')
@@ -118,7 +121,7 @@ export class UsersController {
     description: 'UUIDv4 of the user',
   })
   async deleteUser(@Param('id', ParseUUIDPipe) id: string): Promise<number> {
-    return this.usersService.deleteUser(id);
+    return await this.usersService.deleteUser(id);
   }
 
   @Delete()

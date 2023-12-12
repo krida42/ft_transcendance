@@ -50,7 +50,7 @@ export class User extends Model {
   @ApiProperty()
   @Column({
     type: DataTypes.BLOB('tiny'),
-    allowNull: false,
+    allowNull: true,
     unique: true,
     field: 'email',
     validate: { isEmail: true },

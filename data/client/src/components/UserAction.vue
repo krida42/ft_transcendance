@@ -1,5 +1,5 @@
 <template>
-  <div class="user-action w-[10rem] h-[5srem] bd-redd">
+  <div class="user-action w-[8rem] h-[5srem] bd-redd">
     <div class="avatar w-[5rem] h-[5rem] mx-auto rounded-full overflow-hidden">
       <img :src="user?.avatar" alt="user image" />
     </div>
@@ -11,13 +11,13 @@
             'bg-green-online': user?.status === Status.Online,
             'bg-red-my': user?.status === Status.Offline,
             'bg-blue-my': user?.status === Status.InGame,
-            circle: user?.status && mode !== Mode.CHANNEL,
+            circle: user?.status,
           }"
         ></span
         >{{ user?.pseudo }}
       </p>
     </div>
-    <div class="actions bd-redd flex justify-around mt-1">
+    <div class="actions bd-redd flex justify-center gap-[0.5rem] mt-1">
       <button
         class="accept-btn text-green-dark hover:bg-green-dark hover:text-white hover:border-white"
         @click="acceptFriendRequest(uuid)"
@@ -57,9 +57,6 @@
       >
         unblock
       </button>
-      <button class="invite-btn text-red-my" v-if="mode === Mode.CHANNEL">
-        invite
-      </button>
     </div>
   </div>
 </template>
@@ -88,7 +85,6 @@ const Mode = {
   FRIEND: "friend",
   // REQUESTS: "requests",
   BLOCKED: "blocked",
-  CHANNEL: "channel",
   REQUEST_IN: "request_in",
   REQUEST_OUT: "request_out",
 };
@@ -136,14 +132,6 @@ const myAlert = (msg: string) => {
   border: 1px solid black;
 }
 
-.invite-btn {
-  color: black;
-  background-color: $green-bg;
-}
-
-.invite-btn:hover {
-  background-color: $yellow-hover;
-}
 .circle {
   width: 0.7rem;
   height: 0.7rem;

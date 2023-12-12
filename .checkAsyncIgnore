@@ -1,0 +1,13 @@
+this.engine = Matter.Engine.create({
+this.runner = Matter.Runner.create();
+const downVelocity = Matter.Vector.create(
+const upVelocity = Matter.Vector.create(
+const invertedVelocity = Matter.Vector.create(
+const encryptedText = Buffer.concat([cipher.update(text), cipher.final()]);
+decipher.update(encryptedData),
+console.error(
+this.setcurrentId(); // DEPR
+this.setCurrentId();
+start() {
+pause() {
+.pause();

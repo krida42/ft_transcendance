@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { Channel, Id } from "@/types";
+import { formatDate } from "@vueuse/core";
 
 // const host = process.env.VUE_APP_API_URL;
 const host = "http://localhost:3001";
@@ -28,6 +29,13 @@ export default {
     return res.data;
   },
 
+  async fetchAvailableChannels() {
+    const res = await axios.get(`${host}/channels-available`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
   async fetchChannelMembers(channelId: string) {
     const res = await axios.get(`${host}/channels/${channelId}/users`, {
       withCredentials: true,
@@ -37,6 +45,13 @@ export default {
 
   async fetchChannelAdmins(channelId: string) {
     const res = await axios.get(`${host}/channels/${channelId}/admins`, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
+  async fetchChannelInvites(channelId: string) {
+    const res = await axios.get(`${host}/channels/${channelId}/invites`, {
       withCredentials: true,
     });
     return res.data;
@@ -63,8 +78,15 @@ export default {
     return res.data;
   },
 
+  async editChannel(channel: Channel) {
+    const res = await axios.put(`${host}/channels/${channel.chanId}`, channel, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
   async leaveChannel(channelId: Id) {
-    const res = await axios.delete(`${host}/channels/${channelId}/quit}`, {
+    const res = await axios.delete(`${host}/channels/${channelId}/quit`, {
       withCredentials: true,
     });
     return res.data;
@@ -90,6 +112,59 @@ export default {
   async unbanUser(channelId: Id, userId: Id) {
     const res = await axios.delete(
       `${host}/channels/${channelId}/ban/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  },
+
+  async kickUser(channelId: Id, userId: Id) {
+    const res = await axios.delete(
+      `${host}/channels/${channelId}/kick/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  },
+
+  async addAdmin(channelId: Id, userId: Id) {
+    const res = await axios.post(
+      `${host}/channels/${channelId}/admin/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  },
+
+  async removeAdmin(channelId: Id, userId: Id) {
+    const res = await axios.delete(
+      `${host}/channels/${channelId}/admin/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  },
+
+  async inviteUser(channelId: Id, userId: Id) {
+    const res = await axios.post(
+      `${host}/channels/${channelId}/invite/${userId}`,
+      {
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  },
+
+  async uploadChannelLogo(channelId: Id, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await axios.patch(
+      `${host}/channels/${channelId}/image`,
+      formData,
       {
         withCredentials: true,
       }

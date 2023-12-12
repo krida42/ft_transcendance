@@ -14,8 +14,8 @@ import { FriendsService } from '../friends/friends.service';
 import { InvalidUUIDException } from 'src/exceptions/exceptions';
 
 // ---------- UTILS
-// checkId(id): Promise< uuidv4 > OK
-// findById(chanId): Promise< Channels > OK
+// await checkId(id): Promise< uuidv4 > OK
+// await findById(chanId): Promise< Channels > OK
 // fetchChannelDto(chanId): Promise< channelDto > OK
 // fetchChannelDtoArray(all: Channels[]): Promise< channelDto[] > OK
 // fetchChanUsersToChanDtoArray(all: ChannelsUsers[]): Promise< channelDto[] > OK
@@ -91,6 +91,7 @@ export class ChannelsUtilsService {
       chan.chanType,
       chan.ownerId,
       chan.nbUser,
+      chan.imgData,
     );
     return dto;
   }
@@ -105,6 +106,7 @@ export class ChannelsUtilsService {
         chan.chanType,
         chan.ownerId,
         chan.nbUser,
+        chan.imgData,
       );
       channelDtoArray.push(dto);
     }
@@ -116,7 +118,7 @@ export class ChannelsUtilsService {
   ): Promise<channelDto[]> {
     const channelIds = all.map((userChannel) => userChannel.chanId);
     const channels = await Channels.findAll({ where: { chanId: channelIds } });
-    return this.fetchChannelDtoArray(channels);
+    return await this.fetchChannelDtoArray(channels);
   }
 
   // status: ('Direct', 'Owner', 'Admin', 'User', 'Muted', 'Banned', 'Invited'),
@@ -229,7 +231,7 @@ export class ChannelsUtilsService {
     chanId: uuidv4,
     userStatuses: string[],
   ): Promise<PublicUserDto[]> {
-    this.checkId(chanId);
+    await this.checkId(chanId);
 
     const userChan = await this.channelUsersModel.findAll({
       where: {
@@ -239,13 +241,13 @@ export class ChannelsUtilsService {
         },
       },
     });
-    return this.fetchUserDtoArray(userChan);
+    return await this.fetchUserDtoArray(userChan);
   }
 
   async checkUserIds(currentId: uuidv4, userId: uuidv4) {
     if (
-      this.friendsService.checkId(currentId) ===
-      this.friendsService.checkId(userId)
+      (await this.friendsService.checkId(currentId)) ===
+      (await this.friendsService.checkId(userId))
     ) {
       throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }

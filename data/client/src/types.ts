@@ -80,11 +80,12 @@ export type Channel = {
   ownerId: Id;
   chanName: string;
   chanType: PrivacyType;
-  logo?: FormData;
+  imgData?: File;
   chanPassword?: string;
   members: User[];
   admins: User[];
   bans: User[];
+  invites: Id[];
   nbUser: number;
 };
 

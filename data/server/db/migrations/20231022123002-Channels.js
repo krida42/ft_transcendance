@@ -10,7 +10,6 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.literal('uuid_generate_v4()'),
       },
-
       chanName: {
         unique: true,
         allowNull: false,
@@ -35,6 +34,21 @@ module.exports = {
         unique: false,
         allowNull: false,
         type: Sequelize.INTEGER,
+      },
+      imgName: {
+        unique: false,
+        allowNull: true,
+        type: Sequelize.STRING,
+      },
+      imgType: {
+        unique: false,
+        allowNull: true,
+        type: Sequelize.STRING,
+      },
+      imgData: {
+        unique: false,
+        allowNull: true,
+        type: Sequelize.BLOB,
       },
       createdAt: {
         type: Sequelize.DATE,

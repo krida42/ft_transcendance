@@ -9,8 +9,11 @@ import {
   Req,
   Query,
   UseGuards,
+  UploadedFile,
+  UseInterceptors,
   ParseUUIDPipe,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -23,11 +26,11 @@ import { EditChannelDto } from './dto/editChannel.dto';
 import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
 import { PasswordChannelDto } from './dto/passwordChannel.dto';
-import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 import { AddMessageDto } from 'src/message/dto/addMessage.dto';
 import { MessageService } from 'src/message/message.service';
+import { UploadDto } from './dto/setImage.dto';
 
-@ApiTags('channels v3 (jwt OFF)')
+@ApiTags('channels v4 (jwt OFF)')
 @Controller('')
 export class ChannelsController {
   private public_id: string | null = null; // DEPR
@@ -44,9 +47,8 @@ export class ChannelsController {
     this.setcurrentId(); // DEPR
   }
 
+  /// DEPR
   async setcurrentId() {
-    // DEPR
-    // TEMP
     let user: User | null;
     if (ChannelsController.isFirstUserConnected === true) {
       user = await this.usersService.findByLogin('marvin');
@@ -63,8 +65,11 @@ export class ChannelsController {
   }
 
   // @Post('/channels') OK
-  // @Patch('/channels/:chanId') FIXME
+  // @Patch('/channels/:chanId') OK
   // @Delete('/channels/:chanId') OK
+
+  // ---------- PATCH IMG
+  // @Patch('/channels/:chanId/image') OK
 
   // ---------- JOIN / QUIT
   // @Post('/channels/:chanId/join') OK
@@ -83,7 +88,7 @@ export class ChannelsController {
   // @Delete('/channels/:chanId/ban/:userId') OK
 
   // ---------- MUTE
-  // @Patch('/channels/:chanId/mute/:userId') OK FIXME TIMER
+  // @Patch('/channels/:chanId/mute/:userId') OK
 
   // ---------- KICK
   // @Delete('/channels/:chanId/kick/:userId') OK
@@ -98,7 +103,7 @@ export class ChannelsController {
   // @Get('/channels-unjoined-protect') OK
   // @Get('/channels-unjoined-private') OK
 
-  // ---------- GET USERS LIST // TODO BLOCK ACCESS IF NOT IN CHANNEL PRIVATE OR PROTECt
+  // ---------- GET USERS LIST
   // @Get('/channels/:chanId/users') OK
   // @Get('/channels/:chanId/users-only') OK
   // @Get('/channels/:chanId/mutes') OK
@@ -107,6 +112,37 @@ export class ChannelsController {
   // @Get('/channels/:chanId/bans') OK
   // @Get('/channels/:chanId/owner') OK
 
+  // ---------- PATCH IMG
+
+  // @Post()
+  @Patch('/channels/:chanId/image')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @Req() req: ReqU,
+    @Param('chanId') chanId: uuidv4,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const uploadDto: UploadDto = { file };
+    return await this.channelService.uploadImage(
+      this.public_id,
+      chanId,
+      uploadDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Change channel image' })
+  // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @Patch('/channels/:chanId/image')
+  async uploadImage(
+    @Req() req: ReqU,
+    @Param('chanId') chanId: uuidv4,
+    @Body() body: any,
+  ) {
+    return await this.channelService.uploadImage(this.public_id, chanId, body);
+  }
+
+  // ---------- POST / PATCH / DELETE CHANNEL
+
   @ApiOperation({ summary: 'Create a channel (dto)' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Post('/channels')
@@ -114,10 +150,12 @@ export class ChannelsController {
     @Req() req: ReqU,
     @Body() editChannelDto: EditChannelDto,
   ) {
-    return this.channelService.createChannel(this.public_id, editChannelDto);
+    return await this.channelService.createChannel(
+      this.public_id,
+      editChannelDto,
+    );
   }
 
-  /* // FIXME PATCH CHANNEL
   @ApiOperation({ summary: 'Update a channel (dto)' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Patch('/channels/:chanId')
@@ -126,19 +164,18 @@ export class ChannelsController {
     @Param('chanId') chanId: uuidv4,
     @Body() editChannelDto: EditChannelDto,
   ) {
-    return this.channelService.updateChannel(
+    return await this.channelService.updateChannel(
       this.public_id,
       chanId,
       editChannelDto,
     );
   }
-  */
 
   @ApiOperation({ summary: 'Delete a channel' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Delete('/channels/:chanId')
   async deleteChannel(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelService.deleteChannel(this.public_id, chanId);
+    return await this.channelService.deleteChannel(this.public_id, chanId);
   }
 
   // ---------- JOIN / QUIT
@@ -151,7 +188,7 @@ export class ChannelsController {
     @Param('chanId') chanId: uuidv4,
     @Body() passwordChannelDto: PasswordChannelDto,
   ) {
-    return this.channelService.joinChannel(
+    return await this.channelService.joinChannel(
       this.public_id,
       chanId,
       passwordChannelDto,
@@ -162,7 +199,7 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Delete('/channels/:chanId/quit')
   async quitChannel(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelService.quitChannel(this.public_id, chanId);
+    return await this.channelService.quitChannel(this.public_id, chanId);
   }
 
   // ---------- ADMIN
@@ -174,7 +211,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.addAdmin(this.public_id, chanId, userId);
+    return await this.channelOpService.addAdmin(this.public_id, chanId, userId);
   }
 
   @ApiOperation({ summary: 'Delete admin userId' })
@@ -185,7 +222,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.delAdmin(this.public_id, chanId, userId);
+    return await this.channelOpService.delAdmin(this.public_id, chanId, userId);
   }
 
   // ---------- INVITE
@@ -197,7 +234,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.invite(this.public_id, chanId, userId);
+    return await this.channelOpService.invite(this.public_id, chanId, userId);
   }
 
   @ApiOperation({ summary: 'Cancel userId invitation to channel' })
@@ -208,8 +245,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.uninvite(this.public_id, chanId, userId);
-    return this.channelOpService.uninvite(this.public_id, chanId, userId);
+    return await this.channelOpService.uninvite(this.public_id, chanId, userId);
   }
 
   // ---------- BAN
@@ -221,7 +257,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.banUser(this.public_id, chanId, userId);
+    return await this.channelOpService.banUser(this.public_id, chanId, userId);
   }
 
   @ApiOperation({ summary: 'Unban userId from channel' })
@@ -232,7 +268,11 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.unbanUser(this.public_id, chanId, userId);
+    return await this.channelOpService.unbanUser(
+      this.public_id,
+      chanId,
+      userId,
+    );
   }
 
   // ---------- MUTE
@@ -244,7 +284,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.mute(this.public_id, chanId, userId);
+    return await this.channelOpService.mute(this.public_id, chanId, userId);
   }
 
   // ---------- KICK
@@ -256,7 +296,7 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return this.channelOpService.kick(this.public_id, chanId, userId);
+    return await this.channelOpService.kick(this.public_id, chanId, userId);
   }
 
   // ---------- GET CHANNEL DATA
@@ -265,7 +305,7 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId')
   async getDataChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getDataChan(chanId);
+    return await this.channelGetService.getDataChan(chanId);
   }
 
   // ---------- GET CHANNELS LIST (for current user, sorted by user size)
@@ -276,21 +316,21 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-joined')
   async getJoinedChan(@Req() req: ReqU) {
-    return this.channelGetService.getJoinedChan(this.public_id);
+    return await this.channelGetService.getJoinedChan(this.public_id);
   }
 
   @ApiOperation({ summary: 'Get direct joined channels (sorted)' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-direct')
   async getDirectChan(@Req() req: ReqU) {
-    return this.channelGetService.getDirectChan(this.public_id);
+    return await this.channelGetService.getDirectChan(this.public_id);
   }
 
   @ApiOperation({ summary: 'Get available channels (sorted)' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-available')
   async getAvailableChan(@Req() req: ReqU) {
-    return this.channelGetService.getUnjoinedChan(
+    return await this.channelGetService.getUnjoinedChan(
       this.public_id,
       ChanType.Public,
     );
@@ -300,7 +340,7 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-unjoined-protect')
   async getProtectedChan(@Req() req: ReqU) {
-    return this.channelGetService.getUnjoinedChan(
+    return await this.channelGetService.getUnjoinedChan(
       this.public_id,
       ChanType.Protected,
     );
@@ -310,7 +350,7 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-unjoined-private')
   async getPrivateChan(@Req() req: ReqU) {
-    return this.channelGetService.getUnjoinedChan(
+    return await this.channelGetService.getUnjoinedChan(
       this.public_id,
       ChanType.Private,
     );
@@ -324,42 +364,42 @@ export class ChannelsController {
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/users')
   async getUsersChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getUsersChan(chanId);
+    return await this.channelGetService.getUsersChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get only users/muted list' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/users-only')
   async getUsersOnlyChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getUsersOnlyChan(chanId);
+    return await this.channelGetService.getUsersOnlyChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get mutes list' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/mutes')
   async getMutesChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getMutesChan(chanId);
+    return await this.channelGetService.getMutesChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get admins (owner include) list' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/admins')
   async getAdminsChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getAdminsChan(chanId);
+    return await this.channelGetService.getAdminsChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get invites list' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/invites')
   async getInvitesChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getInvitesChan(chanId);
+    return await this.channelGetService.getInvitesChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get bans list' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels/:chanId/bans')
   async getBansChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
-    return this.channelGetService.getBansChan(chanId);
+    return await this.channelGetService.getBansChan(chanId);
   }
 
   @ApiOperation({ summary: 'Get owner' })
@@ -367,7 +407,7 @@ export class ChannelsController {
   @Get('/channels/:chanId/owner')
   async getOwnerChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
     const userStatuses = [UserStatus.Owner];
-    return this.utils.getUsersByStatuses(chanId, userStatuses);
+    return await this.utils.getUsersByStatuses(chanId, userStatuses);
   }
 
   @ApiOperation({ summary: 'Send a message' })

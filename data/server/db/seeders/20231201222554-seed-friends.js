@@ -14,7 +14,14 @@ module.exports = {
       {
         sender_id: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
         receiver_id: '8d4ac36d-251f-4fa2-ab6c-ed3fb06d9f40', // zap
-        status: 'Pending',
+        status: 'Active',
+        createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
+        updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
+      },
+      {
+        sender_id: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
+        receiver_id: 'f447442d-f5ab-4e8d-848b-ea49490823bc', // blob
+        status: 'Active',
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
@@ -35,7 +42,7 @@ module.exports = {
       {
         sender_id: '757f4aab-72cb-4360-81b8-7446b0e1de00', // pixel
         receiver_id: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
-        status: 'Pending',
+        status: 'Active',
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },

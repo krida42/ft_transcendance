@@ -44,9 +44,10 @@ export const useChannelsStore = defineStore({
         });
       });
     },
-    async createChannel(channel: Channel): Promise<void> {
+    async createChannel(channel: Channel): Promise<Channel | void> {
       return channelsApi.createChannel(channel).then((channel) => {
         this.myChannels.set(channel.chanId, channel);
+        return channel;
       });
     },
     async deleteChannel(chanId: Id): Promise<void> {
@@ -54,14 +55,19 @@ export const useChannelsStore = defineStore({
         this.myChannels.delete(chanId);
       });
     },
-    async leaveChannel(chanId: Id, userId: Id): Promise<void> {
+    async editChannel(channel: Channel): Promise<void> {
+      return channelsApi.editChannel(channel).then((channel) => {
+        this.myChannels.set(channel.chanId, channel);
+      });
+    },
+    async leaveChannel(chanId: Id): Promise<void> {
       return channelsApi.leaveChannel(chanId).then(() => {
-        const channel = this.myChannels.get(chanId);
-        if (channel) {
-          channel.members = channel.members.filter(
-            (user) => user.id !== userId
-          );
-        }
+        this.myChannels.delete(chanId);
+      });
+    },
+    async joinChannel(chanId: Id): Promise<void> {
+      return channelsApi.joinChannel(chanId).then((channel) => {
+        this.myChannels.set(channel.chanId, channel);
       });
     },
     async refreshMembers(chanId: Id): Promise<void> {
@@ -69,6 +75,17 @@ export const useChannelsStore = defineStore({
         const channel = this.myChannels.get(chanId);
         if (channel) {
           channel.members = users;
+        }
+      });
+    },
+    async refreshInvites(chanId: Id): Promise<void> {
+      return channelsApi.fetchChannelInvites(chanId).then((users) => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.invites = [];
+          for (const user of users) {
+            channel.invites.push(user.id);
+          }
         }
       });
     },
@@ -107,6 +124,47 @@ export const useChannelsStore = defineStore({
         if (channel) {
           channel.bans = channel.bans.filter((user) => user.id !== userId);
         }
+      });
+    },
+    async kickUser(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.kickUser(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.members = channel.members.filter(
+            (user) => user.id !== userId
+          );
+        }
+      });
+    },
+    async addAdmin(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.addAdmin(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.admins.push(
+            channel.members.find((user) => user.id === userId)!
+          );
+        }
+      });
+    },
+    async removeAdmin(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.removeAdmin(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.admins = channel.admins.filter((user) => user.id !== userId);
+        }
+      });
+    },
+    async inviteUser(chanId: Id, userId: Id): Promise<void> {
+      return channelsApi.inviteUser(chanId, userId).then(() => {
+        const channel = this.myChannels.get(chanId);
+        if (channel && channel.invites) {
+          channel.invites.push(userId);
+        }
+      });
+    },
+    async uploadChannelLogo(chanId: Id, file: File): Promise<void> {
+      return channelsApi.uploadChannelLogo(chanId, file).then((channel) => {
+        this.myChannels.set(channel.chanId, channel);
       });
     },
   },

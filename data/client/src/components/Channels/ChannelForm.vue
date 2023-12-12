@@ -146,7 +146,7 @@ const privacy = ref(PrivacyType.Private);
 const channelName = ref("");
 const channelLogo = ref("");
 const search_input = ref("");
-let usersInvited: string[] = [];
+const usersInvited = ref([] as string[]);
 const friendStore = useFriendStore();
 const friendList = computed(() => {
   return FriendsTransformer.beginWithLetters(
@@ -161,6 +161,12 @@ const channelId = ref("");
 let files: FileList | null = null;
 let file: File | null = null;
 
+const initInvites = (currentChannel: Channel) => {
+  for (const invite of currentChannel.invites) {
+    usersInvited.value.push(invite);
+  }
+};
+
 const initChannel = async () => {
   await channel.refreshChannels();
   channelId.value = router.currentRoute.value.params.channelId as string;
@@ -171,12 +177,9 @@ const initChannel = async () => {
   chanMembers.value = currentChannel.value.members;
   channelName.value = currentChannel.value.chanName;
   privacy.value = currentChannel.value.chanType;
-  console.log(currentChannel.value.imgData);
-
-  for (const invite of currentChannel.value.invites) {
-    //console.log(invite);
-    usersInvited.push(invite);
-  }
+  //console.log(currentChannel.value.imgData);
+  initInvites(currentChannel.value);
+  console.log(usersInvited.value);
 };
 
 onBeforeMount(() => {
@@ -211,7 +214,7 @@ const createForm = async () => {
     if (chan) {
       channel.refreshInvites(chan.chanId);
       if (file) channel.uploadChannelLogo(chan.chanId, file);
-      for (const userId of usersInvited) {
+      for (const userId of usersInvited.value) {
         channel.inviteUser(chan.chanId, userId);
       }
     }
@@ -243,12 +246,11 @@ async function deleteChannel(channelId: string) {
 }
 
 async function inviteUser(userId: string) {
-  if (usersInvited.includes(userId)) {
-    usersInvited = usersInvited.filter((id) => id !== userId);
+  if (usersInvited.value.includes(userId)) {
+    usersInvited.value = usersInvited.value.filter((id) => id !== userId);
   } else {
-    usersInvited.push(userId);
+    usersInvited.value.push(userId);
   }
-  //console.log(usersInvited);
 }
 </script>
 

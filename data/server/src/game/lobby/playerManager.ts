@@ -13,7 +13,7 @@ export class PlayerManager {
     this.pongRoom = pongRoom;
   }
 
-  async addPlayer(player: Player) {
+  async addPlayer(player: Player): Promise<boolean>{
     try {
       if (!this.canAddPlayer(player)) return false;
       player.number = this.players.length;
@@ -44,7 +44,7 @@ export class PlayerManager {
       !this.isAlreadyInRoom(player) &&
       !this.pongRoom.started &&
       !this.pongRoom.isGameEnded &&
-      !this.isPlayerInARoom(player)
+      !this.pongRoom.pongGateway.whichRoomForClient(player.client)
     );
   }
 
@@ -168,12 +168,6 @@ export class PlayerManager {
     } catch (error) {
       console.error('Error reconnecting player:', error);
     }
-  }
-
-  isPlayerInARoom(player: Player): boolean {
-    return !!this.pongRoom.pongGateway.rooms.find((r) =>
-      r.PlayerManager.hasPlayer(player.user.public_id),
-    );
   }
 
   isAllPlayersDisconnected(): boolean {

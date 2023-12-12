@@ -7,7 +7,8 @@ import { GameDBManager } from '../database/db';
 import { GameSave } from '../type';
 import { Achievement } from '../achievements/achievements';
 import { User } from 'db/models/user';
-
+import { v4 } from 'uuid';
+import { uuidv4 } from 'src/types';
 export class PongRoom {
   //game
   pongGateway: PongGateway;
@@ -24,9 +25,16 @@ export class PongRoom {
   PlayerManager: PlayerManager = new PlayerManager(this);
   //save
   gameSaved:boolean = false;
+  //private
+  id: uuidv4 = v4();
   
-  constructor(PongGateway: PongGateway) {
+  constructor(PongGateway: PongGateway, options?: { private : boolean }) {
     this.pongGateway = PongGateway;
+    if (options?.private) {
+      this.pongGateway.privateRooms.set(this.id, this);
+    } else {
+      this.pongGateway.randomRooms.push(this);
+    }
   }
 
   get players(): Player[] {

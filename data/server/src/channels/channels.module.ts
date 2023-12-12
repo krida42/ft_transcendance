@@ -20,7 +20,7 @@ import { MessageModule } from 'src/message/message.module';
 @Module({
   imports: [
     SequelizeModule.forFeature([Channels, ChannelsUsers]),
-    FriendsModule,
+    forwardRef(() => FriendsModule),
     forwardRef(() => UsersModule),
     forwardRef(() => MessageModule),
   ],

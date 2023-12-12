@@ -47,7 +47,10 @@ export class ChannelsService {
     await this.friendsService.checkId(currentId);
 
     const chan = await this.channelModel.findOne({
-      where: { chanName: editChannelDto.chanName },
+      where: {
+        chanName: editChannelDto.chanName,
+         [Op.not]: { ChanType: ChanType.Direct },
+      },
     });
     if (chan) {
       throw new HttpException('name already exist', HttpStatus.CONFLICT);
@@ -106,6 +109,7 @@ export class ChannelsService {
           [Op.not]: chanId,
         },
         chanName: editChannelDto.chanName,
+        [Op.not]: { ChanType: ChanType.Direct },
       },
     });
     if (chanTestName) {
@@ -311,6 +315,46 @@ export class ChannelsService {
     } catch (error) {
       throw new HttpException(
         ErrorMsg.quitChannel + error,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async createDirectChannel(user1_id: uuidv4, user2_id: uuidv4) {
+    if (
+      (await this.friendsService.checkId(user1_id)) ===
+      (await this.friendsService.checkId(user2_id))
+    ) {
+      throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
+    }
+
+    const name = [
+      await this.usersService.findById(user1_id),
+      await this.usersService.findById(user2_id),
+    ];
+
+    try {
+      const chan = await this.channelModel.create({
+        chanName: name[0].login + ' & ' + name[1].login,
+        ownerId: user1_id,
+        chanType: ChanType.Direct,
+        chanPassword: 'nannan',
+        nbUser: 2,
+      });
+
+      await this.channelUsersModel.create({
+        chanId: chan.chanId,
+        userId: user1_id,
+        userStatus: UserStatus.Direct,
+      });
+      await this.channelUsersModel.create({
+        chanId: chan.chanId,
+        userId: user2_id,
+        userStatus: UserStatus.Direct,
+      });
+    } catch (error) {
+      throw new HttpException(
+        'createDirectChannel ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }

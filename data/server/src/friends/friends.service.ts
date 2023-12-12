@@ -7,6 +7,7 @@ import { uuidv4 } from 'src/types';
 import { Friends } from 'db/models/friends';
 import { UsersService } from '../users/users.service';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
+import { ChannelsService } from 'src/channels/channels.service';
 
 enum FriendStatus {
   Pending = 'Pending',
@@ -45,6 +46,7 @@ export class FriendsService {
     @InjectModel(Friends)
     private readonly friendsModel: typeof Friends,
     private readonly usersService: UsersService,
+    private readonly channelsService: ChannelsService,
   ) {}
 
   async createFriend(
@@ -103,6 +105,7 @@ export class FriendsService {
     }
     pendingFriend.status = FriendStatus.Active;
     await pendingFriend.save();
+    this.channelsService.createDirectChannel(sender_id, receiver_id);
     return await this.fetchPublicUserDto(sender_id);
   }
 

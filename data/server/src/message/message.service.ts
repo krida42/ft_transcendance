@@ -142,11 +142,17 @@ export class MessageService {
     receiverId: string,
     addMessageDto: AddMessageDto,
   ) {
-    throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED);
-    // const chanId = await this.channelsGetService.getDirectChan(senderId);
+    // throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED);
+    const chanId = await this.channelsUtilsService.getDirectChanId(
+      senderId,
+      receiverId,
+    );
+    if (!chanId) {
+      throw new HttpException('No direct channel', HttpStatus.NOT_FOUND);
+    }
     const insertedMsg = await this.insertMessage(
       senderId,
-      'L ID du chan direct',
+      chanId,
       addMessageDto.content,
     );
 

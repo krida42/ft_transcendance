@@ -174,9 +174,9 @@ const initChannel = async () => {
   //channelLogo.value = currentChannel.value.logo as string;
 
   for (const invite of currentChannel.value.invites) {
-    usersInvited.push(invite.id);
+    console.log(invite);
+    usersInvited.push(invite);
   }
-  console.log(usersInvited);
 };
 
 onBeforeMount(() => {
@@ -209,10 +209,10 @@ const createForm = async () => {
 
   channel.createChannel(newChannel).then((chan) => {
     if (chan) {
-      console.log(file);
+      channel.refreshInvites(chan.chanId);
       if (file) channel.uploadChannelLogo(chan.chanId, file);
       for (const userId of usersInvited) {
-        channel.inviteUser(userId, chan.chanId);
+        channel.inviteUser(chan.chanId, userId);
       }
     }
   });
@@ -248,6 +248,7 @@ async function inviteUser(userId: string) {
   } else {
     usersInvited.push(userId);
   }
+  console.log(usersInvited);
 }
 </script>
 

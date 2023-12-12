@@ -62,7 +62,10 @@ export class UsersController {
     @Req() req: Request & { user: any },
   ): Promise<PublicUserDto | ResponseUserDto> {
     if (id === 'me' || id === req.user.public_id) {
-      return await responseUser(req.user);
+      const resUser: any = await responseUser(req.user);
+      resUser.id = req.user.public_id;
+      delete resUser.public_id;
+      return resUser;
     }
     if (!isUUID(id, 4)) throw new InvalidUUIDException();
     const foundUser = await this.usersService.findById(id);

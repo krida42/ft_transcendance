@@ -11,7 +11,7 @@ export enum Status {
 export const StatusSchema = z.nativeEnum(Status);
 
 export const UserResponseSchema = z.object({
-  public_id: z.string(),
+  id: z.string(),
   login: z.string(),
   pseudo: z.string(),
   avatar: z.string(),

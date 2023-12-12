@@ -38,17 +38,18 @@ export const useMainStore = defineStore({
         .fetchUser("me")
         .then((user: MyUserResponse) => {
           console.log("user", user);
-          const { public_id, login, pseudo, avatar, email, phone, roles } =
-            MyUserResponseSchema.parse(user);
-          this.userInfo = {
-            id: public_id,
-            login,
-            pseudo,
-            avatar,
-            email,
-            phone,
-            roles,
-          };
+          // const { public_id, login, pseudo, avatar, email, phone, roles } =
+          // MyUserResponseSchema.parse(user);
+          // this.userInfo = {
+          //   id: public_id,
+          //   login,
+          //   pseudo,
+          //   avatar,
+          //   email,
+          //   phone,
+          //   roles,
+          // };
+          this.userInfo = MyUserResponseSchema.parse(user);
           this.login();
         })
         .catch((err: AxiosError) => {

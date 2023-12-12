@@ -17,6 +17,6 @@ export default {
       .get(`${host}/users`, {
         params: { pseudo: pseudo },
       })
-      .then((res) => ({ ...res.data, id: res.data.public_id }));
+      .then((res) => ({ ...res.data, id: res.data.id }));
   },
 };

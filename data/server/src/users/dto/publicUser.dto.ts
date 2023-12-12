@@ -10,7 +10,7 @@ import {
 import { Is } from 'sequelize-typescript';
 
 export class PublicUserDto {
-  @Expose()
+  @Expose({ name: 'public_id' })
   @IsNotEmpty()
   id: string;
 

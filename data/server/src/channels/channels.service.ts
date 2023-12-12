@@ -13,6 +13,7 @@ import { UsersService } from '../users/users.service';
 import { FriendsService } from '../friends/friends.service';
 import { ChannelsGetService } from '../channels/channels-get.service';
 import { ChannelsUtilsService } from './channels-utils.service';
+import { buffer } from 'stream/consumers';
 
 // POST createChannel(currentId, editChannelDto, setImageDto): Promise<channelDto> OK
 // PATCH updateChannel(currentId, chanId, editChannelDto, setImageDto): Promise<channelDto> OK
@@ -132,8 +133,7 @@ export class ChannelsService {
       let chan = await this.utils.findById(chanId);
       chan.chanName = editChannelDto.chanName;
       chan.chanType = editChannelDto.chanType;
-      chan.chanPassword = pass,
-      await chan.save();
+      (chan.chanPassword = pass), await chan.save();
       return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException(
@@ -143,22 +143,25 @@ export class ChannelsService {
     }
   }
 
-// ---------- PATCH IMAGE
+  // ---------- PATCH IMAGE
 
-
+  // 413 payload too large /!\
   async uploadImage(
     currentId: uuidv4,
     chanId: uuidv4,
-    file: Express.Multer.File,
+    file: Buffer,
   ): Promise<channelDto> {
+
     await this.friendsService.checkId(currentId);
     let chan = await this.utils.findById(chanId);
     await this.utils.checkOwner(currentId, chanId);
 
     if (!file) {
+      console.log('>>> !file');
       return await this.utils.fetchChannelDto(chan.chanId);
     }
 
+    /*
     console.log('file:', file);
     const fileType = await import('file-type');
     const imageType = await fileType.fileTypeFromBuffer(file.buffer);
@@ -167,17 +170,19 @@ export class ChannelsService {
       throw new HttpException('invalid image', HttpStatus.BAD_REQUEST);
     }
 
+    */
+
     try {
-      const { originalname, mimetype, buffer } = file;
+      // const { originalname, mimetype, buffer } = file;
 
-      console.log('imgName:', originalname);
-      console.log('imgType:', mimetype);
-      console.log('imgData:', buffer);
+      // console.log('imgName:', originalname);
+      // console.log('imgType:', mimetype);
+      // console.log('imgData:', buffer);
 
-      chan.imgName = originalname;
-      chan.imgType = mimetype;
-      chan.imgData = buffer;
-
+      // chan.imgName = originalname;
+      // chan.imgType = mimetype;
+      console.log('body: ', file);
+      chan.imgData = file;
       await chan.save();
       return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {

@@ -16,11 +16,11 @@ export class channelDto {
   @IsNotEmpty()
   nbUser: number;
 
-  @IsOptional()
-  imgName: string;
+  // @IsOptional()
+  // imgName: string;
 
-  @IsOptional()
-  imgType: string;
+  // @IsOptional()
+  // imgType: string;
 
   @IsOptional()
   imgData: Buffer;
@@ -32,17 +32,17 @@ export class channelDto {
     chanType: string,
     ownerId: string,
     nbUser: number,
-    imgName: string,
-    imgType: string,
     imgData: Buffer,
+    // imgName: string,
+    // imgType: string,
   ) {
     this.chanId = chanId;
     this.chanName = chanName;
     this.chanType = chanType;
     this.ownerId = ownerId;
     this.nbUser = nbUser;
-    this.imgName = imgName;
-    this.imgType = imgType;
     this.imgData = imgData;
+    // this.imgName = imgName;
+    // this.imgType = imgType;
   }
 }

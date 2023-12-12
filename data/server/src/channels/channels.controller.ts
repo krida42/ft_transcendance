@@ -108,6 +108,21 @@ export class ChannelsController {
   // @Get('/channels/:chanId/bans') OK
   // @Get('/channels/:chanId/owner') OK
 
+  // ---------- PATCH IMG
+  @ApiOperation({ summary: 'Change channel image' })
+  // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @Patch('/channels/:chanId/image')
+  async uploadImage(
+    @Req() req: ReqU,
+    @Param('chanId') chanId: uuidv4,
+    @Body() body: any,
+  ) {
+
+    return await this.channelService.uploadImage(this.public_id, chanId, body);
+  }
+
+  // ---------- POST / PATCH / DELETE CHANNEL
+
   @ApiOperation({ summary: 'Create a channel (dto)' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Post('/channels')
@@ -141,20 +156,6 @@ export class ChannelsController {
   @Delete('/channels/:chanId')
   async deleteChannel(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
     return await this.channelService.deleteChannel(this.public_id, chanId);
-  }
-
-  // ---------- PATCH IMG
-
-  @ApiOperation({ summary: 'Change channel image' })
-  // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
-  @UseInterceptors(FileInterceptor('image'))
-  @Patch('/channels/:chanId/image')
-  async uploadImage(
-    @Req() req: ReqU,
-    @Param('chanId') chanId: uuidv4,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    return await this.channelService.uploadImage(this.public_id, chanId, file);
   }
 
   // ---------- JOIN / QUIT

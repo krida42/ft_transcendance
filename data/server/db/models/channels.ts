@@ -70,7 +70,6 @@ export class Channels extends Model {
     unique: false,
     allowNull: true,
     type: DataTypes.STRING,
-    defaultValue: 'default',
     field: 'imgName',
   })
   public imgName!: string;
@@ -79,7 +78,6 @@ export class Channels extends Model {
     unique: false,
     allowNull: true,
     type: DataTypes.STRING,
-    defaultValue: 'default',
     field: 'imgType',
   })
   public imgType!: string;
@@ -88,7 +86,6 @@ export class Channels extends Model {
     unique: false,
     allowNull: true,
     type: DataTypes.BLOB('long'),
-    defaultValue: 'default',
     field: 'imgData',
   })
   public imgData!: Buffer;

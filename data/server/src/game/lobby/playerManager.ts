@@ -108,7 +108,7 @@ export class PlayerManager {
         const index = this.getPlayerIndex(client);
         console.log(`Client disconnected: ${player.user.login}`);
         this.players[index].disconnected = true;
-        await this.endGameIfNoPlayers();
+        this.endGameIfNoPlayers();
         this.pauseGameIfNotEnoughPlayers();
 
         const otherPlayerIndex = this.players.findIndex((p) => p !== player);

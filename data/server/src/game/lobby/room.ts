@@ -26,14 +26,13 @@ export class PongRoom {
   //save
   gameSaved:boolean = false;
   //private
-  id: uuidv4 = v4();
+  key: uuidv4 = null;
   
-  constructor(PongGateway: PongGateway, options?: { private : boolean }) {
+  constructor(PongGateway: PongGateway, options?: { isPrivate ?: boolean }) {
+    PongRoom.id++;
     this.pongGateway = PongGateway;
-    if (options?.private) {
-      this.pongGateway.privateRooms.set(this.id, this);
-    } else {
-      this.pongGateway.randomRooms.push(this);
+    if (options?.isPrivate) {
+      this.key = v4();
     }
   }
 
@@ -54,7 +53,7 @@ export class PongRoom {
       }
     }, BEFORE_GAME);
   }
-
+  
   async save() {
     if (this.gameSaved) return;
     console.log('Game saved', "score1:", this.game.gameState.score[0], "score2:", this.game.gameState.score[1]);

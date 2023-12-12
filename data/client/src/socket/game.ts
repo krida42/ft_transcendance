@@ -1,4 +1,5 @@
 import { socketGame as socket } from "./index";
+import { socket as socketSocial } from "@/socket/index";
 import router from "@/router";
 
 socket.on("randomRoom", (data: any) => {
@@ -12,4 +13,9 @@ socket.on("play", () => {
 socket.on("waiting", () => {
   console.log("waiting");
   router.push("/main/waiting");
+});
+
+socket.on("invite", (data: any) => {
+  console.log("invite event: ", data);
+  router.push("/main/invite");
 });

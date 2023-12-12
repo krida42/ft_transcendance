@@ -177,9 +177,8 @@ const initChannel = async () => {
   chanMembers.value = currentChannel.value.members;
   channelName.value = currentChannel.value.chanName;
   privacy.value = currentChannel.value.chanType;
-  //console.log(currentChannel.value.imgData);
+  console.log(currentChannel.value.imgData);
   initInvites(currentChannel.value);
-  console.log(usersInvited.value);
 };
 
 onBeforeMount(() => {

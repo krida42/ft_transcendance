@@ -1,10 +1,12 @@
 <template>
   <div class="buttons">
-    <button>
+    <button @click="$emit('button1')">
       {{
         mode === profileModes.myProfile ? "Settings" : "Add as friend"
       }}</button
-    ><button>{{ mode === profileModes.myProfile ? "Logout" : "Block" }}</button>
+    ><button @click="$emit('button2')">
+      {{ mode === profileModes.myProfile ? "Logout" : "Block" }}
+    </button>
   </div>
 </template>
 

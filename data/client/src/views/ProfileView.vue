@@ -40,7 +40,18 @@
       />
       <p class="text-[2.2rem]">{{ username }}</p>
     </div>
-    <ProfileButttons :mode="mode" />
+    <ProfileButttons
+      :mode="mode"
+      @button1="button1press"
+      @button2="button2press"
+    />
+    <ProfileSettings
+      v-if="isSettings"
+      :username="username"
+      :avatar="avatar"
+      :twoFactor="twoFactor"
+      @closeSettings="() => (isSettings = false)"
+    />
   </div>
 </template>
 
@@ -48,21 +59,28 @@
 import WinrateChart from "@/components/profile/WinrateChart.vue";
 import MatchHistoryItem from "@/components/profile/MatchHistoryItem.vue";
 import MenuButton from "@/components/MenuButton.vue";
-import axios from "axios";
+import ProfileSettings from "@/components/profile/ProfileSettings.vue";
+import ProfileButttons from "@/components/profile/ProfileButtons.vue";
 import { onBeforeMount, ref, computed } from "vue";
 import { Match, Id } from "@/types";
-import ProfileButttons from "@/components/profile/ProfileButtons.vue";
 import { profileModes } from "@/types";
 import router from "@/router";
+import { useUsersStore } from "@/stores/users";
+import { User } from "@/types";
+import axios from "axios";
 
+const usersStore = useUsersStore();
 const host = process.env.VUE_APP_API_URL;
+const user = ref<User>(usersStore.currentUser);
 const rank = "beginner";
 const level = 14;
 const winrate = ref<number>(0);
 const displayWinrate = ref<boolean>(false);
 const matchHistory = ref<Match[]>([]);
-const username = ref<string>("");
-const avatar = ref<string>("");
+const username = ref<string>(user.value.pseudo);
+const avatar = ref<string>(user.value.avatar);
+const twoFactor = ref<boolean>(false);
+const isSettings = ref<boolean>(false);
 const mode = computed(() => {
   if ((router.currentRoute.value.params.userId as string) !== undefined) {
     return profileModes.otherProfile;
@@ -100,11 +118,33 @@ async function getUserInfo() {
     .catch((err) => console.log(err));
 }
 
+const initUser = async () => {
+  await usersStore.refreshUser(usersStore.currentUser.id);
+  user.value = usersStore.currentUser;
+};
+
 onBeforeMount(() => {
+  initUser();
   getWinrate(1);
   getMatchHistory();
   getUserInfo();
 });
+
+function button1press() {
+  if (mode.value === profileModes.myProfile) {
+    isSettings.value = true;
+  } else {
+    console.log("add as friend");
+  }
+}
+
+function button2press() {
+  if (mode.value === profileModes.myProfile) {
+    console.log("logout");
+  } else {
+    console.log("block");
+  }
+}
 </script>
 
 <style lang="scss" scoped>

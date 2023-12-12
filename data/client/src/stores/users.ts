@@ -23,19 +23,25 @@ export const useUsersStore = defineStore({
         ...state.usersMap,
       ]),
 
-    currentUser: (state) => {
+    currentUser: (state): User => {
       void state;
       const mainStore = useMainStore();
       return {
         id: mainStore.userInfo.id,
         pseudo: mainStore.userInfo.pseudo,
         login: mainStore.userInfo.login,
+        avatar: mainStore.userInfo.avatar,
       };
     },
   },
   actions: {
     refreshUser(userId: string) {
       userApi.fetchUser(userId).then((user) => {
+        this.usersMap.set(user.id, user);
+      });
+    },
+    editUser(user: User) {
+      userApi.editUser(user).then((user) => {
         this.usersMap.set(user.id, user);
       });
     },

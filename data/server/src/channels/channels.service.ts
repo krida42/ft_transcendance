@@ -149,7 +149,7 @@ export class ChannelsService {
   async uploadImage(
     currentId: uuidv4,
     chanId: uuidv4,
-    file: Buffer,
+    file: File,
   ): Promise<channelDto> {
 
     await this.friendsService.checkId(currentId);

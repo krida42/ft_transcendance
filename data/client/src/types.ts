@@ -97,3 +97,8 @@ export enum profileModes {
   myProfile = "myProfile",
   otherProfile = "otherProfile",
 }
+
+export type ErrorPop = {
+  statusCode: number;
+  message: string;
+};

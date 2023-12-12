@@ -1,7 +1,6 @@
 import axios from "axios";
 
 import { Channel, Id } from "@/types";
-import { formatDate } from "@vueuse/core";
 
 // const host = process.env.VUE_APP_API_URL;
 const host = "http://localhost:3001";
@@ -64,7 +63,7 @@ export default {
     return res.data;
   },
 
-  async createChannel(channel: Channel) {
+  async createChannel(channel: Channel): Promise<Channel> {
     const res = await axios.post(`${host}/channels`, channel, {
       withCredentials: true,
     });
@@ -78,10 +77,14 @@ export default {
     return res.data;
   },
 
-  async editChannel(channel: Channel) {
-    const res = await axios.put(`${host}/channels/${channel.chanId}`, channel, {
-      withCredentials: true,
-    });
+  async editChannel(channel: Channel): Promise<Channel> {
+    const res = await axios.patch(
+      `${host}/channels/${channel.chanId}`,
+      channel,
+      {
+        withCredentials: true,
+      }
+    );
     return res.data;
   },
 

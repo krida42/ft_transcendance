@@ -120,6 +120,12 @@
       </button>
     </div>
   </form>
+  <ErrorPopup
+    v-if="isErr"
+    :statusCode="error.statusCode"
+    :message="error.message"
+    @close="isErr = false"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -133,6 +139,9 @@ import { PrivacyType } from "@/types";
 import router from "@/router";
 import { FriendsTransformer } from "@/utils//friendsTransformer";
 import { User } from "@/types";
+import { ErrorPop } from "@/types";
+import ErrorPopup from "@/components/ErrorPopup.vue";
+import axios, { AxiosError } from "axios";
 
 const props = defineProps({
   formType: {
@@ -157,6 +166,8 @@ const friendList = computed(() => {
 const chanMembers = ref([] as User[]);
 const channel = useChannelsStore();
 const channelId = ref("");
+const error = ref({} as ErrorPop);
+const isErr = ref(false);
 
 let files: FileList | null = null;
 let file: File | null = null;
@@ -177,7 +188,7 @@ const initChannel = async () => {
   chanMembers.value = currentChannel.value.members;
   channelName.value = currentChannel.value.chanName;
   privacy.value = currentChannel.value.chanType;
-  console.log(currentChannel.value.imgData);
+  //console.log(currentChannel.value.imgData);
   initInvites(currentChannel.value);
 };
 
@@ -209,27 +220,62 @@ const createForm = async () => {
     search_input.value = "password";
   newChannel.chanPassword = search_input.value;
 
-  channel.createChannel(newChannel).then((chan) => {
-    if (chan) {
-      channel.refreshInvites(chan.chanId);
-      if (file) channel.uploadChannelLogo(chan.chanId, file);
-      for (const userId of usersInvited.value) {
-        channel.inviteUser(chan.chanId, userId);
+  channel
+    .createChannel(newChannel)
+    .then((chan) => {
+      if (chan) {
+        channel.refreshInvites(chan.chanId);
+        if (file) channel.uploadChannelLogo(chan.chanId, file);
+        for (const userId of usersInvited.value) {
+          channel.inviteUser(chan.chanId, userId);
+        }
       }
-    }
-  });
-  router.push("/channels/my-channels");
+      router.push("/channels/my-channels");
+    })
+    .catch((err: AxiosError | Error) => {
+      isErr.value = true;
+      if (axios.isAxiosError(err)) {
+        if (err.response && err.response.data && err.response.data.message)
+          error.value.message = err.response.data.message[0];
+        if (err.response && err.response.status)
+          error.value.statusCode = err.response.status;
+      } else {
+        error.value.message = err.message;
+      }
+    });
 };
 
 const editForm = async () => {
   let newChannel: Channel = {} as Channel;
-  const fd = new FormData();
   newChannel.chanId = channelId.value;
   newChannel.chanName = channelName.value;
   newChannel.chanType = privacy.value;
-  //newChannel.logo = fd;
-  await channel.editChannel(newChannel);
-  router.push("/channels/my-channels");
+  if (privacy.value !== PrivacyType.Protected && !search_input.value)
+    search_input.value = "password";
+  newChannel.chanPassword = search_input.value;
+
+  channel
+    .editChannel(newChannel)
+    .then((chan) => {
+      if (chan) {
+        if (file) channel.uploadChannelLogo(chan.chanId, file);
+        for (const userId of usersInvited.value) {
+          channel.inviteUser(chan.chanId, userId);
+        }
+      }
+      router.push("/channels/my-channels");
+    })
+    .catch((err: AxiosError | Error) => {
+      isErr.value = true;
+      if (axios.isAxiosError(err)) {
+        if (err.response && err.response.data && err.response.data.message)
+          error.value.message = err.response.data.message[0];
+        if (err.response && err.response.status)
+          error.value.statusCode = err.response.status;
+      } else {
+        error.value.message = err.message;
+      }
+    });
 };
 
 const sendForm = props.formType === "create" ? createForm : editForm;

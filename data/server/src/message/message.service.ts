@@ -69,7 +69,7 @@ export class MessageService {
   ) {
     const beforeConfidentialId = (
       await this.messageModel.findOne({
-        where: { publicId: beforeMsgId },
+        where: { msgId: beforeMsgId },
         attributes: ['confidentialId'],
       })
     )?.confidentialId;
@@ -116,30 +116,6 @@ export class MessageService {
       console.log('error: ', error);
       throw new HttpException('Cant create message', HttpStatus.BAD_REQUEST);
     }
-  }
-
-  async sendMessage(
-    channelId: string,
-    senderId: string,
-    addMessageDto: AddMessageDto,
-    chanType: ChanType,
-  ) {
-    const insertedMsg = await this.insertMessage(
-      senderId,
-      channelId,
-      // receiver_id,
-      addMessageDto.content,
-      // sender_id,
-    );
-
-    if (chanType === ChanType.Direct) {
-      this.chatGateway.transmitMessageOfUserToUser(
-        senderId,
-        channelId,
-        insertedMsg,
-      );
-    }
-    return new AddMessageResponseDto(addMessageDto.msgId, insertedMsg.msgId);
   }
 
   async sendMessageToChannel(

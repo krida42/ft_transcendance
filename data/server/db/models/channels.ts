@@ -88,7 +88,7 @@ export class Channels extends Model {
     type: DataTypes.BLOB('long'),
     field: 'imgData',
   })
-  public imgData!: Blob;
+  public imgData!: Buffer;
 
   @Column({
     type: DataTypes.DATE,

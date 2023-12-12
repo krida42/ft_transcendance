@@ -17,13 +17,18 @@ import { ChannelsOpService } from './channels-op.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 
 @Module({
-    imports: [
-        SequelizeModule.forFeature([Channels, ChannelsUsers]),
-        UsersModule,
-        FriendsModule
-    ],
-    controllers: [ChannelsController],
-    providers: [ChannelsService, ChannelsGetService, ChannelsOpService, ChannelsUtilsService],
-    exports: [ChannelsService],
+  imports: [
+    SequelizeModule.forFeature([Channels, ChannelsUsers]),
+    UsersModule,
+    FriendsModule,
+  ],
+  controllers: [ChannelsController],
+  providers: [
+    ChannelsService,
+    ChannelsGetService,
+    ChannelsOpService,
+    ChannelsUtilsService,
+  ],
+  exports: [ChannelsService],
 })
 export class ChannelsModule {}

@@ -162,9 +162,13 @@ export default {
   async uploadChannelLogo(channelId: Id, file: File) {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await axios.patch(`${host}/channels/${channelId}/image`, file, {
-      withCredentials: true,
-    });
+    const res = await axios.patch(
+      `${host}/channels/${channelId}/image`,
+      formData,
+      {
+        withCredentials: true,
+      }
+    );
     return res.data;
   },
 };

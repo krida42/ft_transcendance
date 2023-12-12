@@ -13,7 +13,7 @@ import { UsersService } from '../users/users.service';
 import { FriendsService } from '../friends/friends.service';
 import { ChannelsGetService } from '../channels/channels-get.service';
 import { ChannelsUtilsService } from './channels-utils.service';
-import { buffer } from 'stream/consumers';
+import { UploadDto } from './dto/setImage.dto';
 
 // POST createChannel(currentId, editChannelDto, setImageDto): Promise<channelDto> OK
 // PATCH updateChannel(currentId, chanId, editChannelDto, setImageDto): Promise<channelDto> OK
@@ -149,17 +149,19 @@ export class ChannelsService {
   async uploadImage(
     currentId: uuidv4,
     chanId: uuidv4,
-    file: File,
+    uploadDto: UploadDto,
   ): Promise<channelDto> {
 
     await this.friendsService.checkId(currentId);
     let chan = await this.utils.findById(chanId);
     await this.utils.checkOwner(currentId, chanId);
 
+    /* if ! buffer
     if (!file) {
       console.log('>>> !file');
       return await this.utils.fetchChannelDto(chan.chanId);
     }
+    */
 
     /*
     console.log('file:', file);
@@ -173,16 +175,16 @@ export class ChannelsService {
     */
 
     try {
+      console.log("-----");
+      console.log(uploadDto.file.buffer);
+      console.log("-----");
+      console.log(uploadDto);
       // const { originalname, mimetype, buffer } = file;
 
       // console.log('imgName:', originalname);
       // console.log('imgType:', mimetype);
       // console.log('imgData:', buffer);
-
-      // chan.imgName = originalname;
-      // chan.imgType = mimetype;
-      console.log('body: ', file);
-      chan.imgData = file;
+      chan.imgData = uploadDto.file.buffer;
       await chan.save();
       return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {

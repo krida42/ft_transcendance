@@ -23,7 +23,7 @@ export class channelDto {
   // imgType: string;
 
   @IsOptional()
-  imgData: Blob;
+  imgData: Buffer;
 
 
   constructor(
@@ -32,7 +32,7 @@ export class channelDto {
     chanType: string,
     ownerId: string,
     nbUser: number,
-    imgData: Blob,
+    imgData: Buffer,
   ) {
     this.chanId = chanId;
     this.chanName = chanName;

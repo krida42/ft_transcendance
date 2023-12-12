@@ -22,10 +22,11 @@ import { ChannelsGetService } from './channels-get.service';
 import { ChannelsOpService } from './channels-op.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 import { EditChannelDto } from './dto/editChannel.dto';
-import { SetImageDto } from './dto/setImage.dto';
 import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
 import { PasswordChannelDto } from './dto/passwordChannel.dto';
+
+import { UploadDto } from './dto/setImage.dto';
 
 @ApiTags('channels v4 (jwt OFF)')
 @Controller('')
@@ -109,6 +110,20 @@ export class ChannelsController {
   // @Get('/channels/:chanId/owner') OK
 
   // ---------- PATCH IMG
+
+
+  // @Post()
+  @Patch('/channels/:chanId/image')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @Req() req: ReqU,
+    @Param('chanId') chanId: uuidv4,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const uploadDto: UploadDto = { file };
+    return await this.channelService.uploadImage(this.public_id, chanId, uploadDto);
+  }
+
   @ApiOperation({ summary: 'Change channel image' })
   // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Patch('/channels/:chanId/image')
@@ -117,7 +132,6 @@ export class ChannelsController {
     @Param('chanId') chanId: uuidv4,
     @Body() body: any,
   ) {
-
     return await this.channelService.uploadImage(this.public_id, chanId, body);
   }
 

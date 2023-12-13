@@ -75,7 +75,7 @@ module.exports = {
         chanName: 'Protected Marvin',
         ownerId: '90aeb920-0ebd-4361-83a6-01a9a8748f32', // marvin
         chanType: 'Protected',
-        chanPassword: 'nannan',
+        chanPassword: '$2b$10$1Hdk6sz0g0O7ic5BOT.SUuNTzBCGSkKO2oW5p2mLnD80Rxy7t9ITe',
         nbUser: 1,
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),

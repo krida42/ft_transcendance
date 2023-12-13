@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { defineProps, onMounted, onBeforeUnmount, defineEmits } from "vue";
 
 defineProps({
   statusCode: {
@@ -27,6 +27,24 @@ defineProps({
     type: String,
     required: true,
   },
+});
+
+const emit = defineEmits(["close"]);
+
+onMounted(() => {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      emit("close");
+    }
+  });
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      emit("close");
+    }
+  });
 });
 </script>
 

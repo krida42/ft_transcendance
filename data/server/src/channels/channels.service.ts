@@ -133,7 +133,8 @@ export class ChannelsService {
       let chan = await this.utils.findById(chanId);
       chan.chanName = editChannelDto.chanName;
       chan.chanType = editChannelDto.chanType;
-      (chan.chanPassword = pass), await chan.save();
+      chan.chanPassword = pass;
+      await chan.save();
       return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException(
@@ -227,16 +228,15 @@ export class ChannelsService {
     if (await this.utils.userIsInChannel(currentId, chanId))
       throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
 
-    console.log("input password : ", passwordChannelDto);
-
     if (chan.chanType == ChanType.Protected) {
       if (!passwordChannelDto || !passwordChannelDto.chanPassword)
         throw new HttpException('empty password', HttpStatus.FORBIDDEN);
 
-      const pass = await BcryptService.hashPassword(
+      const validPassword = await BcryptService.comparePassword(
         passwordChannelDto.chanPassword,
+        chan.chanPassword,
       );
-      if (pass != chan.chanPassword)
+      if (!validPassword)
         throw new HttpException('invalid password', HttpStatus.FORBIDDEN);
     }
 

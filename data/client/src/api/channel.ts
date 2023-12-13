@@ -111,10 +111,10 @@ export default {
 
   async joinProtectedChannel(
     channelId: Id,
-    password: string
+    chanPassword: string
   ): Promise<Channel> {
     const res = await axios.post(`${host}/channels/${channelId}/join`, {
-      password,
+      chanPassword,
       withCredentials: true,
     });
     return res.data;

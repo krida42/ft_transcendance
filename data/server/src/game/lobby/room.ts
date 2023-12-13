@@ -108,7 +108,6 @@ export class PongRoom {
       const user2 = await User.findOne({ where: { public_id: this.players[1].user.public_id } });
       if (user2)
         await achievement.checkAchievements(user2);
-      await achievement.checkManHunter(user1, user2);
     } catch (err) {
       console.error(err);
     }

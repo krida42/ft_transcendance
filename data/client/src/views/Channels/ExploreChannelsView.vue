@@ -18,6 +18,7 @@
         This channel is protected, please enter the password
       </p>
       <input
+        @keypress.enter="joinProtectedChannel"
         v-if="isProtected"
         v-model="password"
         placeholder="password..."
@@ -81,6 +82,7 @@ const myChannelsList = ref<Channel[]>([]);
 const channelsStore = useChannelsStore();
 const isErr = ref(false);
 const error = ref<ErrorPop>({ statusCode: 0, message: "" });
+const protectedChannel = ref<Channel>();
 
 const fetchChannels = async () => {
   channelsApi.fetchAvailableChannels().then((res) => {
@@ -147,8 +149,11 @@ const joinChannel = () => {
       .catch((err: AxiosError | Error) => {
         isErr.value = true;
         if (axios.isAxiosError(err)) {
-          if (err.response && err.response.data && err.response.data.message)
-            error.value.message = err.response.data.message[0];
+          if (err.response && err.response.data && err.response.data.message) {
+            if (Array.isArray(err.response.data.message))
+              error.value.message = err.response.data.message[0];
+            else error.value.message = err.response.data.message;
+          }
           if (err.response && err.response.status)
             error.value.statusCode = err.response.status;
         } else {
@@ -156,10 +161,10 @@ const joinChannel = () => {
         }
       });
   } else {
-    const chanFound = protectedChannelsList.value.find(
+    protectedChannel.value = protectedChannelsList.value.find(
       (chan) => chan.chanName === channelName.value
     );
-    if (chanFound) {
+    if (protectedChannel.value) {
       isProtected.value = true;
     } else {
       isErr.value = true;
@@ -169,6 +174,29 @@ const joinChannel = () => {
       };
     }
   }
+};
+
+const joinProtectedChannel = () => {
+  console.log(password.value);
+  channelsStore
+    .joinProtectedChannel(protectedChannel.value!.chanId, password.value)
+    .then((chan) => {
+      router.push("/channels/my-channels");
+    })
+    .catch((err: AxiosError | Error) => {
+      isErr.value = true;
+      if (axios.isAxiosError(err)) {
+        if (err.response && err.response.data && err.response.data.message) {
+          if (Array.isArray(err.response.data.message))
+            error.value.message = err.response.data.message[0];
+          else error.value.message = err.response.data.message;
+        }
+        if (err.response && err.response.status)
+          error.value.statusCode = err.response.status;
+      } else {
+        error.value.message = err.message;
+      }
+    });
 };
 </script>
 

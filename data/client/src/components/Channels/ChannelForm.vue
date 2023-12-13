@@ -268,8 +268,11 @@ const editForm = async () => {
     .catch((err: AxiosError | Error) => {
       isErr.value = true;
       if (axios.isAxiosError(err)) {
-        if (err.response && err.response.data && err.response.data.message)
-          error.value.message = err.response.data.message[0];
+        if (err.response && err.response.data && err.response.data.message) {
+          if (Array.isArray(err.response.data.message))
+            error.value.message = err.response.data.message[0];
+          else error.value.message = err.response.data.message;
+        }
         if (err.response && err.response.status)
           error.value.statusCode = err.response.status;
       } else {

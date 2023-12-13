@@ -131,6 +131,17 @@ export class ChannelsService {
 
     try {
       let chan = await this.utils.findById(chanId);
+      if (
+        chan.chanType == ChanType.Private &&
+        editChannelDto.chanType != ChanType.Private
+      ) {
+        await this.channelUsersModel.destroy({
+          where: {
+            chanId: chanId,
+            userStatus: UserStatus.Invited,
+          },
+        });
+      }
       chan.chanName = editChannelDto.chanName;
       chan.chanType = editChannelDto.chanType;
       chan.chanPassword = pass;

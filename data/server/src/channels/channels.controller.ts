@@ -434,7 +434,6 @@ export class ChannelsController {
     console.log('----- END FILE -----');
     console.log('chanId  : ', chanId);
     // console.log('publicId: ', req.user.public_id);
-
     console.log('dirname', __dirname);
 
     const dirPath = `/app/dist/public/`;
@@ -453,12 +452,8 @@ export class ChannelsController {
       let chan = await this.utils.findById(chanId);
       chan.imgName = imageUrl;
       chan.save();
-
     } catch (error) {
-      throw new HttpException(
-        "UploadImage" + error,
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('UploadImage' + error, HttpStatus.BAD_REQUEST);
     }
 
     return { message: 'File uploaded successfully', imageUrl };

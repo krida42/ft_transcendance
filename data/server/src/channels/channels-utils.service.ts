@@ -88,7 +88,7 @@ export class ChannelsUtilsService {
       chan.chanType,
       chan.ownerId,
       chan.nbUser,
-      chan.imgData,
+      chan.imgName,
     );
     return dto;
   }
@@ -103,7 +103,7 @@ export class ChannelsUtilsService {
         chan.chanType,
         chan.ownerId,
         chan.nbUser,
-        chan.imgData,
+        chan.imgName,
       );
       channelDtoArray.push(dto);
     }

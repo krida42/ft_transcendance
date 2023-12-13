@@ -440,7 +440,7 @@ export class ChannelsController {
     const fileName = `${chanId}_image.${file.mimetype.split('/')[1]}`;
     console.log('FILE PATH:', dirPath + fileName);
 
-    const imageUrl = 'localhost:3001/' + fileName;
+    const imageUrl = 'http://localhost:3001/' + fileName;
     console.log('FILE URL: ', imageUrl);
 
     if (!fs.existsSync(dirPath)) {

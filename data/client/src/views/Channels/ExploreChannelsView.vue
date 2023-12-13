@@ -3,12 +3,12 @@
     class="explore-channels min-h-[100vh] flex flex-col items-center justify-around gap-[2rem]"
   >
     <div
-      class="relative bg-yellow-hover rounded-[15px] w-[90%] h-[2rem] mt-[2rem]"
+      class="relative bg-yellow-hover rounded-[15px] w-[90%] h-[2.2rem] mt-[2rem]"
     >
       <input
         @keypress.enter="joinChannel"
         v-model="channelName"
-        placeholder="search for channel..."
+        placeholder="enter channel name to join..."
         type="text"
         minlength="3"
         maxlength="20"
@@ -69,7 +69,8 @@ import { Channel } from "@/types";
 import { useChannelsStore } from "@/stores/channels";
 import ErrorPopup from "@/components/ErrorPopup.vue";
 import { ErrorPop } from "@/types";
-import { Axios, AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
+import router from "@/router";
 
 const channelName = ref("");
 const password = ref("");
@@ -120,13 +121,19 @@ const joinChannel = () => {
   if (chanFound) {
     channelsStore
       .joinChannel(chanFound.chanId)
-      .then()
-      .catch((err: AxiosError) => {
+      .then((chan) => {
+        router.push("/channels/my-channels");
+      })
+      .catch((err: AxiosError | Error) => {
         isErr.value = true;
-        error.value = {
-          statusCode: err.response?.status,
-          message: err.response?.data,
-        };
+        if (axios.isAxiosError(err)) {
+          if (err.response && err.response.data && err.response.data.message)
+            error.value.message = err.response.data.message[0];
+          if (err.response && err.response.status)
+            error.value.statusCode = err.response.status;
+        } else {
+          error.value.message = err.message;
+        }
       });
   } else {
     const chanFound = protectedChannelsList.value.find(

@@ -66,9 +66,10 @@ export const useChannelsStore = defineStore({
         this.myChannels.delete(chanId);
       });
     },
-    async joinChannel(chanId: Id): Promise<void> {
+    async joinChannel(chanId: Id): Promise<Channel> {
       return channelsApi.joinChannel(chanId).then((channel) => {
         this.myChannels.set(channel.chanId, channel);
+        return channel;
       });
     },
     async refreshMembers(chanId: Id): Promise<void> {

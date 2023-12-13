@@ -102,7 +102,7 @@ export default {
     return res.data;
   },
 
-  async joinChannel(channelId: Id) {
+  async joinChannel(channelId: Id): Promise<Channel> {
     const res = await axios.post(`${host}/channels/${channelId}/join`, {
       withCredentials: true,
     });

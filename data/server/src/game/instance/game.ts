@@ -97,7 +97,15 @@ export class Game {
   async endGame() {
     this.pongRoom.isGameEnded = true;
     this.running = false;
-    await this.pongRoom.close();
+    if (this.pongRoom.PlayerManager.isAllPlayersDisconnected())
+    {
+      console.log('WITHOUT SAVE')
+      this.pongRoom.closeWithoutSave();
+    }
+    else if (this.pongRoom.PlayerManager.disconnectPlayers.size > 0)
+      await this.pongRoom.close();
+    else
+      await this.pongRoom.closeWithAchievement();
     this.end();
   }
 
@@ -119,15 +127,11 @@ export class Game {
     else if (event.player === 2) this.scorePlayer2++;
     const score: [number, number] = [this.scorePlayer1, this.scorePlayer2];
     this.pongRoom.sendScore(score);
-    this.pongRoom.GameState.score = score;
+    this.gameState.score = score;
 
-    if (
-      this.scorePlayer1 >= SCORE_TO_WIN ||
-      this.scorePlayer2 >= SCORE_TO_WIN
-    ) {
+    if (this.scorePlayer1 >= SCORE_TO_WIN ||
+      this.scorePlayer2 >= SCORE_TO_WIN)
       this.declareWinner();
-      this.endGame();
-    }
   }
 
   setupIntervals() {
@@ -215,6 +219,10 @@ export class Game {
   declarePlayerWinnerForDeconnection(winnerIndex: number) {
     if (winnerIndex >= 0 && winnerIndex < this.pongRoom.players.length) {
       this.pongRoom.players[winnerIndex].client.emit('winner');
+      if (winnerIndex === 0)
+        this.gameState.score = [1, 0];
+      else
+        this.gameState.score = [0, 1];
       this.endGame();
     } else {
       console.error('Invalid player index deconnection');
@@ -223,10 +231,6 @@ export class Game {
 
   declareDraw() {
     this.pongRoom.players.forEach((player) => player.client.emit('draw'));
-  }
-
-  declareAbandon() {
-    this.endGame();
   }
 
   moveDown(player: number) {

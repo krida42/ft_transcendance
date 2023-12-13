@@ -8,7 +8,8 @@ import session from 'express-session';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import cookieParser from 'cookie-parser';
 import { CustomExceptionFilter } from './exceptions/exceptions.middleware';
-import { Achievement } from './game/achievements/achievements';
+import { JwtAuthGuard } from './authentication/guards/jwt.guard';
+import { Jwt2faAuthGuard } from './authentication/guards/2fa.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -21,6 +22,8 @@ async function bootstrap() {
     .setVersion('1.0')
     // .addBearerAuth() authentification token for swagger use with ApiBearerAuth()
     .build();
+
+  app.useGlobalGuards(app.get(JwtAuthGuard), app.get(Jwt2faAuthGuard));
 
   const document = SwaggerModule.createDocument(app, config);
   const theme = new SwaggerTheme('v3');

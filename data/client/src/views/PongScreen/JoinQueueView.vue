@@ -6,7 +6,7 @@
       Continue?
     </p>
     <div class="buttons-yes-no flex justify-evenly">
-      <button @click="router.push('/main/waiting')">YES</button>
+      <button @click="joinQueue">YES</button>
       <button @click="router.push('/main/home')">NO</button>
     </div>
   </div>
@@ -14,6 +14,12 @@
 
 <script lang="ts" setup>
 import router from "@/router";
+// import { socket as socket } from "@/socket";
+
+const joinQueue = () => {
+  console.log("Joining queue");
+  // socket.emit("randomRoom");
+};
 </script>
 
 <style lang="scss" scoped>

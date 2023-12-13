@@ -14,8 +14,7 @@ export class GameInit {
 
     const newGameState: GameState = {
       scoreToWin: SCORE_TO_WIN,
-      score1: 0,
-      score2: 0,
+      score: [0, 0],
       pongWorld: pongWorldInstance,
       pongBall: new PongBall(pongWorldInstance),
       pongPaddle1: new PongPaddle(pongWorldInstance, 1),

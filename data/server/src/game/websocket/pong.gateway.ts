@@ -5,7 +5,7 @@ import { SubscribeMessage } from '@nestjs/websockets';
 import * as jwt from 'jsonwebtoken';
 import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 import { PongRoom } from '../lobby/room';
-import { PlayerManager } from '../lobby/playerManager';
+import { Options } from '../type';
 
 @WebSocketGateway({
   cors: {
@@ -13,7 +13,6 @@ import { PlayerManager } from '../lobby/playerManager';
     methods: ['GET', 'POST'],
     credentials: true,
   },
-  // transports: ['websocket'],
   namespace: 'game',
 })
 export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -23,159 +22,292 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   usersMap = new Map<string, Socket>();
 
   getUserWithCookie(socket: Socket): ResponseUserDto | null {
-    let cookie = socket.handshake.headers.cookie;
-    if (!cookie) {
-      return null;
-    }
-    cookie = cookie.split('=')[1];
-    const user = jwt.decode(cookie) as ResponseUserDto;
-    if (!user) {
-      return null;
-    }
-    return user;
-  }
-
-  whichRoom(user: ResponseUserDto) {
-    return this.rooms.find((r) => r.PlayerManager.hasPlayer(user.public_id));
-  }
-
-  isConnected(userCookie: ResponseUserDto): boolean {
-    const client = this.usersMap.get(userCookie.public_id);
-    if (!client) return false;
-    client.emit('alreadyConnected');
-    return this.whichRoom(userCookie)?.PlayerManager.addPlayer({
-      user: userCookie,
-      client,
-    })
-      ? true
-      : true;
-  }
-
-  handleConnection(client: Socket) {
-    const userCookie = this.getUserWithCookie(client);
-    if (!userCookie) return;
-
-    const existingRoom = this.whichRoom(userCookie);
-    if (existingRoom) {
-      const existingPlayer = existingRoom.PlayerManager.players.find(
-        (p) => p.user.public_id === userCookie.public_id,
-      );
-      if (existingPlayer && existingPlayer.disconnected) {
-        existingRoom.PlayerManager.reconnectPlayer(existingPlayer, {
-          user: userCookie,
-          client,
-        });
-        return;
+    try {
+      let cookie = socket.handshake.headers.cookie;
+      if (!cookie) {
+        return null;
       }
+      cookie = cookie.split('=')[1];
+      const user = jwt.decode(cookie) as ResponseUserDto;
+      if (!user) {
+        return null;
+      }
+      return user;
+    } catch (error) {
+      console.error('Error while getting user with cookie:', error);
+      return null;
     }
+  }
 
-    if (!this.isConnected(userCookie)) {
-      this.addUserToMap(userCookie, client);
-      this.addUserToRoom(userCookie, client);
+  whichRoom(userCookie: ResponseUserDto): PongRoom | undefined {
+    try {
+      return this.rooms.find((r) =>
+        r.PlayerManager.hasPlayer(userCookie.public_id),
+      );
+    } catch (error) {
+      console.error('Error while finding room for user:', error);
+    }
+  } 
+
+  whichRoomForClient(client: Socket): PongRoom | undefined {
+    try {
+      const userCookie = this.getUserWithCookie(client);
+      if (!userCookie) return;
+      return this.whichRoom(userCookie);
+    } catch (error) {
+      console.error('Error while finding room for client:', error);
+    }
+  }
+
+  async isConnected(userCookie: ResponseUserDto) {
+    try {
+      const client = this.usersMap.get(userCookie.public_id);
+      if (!client) return false;
+
+      const room = this.whichRoom(userCookie);
+      if (room) {
+        const player = room.PlayerManager.players.find(
+          (p) => p.user.public_id === userCookie.public_id,
+        );
+        if (player) {
+          player.disconnected = false;
+          player.client = client;
+        }
+        else
+          client.emit('alreadyConnected');
+      } 
+      // if (room) {
+      //   const addedPlayer = await room.PlayerManager.addPlayer({
+      //     user: userCookie,
+      //     client,
+      //   });
+      //   return addedPlayer;
+      // }
+      // return false;
+    } catch (error) {
+      console.error('Error while checking connection:', error);
+      return false;
+    }
+  }
+
+  async handleConnection(client: Socket) {
+    try {
+      // console.log("CONNECTED", client.id);
+
+      const userCookie = this.getUserWithCookie(client);
+      if (!userCookie) return;
+
+      const existingRoom = this.whichRoom(userCookie);
+      if (existingRoom) {
+        const existingPlayer = existingRoom.PlayerManager.players.find(
+          (p) => p.user.public_id === userCookie.public_id,
+        );
+
+        // console.log("EXISTING PLAYER", existingPlayer?.client.id, "login:",
+        //  userCookie.login, "client:", client.id);
+
+        if (existingPlayer && existingPlayer.disconnected) {
+          existingRoom.PlayerManager.reconnectPlayer(existingPlayer, {
+            user: userCookie,
+            client,
+          });
+          return;
+        }
+        }
+        if (!await this.isConnected(userCookie)) {
+          this.addUserToMap(userCookie, client);
+          this.randomRoom(client);
+
+              // else {
+        
+                // if (options?.key)
+                //   this.joinPrivateRoom(client, options);
+                // else if (options?.uuid)
+                //   this.inviteToRoom(client, options);
+                // else
+              // }
+        
+      }
+    } catch (error) {
+      console.error('Error while handling connection:', error);
     }
   }
 
   handleDisconnect(client: Socket) {
-    const userCookie = this.getUserWithCookie(client);
-    if (userCookie) {
-      const room = this.rooms.find((r) =>
-        r.PlayerManager.hasPlayer(userCookie.public_id),
-      );
-      if (room) {
-        room.PlayerManager.removePlayer(client);
-        this.usersMap.delete(userCookie.public_id);
-        console.log(`Client disconnected: ${userCookie.login}`);
+    try {
+      console.log("DISCONNECTED", client.id);
+      const userCookie = this.getUserWithCookie(client);
+      if (userCookie) {
+        const room: PongRoom | undefined = this.rooms.find((r) =>
+          r.PlayerManager.hasPlayer(userCookie.public_id),
+        );
+        if (room) {
+          room.PlayerManager.removePlayer(client);
+          this.usersMap.delete(userCookie.public_id);
+          // console.log(`Client disconnected: ${userCookie.login}`);
+        }
       }
+    } catch (error) {
+      console.error('Error while handling disconnection:', error);
     }
   }
 
   addUserToMap(userCookie: ResponseUserDto, client: Socket) {
-    const player = { user: userCookie, client };
-    this.usersMap.set(userCookie.public_id, client);
-  }
-
-  addUserToRoom(userCookie: ResponseUserDto, client: Socket) {
-    let room = this.findRoomForUser(userCookie);
-    if (!room) {
-      room = this.findOrCreateRoom();
+    try {
+      const player = { user: userCookie, client };
+      this.usersMap.set(userCookie.public_id, client);
+    } catch (error) {
+      console.error('Error while adding user to map:', error);
     }
-    room.PlayerManager.addPlayer({ user: userCookie, client });
   }
 
-  findRoomForUser(userCookie: ResponseUserDto) {
-    return this.rooms.find((r) =>
-      r.PlayerManager.hasPlayer(userCookie.public_id),
-    );
-  }
-
-  findOrCreateRoom(): PongRoom {
-    let room = this.rooms.find((r) => !r.PlayerManager.isFull());
-    if (!room) {
-      room = new PongRoom(this);
-      this.rooms.push(room);
+  roomNotFull(): PongRoom | undefined {
+    try {
+      return this.rooms.find((r) => !r.PlayerManager.isFull() && !r.started);
+    } catch (error) {
+      console.error('Error while finding random room:', error);
     }
-    return room;
+  }
+  
+  findOrCreateRoom(options?: Options): PongRoom | undefined {
+    try {
+      let room = this.roomNotFull();
+      // console.log("Find a room", room?.players.length);
+      if (!room || room.started) {
+        // console.log("CREATE ROOM");
+        room = new PongRoom(this, options);
+        this.rooms.push(room);
+      }
+      return room;
+    } catch (error) {
+      console.error('Error while finding or creating room:', error);
+    }
   }
 
   closeRoom(room: PongRoom) {
-    const index = this.rooms.findIndex((r) => r === room);
-    const players = room.players;
-    players.forEach((player) => {
-      player.client.emit('roomClosed');
-      this.usersMap.delete(player.user.public_id);
-    });
-    if (index !== -1) {
-      if (this.rooms[index].isGameEnded) this.rooms.splice(index, 1);
+    try {
+      const index = this.rooms.findIndex((r) => r === room);
+      const players = room.players;
+      players.forEach((player) => {
+        player.client.emit('roomClosed');
+        this.usersMap.delete(player.user.public_id);
+      });
+      if (index !== -1) {
+        if (this.rooms[index].isGameEnded) this.rooms.splice(index, 1);
+      }
+    } catch (error) {
+      console.error('Error while closing room:', error);
     }
   }
 
   executeMove(client: Socket, moveDir: 'moveUp' | 'moveDown') {
-    const userCookie = this.getUserWithCookie(client);
-    if (!userCookie) return;
-    const room = this.rooms.find((r) =>
-      r.PlayerManager.hasPlayer(userCookie.public_id),
-    );
-    if (!room) return;
+    try {
+      const userCookie = this.getUserWithCookie(client);
+      if (!userCookie) return;
+      const room = this.whichRoom(userCookie);
+      if (!room) return;
 
-    const player = room.players.find((p) => p.client.id === client.id);
-    if (player?.number == null || ![0, 1].includes(player?.number))
-      throw new Error('handle move down' + player?.number);
+      const player = room.players.find((p) => p.client.id === client.id);
+      // console.log("PLAYER", player?.number);
+      // console.log("ROOM", room.players);
+      // console.log("CLIENT", client.id);
+      if (player?.number == null || ![0, 1].includes(player?.number))
+        throw new Error('Error MOVING' + player?.number);
 
-    if (moveDir === 'moveUp') {
-      room.moveUp(player.number);
-    } else if (moveDir === 'moveDown') {
-      room.moveDown(player.number);
+      if (moveDir === 'moveUp') {
+        room.moveUp(player.number);
+      } else if (moveDir === 'moveDown') {
+        room.moveDown(player.number);
+      }
+    } catch (error) {
+      console.error('Error while executing move:', error);
     }
   }
 
   @SubscribeMessage('moveUp')
-  handleMoveUp(client: Socket) {
-    this.executeMove(client, 'moveUp');
+  handleMoveUp(client: Socket, data: any) {
+    try {
+      this.executeMove(client, 'moveUp');
+    } catch (error) {
+      console.error('Error while handling move up:', error);
+    }
   }
 
   @SubscribeMessage('moveDown')
   handleMoveDown(client: Socket) {
-    this.executeMove(client, 'moveDown');
+    try {
+      this.executeMove(client, 'moveDown');
+    } catch (error) {
+      console.error('Error while handling move down:', error);
+    }
   }
 
   @SubscribeMessage('stopMoving')
   handleStopMoving(client: Socket) {
-    const userCookie = this.getUserWithCookie(client);
-    if (userCookie) {
-      const room = this.rooms.find((r) =>
-        r.PlayerManager.hasPlayer(userCookie.public_id),
-      );
-      if (room) {
-        const player = room.players.find((p) => p.client.id === client.id);
-        if (player?.number == null || ![0, 1].includes(player?.number))
-          throw new Error('handle stop move' + player);
-        room.stopMoving(player.number);
+    try {
+      const userCookie = this.getUserWithCookie(client);
+      if (userCookie) {
+        const room = this.rooms.find((r) =>
+          r.PlayerManager.hasPlayer(userCookie.public_id),
+        );
+        if (room) {
+          const player = room.players.find((p) => p.client.id === client.id);
+          if (player?.number == null || ![0, 1].includes(player?.number))
+            throw new Error('handle stop move' + player);
+          room.stopMoving(player.number);
+        }
       }
+    } catch (error) {
+      console.error('Error while handling stop moving:', error);
     }
   }
 
-  @SubscribeMessage('newGame')
-  newGame() {
-    console.log('new game');
+  // joinPrivateRoom(client: Socket, options: Options) {
+  //   try {
+  //     const userCookie = this.getUserWithCookie(client);
+  //     if (!userCookie || !options?.key ) return;
+  //     const room = this.rooms.find((r) => r.key === options.key);
+  //     if (!room) return;
+  //     room.PlayerManager.addPlayer({ user: userCookie, client });
+  //   } catch (error) {
+  //     console.error('Error while handling join private room:', error);
+  //   }
+  // }
+
+  // async inviteToRoom(client: Socket, options: Options) {
+  //   try {
+  //     const userCookie = this.getUserWithCookie(client);
+  //     if (!userCookie) return;
+      
+  //     const roomPrivate = this.findOrCreateRoom(options);
+  //     if (!roomPrivate) return;
+      
+  //     // client.emit('waitingFriend=');
+
+  //     if (!await this.isConnected(userCookie)) {
+  //       this.addUserToMap(userCookie, client);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error while handling inviteSubscribeMessage to room:', error);
+  //   }
+  // }
+
+  async randomRoom(client: Socket) {
+    try {
+      const userCookie = this.getUserWithCookie(client);
+      if (!userCookie) return;
+      const room = this.findOrCreateRoom();
+      if (!room) return;
+      room.PlayerManager.addPlayer({ user: userCookie, client });
+      
+      // console.log('random room:', PongRoom.id);
+      
+      if (!room.PlayerManager.isFull())
+        client.emit('waiting');
+      else
+        room?.players.forEach((player) => player.client.emit('play'));
+    } catch (error) {
+      console.error('Error while handling random room:', error);
+    }
   }
 }

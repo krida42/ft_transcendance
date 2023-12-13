@@ -30,3 +30,8 @@ export type GameSave = {
   score2: number;
   time: number;
 };
+
+export type Options = {
+  uuid?: string;
+  key?: string;
+} | undefined;

@@ -13,18 +13,25 @@ export class PlayerManager {
     this.pongRoom = pongRoom;
   }
 
-  async addPlayer(player: Player): Promise<boolean>{
+  async addPlayer(player: Player): Promise<boolean | undefined>{
     try {
-      if (!this.canAddPlayer(player)) return false;
+      if (!this.canAddPlayer(player)) {
+        console.log('Player cannot be added', player.user.login);
+        return false;
+      }
       player.number = this.players.length;
+      
       this.players.push(player);
-      console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
+      if (!this.isMaxPlayer()) player.client.emit('waiting', true);
+      else this.players.forEach((p) => p.client.emit('waiting', false));
+
+      // console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
       this.showPlayers();
+
       await this.pongRoom.start();
       return true;
     } catch (error) {
       console.error('Error adding player:', error);
-      return false;
     }
   }
 
@@ -67,11 +74,11 @@ export class PlayerManager {
     return this.players.findIndex((p) => p.client.id === client.id);
   }
 
-  endGameIfNoPlayers() {
+  async endGameIfNoPlayers() {
     try {
       if (this.players.length === 0) {
         console.log('No more players in room');
-        this.pongRoom.game.endGame();
+        await this.pongRoom.game.endGame();
       }
     } catch (error) {
       console.error('Error ending game:', error);
@@ -108,7 +115,7 @@ export class PlayerManager {
         const index = this.getPlayerIndex(client);
         console.log(`Client disconnected: ${player.user.login}`);
         this.players[index].disconnected = true;
-        this.endGameIfNoPlayers();
+        await this.endGameIfNoPlayers();
         this.pauseGameIfNotEnoughPlayers();
 
         const otherPlayerIndex = this.players.findIndex((p) => p !== player);
@@ -176,7 +183,7 @@ export class PlayerManager {
 
   showPlayers() {
     console.log(
-      `Players login in room:${PongRoom.id} `,
+      `Players in room ${PongRoom.id}:`,
       this.players.map((p) => p.user.login),
     );
   }

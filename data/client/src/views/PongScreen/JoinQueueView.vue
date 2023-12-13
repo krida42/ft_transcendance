@@ -14,11 +14,11 @@
 
 <script lang="ts" setup>
 import router from "@/router";
-import { socketGame as socket } from "@/socket";
+// import { socket as socket } from "@/socket";
 
 const joinQueue = () => {
   console.log("Joining queue");
-  socket.emit("randomRoom");
+  // socket.emit("randomRoom");
 };
 </script>
 

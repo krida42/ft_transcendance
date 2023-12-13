@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import BootScene from "@/game/scenes/BootScene";
 import PlayScene from "@/game/scenes/PlayScene";
 import ErrorScene from "@/game/scenes/ErrorScene";
+import WaitingScene from "./scenes/WaitingScene";
 
 function launch(containerId: any) {
   return new Phaser.Game({
@@ -12,11 +13,11 @@ function launch(containerId: any) {
     physics: {
       default: "arcade",
       arcade: {
-        gravity: { y: 0 }, // A recuperer du cote serveur ?
+        gravity: { y: 0 },
         debug: false,
       },
     },
-    scene: [BootScene, PlayScene, ErrorScene],
+    scene: [BootScene, WaitingScene, PlayScene, ErrorScene],
   });
 }
 

@@ -26,3 +26,7 @@ nav {
   }
 }
 </style>
+
+<script lang="ts">
+// import("@/socket");
+</script>

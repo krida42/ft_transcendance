@@ -1,5 +1,5 @@
 import { Game } from '../instance/game';
-import { Player } from '../type';
+import { Options, Player } from '../type';
 import { BEFORE_GAME } from '../const';
 import { PongGateway } from '../websocket/pong.gateway';
 import { PlayerManager } from './playerManager';
@@ -28,11 +28,11 @@ export class PongRoom {
   //private
   key: uuidv4 = null;
   
-  constructor(PongGateway: PongGateway, options?: { isPrivate ?: boolean }) {
+  constructor(PongGateway: PongGateway, options?: Options) {
     PongRoom.id++;
     this.pongGateway = PongGateway;
-    if (options?.isPrivate) {
-      this.key = v4();
+    if (options?.uuid) {
+      this.key = v4() + options.uuid;
     }
   }
 
@@ -43,13 +43,12 @@ export class PongRoom {
   async start() {
     if (!this.PlayerManager.isMaxPlayer()) return;
     console.log('Game started id:', Game.id);
-    this.PlayerManager.showPlayers();
     this.started = true;
     setTimeout(async() => {
       try {
         await this.game.start();
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     }, BEFORE_GAME);
   }
@@ -68,7 +67,7 @@ export class PongRoom {
     try {
       await GameDBManager.saveGame(gameSave);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -77,7 +76,7 @@ export class PongRoom {
     try {
       this.game.pause();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -86,7 +85,7 @@ export class PongRoom {
     try {
       this.game.resume();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -95,7 +94,7 @@ export class PongRoom {
       await this.save();
       this.pongGateway.closeRoom(this);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -111,7 +110,7 @@ export class PongRoom {
         await achievement.checkAchievements(user2);
       await achievement.checkManHunter(user1, user2);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -125,7 +124,7 @@ export class PongRoom {
     try {
       this.game.moveDown(player);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -135,17 +134,17 @@ export class PongRoom {
     try {
       this.game.moveUp(player);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
-
+  
   stopMoving(player: number) {
     // console.log('stopMoving', player);
     if (!this.started) return;
     try {
       this.game.stopMoving(player);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -156,7 +155,7 @@ export class PongRoom {
         player.client.emit('ball', ball);
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -167,7 +166,7 @@ export class PongRoom {
         player.client.emit(`paddle${playerNumber}`, paddle);
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -178,7 +177,7 @@ export class PongRoom {
         player.client.emit('score', score);
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -189,7 +188,7 @@ export class PongRoom {
         player.client.emit('time', Math.floor(time));
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -200,7 +199,7 @@ export class PongRoom {
         player.client.emit('pause');
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
@@ -211,7 +210,7 @@ export class PongRoom {
         player.client.emit('resume');
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 }

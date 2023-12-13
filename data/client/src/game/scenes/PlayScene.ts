@@ -1,6 +1,7 @@
 import { Scene } from "phaser";
 import io from "socket.io-client";
-import { socketGame as socket } from "@/socket/index";
+import BootScene from "./BootScene";
+// import { socketGame as socket } from "@/socket/index";
 export default class PlayScene extends Scene {
   // socket = "player"
   socket: any;
@@ -33,10 +34,12 @@ export default class PlayScene extends Scene {
   }
 
   preload() {
-    // const socket = io("http://localhost:3001/game", {
-    //   withCredentials: true,
-    // });
-    this.socket = socket;
+    const options = {
+      uuid: undefined,
+      key: undefined,
+    };
+    // socket.emit("connectToRoom", options.uuid, options.key);
+    this.socket = BootScene.socket;
 
     this.ballPosition = [300, 300];
     this.paddlePosition1 = [0, 0];
@@ -209,6 +212,15 @@ export default class PlayScene extends Scene {
       this.scene.start("ErrorScene", {
         message: "Vous êtes déjà connecté à une partie.",
       });
+    });
+
+    this.socket.on("waiting", (isWaiting: boolean) => {
+      if (isWaiting === true) {
+        this.scene.start("WaitingScene");
+      } else if (isWaiting === false) {
+        this.scene.start("PlayScene");
+        this.scene.stop("WaitingScene");
+      }
     });
   }
 

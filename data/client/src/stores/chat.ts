@@ -4,6 +4,7 @@ import messageApi from "../api/message";
 import { MessageTransformer } from "@/utils/messageTransformer";
 
 import { Chat, ChatType, Id, Message } from "@/types";
+import { v4 } from "uuid";
 
 export const useChatStore = defineStore({
   id: "chat",
@@ -112,14 +113,14 @@ export const useChatStore = defineStore({
           ? messageApi.postDirectMsg
           : messageApi.postChannelMsg;
       const localMsg: Message = {
-        msgId: "local" + Math.floor(Math.random() * 1000000),
+        msgId: v4(),
         content,
         createdAt: new Date(),
         userId: useUsersStore().currentUser.id,
         ack: false,
       };
       this.addMessageToStore(chatId, localMsg);
-      postFn(chatId, content).then((resMsg) => {
+      postFn(chatId, content, localMsg.msgId).then((resMsg) => {
         resMsg.createdAt = new Date(Number(resMsg.createdAt));
         this.updateMsgAck(chatId, true, localMsg.msgId, resMsg.remoteMsgId);
       });

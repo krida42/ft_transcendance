@@ -14,6 +14,7 @@ import {
   ParseFilePipeBuilder,
   HttpStatus,
   HttpException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -29,7 +30,8 @@ import { EditChannelDto } from './dto/editChannel.dto';
 import { User } from 'db/models/user';
 import { UsersService } from '../users/users.service';
 import { PasswordChannelDto } from './dto/passwordChannel.dto';
-
+import { AddMessageDto } from 'src/message/dto/addMessage.dto';
+import { MessageService } from 'src/message/message.service';
 import { UploadDto } from './dto/setImage.dto';
 import { join } from 'path';
 
@@ -45,6 +47,7 @@ export class ChannelsController {
     private readonly channelOpService: ChannelsOpService,
     private readonly utils: ChannelsUtilsService,
     private readonly usersService: UsersService,
+    private readonly messageService: MessageService,
   ) {
     this.setcurrentId(); // DEPR
   }
@@ -457,5 +460,20 @@ export class ChannelsController {
     }
 
     return { message: 'File uploaded successfully', imageUrl };
+  }
+
+  @ApiOperation({ summary: 'Send a message' })
+  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @Post('/channels/:chanId/messages')
+  async sendMessage(
+    @Req() req: ReqU,
+    @Param('chanId', ParseUUIDPipe) chanId: string,
+    @Body() addMessageDto: AddMessageDto,
+  ) {
+    return this.messageService.sendMessageToChannel(
+      req.user.public_id,
+      chanId,
+      addMessageDto,
+    );
   }
 }

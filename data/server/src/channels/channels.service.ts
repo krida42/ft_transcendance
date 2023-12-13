@@ -1,4 +1,10 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  forwardRef,
+  Inject,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { BcryptService } from 'src/tools/bcrypt.service';
@@ -9,9 +15,7 @@ import { ChannelsUsers } from 'db/models/channelsUsers';
 import { EditChannelDto } from './dto/editChannel.dto';
 import { PasswordChannelDto } from './dto/passwordChannel.dto';
 import { channelDto } from './dto/channel.dto';
-import { UsersService } from '../users/users.service';
 import { FriendsService } from '../friends/friends.service';
-import { ChannelsGetService } from '../channels/channels-get.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 import { UploadDto } from './dto/setImage.dto';
 
@@ -31,9 +35,7 @@ export class ChannelsService {
   constructor(
     @InjectModel(Channels)
     private readonly channelModel: typeof Channels,
-    private readonly usersService: UsersService,
     private readonly friendsService: FriendsService,
-    private readonly channelsGetService: ChannelsGetService,
     private readonly utils: ChannelsUtilsService,
 
     @InjectModel(ChannelsUsers)
@@ -47,7 +49,10 @@ export class ChannelsService {
     await this.friendsService.checkId(currentId);
 
     const chan = await this.channelModel.findOne({
-      where: { chanName: editChannelDto.chanName },
+      where: {
+        chanName: editChannelDto.chanName,
+        [Op.not]: { ChanType: ChanType.Direct },
+      },
     });
     if (chan) {
       throw new HttpException('name already exist', HttpStatus.CONFLICT);
@@ -106,6 +111,7 @@ export class ChannelsService {
           [Op.not]: chanId,
         },
         chanName: editChannelDto.chanName,
+        [Op.not]: { ChanType: ChanType.Direct },
       },
     });
     if (chanTestName) {

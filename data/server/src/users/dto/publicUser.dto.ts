@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'; // Importez ceci si vous utilisez Swagger pour la documentation
+import { Expose } from 'class-transformer';
 import {
   IsNotEmpty,
   Length,
@@ -9,9 +10,11 @@ import {
 import { Is } from 'sequelize-typescript';
 
 export class PublicUserDto {
+  @Expose({ name: 'public_id' })
   @IsNotEmpty()
   id: string;
 
+  @Expose()
   @IsNotEmpty()
   @ApiProperty({
     example: 'JDoe',
@@ -19,6 +22,7 @@ export class PublicUserDto {
   })
   login: string;
 
+  @Expose()
   @IsNotEmpty()
   @Length(3, 20)
   @ApiProperty({
@@ -27,6 +31,7 @@ export class PublicUserDto {
   })
   pseudo: string;
 
+  @Expose()
   @IsNotEmpty()
   @ApiProperty({
     example:

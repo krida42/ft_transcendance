@@ -11,6 +11,13 @@ import { channelDto } from './dto/channel.dto';
 import { UsersService } from '../users/users.service';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { FriendsService } from '../friends/friends.service';
+import { InvalidUUIDException } from 'src/exceptions/exceptions';
+
+enum FriendStatus {
+  Pending = 'Pending',
+  Active = 'Active',
+  Blocked = 'Blocked',
+}
 
 // ---------- UTILS
 // await checkId(id): Promise< uuidv4 > OK
@@ -73,6 +80,8 @@ export class ChannelsUtilsService {
   }
 
   async findById(chanId: uuidv4): Promise<Channels> {
+    if (!isUUID(chanId)) new InvalidUUIDException();
+
     const chan = await Channels.findOne({ where: { chanId: chanId } });
     if (!chan) {
       throw new HttpException('channel not found', HttpStatus.NOT_FOUND);
@@ -259,5 +268,33 @@ export class ChannelsUtilsService {
       user.avatar,
     );
     return publicUserDto;
+  }
+
+  async getDirectChanId(
+    sender_id: uuidv4,
+    receiver_id: uuidv4,
+  ): Promise<uuidv4> {
+    if (
+      (await this.friendsService.checkId(sender_id)) ===
+      (await this.friendsService.checkId(receiver_id))
+    ) {
+      throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
+    }
+
+    const usersChan = await this.channelUsersModel.findAll({
+      where: {
+        userStatus: UserStatus.Direct,
+        [Op.or]: [{ userId: sender_id }, { userId: receiver_id }],
+      },
+    });
+
+    const channelIds: uuidv4[] = [];
+    let chanId: uuidv4 = null;
+    for (const userChan of usersChan) {
+      if (channelIds.includes(userChan.chanId)) chanId = userChan.chanId;
+      channelIds.push(userChan.chanId);
+    }
+
+    return chanId;
   }
 }

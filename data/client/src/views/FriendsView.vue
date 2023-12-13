@@ -320,6 +320,7 @@ function executeSearchInput(e: KeyboardEvent) {
   if (activeListName.value === ActiveListName.REQUESTS) {
     userApi.fetchUserByPseudo(searchedUser.value).then((user) => {
       if (user) {
+        console.log("user send friuend request id:", user);
         friendStore.sendFriendRequest(user.id);
       }
     });

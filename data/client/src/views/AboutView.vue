@@ -20,6 +20,7 @@
     </MyIcon> -->
 
     <h3>Status: {{ mainStore.status }}</h3>
+    <h3>User info: {{ mainStore.userInfo }}</h3>
     <ChatAccessList />
     <ChatMsgList class="sticky top-10 left-[33%]" />
     <TestComp msg="coucou">

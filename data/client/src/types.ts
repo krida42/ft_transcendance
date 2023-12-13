@@ -19,6 +19,23 @@ export const UserResponseSchema = z.object({
 
 export type UserResponse = z.infer<typeof UserResponseSchema>;
 
+export const MyUserResponseSchema = UserResponseSchema.extend({
+  email: z.string(),
+  phone: z.string().nullable(),
+  roles: z.array(z.string()),
+});
+
+export type MyUserResponse = z.infer<typeof UserResponseSchema>;
+
+export const MessageResponseSchema = z.object({
+  msgId: z.string(),
+  content: z.string(),
+  createdAt: z.date(),
+  userId: z.string(),
+});
+
+export type MessageResponse = z.infer<typeof MessageResponseSchema>;
+
 export type User = {
   id: Id;
   email?: string;

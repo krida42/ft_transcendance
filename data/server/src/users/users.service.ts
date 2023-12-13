@@ -15,6 +15,7 @@ import {
 import { plainToClass } from 'class-transformer';
 import { ResponseUserDto } from './dto/responseUser.dto';
 import { Express } from 'express';
+import { PublicUserDto } from './dto/publicUser.dto';
 
 export async function responseUser(user: User) {
   const userDto = plainToClass(ResponseUserDto, user, {
@@ -22,12 +23,20 @@ export async function responseUser(user: User) {
   });
   return userDto;
 }
+
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User)
     private usersModel: typeof User,
   ) {}
+
+  static async userModelToPublicUserDto(user: User) {
+    const userDto = plainToClass(PublicUserDto, user, {
+      excludeExtraneousValues: true,
+    });
+    return userDto;
+  }
 
   private attributesToRetrieve = [
     'public_id',
@@ -151,20 +160,16 @@ export class UsersService {
         { ...updateUserDto },
         { where: { public_id: id }, individualHooks: true },
       );
-      if (retUpdateNotSafe[0] === 0)
-        throw new HttpException(
-          'Data to change is already the same as asked',
-          HttpStatus.NOT_MODIFIED,
-        );
+
+      if (retUpdateNotSafe[0] === 0) return [false, null];
       const updatedUser = await this.usersModel.findOne({
         where: { public_id: id },
         attributes: this.attributesToRetrieve,
       });
 
-      return await responseUser(updatedUser!);
+      return [true, await responseUser(updatedUser!)];
     } catch (error) {
       console.error(error);
-      if (error instanceof HttpException) throw error;
       throw new HttpException('Cant update user', HttpStatus.BAD_REQUEST);
     }
   }

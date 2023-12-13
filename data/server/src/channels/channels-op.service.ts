@@ -56,7 +56,7 @@ export class ChannelsOpService {
       throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
 
     if (await this.utils.userIs(UserStatus.Admin, userId, chanId))
-      throw new HttpException('is already admin', HttpStatus.BAD_REQUEST);
+      throw new HttpException('is already admin', HttpStatus.NOT_MODIFIED);
 
     if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
       throw new HttpException('owner cannot be admin', HttpStatus.FORBIDDEN);
@@ -116,7 +116,7 @@ export class ChannelsOpService {
       throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
 
     if (await this.utils.userIs(UserStatus.Invited, userId, chanId))
-      throw new HttpException('user already invited', HttpStatus.BAD_REQUEST);
+      throw new HttpException('user already invited', HttpStatus.NOT_MODIFIED);
 
     if (await this.utils.userIs(UserStatus.Banned, userId, chanId))
       throw new HttpException('user banned', HttpStatus.FORBIDDEN);
@@ -171,7 +171,7 @@ export class ChannelsOpService {
     await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (await this.utils.userIs(UserStatus.Banned, userId, chanId))
-      throw new HttpException('user already banned', HttpStatus.BAD_REQUEST);
+      throw new HttpException('user already banned', HttpStatus.NOT_MODIFIED);
 
     if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
       throw new HttpException('owner cannot be banned', HttpStatus.FORBIDDEN);

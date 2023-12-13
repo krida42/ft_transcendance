@@ -131,10 +131,7 @@ export class ChannelsService {
 
     try {
       let chan = await this.utils.findById(chanId);
-      if (
-        chan.chanType == ChanType.Private &&
-        editChannelDto.chanType != ChanType.Private
-      ) {
+      if (chan.chanType != editChannelDto.chanType) {
         await this.channelUsersModel.destroy({
           where: {
             chanId: chanId,

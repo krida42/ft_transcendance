@@ -186,12 +186,19 @@ const initChannel = async () => {
   await channel.refreshChannels();
   channelId.value = router.currentRoute.value.params.channelId as string;
   currentChannel.value = channel.channel(channelId.value);
+
+  console.log(currentChannel.value);
+
   if (!currentChannel.value) return;
   await channel.refreshMembers(currentChannel.value.chanId);
   await channel.refreshInvites(currentChannel.value.chanId);
   chanMembers.value = currentChannel.value.members;
   channelName.value = currentChannel.value.chanName;
   privacy.value = currentChannel.value.chanType;
+
+  if (currentChannel.value.imgName)
+    channelLogo.value = currentChannel.value.imgName;
+
   //console.log(currentChannel.value.imgData);
   initInvites(currentChannel.value);
 };
@@ -225,7 +232,7 @@ const createForm = async () => {
   newChannel.chanPassword = search_input.value;
 
   channel
-    .createChannel(newChannel)
+    .createChannel(newChannel, channelId.value)
     .then((chan) => {
       if (chan) {
         channel.refreshInvites(chan.chanId);
@@ -254,7 +261,6 @@ const createForm = async () => {
 
 const editForm = async () => {
   let newChannel: Channel = {} as Channel;
-  newChannel.chanId = channelId.value;
   newChannel.chanName = channelName.value;
   newChannel.chanType = privacy.value;
   if (privacy.value !== PrivacyType.Protected && !search_input.value)
@@ -262,7 +268,7 @@ const editForm = async () => {
   newChannel.chanPassword = search_input.value;
 
   channel
-    .editChannel(newChannel)
+    .editChannel(newChannel, channelId.value)
     .then((chan) => {
       if (chan) {
         if (file) channel.uploadChannelLogo(chan.chanId, file);

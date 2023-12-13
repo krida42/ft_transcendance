@@ -7,105 +7,74 @@ const host = "http://localhost:3001";
 
 export default {
   async fetchChannel(channelId: string) {
-    const res = await axios.get(`${host}/channels/${channelId}`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`${host}/channels/${channelId}`);
     return res.data;
   },
 
   async fetchChannels(page: number) {
     const res = await axios.get(`${host}/channels`, {
       params: { page },
-      withCredentials: true,
     });
     return res.data;
   },
 
   async fetchMyChannels() {
-    const res = await axios.get(`${host}/channels-joined`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`${host}/channels-joined`);
     return res.data;
   },
 
   async fetchAvailableChannels() {
-    const res = await axios.get(`${host}/channels-available`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`${host}/channels-available`);
     return res.data;
   },
 
   async fetchUnjoinedProtectedChannels() {
-    const res = await axios.get(`${host}/channels-unjoined-protect`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`${host}/channels-unjoined-protect`);
     return res.data;
   },
 
   async fetchChannelMembers(channelId: string) {
-    const res = await axios.get(`${host}/channels/${channelId}/users`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`${host}/channels/${channelId}/users`);
     return res.data;
   },
 
   async fetchChannelAdmins(channelId: string) {
-    const res = await axios.get(`${host}/channels/${channelId}/admins`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`${host}/channels/${channelId}/admins`);
     return res.data;
   },
 
   async fetchChannelInvites(channelId: string) {
-    const res = await axios.get(`${host}/channels/${channelId}/invites`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`${host}/channels/${channelId}/invites`);
     return res.data;
   },
 
   async fetchBannedUsers(channelId: string) {
-    const res = await axios.get(`${host}/channels/${channelId}/bans`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`${host}/channels/${channelId}/bans`);
     return res.data;
   },
 
   async createChannel(channel: Channel): Promise<Channel> {
-    const res = await axios.post(`${host}/channels`, channel, {
-      withCredentials: true,
-    });
+    const res = await axios.post(`${host}/channels`, channel);
     return res.data;
   },
 
   async deleteChannel(channelId: Id) {
-    const res = await axios.delete(`${host}/channels/${channelId}`, {
-      withCredentials: true,
-    });
+    const res = await axios.delete(`${host}/channels/${channelId}`);
     return res.data;
   },
 
-  async editChannel(channel: Channel): Promise<Channel> {
-    const res = await axios.patch(
-      `${host}/channels/${channel.chanId}`,
-      channel,
-      {
-        withCredentials: true,
-      }
-    );
+  async editChannel(channel: Channel, chanId: string): Promise<Channel> {
+    const res = await axios.patch(`${host}/channels/${chanId}`, channel);
     return res.data;
   },
 
   async leaveChannel(channelId: Id) {
-    const res = await axios.delete(`${host}/channels/${channelId}/quit`, {
-      withCredentials: true,
-    });
+    const res = await axios.delete(`${host}/channels/${channelId}/quit`);
     return res.data;
   },
 
   async joinChannel(channelId: Id): Promise<Channel> {
-    const res = await axios.post(`${host}/channels/${channelId}/join`, {
-      withCredentials: true,
-    });
+    const res = await axios.post(`${host}/channels/${channelId}/join`);
     return res.data;
   },
 
@@ -115,67 +84,46 @@ export default {
   ): Promise<Channel> {
     const res = await axios.post(`${host}/channels/${channelId}/join`, {
       chanPassword,
-      withCredentials: true,
     });
     return res.data;
   },
 
   async banUser(channelId: Id, userId: Id) {
-    const res = await axios.post(
-      `${host}/channels/${channelId}/ban/${userId}`,
-      {
-        withCredentials: true,
-      }
-    );
+    const res = await axios.post(`${host}/channels/${channelId}/ban/${userId}`);
     return res.data;
   },
 
   async unbanUser(channelId: Id, userId: Id) {
     const res = await axios.delete(
-      `${host}/channels/${channelId}/ban/${userId}`,
-      {
-        withCredentials: true,
-      }
+      `${host}/channels/${channelId}/ban/${userId}`
     );
     return res.data;
   },
 
   async kickUser(channelId: Id, userId: Id) {
     const res = await axios.delete(
-      `${host}/channels/${channelId}/kick/${userId}`,
-      {
-        withCredentials: true,
-      }
+      `${host}/channels/${channelId}/kick/${userId}`
     );
     return res.data;
   },
 
   async addAdmin(channelId: Id, userId: Id) {
     const res = await axios.post(
-      `${host}/channels/${channelId}/admin/${userId}`,
-      {
-        withCredentials: true,
-      }
+      `${host}/channels/${channelId}/admin/${userId}`
     );
     return res.data;
   },
 
   async removeAdmin(channelId: Id, userId: Id) {
     const res = await axios.delete(
-      `${host}/channels/${channelId}/admin/${userId}`,
-      {
-        withCredentials: true,
-      }
+      `${host}/channels/${channelId}/admin/${userId}`
     );
     return res.data;
   },
 
   async inviteUser(channelId: Id, userId: Id) {
     const res = await axios.post(
-      `${host}/channels/${channelId}/invite/${userId}`,
-      {
-        withCredentials: true,
-      }
+      `${host}/channels/${channelId}/invite/${userId}`
     );
     return res.data;
   },
@@ -186,10 +134,7 @@ export default {
       formData.append("file", file);
       const res = await axios.post(
         `${host}/channels/${channelId}/image`,
-        formData,
-        {
-          withCredentials: true,
-        }
+        formData
       );
       console.log("CHANNEL LOGO server response:", res.data);
       return res.data;

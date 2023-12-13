@@ -48,10 +48,12 @@ export class ChannelsService {
   ): Promise<channelDto> {
     await this.friendsService.checkId(currentId);
 
+    console.log("editChannelDto", editChannelDto);
+
     const chan = await this.channelModel.findOne({
       where: {
         chanName: editChannelDto.chanName,
-        [Op.not]: { ChanType: ChanType.Direct },
+        [Op.not]: { chanType: ChanType.Direct },
       },
     });
     if (chan) {
@@ -111,7 +113,7 @@ export class ChannelsService {
           [Op.not]: chanId,
         },
         chanName: editChannelDto.chanName,
-        [Op.not]: { ChanType: ChanType.Direct },
+        [Op.not]: { chanType: ChanType.Direct },
       },
     });
     if (chanTestName) {

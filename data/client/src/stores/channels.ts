@@ -44,9 +44,9 @@ export const useChannelsStore = defineStore({
         });
       });
     },
-    async createChannel(channel: Channel): Promise<Channel> {
+    async createChannel(channel: Channel, chanId: string): Promise<Channel> {
       return channelsApi.createChannel(channel).then((channel) => {
-        this.myChannels.set(channel.chanId, channel);
+        this.myChannels.set(chanId, channel);
         return channel;
       });
     },
@@ -55,9 +55,9 @@ export const useChannelsStore = defineStore({
         this.myChannels.delete(chanId);
       });
     },
-    async editChannel(channel: Channel): Promise<Channel> {
-      return channelsApi.editChannel(channel).then((channel) => {
-        this.myChannels.set(channel.chanId, channel);
+    async editChannel(channel: Channel, chanId: string): Promise<Channel> {
+      return channelsApi.editChannel(channel, chanId).then((channel) => {
+        this.myChannels.set(chanId, channel);
         return channel;
       });
     },
@@ -172,9 +172,13 @@ export const useChannelsStore = defineStore({
         }
       });
     },
+
     async uploadChannelLogo(chanId: Id, file: File): Promise<void> {
-      return channelsApi.uploadChannelLogo(chanId, file).then((channel) => {
-        this.myChannels.set(channel.chanId, channel);
+      return channelsApi.uploadChannelLogo(chanId, file).then((url) => {
+        const channel = this.myChannels.get(chanId);
+        if (channel) {
+          channel.imgName = url;
+        }
       });
     },
   },

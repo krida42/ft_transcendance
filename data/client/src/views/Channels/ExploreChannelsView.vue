@@ -2,34 +2,40 @@
   <div
     class="explore-channels min-h-[100vh] flex flex-col items-center justify-around gap-[2rem]"
   >
-    <div
-      class="relative bg-yellow-hover rounded-[15px] w-[90%] h-[2.2rem] mt-[2rem]"
-    >
-      <input
-        @keypress.enter="joinChannel"
-        v-model="channelName"
-        placeholder="enter channel name to join..."
-        type="text"
-        minlength="3"
-        maxlength="20"
-        class="w-[100%] h-[100%] rounded-[15px] bg-transparent text-black text-[1.2rem] pl-[1rem]"
-      />
-      <p v-if="isProtected">
+    <div class="search-bars w-[100%] flex flex-col justify-start items-center">
+      <div
+        class="relative bg-yellow-hover rounded-[15px] w-[90%] h-[2.2rem] mt-[2rem]"
+      >
+        <input
+          @keypress.enter="joinChannel"
+          v-model="channelName"
+          placeholder="enter channel name to join..."
+          type="text"
+          minlength="3"
+          maxlength="20"
+          class="w-[100%] h-[100%] rounded-[15px] bg-transparent text-black text-[1.2rem] pl-[1rem]"
+        />
+        <img
+          src="@/assets/svg/search-icon-black.svg"
+          class="absolute aspect-square w-[1.5rem] right-[1rem] top-[0.25rem] cursor-pointer"
+          @click="sendForm"
+        />
+      </div>
+      <p v-if="isProtected" class="pt-[1rem]">
         This channel is protected, please enter the password
       </p>
-      <input
-        @keypress.enter="joinProtectedChannel"
+      <div
         v-if="isProtected"
-        v-model="password"
-        placeholder="password..."
-        type="text"
-        class="w-[100%] h-[100%] rounded-[15px] bg-transparent text-black text-[1.2rem] pl-[1rem]"
-      />
-      <img
-        src="@/assets/svg/search-icon-black.svg"
-        class="absolute aspect-square w-[1.5rem] right-[1rem] top-[0.25rem] cursor-pointer"
-        @click="sendForm"
-      />
+        class="relative bg-yellow-hover rounded-[15px] w-[90%] h-[2.2rem] mt-[1rem]"
+      >
+        <input
+          @keypress.enter="joinProtectedChannel"
+          v-model="password"
+          placeholder="password..."
+          type="text"
+          class="w-[100%] h-[100%] rounded-[15px] bg-transparent text-black text-[1.2rem] pl-[1rem]"
+        />
+      </div>
     </div>
     <div class="title w-[25rem]">
       <h1 class="text-[2rem] pb-[1rem]">Most popular channels</h1>

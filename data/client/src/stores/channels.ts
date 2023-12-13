@@ -72,6 +72,14 @@ export const useChannelsStore = defineStore({
         return channel;
       });
     },
+    async joinProtectedChannel(chanId: Id, password: string): Promise<Channel> {
+      return channelsApi
+        .joinProtectedChannel(chanId, password)
+        .then((channel) => {
+          this.myChannels.set(channel.chanId, channel);
+          return channel;
+        });
+    },
     async refreshMembers(chanId: Id): Promise<void> {
       return channelsApi.fetchChannelMembers(chanId).then((users) => {
         const channel = this.myChannels.get(chanId);

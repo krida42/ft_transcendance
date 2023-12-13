@@ -109,6 +109,17 @@ export default {
     return res.data;
   },
 
+  async joinProtectedChannel(
+    channelId: Id,
+    password: string
+  ): Promise<Channel> {
+    const res = await axios.post(`${host}/channels/${channelId}/join`, {
+      password,
+      withCredentials: true,
+    });
+    return res.data;
+  },
+
   async banUser(channelId: Id, userId: Id) {
     const res = await axios.post(
       `${host}/channels/${channelId}/ban/${userId}`,

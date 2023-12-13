@@ -131,7 +131,7 @@
 <script lang="ts" setup>
 import { useChannelsStore } from "@/stores/channels";
 import { useFriendStore } from "@/stores/friend";
-import { ref, computed, defineProps, onBeforeMount } from "vue";
+import { ref, computed, defineProps, onBeforeMount, watch } from "vue";
 import { Channel } from "@/types";
 import unknownLogo from "@/assets/svg/unknown-img.svg";
 import ChannelSettingsMembers from "@/components/Channels/ChannelSettingsMembers.vue";
@@ -171,6 +171,10 @@ const isErr = ref(false);
 
 let files: FileList | null = null;
 let file: File | null = null;
+
+watch(privacy, () => {
+  search_input.value = "";
+});
 
 const initInvites = (currentChannel: Channel) => {
   for (const invite of currentChannel.invites) {
@@ -235,8 +239,11 @@ const createForm = async () => {
     .catch((err: AxiosError | Error) => {
       isErr.value = true;
       if (axios.isAxiosError(err)) {
-        if (err.response && err.response.data && err.response.data.message)
-          error.value.message = err.response.data.message[0];
+        if (err.response && err.response.data && err.response.data.message) {
+          if (Array.isArray(err.response.data.message))
+            error.value.message = err.response.data.message[0];
+          else error.value.message = err.response.data.message;
+        }
         if (err.response && err.response.status)
           error.value.statusCode = err.response.status;
       } else {

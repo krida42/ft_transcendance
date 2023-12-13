@@ -92,7 +92,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     try {
-      console.log("CONNECTED", client.id);
+      // console.log("CONNECTED", client.id);
 
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie) return;
@@ -103,8 +103,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
           (p) => p.user.public_id === userCookie.public_id,
         );
 
-        console.log("EXISTING PLAYER", existingPlayer?.client.id, "login:",
-         userCookie.login, "client:", client.id);
+        // console.log("EXISTING PLAYER", existingPlayer?.client.id, "login:",
+        //  userCookie.login, "client:", client.id);
 
         if (existingPlayer && existingPlayer.disconnected) {
           existingRoom.PlayerManager.reconnectPlayer(existingPlayer, {
@@ -172,9 +172,9 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   findOrCreateRoom(options?: Options): PongRoom | undefined {
     try {
       let room = this.roomNotFull();
-      console.log("Find a room", room?.players.length);
+      // console.log("Find a room", room?.players.length);
       if (!room || room.started) {
-        console.log("CREATE ROOM");
+        // console.log("CREATE ROOM");
         room = new PongRoom(this, options);
         this.rooms.push(room);
       }
@@ -210,7 +210,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const player = room.players.find((p) => p.client.id === client.id);
       // console.log("PLAYER", player?.number);
       // console.log("ROOM", room.players);
-      console.log("CLIENT", client.id);
+      // console.log("CLIENT", client.id);
       if (player?.number == null || ![0, 1].includes(player?.number))
         throw new Error('Error MOVING' + player?.number);
 
@@ -300,10 +300,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (!room) return;
       room.PlayerManager.addPlayer({ user: userCookie, client });
       
-      console.log('random room:', PongRoom.id);
+      // console.log('random room:', PongRoom.id);
       
-
-
       if (!room.PlayerManager.isFull())
         client.emit('waiting');
       else

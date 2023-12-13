@@ -186,4 +186,15 @@ export class UsersService {
     console.log(`${users} users deleted`);
     return users;
   }
+
+  async get2fa(publicId: uuidv4): Promise<boolean> {
+    const user = await this.usersModel.findOne({
+      where: {
+        public_id: publicId,
+      },
+    });
+    if (user?.twoFactorEnable === true)
+      return true;
+    return false;
+  }
 }

@@ -26,9 +26,9 @@ import { UpdateUserDto } from './dto/updateUser.dto';
 import { DeveloperGuard } from './dev.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { uuidv4 } from 'src/types';
+import { ReqU } from 'src/types';
 
 @ApiBearerAuth()
-@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -101,5 +101,10 @@ export class UsersController {
   async deleteAllUsers(): Promise<number> {
     console.log('delete all users');
     return await this.usersService.deleteAllUsers();
+  }
+
+  @Get('/is2fa')
+  async get2fa(@Req() req: ReqU) {
+    return await this.usersService.get2fa(req.user.public_id);
   }
 }

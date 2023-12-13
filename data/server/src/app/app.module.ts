@@ -3,6 +3,8 @@ import { GameModule } from './../game/game.module';
 import { ChannelsModule } from '../channels/channels.module';
 import { FriendsModule } from './../friends/friends.module';
 import { AuthService } from 'src/authentication/auth.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import {
   MiddlewareConsumer,
@@ -25,6 +27,10 @@ import { RealtimeModule } from 'src/realtime/realtime.module';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      // rootPath: join(__dirname, '..', 'client'),
+      rootPath: "/app/dist/public/",
+    }),
     ConfigModule.forRoot({
       envFilePath: '../../.env',
     }),

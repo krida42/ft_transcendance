@@ -13,6 +13,7 @@ import {
   UseInterceptors,
   ParseFilePipeBuilder,
   HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -411,7 +412,7 @@ export class ChannelsController {
 
   @Post('/channels/:chanId/image')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(
+  async uploadFile(
     @Req() req: ReqU,
     @Param('chanId') chanId: uuidv4,
     @UploadedFile(
@@ -434,23 +435,31 @@ export class ChannelsController {
     console.log('chanId  : ', chanId);
     // console.log('publicId: ', req.user.public_id);
 
-    console.log("dirname", __dirname);
+    console.log('dirname', __dirname);
 
+    const dirPath = `/app/dist/public/`;
+    const fileName = `${chanId}_image.${file.mimetype.split('/')[1]}`;
+    console.log('FILE PATH:', dirPath + fileName);
 
-    const publicFolderPath = join(__dirname, '..', 'public');
-    const filePath = `${publicFolderPath}/${chanId}_image.${
-      file.mimetype.split('/')[1]
-    }`;
+    const imageUrl = 'localhost:3001/' + fileName;
+    console.log('FILE URL: ', imageUrl);
 
-    fs.writeFileSync(filePath, file.buffer, { flag: 'w' });
-    console.log('FILE PATH:', filePath);
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath);
+    }
+    fs.writeFileSync(dirPath + fileName, file.buffer, { flag: 'w' });
 
-    const serverUrl = '';
-    const imageUrl = `${serverUrl}/${chanId}_image.${
-      file.mimetype.split('/')[1]
-    }`;
-    console.log('FILE URL:', imageUrl);
+    try {
+      let chan = await this.utils.findById(chanId);
+      chan.imgName = imageUrl;
+      chan.save();
 
+    } catch (error) {
+      throw new HttpException(
+        "UploadImage" + error,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     return { message: 'File uploaded successfully', imageUrl };
   }

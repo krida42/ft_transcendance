@@ -1,4 +1,5 @@
 import {
+  Bind,
   Body,
   Controller,
   Delete,
@@ -9,7 +10,9 @@ import {
   Post,
   Query,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -27,6 +30,7 @@ import { DeveloperGuard } from './dev.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { uuidv4 } from 'src/types';
 import { ReqU } from 'src/types';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiBearerAuth()
 @Controller('users')
@@ -75,7 +79,10 @@ export class UsersController {
     @Req() req: Request & { user: any },
   ) {
     console.log('update user, req.user.public_id:', req.user.public_id);
-    return await this.usersService.updateUser(req.user.public_id, updateUserDto);
+    return await this.usersService.updateUser(
+      req.user.public_id,
+      updateUserDto,
+    );
   }
 
   @Delete(':id')
@@ -106,5 +113,18 @@ export class UsersController {
   @Get('/is2fa')
   async get2fa(@Req() req: ReqU) {
     return await this.usersService.get2fa(req.user.public_id);
+  }
+
+  @Post('/image')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(
+    @Req() req: ReqU,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log('-----');
+    console.log(file);
+    console.log('-----');
+    console.log('publicId: ', req.user.public_id);
+    // TODO return user img url
   }
 }

@@ -227,9 +227,11 @@ export class ChannelsService {
     if (await this.utils.userIsInChannel(currentId, chanId))
       throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
 
+    console.log("input password : ", passwordChannelDto);
+
     if (chan.chanType == ChanType.Protected) {
-      if (!passwordChannelDto || !passwordChannelDto.chanPassword)
-        throw new HttpException('empty password', HttpStatus.FORBIDDEN);
+    //   if (!passwordChannelDto || !passwordChannelDto.chanPassword)
+    //     throw new HttpException('empty password', HttpStatus.FORBIDDEN);
 
       const pass = await BcryptService.hashPassword(
         passwordChannelDto.chanPassword,

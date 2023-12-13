@@ -11,6 +11,8 @@ import {
   UseGuards,
   UploadedFile,
   UseInterceptors,
+  ParseFilePipeBuilder,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -111,29 +113,28 @@ export class ChannelsController {
 
   // ---------- PATCH IMG
 
-
   // @Post()
-  @Patch('/channels/:chanId/image')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(
-    @Req() req: ReqU,
-    @Param('chanId') chanId: uuidv4,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    const uploadDto: UploadDto = { file };
-    return await this.channelService.uploadImage(this.public_id, chanId, uploadDto);
-  }
+  // @Patch('/channels/:chanId/image')
+  // @UseInterceptors(FileInterceptor('file'))
+  // async uploadFile(
+  //   @Req() req: ReqU,
+  //   @Param('chanId') chanId: uuidv4,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ) {
+  //   const uploadDto: UploadDto = { file };
+  //   return await this.channelService.uploadImage(this.public_id, chanId, uploadDto);
+  // }
 
-  @ApiOperation({ summary: 'Change channel image' })
-  // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
-  @Patch('/channels/:chanId/image')
-  async uploadImage(
-    @Req() req: ReqU,
-    @Param('chanId') chanId: uuidv4,
-    @Body() body: any,
-  ) {
-    return await this.channelService.uploadImage(this.public_id, chanId, body);
-  }
+  // @ApiOperation({ summary: 'Change channel image' })
+  // // @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  // @Patch('/channels/:chanId/image')
+  // async uploadImage(
+  //   @Req() req: ReqU,
+  //   @Param('chanId') chanId: uuidv4,
+  //   @Body() body: any,
+  // ) {
+  //   return await this.channelService.uploadImage(this.public_id, chanId, body);
+  // }
 
   // ---------- POST / PATCH / DELETE CHANNEL
 
@@ -402,5 +403,35 @@ export class ChannelsController {
   async getOwnerChan(@Req() req: ReqU, @Param('chanId') chanId: uuidv4) {
     const userStatuses = [UserStatus.Owner];
     return await this.utils.getUsersByStatuses(chanId, userStatuses);
+  }
+
+  // ---------- POST IMG
+
+  @Post('/channels/:chanId/image')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(
+    @Req() req: ReqU,
+    @Param('chanId') chanId: uuidv4,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: 'jpeg',
+        })
+        .addMaxSizeValidator({
+          maxSize: 1000,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
+  ) {
+    console.log('----- FILE -----');
+    console.log(file);
+    console.log('----- END FILE -----');
+    console.log('chanId  : ', chanId);
+    console.log('publicId: ', req.user.public_id);
+    // TODO return channel img url
+    return { message: 'File uploaded successfully' };
   }
 }

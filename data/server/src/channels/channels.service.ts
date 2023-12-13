@@ -151,7 +151,6 @@ export class ChannelsService {
     chanId: uuidv4,
     uploadDto: UploadDto,
   ): Promise<channelDto> {
-
     await this.friendsService.checkId(currentId);
     let chan = await this.utils.findById(chanId);
     await this.utils.checkOwner(currentId, chanId);
@@ -175,9 +174,9 @@ export class ChannelsService {
     */
 
     try {
-      console.log("-----");
+      console.log('-----');
       console.log(uploadDto.file.buffer);
-      console.log("-----");
+      console.log('-----');
       console.log(uploadDto);
       // const { originalname, mimetype, buffer } = file;
 
@@ -229,6 +228,9 @@ export class ChannelsService {
       throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
 
     if (chan.chanType == ChanType.Protected) {
+      if (!passwordChannelDto || !passwordChannelDto.chanPassword)
+        throw new HttpException('empty password', HttpStatus.FORBIDDEN);
+
       const pass = await BcryptService.hashPassword(
         passwordChannelDto.chanPassword,
       );

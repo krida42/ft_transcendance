@@ -14,6 +14,7 @@ import {
 } from 'src/exceptions/exceptions';
 import { plainToClass } from 'class-transformer';
 import { ResponseUserDto } from './dto/responseUser.dto';
+import { Express } from 'express';
 
 export async function responseUser(user: User) {
   const userDto = plainToClass(ResponseUserDto, user, {

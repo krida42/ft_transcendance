@@ -234,7 +234,7 @@ export class ChannelsService {
       throw new HttpException('you are banned', HttpStatus.FORBIDDEN);
 
     if (await this.utils.userIsInChannel(currentId, chanId))
-      throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
+      throw new HttpException('already in channel', HttpStatus.OK);
 
     if (chan.chanType == ChanType.Protected) {
       if (!passwordChannelDto || !passwordChannelDto.chanPassword)
@@ -292,7 +292,7 @@ export class ChannelsService {
     let chan = await this.utils.findById(chanId);
 
     if (false == (await this.utils.userIsInChannel(currentId, chanId)))
-      throw new HttpException('not in channel', HttpStatus.BAD_REQUEST);
+      throw new HttpException('not in channel', HttpStatus.OK);
 
     try {
       if (await this.utils.userIs(UserStatus.Owner, currentId, chanId)) {

@@ -434,12 +434,14 @@ export class ChannelsController {
     console.log('chanId  : ', chanId);
     // console.log('publicId: ', req.user.public_id);
 
+    console.log("dirname", __dirname);
 
-    // const publicFolderPath = join(__dirname, '../../../..', 'public');
+
     const publicFolderPath = join(__dirname, '..', 'public');
     const filePath = `${publicFolderPath}/${chanId}_image.${
       file.mimetype.split('/')[1]
     }`;
+
     fs.writeFileSync(filePath, file.buffer, { flag: 'w' });
     console.log('FILE PATH:', filePath);
 

@@ -77,6 +77,7 @@ const password = ref("");
 const isProtected = ref(false);
 const availableChannelsList = ref<Channel[]>([]);
 const protectedChannelsList = ref<Channel[]>([]);
+const myChannelsList = ref<Channel[]>([]);
 const channelsStore = useChannelsStore();
 const isErr = ref(false);
 const error = ref<ErrorPop>({ statusCode: 0, message: "" });
@@ -88,6 +89,9 @@ const fetchChannels = async () => {
   channelsApi.fetchUnjoinedProtectedChannels().then((res) => {
     protectedChannelsList.value = res;
   });
+  channelsApi.fetchMyChannels().then((res) => {
+    myChannelsList.value = res;
+  });
 };
 
 onBeforeMount(() => {
@@ -98,14 +102,14 @@ const sendForm = () => {
   //console.log(channelName.value);
 };
 
-const joinChannel = () => {
+const checkChannelValidity = (): boolean => {
   if (channelName.value.length < 3) {
     isErr.value = true;
     error.value = {
       statusCode: 400,
       message: "Channel name must be at least 3 characters long",
     };
-    return;
+    return false;
   }
   if (channelName.value.length > 20) {
     isErr.value = true;
@@ -113,8 +117,24 @@ const joinChannel = () => {
       statusCode: 400,
       message: "Channel name must be at most 20 characters long",
     };
-    return;
+    return false;
   }
+  if (
+    myChannelsList.value.find((chan) => chan.chanName === channelName.value)
+  ) {
+    isErr.value = true;
+    error.value = {
+      statusCode: 400,
+      message: "You are already in this channel",
+    };
+    return false;
+  }
+  return true;
+};
+
+const joinChannel = () => {
+  isProtected.value = false;
+  if (!checkChannelValidity()) return;
   const chanFound = availableChannelsList.value.find(
     (chan) => chan.chanName === channelName.value
   );

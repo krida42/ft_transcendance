@@ -73,7 +73,7 @@ module.exports = {
       {
         chanId: '4c2de8f9-4682-413b-a763-687d21d272fe',
         chanName: 'Protected Marvin',
-        ownerId: 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57', // marvin
+        ownerId: '90aeb920-0ebd-4361-83a6-01a9a8748f32', // marvin
         chanType: 'Protected',
         chanPassword: 'nannan',
         nbUser: 1,

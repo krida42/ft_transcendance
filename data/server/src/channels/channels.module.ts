@@ -15,6 +15,7 @@ import { ChannelsService } from './channels.service';
 import { ChannelsGetService } from './channels-get.service';
 import { ChannelsOpService } from './channels-op.service';
 import { ChannelsUtilsService } from './channels-utils.service';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -31,4 +32,8 @@ import { ChannelsUtilsService } from './channels-utils.service';
   ],
   exports: [ChannelsService],
 })
-export class ChannelsModule {}
+export class ChannelsModule {
+  constructor() {
+    const publicFolderPath = join(__dirname, '..', 'public');
+  }
+}

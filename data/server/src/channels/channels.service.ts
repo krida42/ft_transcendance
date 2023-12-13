@@ -230,8 +230,8 @@ export class ChannelsService {
     console.log("input password : ", passwordChannelDto);
 
     if (chan.chanType == ChanType.Protected) {
-    //   if (!passwordChannelDto || !passwordChannelDto.chanPassword)
-    //     throw new HttpException('empty password', HttpStatus.FORBIDDEN);
+      if (!passwordChannelDto || !passwordChannelDto.chanPassword)
+        throw new HttpException('empty password', HttpStatus.FORBIDDEN);
 
       const pass = await BcryptService.hashPassword(
         passwordChannelDto.chanPassword,

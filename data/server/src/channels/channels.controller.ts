@@ -17,6 +17,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import * as fs from 'fs';
 
 import { uuidv4, ChanType, UserStatus, ReqU } from 'src/types';
 import { ChannelsService } from './channels.service';
@@ -29,6 +30,7 @@ import { UsersService } from '../users/users.service';
 import { PasswordChannelDto } from './dto/passwordChannel.dto';
 
 import { UploadDto } from './dto/setImage.dto';
+import { join } from 'path';
 
 @ApiTags('channels v4 (jwt OFF)')
 @Controller('')
@@ -415,10 +417,10 @@ export class ChannelsController {
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
-          fileType: 'jpeg',
+          fileType: 'image',
         })
         .addMaxSizeValidator({
-          maxSize: 1000,
+          maxSize: 100000,
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -430,8 +432,24 @@ export class ChannelsController {
     console.log(file);
     console.log('----- END FILE -----');
     console.log('chanId  : ', chanId);
-    console.log('publicId: ', req.user.public_id);
-    // TODO return channel img url
-    return { message: 'File uploaded successfully' };
+    // console.log('publicId: ', req.user.public_id);
+
+
+    // const publicFolderPath = join(__dirname, '../../../..', 'public');
+    const publicFolderPath = join(__dirname, '..', 'public');
+    const filePath = `${publicFolderPath}/${chanId}_image.${
+      file.mimetype.split('/')[1]
+    }`;
+    fs.writeFileSync(filePath, file.buffer, { flag: 'w' });
+    console.log('FILE PATH:', filePath);
+
+    const serverUrl = '';
+    const imageUrl = `${serverUrl}/${chanId}_image.${
+      file.mimetype.split('/')[1]
+    }`;
+    console.log('FILE URL:', imageUrl);
+
+
+    return { message: 'File uploaded successfully', imageUrl };
   }
 }

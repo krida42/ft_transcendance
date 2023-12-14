@@ -408,8 +408,8 @@ export class FriendsService {
     const user = await this.usersService.findById(id);
     const publicUserDto = new PublicUserDto(
       user.public_id,
-      user.pseudo,
       user.login,
+      user.pseudo,
       user.avatar,
     );
     return publicUserDto;
@@ -427,8 +427,8 @@ export class FriendsService {
       }
       const publicUserDto = new PublicUserDto(
         other_user.public_id,
-        other_user.pseudo,
         other_user.login,
+        other_user.pseudo,
         other_user.avatar,
       );
       publicUserDtoArray.push(publicUserDto);

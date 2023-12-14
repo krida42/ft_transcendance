@@ -57,8 +57,8 @@ export class ChannelsUtilsService {
     for (const user of users) {
       const publicUserDto = new PublicUserDto(
         user.public_id,
-        user.pseudo,
         user.login,
+        user.pseudo,
         user.avatar,
       );
       publicUserDtoArray.push(publicUserDto);
@@ -263,8 +263,8 @@ export class ChannelsUtilsService {
     const user = await this.usersService.findById(id);
     const publicUserDto = new PublicUserDto(
       user.public_id,
-      user.pseudo,
       user.login,
+      user.pseudo,
       user.avatar,
     );
     return publicUserDto;

@@ -5,33 +5,33 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.bulkInsert('Achievements', [
       {
-        name: 'First game',
+        name: 'First_game',
         description: 'Litterally you are a Pong player',
         icon: "./assets/achievements/firstGame.png",
       },
       {
-        name: 'First lose',
+        name: 'First_lose',
         description: 'You lost your first game... You are a loser',
         icon: "./assets/achievements/firstLose.png",
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       {
-        name: 'First win',
+        name: 'First_win',
         description: 'You won your first game!',
         icon: "./assets/achievements/firstWin.png",
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       {
-        name: 'First draw',
+        name: 'First_draw',
         description: 'Chechmate! This is a draw',
         icon: "./assets/achievements/firstDraw.png",
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       {
-        name: 'Barry Allen',
+        name: 'Barry_Allen',
         description: 'Faster than light, play a game in less than 1 minutes',
         icon: "./assets/achievements/barryAllen.png",
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -52,14 +52,14 @@ module.exports = {
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       {
-        name: 'Older than internet',
+        name: 'Older_than_internet',
         description: 'No much time in a game',
         icon: "./assets/achievements/olderThanInternet.png",
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),
         updatedAt: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       {
-        name: 'Man Hunter',
+        name: 'Man_Hunter',
         description: 'Play with a friend',
         icon: "./assets/achievements/manHunt.png",
         createdAt: Sequelize.literal('CURRENT_TIMESTAMP'),

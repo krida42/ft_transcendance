@@ -51,7 +51,11 @@ export class PongRoom {
     console.log('Game started id:', Game.id);
     this.started = true;
     setTimeout(async () => {
+      try {
         await this.game.start();
+      }catch (err){
+          console.error(err);
+      }
     }, BEFORE_GAME);
   }
 
@@ -100,6 +104,7 @@ export class PongRoom {
   async close() {
     console.log('Game closed');
     try {
+      console.log('Game closed');
       await this.save();
       this.pongGateway.closeRoom(this);
     } catch (err) {
@@ -110,6 +115,7 @@ export class PongRoom {
   async closeWithAchievement() {
     console.log('Game closed with achievement');
     try {
+      console.log('Game closed with achievement');
       await this.close();
       const user1 = await User.findOne({
         where: { public_id: this.players[0].user.public_id },

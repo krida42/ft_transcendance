@@ -20,7 +20,9 @@
             :mode="'my_channels'"
             :name="channel.chanName"
             :logo="channel?.imgData"
-            :is_owner="channelsStore.isOwner(channel.chanId, currentUserId)"
+            :is_owner="
+              channelsStore.isOwner(channel.chanId, usersStore.currentUser?.id)
+            "
             :nb_users="channel.nbUser"
           />
         </ul>
@@ -42,7 +44,6 @@ onBeforeMount(() => {
   channelsStore.refreshChannels();
 });
 
-const currentUserId = usersStore.currentUser?.id;
 const myChannelsList = computed(() => channelsStore.myChannelsList);
 </script>
 

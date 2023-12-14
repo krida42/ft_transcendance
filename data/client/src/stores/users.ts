@@ -40,9 +40,14 @@ export const useUsersStore = defineStore({
         this.usersMap.set(user.id, user);
       });
     },
-    editUser(user: User) {
+    editUser(user: any) {
       userApi.editUser(user).then((user) => {
         this.usersMap.set(user.id, user);
+      });
+    },
+    uploadUserAvatar(file: File) {
+      userApi.uploadUserAvatar(file).then((fileUrl) => {
+        this.currentUser.avatar = fileUrl;
       });
     },
   },

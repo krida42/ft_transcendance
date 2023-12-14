@@ -93,6 +93,7 @@ const avatar = ref(props.avatar);
 const twoFactor = ref(props.twoFactor);
 const twoFactorInital = ref(props.twoFactor);
 const usersStore = useUsersStore();
+const host = process.env.VUE_APP_API_URL;
 
 const onFileSelected = (e: Event) => {
   if (e) e.preventDefault();
@@ -108,14 +109,14 @@ const onFileSelected = (e: Event) => {
 
 const editProfile = async () => {
   if (twoFactor.value !== twoFactorInital.value) {
-    if (twoFactor.value) axios.post("2fa/turn-on"), { withCredentials: true };
-    else axios.post("2fa/turn-off"), { withCredentials: true };
+    if (twoFactor.value)
+      axios.post(host + "/2fa/turn-on"), { withCredentials: true };
+    else axios.post(host + "/2fa/turn-off"), { withCredentials: true };
   }
-  const profile: User = {
-    id: usersStore.currentUser.id,
+  const profile = {
     pseudo: username.value,
-    avatar: avatar.value,
   };
+  if (file) await usersStore.uploadUserAvatar(file);
   await usersStore.editUser(profile);
   await usersStore.refreshUser(usersStore.currentUser.id);
   emit("closeSettings");

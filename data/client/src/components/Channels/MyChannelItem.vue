@@ -65,7 +65,6 @@ const channel = defineProps({
 });
 
 const channelsStore = useChannelsStore();
-const channelId = router.currentRoute.value.params.channelId as string;
 const isJoined = ref(false);
 const button_text = computed(() => {
   return channel.mode === "my_channels"

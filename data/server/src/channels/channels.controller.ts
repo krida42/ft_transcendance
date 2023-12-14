@@ -420,7 +420,7 @@ export class ChannelsController {
           fileType: 'image',
         })
         .addMaxSizeValidator({
-          maxSize: 100000,
+          maxSize: 15 * 1024 * 1024,
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -428,35 +428,31 @@ export class ChannelsController {
     )
     file: Express.Multer.File,
   ) {
-    // TODO CHECK OWNER with req.user
-    console.log('----- FILE -----');
-    console.log(file);
-    console.log('----- END FILE -----');
-    console.log('chanId  : ', chanId);
-    // console.log('publicId: ', req.user.public_id);
-    console.log('dirname', __dirname);
-
-    const dirPath = `/app/dist/public/`;
-    const fileName = `${chanId}_image.${file.mimetype.split('/')[1]}`;
-    console.log('FILE PATH:', dirPath + fileName);
-
-    const imageUrl = 'http://localhost:3001/' + fileName;
-    console.log('FILE URL: ', imageUrl);
-
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
-    }
-    fs.writeFileSync(dirPath + fileName, file.buffer, { flag: 'w' });
+    await this.utils.checkId(chanId);
+    await this.utils.checkOwner(req.user.public_id, chanId);
+    let chan = await this.utils.findById(chanId);
+    // console.log('----- FILE -----');
+    // console.log(file);
+    // console.log('----- END FILE -----');
 
     try {
-      let chan = await this.utils.findById(chanId);
+      const dirPath = `/app/dist/public/`;
+      const fileName = `${chanId}_chan_image.${file.mimetype.split('/')[1]}`;
+      // console.log('FILE PATH:', dirPath + fileName);
+      const imageUrl = 'http://localhost:3001/' + fileName;
+      // console.log('FILE URL: ', imageUrl);
+
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath);
+      }
+      fs.writeFileSync(dirPath + fileName, file.buffer, { flag: 'w' });
+
       chan.imgName = imageUrl;
-      chan.save();
+      await chan.save();
+      return { message: 'File uploaded successfully', imageUrl };
     } catch (error) {
       throw new HttpException('UploadImage' + error, HttpStatus.BAD_REQUEST);
     }
-
-    return { message: 'File uploaded successfully', imageUrl };
   }
 
   @ApiOperation({ summary: 'Send a message' })

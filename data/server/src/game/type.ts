@@ -34,4 +34,5 @@ export type GameSave = {
 export type Options = {
   uuid?: string;
   key?: string;
+  mode?: boolean;
 } | undefined;

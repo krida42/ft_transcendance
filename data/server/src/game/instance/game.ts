@@ -28,14 +28,11 @@ export class Game {
   //save into db
   timeAtEnd: number = 0;
 
-  //mode
-  // mode: boolean = false;
-
   constructor(PongRoom: PongRoom) {
     Game.id++;
     this.pongRoom = PongRoom;
-    // console.log('PongRoom mode:', PongRoom.mode);
-    // console.log('Game key:', PongRoom?.key);
+    console.log('PongRoom mode:', PongRoom.mode);
+    console.log('Game key:', PongRoom?.key);
     this.gameState = GameInit.initGameState(this.pongRoom.mode);
     this.setupScoreEvent();
   }

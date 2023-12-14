@@ -45,7 +45,7 @@ export default class BootScene extends Scene {
     this.load.svg("smallBall", pokeball, { width: 18, height: 18 });
     // petite balle
 
-    this.load.audio("thud", [thudMp3, thudOgg]);
+    // this.load.audio("thud", [thudMp3, thudOgg]);
     this.load.svg("paddle", paddle, { width: 100, height: 100 });
   }
 

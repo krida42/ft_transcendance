@@ -16,14 +16,12 @@ export class PongBall {
     let fX = 0;
     let fY = 0;
     if (mode == true) {
-      console.log('mode GROSSE BALLE');
       this.ball = Matter.Bodies.circle(WIDTH / 2, HEIGHT / 2, BALL_RADIUS * 3, {
         density: 0.01,
       });
     } 
     else {
-      console.log('mode PETITE BALLE');
-    this.ball = Matter.Bodies.circle(WIDTH / 2, HEIGHT / 2, BALL_RADIUS, {
+      this.ball = Matter.Bodies.circle(WIDTH / 2, HEIGHT / 2, BALL_RADIUS, {
       density: 0.01,
     });
     }

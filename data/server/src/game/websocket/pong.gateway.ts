@@ -74,14 +74,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
           player.client = client;
         } else client.emit('alreadyConnected');
       }
-      // if (room) {
-      //   const addedPlayer = await room.PlayerManager.addPlayer({
-      //     user: userCookie,
-      //     client,
-      //   });
-      //   return addedPlayer;
-      // }
-      // return false;
     } catch (error) {
       console.error('Error while checking connection:', error);
       return false;
@@ -89,12 +81,10 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleConnection(client: Socket) {
-    console.log('CONNECTED', client.id);
   }
 
   async handleDisconnect(client: Socket) {
     try {
-      console.log('DISCONNECTED', client.id);
       const userCookie = this.getUserWithCookie(client);
       if (userCookie) {
         const room: PongRoom | undefined = this.rooms.find((r) =>
@@ -112,7 +102,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   addUserToMap(userCookie: ResponseUserDto, client: Socket) {
-    console.log('ADD USER TO MAP');
     try {
       const player = { user: userCookie, client };
       this.usersMap.set(userCookie.public_id, client);
@@ -122,7 +111,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   roomNotFull(): PongRoom | undefined {
-    console.log('ROOM NOT FULL');
     try {
       return this.rooms.find((r) => !r.PlayerManager.isFull() && !r.started);
     } catch (error) {
@@ -131,7 +119,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   findOrCreateRoom(options?: Options): PongRoom | undefined {
-    console.log('FIND OR CREATE ROOM');
     try {
       let room = this.roomNotFull();
       // console.log("Find a room", room?.players.length);
@@ -147,7 +134,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   createRoom(options?: Options): PongRoom | undefined {
-    console.log('CREATE ROOM');
     try {
       const room = new PongRoom(this, options);
       this.rooms.push(room);
@@ -158,7 +144,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   closeRoom(room: PongRoom) {
-    console.log('CLOSE ROOM');
     try {
       const index = this.rooms.findIndex((r) => r === room);
       const players = room.players;
@@ -239,7 +224,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('options')
   async handleOptions(client: Socket, options: Options) {
     try {
-      console.log('\nOPTIONS gateway', options);
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie) return;
 
@@ -274,7 +258,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async joinPrivateRoom(client: Socket, options: Options) {
-    console.log('JOIN PRIVATE ROOM');
+    // console.log('JOIN PRIVATE ROOM');
     try {
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie || !options?.key) return;
@@ -287,7 +271,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async inviteToRoom(client: Socket, options: Options) {
-    console.log('INVITE TO ROOM');
+    // console.log('INVITE TO ROOM');
     try {
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie) return;
@@ -296,7 +280,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (!roomPrivate) return;
       await roomPrivate.PlayerManager.addPlayer({ user: userCookie, client });
 
-      console.log('MAGIC KEY:', roomPrivate.key);
+      // console.log('MAGIC KEY:', roomPrivate.key);
       client.emit('waiting-friend', {
         uuid: options!.uuid,
         key: roomPrivate.key,
@@ -314,7 +298,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async randomRoom(client: Socket, options?: Options) {
-    console.log('RANDOM ROOM');
+    // console.log('RANDOM ROOM');
     try {
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie) return;

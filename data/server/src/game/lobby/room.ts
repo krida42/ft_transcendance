@@ -38,7 +38,6 @@ export class PongRoom {
     if (options?.mode) {
       this.mode = options.mode;
     }
-    console.log('mode ROOM:', this.mode);
     this.game = new Game(this);
   }
 

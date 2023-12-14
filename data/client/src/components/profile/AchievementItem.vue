@@ -4,7 +4,7 @@
   >
     <div class="w-[5rem] h-[5rem] rounded-full overflow-hidden">
       <img
-        :src="props.img"
+        :src="require(`@/assets/png/${props.name}.png`)"
         alt="user image"
         class="w-[100%] h-[5rem] object-cover"
         :title="props.description"

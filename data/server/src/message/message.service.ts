@@ -17,6 +17,8 @@ import { AddMessageResponseDto } from './dto/addMessageResponse.dto';
 import { ChatGateway } from 'src/realtime/chat.gateway';
 import { ChanType } from 'src/types';
 import { ChannelsGetService } from 'src/channels/channels-get.service';
+import { FriendsService } from 'src/friends/friends.service';
+import { RoomService } from 'src/realtime/room.service';
 
 @Injectable()
 export class MessageService {
@@ -29,9 +31,17 @@ export class MessageService {
     private readonly channelsUtilsService: ChannelsUtilsService,
     private readonly channelsGetService: ChannelsGetService,
     private readonly chatGateway: ChatGateway,
+    private readonly friendsService: FriendsService,
+    private readonly roomsService: RoomService,
   ) {}
 
-  private attributesToRetrieve = ['msgId', 'content', 'createdAt', 'userId'];
+  private attributesToRetrieve = [
+    'msgId',
+    'content',
+    'createdAt',
+    'userId',
+    'chanId',
+  ];
   //   async findForChannel(channelId: string, { limit = 50, beforeMsgId = null }) {
   //     if (beforeMsgId) {
   //       const beforeConfidentialId = (
@@ -48,12 +58,25 @@ export class MessageService {
   //     }
   //   }
 
-  async findForChannel(channelId: string) {
+  async findForChannel(channelId: string, exceptUserIds?: string[]) {
     await this.channelsUtilsService.findById(channelId);
 
+    // let messages = await this.messageModel.findAll({
+    //   where: { chanId: channelId },
+    //   // limit: limit,
+    // });
+
+    // let messages = await this.messageModel.findAll({
+    //   where: { chanId: channelId },
+    //   attributes: this.attributesToRetrieve,
+    // });
+
     let messages = await this.messageModel.findAll({
-      where: { chanId: channelId },
-      // limit: limit,
+      where: {
+        chanId: channelId,
+        userId: { [Op.notIn]: exceptUserIds },
+      },
+      attributes: this.attributesToRetrieve,
     });
 
     // console.log('messages: ', messages);
@@ -141,10 +164,16 @@ export class MessageService {
       addMessageDto.content,
     );
 
+    const blockers = await this.friendsService.getBlockersOfUser(senderId);
+    const exceptUserIds = blockers.map((blocker) =>
+      this.roomsService.getUserPersonalRoom(blocker.id),
+    );
+
     await this.chatGateway.transmitMessageOfUserToChannel(
       senderId,
       channelId,
       insertedMsg,
+      exceptUserIds,
     );
     return new AddMessageResponseDto(addMessageDto.msgId, insertedMsg.msgId);
   }

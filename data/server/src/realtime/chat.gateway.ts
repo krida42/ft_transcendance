@@ -51,9 +51,17 @@ export class ChatGateway {
     fromUserId: string,
     channelId: string,
     message: unknown,
+    exceptUserIds?: string[],
   ) {
     // throw new Error('Method not implemented.');
     const socket = await this.realtimeGateway.findSocketByUserId(fromUserId);
-    socket.to(channelId).emit('messageChannel', message);
+
+    if (!exceptUserIds || exceptUserIds.length === 0)
+      socket.to(channelId).emit('messageChannel', message);
+    else
+      socket
+        .to(channelId)
+        .except(exceptUserIds)
+        .emit('messageChannel', message);
   }
 }

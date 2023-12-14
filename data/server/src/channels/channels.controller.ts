@@ -36,6 +36,7 @@ import { UploadDto } from './dto/setImage.dto';
 import { join } from 'path';
 import { MessageDto } from 'src/message/dto/message.dto';
 import { isUUID } from 'class-validator';
+import { FriendsService } from 'src/friends/friends.service';
 
 @ApiTags('channels v4 (jwt OFF)')
 @Controller('')
@@ -50,6 +51,7 @@ export class ChannelsController {
     private readonly utils: ChannelsUtilsService,
     private readonly usersService: UsersService,
     private readonly messageService: MessageService,
+    private readonly friendsService: FriendsService,
   ) {
     // this.setcurrentId(); // DEPR
   }
@@ -338,9 +340,7 @@ export class ChannelsController {
   @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Get('/channels-invited')
   async getInvitedChan(@Req() req: ReqU) {
-    return await this.channelGetService.getInvitedChan(
-      req.user.public_id,
-    );
+    return await this.channelGetService.getInvitedChan(req.user.public_id);
   }
 
   @ApiOperation({ summary: 'Get protected unjoined channels (sorted)' })
@@ -489,6 +489,9 @@ export class ChannelsController {
     @Req() req: ReqU,
   ): Promise<MessageDto[]> {
     console.log('getAllMessages for channels: ', channelId);
-    return this.messageService.findForChannel(channelId);
+    const blockedIds = (
+      await this.friendsService.getBlocked(req.user.public_id)
+    ).map((blocked) => blocked.id);
+    return this.messageService.findForChannel(channelId, blockedIds);
   }
 }

@@ -79,7 +79,10 @@ export class FriendsService {
       throw new HttpException('you blocked this user', HttpStatus.CONFLICT);
     }
     if (await this.heBlockYou(sender_id, receiver_id)) {
-      throw new HttpException('this user has blocked you', HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        'this user has blocked you',
+        HttpStatus.FORBIDDEN,
+      );
     }
     try {
       await this.friendsModel.create({
@@ -151,7 +154,8 @@ export class FriendsService {
     }
     await friendship.destroy();
 
-    if (friend_id) await this.friendsGateway.pingUserFriendsStateChanged(friend_id);
+    if (friend_id)
+      await this.friendsGateway.pingUserFriendsStateChanged(friend_id);
 
     return await this.fetchPublicUserDto(friend_id);
   }
@@ -169,7 +173,8 @@ export class FriendsService {
     }
     await friendship.destroy();
 
-    if (friend_id) await this.friendsGateway.pingUserFriendsStateChanged(friend_id);
+    if (friend_id)
+      await this.friendsGateway.pingUserFriendsStateChanged(friend_id);
     if (currentId && friend_id) {
       this.friendsGateway.unbindUserFromFriends(currentId, [friend_id]);
       this.friendsGateway.unbindUserFromFriends(friend_id, [currentId]);
@@ -232,11 +237,11 @@ export class FriendsService {
         status: FriendStatus.Blocked,
       },
     });
-    if (!youBlock) throw new HttpException('user not blocked', HttpStatus.NOT_FOUND);
+    if (!youBlock)
+      throw new HttpException('user not blocked', HttpStatus.NOT_FOUND);
     else await youBlock.destroy();
     if (receiver_id)
-
-    await this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
+      await this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
 
     return await this.fetchPublicUserDto(receiver_id);
   }
@@ -283,6 +288,17 @@ export class FriendsService {
     const all = await Friends.findAll({
       where: {
         sender_id: currentId,
+        status: FriendStatus.Blocked,
+      },
+    });
+    return await this.fetchUserDtoArrayFor(currentId, all);
+  }
+
+  async getBlockersOfUser(currentId: uuidv4): Promise<PublicUserDto[]> {
+    await this.checkId(currentId);
+    const all = await Friends.findAll({
+      where: {
+        receiver_id: currentId,
         status: FriendStatus.Blocked,
       },
     });

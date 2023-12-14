@@ -113,7 +113,7 @@ export default {
   },
 
   async muteUser(channelId: Id, userId: Id) {
-    const res = await axios.post(
+    const res = await axios.patch(
       `${host}/channels/${channelId}/mute/${userId}`
     );
     return res.data;

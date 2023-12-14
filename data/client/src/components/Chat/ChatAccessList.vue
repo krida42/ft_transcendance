@@ -1,6 +1,6 @@
 <template>
   <ul
-    class="nnw-[264px] w-[230px] h-64 bd-red overflow-y-auto rounded-2xl scrollbar-styling flex flex-col-reverse"
+    class="nnw-[264px] w-[230px] h-64 bd-redd overflow-y-auto rounded-2xl scrollbar-styling flex flex-col-reverse"
   >
     <ChatAccessItem
       v-for="(friend, index) in [...friendStore.friends.values()]"
@@ -8,8 +8,10 @@
       :title="friend.pseudo"
       :chat-id="friend.id"
       @click="openAndRefreshChat(friend.id, friend.pseudo, ChatType.Direct)"
-      :start="index === 0 && true"
-      :end="index === friendStore.friends.size - 1 && true"
+      :start="index === 0 || true"
+      :end="index === friendStore.friends.size - 1 || true"
+      :status="friend.status"
+      :avatar="friend.avatar"
     />
     <!-- <ChatAccessItem
       key="marine"
@@ -34,8 +36,9 @@
       @click="
         openAndRefreshChat(channel.chanId, channel.chanName, ChatType.Channel)
       "
-      :start="index === 0 && true"
-      :end="index === friendStore.friends.size - 1 && true"
+      :start="index === 0 || true"
+      :end="index === friendStore.friends.size - 1 || true"
+      :avatar="channel.imgName"
     />
   </ul>
 </template>

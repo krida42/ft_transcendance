@@ -66,18 +66,21 @@ export class MessageService {
     //   // limit: limit,
     // });
 
-    // let messages = await this.messageModel.findAll({
-    //   where: { chanId: channelId },
-    //   attributes: this.attributesToRetrieve,
-    // });
-
-    let messages = await this.messageModel.findAll({
-      where: {
-        chanId: channelId,
-        userId: { [Op.notIn]: exceptUserIds },
-      },
-      attributes: this.attributesToRetrieve,
-    });
+    let messages;
+    if (!exceptUserIds) {
+      messages = await this.messageModel.findAll({
+        where: { chanId: channelId },
+        attributes: this.attributesToRetrieve,
+      });
+    } else {
+      messages = await this.messageModel.findAll({
+        where: {
+          chanId: channelId,
+          userId: { [Op.notIn]: exceptUserIds },
+        },
+        attributes: this.attributesToRetrieve,
+      });
+    }
 
     // console.log('messages: ', messages);
     console.log('messages.length: ', messages.length);

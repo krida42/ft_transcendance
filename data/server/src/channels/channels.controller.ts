@@ -474,6 +474,10 @@ export class ChannelsController {
     @Param('chanId', ParseUUIDPipe) chanId: string,
     @Body() addMessageDto: AddMessageDto,
   ) {
+    if (await this.utils.userIs(UserStatus.Muted, req.user.public_id, chanId)) {
+      throw new HttpException("You're muted", HttpStatus.FORBIDDEN);
+    }
+
     return this.messageService.sendMessageToChannel(
       req.user.public_id,
       chanId,

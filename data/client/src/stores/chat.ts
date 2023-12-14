@@ -5,6 +5,7 @@ import { MessageTransformer } from "@/utils/messageTransformer";
 
 import { Chat, ChatType, Id, Message } from "@/types";
 import { v4 } from "uuid";
+import { AxiosError } from "axios";
 
 export const useChatStore = defineStore({
   id: "chat",
@@ -124,10 +125,16 @@ export const useChatStore = defineStore({
         ack: false,
       };
       this.addMessageToStore(chatId, localMsg);
-      postFn(chatId, content, localMsg.msgId).then((resMsg) => {
-        resMsg.createdAt = new Date(Number(resMsg.createdAt));
-        this.updateMsgAck(chatId, true, localMsg.msgId, resMsg.remoteMsgId);
-      });
+      postFn(chatId, content, localMsg.msgId)
+        .then((resMsg) => {
+          resMsg.createdAt = new Date(Number(resMsg.createdAt));
+          this.updateMsgAck(chatId, true, localMsg.msgId, resMsg.remoteMsgId);
+        })
+        .catch((err: AxiosError) => {
+          if (err.response?.status === 403) {
+            console.log("403 Forbidden, You are muted");
+          }
+        });
     },
   },
 });

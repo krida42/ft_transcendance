@@ -1,16 +1,17 @@
 <template>
   <!-- <li> -->
   <li
-    class="bd-redd flex justify-between items-center w-1/1 py-3 px-3 my-1 bg-[#FFFDF2] bg-opacity-60 hover:bg-blue-200 cursor-pointer"
+    class="bd-redd flex justify-between items-center w-1/1 py-3 px-3 my-[2px] bg-[#FFFDF2] bg-opacity-60 hover:bg-blue-200 cursor-pointer"
     :class="{
-      'rounded-t-[16px]': start,
-      'rounded-b-[16px]': end,
+      'rounded-t-[8px]': start,
+      'rounded-b-[8px]': end,
     }"
   >
     <div class="avatar bd-blued flex">
-      <Icon class="bdd-red h-1/1" size="30">
+      <!-- <Icon class="bdd-red h-1/1" size="30">
         <UserCircle />
-      </Icon>
+      </Icon> -->
+      <img class="h-1/1 w-1/1 rounded-full w-[30px]" :src="avatar" />
     </div>
     <div class="name bd-redd pt-1 w-[56%] truncate">
       {{ title }}
@@ -25,10 +26,11 @@
     <!-- </div> -->
 
     <div
-      class="status w-2 h-2 border-1 border-black rounded-full bg-red-700"
+      class="status w-2 h-2 border-1 border-black rounded-full"
       :class="{
         'bg-green-700': status === 'online',
         'bg-red-700': status === 'offline',
+        'bg-blue-700': status === 'inGame',
       }"
     ></div>
   </li>
@@ -49,6 +51,7 @@ const props = defineProps({
   end: Boolean,
   title: String,
   chatId: String,
+  avatar: String,
 });
 void props;
 </script>

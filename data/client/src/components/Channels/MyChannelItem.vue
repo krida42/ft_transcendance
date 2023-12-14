@@ -4,10 +4,12 @@
     class="channel-item relative text-[1.2rem] pt-[1rem] pb-[1rem]"
     :class="channel.mode === 'my_channels' ? 'my_channels' : 'explore_channels'"
   >
-    <img
-      :src="channel.logo ? channel.logo : '@/assets/svg/unknown-logo.svg'"
-      class="unknown-logo w-[2.4rem] aspect-square"
-    />
+    <div class="w-[2.4rem] aspect-square rounded-full overflow-hidden">
+      <img
+        :src="channel.logo ? channel.logo : unknownLogo"
+        class="object-cover w-[2.4rem] aspect-square"
+      />
+    </div>
     <img
       v-if="channel.mode === 'my_channels'"
       src="@/assets/svg/crown.svg"
@@ -33,13 +35,22 @@
       {{ button_text }}
     </button>
   </div>
+  <ErrorPopup
+    v-if="isErr"
+    :statusCode="error.statusCode"
+    :message="error.message"
+    @close="isErr = false"
+  />
 </template>
 
 <script lang="ts" setup>
 import { defineProps, computed, ref } from "vue";
 import router from "@/router";
 import { useChannelsStore } from "@/stores/channels";
-
+import unknownLogo from "@/assets/svg/unknown-img.svg";
+import ErrorPopup from "@/components/ErrorPopup.vue";
+import { ErrorPop } from "@/types";
+import axios, { AxiosError } from "axios";
 const channel = defineProps({
   id: {
     type: String,
@@ -73,6 +84,8 @@ const button_text = computed(() => {
       : "leave"
     : "join";
 });
+const isErr = ref(false);
+const error = ref<ErrorPop>({ statusCode: 0, message: "" });
 
 const optionsChannel = async (channelId: string) => {
   if (channel.mode === "my_channels") {
@@ -82,8 +95,25 @@ const optionsChannel = async (channelId: string) => {
       await channelsStore.leaveChannel(channelId);
     }
   } else {
-    channelsStore.joinChannel(channelId);
-    isJoined.value = true;
+    channelsStore
+      .joinChannel(channelId)
+      .then(() => {
+        isJoined.value = true;
+      })
+      .catch((err: AxiosError | Error) => {
+        isErr.value = true;
+        if (axios.isAxiosError(err)) {
+          if (err.response && err.response.data && err.response.data.message) {
+            if (Array.isArray(err.response.data.message))
+              error.value.message = err.response.data.message[0];
+            else error.value.message = err.response.data.message;
+          }
+          if (err.response && err.response.status)
+            error.value.statusCode = err.response.status;
+        } else {
+          error.value.message = err.message;
+        }
+      });
   }
 };
 </script>

@@ -111,7 +111,7 @@ export class FriendsController {
   @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
   @Delete('/friends/:userId/cancel')
   async cancelFriendRequest(@Req() req: ReqU, @Param('userId') userId: uuidv4) {
-    return await this.friendsService.deleteFriend(req.user.public_id, userId);
+    return await this.friendsService.cancelFriend(req.user.public_id, userId);
   }
 
   // ---------- BLOCK / UNBLOCK

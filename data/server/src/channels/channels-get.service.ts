@@ -18,6 +18,7 @@ import { ChannelsUtilsService } from './channels-utils.service';
 // GET getJoinedChan(currentUserId): Promise< channelDto[] > OK
 // GET getDirectChan(currentUserId): Promise< channelDto[] > OK
 // GET getUnjoinedChan(currentUserId, chanType): Promise< channelDto[] > OK
+// GET getInvitedChan(currentUserId): Promise< channelDto[] > OK
 
 // ---------- GET USERS LIST
 // GET get...(chanId): Promise< PublicUserDto[] >
@@ -59,6 +60,18 @@ export class ChannelsGetService {
           { userStatus: UserStatus.Admin },
           { userStatus: UserStatus.Owner },
         ],
+      },
+    });
+    return await this.utils.fetchChanUsersToChanDtoArray(userChannels);
+  }
+
+  async getInvitedChan(currentId: uuidv4): Promise<channelDto[]> {
+    await this.friendsService.checkId(currentId);
+
+    const userChannels = await this.channelUsersModel.findAll({
+      where: {
+        userId: currentId,
+        userStatus: UserStatus.Invited,
       },
     });
     return await this.utils.fetchChanUsersToChanDtoArray(userChannels);

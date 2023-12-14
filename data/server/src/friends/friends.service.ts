@@ -122,6 +122,21 @@ export class FriendsService {
     return await this.fetchPublicUserDto(sender_id);
   }
 
+  async cancelFriend(
+    currentId: uuidv4,
+    friend_id: uuidv4,
+  ): Promise<PublicUserDto> {
+    if ((await this.checkId(currentId)) === (await this.checkId(friend_id))) {
+      throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
+    }
+    const friendship = await this.getPending(currentId, friend_id);
+    if (!friendship) {
+      throw new HttpException('relation not found', HttpStatus.NOT_FOUND);
+    }
+    await friendship.destroy();
+    return await this.fetchPublicUserDto(friend_id);
+  }
+
   async deleteFriend(
     currentId: uuidv4,
     friend_id: uuidv4,
@@ -296,6 +311,27 @@ export class FriendsService {
               { status: FriendStatus.Active },
               { status: FriendStatus.Pending },
             ],
+          },
+        ],
+      },
+    });
+  }
+
+  async getPending(
+    user1_id: uuidv4,
+    user2_id: uuidv4,
+  ): Promise<Friends | null> {
+    return await Friends.findOne({
+      where: {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { sender_id: user1_id, receiver_id: user2_id },
+              { sender_id: user2_id, receiver_id: user1_id },
+            ],
+          },
+          {
+            status: FriendStatus.Pending,
           },
         ],
       },

@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import { useMainStore } from "@/stores/main";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "home",
-    redirect: "/main/home",
+    name: "root",
+    redirect: "/auth/sign-in",
   },
   {
     path: "/about",
@@ -159,6 +160,16 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach(async (to, from, next) => {
+  const mainStore = useMainStore();
+
+  if (to.name === "signIn") return next();
+  if (!mainStore.loggedIn && to.matched[0].path !== "/auth") {
+    await mainStore.refreshUserInfo();
+    if (!mainStore.loggedIn) router.push("/auth/sign-in");
+  }
 });
 
 export default router;

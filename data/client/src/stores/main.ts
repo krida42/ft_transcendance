@@ -33,8 +33,8 @@ export const useMainStore = defineStore({
     logout() {
       this.loggedIn = false;
     },
-    refreshUserInfo() {
-      userApi
+    async refreshUserInfo() {
+      return userApi
         .fetchUser("me")
         .then((user: MyUserResponse) => {
           console.log("user", user);

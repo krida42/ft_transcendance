@@ -53,7 +53,7 @@ export class ChannelsOpService {
     await this.utils.checkOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
-      throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
+      throw new HttpException('user not in channel', HttpStatus.OK);
 
     if (await this.utils.userIs(UserStatus.Admin, userId, chanId))
       throw new HttpException('is already admin', HttpStatus.OK);
@@ -84,10 +84,10 @@ export class ChannelsOpService {
     await this.utils.checkOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
-      throw new HttpException('user not in channel', HttpStatus.BAD_REQUEST);
+      throw new HttpException('user not in channel', HttpStatus.OK);
 
     if (false == (await this.utils.userIs(UserStatus.Admin, userId, chanId)))
-      throw new HttpException('user not admin', HttpStatus.BAD_REQUEST);
+      throw new HttpException('user not admin', HttpStatus.OK);
 
     try {
       let user = await this.utils.getUserInChannel(userId, chanId);
@@ -113,7 +113,7 @@ export class ChannelsOpService {
     await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (await this.utils.userIsInChannel(userId, chanId))
-      throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
+      throw new HttpException('already in channel', HttpStatus.OK);
 
     if (await this.utils.userIs(UserStatus.Invited, userId, chanId))
       throw new HttpException('user already invited', HttpStatus.OK);
@@ -146,7 +146,7 @@ export class ChannelsOpService {
     await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIs(UserStatus.Invited, userId, chanId)))
-      throw new HttpException('user not invited', HttpStatus.BAD_REQUEST);
+      throw new HttpException('user not invited', HttpStatus.OK);
 
     try {
       const user = await this.utils.getInvitedUser(userId, chanId);
@@ -250,10 +250,13 @@ export class ChannelsOpService {
       user.userStatus = UserStatus.Muted;
       await user.save();
 
-      const min = 1; // TODO TEST ME
+      const min = 1; // 10 MIN
       setTimeout(async () => {
-        user.userStatus = UserStatus.User;
-        await user.save();
+        if (await this.utils.userIsInChannel(userId, chanId)) {
+          user = await this.utils.getUserInChannel(userId, chanId);
+          user.userStatus = UserStatus.User;
+          await user.save();
+        }
       }, min * 60 * 1000);
 
       return await this.utils.fetchPublicUserDto(userId);

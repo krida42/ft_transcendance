@@ -67,17 +67,17 @@ export class FriendsService {
     receiver_id: uuidv4,
   ): Promise<PublicUserDto> {
     if ((await this.checkId(sender_id)) === (await this.checkId(receiver_id))) {
-      throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
+      throw new HttpException('same uuidv4', HttpStatus.OK);
     }
     if (await this.friendExists(sender_id, receiver_id)) {
-      throw new HttpException('already added', HttpStatus.CONFLICT);
+      throw new HttpException('already added', HttpStatus.OK);
     }
     if (await this.youBlockIt(sender_id, receiver_id)) {
       throw new HttpException('you blocked this user', HttpStatus.CONFLICT);
     }
     if (await this.heBlockYou(sender_id, receiver_id)) {
       // TEMP
-      throw new HttpException('this user has blocked you', HttpStatus.CONFLICT);
+      throw new HttpException('this user has blocked you', HttpStatus.OK);
     }
     try {
       await this.friendsModel.create({
@@ -163,7 +163,7 @@ export class FriendsService {
     }
     if (await this.youBlockIt(sender_id, receiver_id))
       if (await this.youBlockIt(sender_id, receiver_id))
-        throw new HttpException('user already blocked', HttpStatus.CONFLICT);
+        throw new HttpException('user already blocked', HttpStatus.OK);
 
     try {
       let friendship = await this.getFriendship(sender_id, receiver_id);
@@ -200,7 +200,7 @@ export class FriendsService {
       },
     });
     if (!youBlock)
-      throw new HttpException('user not blocked', HttpStatus.BAD_REQUEST);
+      throw new HttpException('user not blocked', HttpStatus.OK);
     else await youBlock.destroy();
     return await this.fetchPublicUserDto(receiver_id);
   }

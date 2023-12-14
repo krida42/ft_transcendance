@@ -48,7 +48,12 @@
         }}
       </button>
       <button
-        v-if="!admin && user"
+        class="border-[1px] border-white text-gray-400 hover:bg-gray-500 hover:text-gray-200"
+      >
+        Play
+      </button>
+      <button
+        v-if="chatType === ChatType.Direct && !admin && user"
         class="border-[1px] border-white text-red-my hover:bg-[#7c2c2c]"
         @click="
           friendStore.blocked.has(user.id)
@@ -61,7 +66,10 @@
 
       <!-- <button class="w-[100%] hover:bg-gray-500">ADD FRIEND</button> -->
     </div>
-    <div class="admin-btns gap-x-5 gap-y-3 grid grid-cols-3 mt-4" v-if="admin">
+    <div
+      class="admin-btns gap-x-5 gap-y-3 grid grid-cols-3 mt-4"
+      v-if="chatType === ChatType.Channel && admin"
+    >
       <button class="px-4" @click="kickUser">KICK</button>
       <button class="px-4 mr" @click="banUser">BAN</button>
       <button class="" @click="muteUser">MUTE 10M</button>
@@ -81,6 +89,7 @@ import friend from "@/api/friend";
 import router from "@/router";
 import { User } from "@/types";
 import channelsApi from "@/api/channel";
+import { ChatType } from "@/types";
 
 const props = defineProps({
   test: {
@@ -105,6 +114,7 @@ const friendStore = useFriendStore();
 const { sendFriendRequest, blockUser, unblockUser } = friendStore;
 const channelsStore = useChannelsStore();
 const chatStore = useChatStore();
+const chatType = ref(chatStore?.currentChat?.chatType);
 
 const user = computed(() => {
   return usersStore.users.get(props.uuid);

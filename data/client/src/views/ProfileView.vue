@@ -50,7 +50,7 @@
         :src="user.avatar"
         class="w-[150px] aspect-square rounded-full break-normal"
       />
-      <p class="text-[2.2rem]">{{ username }}</p>
+      <p class="text-[2.2rem]">{{ user.pseudo }}</p>
     </div>
     <ProfileButttons
       :mode="mode"
@@ -79,13 +79,11 @@ import { profileModes } from "@/types";
 import router from "@/router";
 import { useUsersStore } from "@/stores/users";
 import { User } from "@/types";
-import axios from "axios";
 import userApi from "@/api/user";
 import { Achievement } from "@/types";
 import AchievementItem from "@/components/profile/AchievementItem.vue";
 
 const usersStore = useUsersStore();
-const host = process.env.VUE_APP_API_URL;
 const user = ref<User>(usersStore.currentUser);
 const ranks = ["beginner", "intermediate", "advanced", "expert"];
 const rank = computed(() => {
@@ -105,7 +103,6 @@ const winrate = ref<number>(0);
 const displayWinrate = ref<boolean>(false);
 const matchHistory = ref<Match[]>([]);
 const achievements = ref<Achievement[]>([]);
-const username = ref<string>(user.value.pseudo);
 const twoFactor = ref<boolean>(false);
 const isSettings = ref<boolean>(false);
 const mode = computed(() => {
@@ -133,6 +130,15 @@ const calcWinrate = () => {
 };
 
 const initUser = async () => {
+  if (mode.value === profileModes.otherProfile) {
+    const userId = router.currentRoute.value.params.userId as string;
+    user.value = await userApi.fetchUser(userId);
+    achievements.value = await userApi.getAchievements(userId);
+    matchHistory.value = await userApi.getHistory(userId);
+    calcWinrate();
+    displayWinrate.value = true;
+    return;
+  }
   usersStore.refreshUser(usersStore.currentUser.id);
   user.value = usersStore.currentUser;
   achievements.value = await userApi.getAchievements(usersStore.currentUser.id);

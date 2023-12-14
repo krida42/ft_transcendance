@@ -218,11 +218,14 @@ export class UsersService {
     const userAchs = await this.userAchModel.findAll({
       where: { public_id: publicId },
     });
+    const dtoArray: AchievementsDto[] = [];
+
+    if (!userAchs)
+      return dtoArray;
 
     const achIds = userAchs.map((userAch) => userAch.achievement_id);
     console.log('achIds', achIds);
 
-    const dtoArray: AchievementsDto[] = [];
     for (const achId of achIds) {
       const data = await this.achievementsModel.findOne({
         where: { id: achId },
@@ -246,6 +249,10 @@ export class UsersService {
       },
     });
     const dtoArray: HistoryDto[] = [];
+
+    if (!games)
+      return dtoArray;
+
     for (const game of games) {
       let opplogin = (await this.findById(game.player1_id)).login;
       let oppScore = game.score1;

@@ -162,10 +162,9 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from) => {
   const mainStore = useMainStore();
 
-  if (to.name === "signIn") return next();
   if (!mainStore.loggedIn && to.matched[0].path !== "/auth") {
     await mainStore.refreshUserInfo();
     if (!mainStore.loggedIn) router.push("/auth/sign-in");

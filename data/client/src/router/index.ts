@@ -8,15 +8,6 @@ const routes: Array<RouteRecordRaw> = [
     redirect: "/auth/sign-in",
   },
   {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
-  },
-  {
     path: "/profile",
     name: "profile",
     component: () =>
@@ -27,17 +18,6 @@ const routes: Array<RouteRecordRaw> = [
     name: "otherProfile",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/ProfileView.vue"),
-  },
-  {
-    path: "/dev",
-    name: "dev",
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/DevView.vue"),
-  },
-  {
-    path: "/test",
-    name: "test",
-    component: () => import("../views/AuthTwoFactor.vue"),
   },
   {
     path: "/auth",

@@ -193,14 +193,14 @@ export class UsersController {
     return await this.usersService.get2fa(req.user.public_id);
   }
 
-  @Get('/achievements')
-  async getAchievements(@Req() req: ReqU) {
-    return await this.usersService.getAchievements(req.user.public_id);
+  @Get('/:userId/achievements')
+  async getAchievements(@Req() req: ReqU, @Param('userId') userId: uuidv4) {
+    return await this.usersService.getAchievements(userId);
   }
 
-  @Get('/history')
-  async getHistory(@Req() req: ReqU) {
-    return await this.usersService.getHistory(req.user.public_id);
+  @Get('/:userId/history')
+  async getHistory(@Req() req: ReqU, @Param('userId') userId: uuidv4) {
+    return await this.usersService.getHistory(userId);
   }
 
   // ---------- POST IMG

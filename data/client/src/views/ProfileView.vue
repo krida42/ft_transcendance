@@ -32,16 +32,18 @@
       </ul>
     </div>
     <div class="rank">{{ rank }}</div>
-    <div
-      class="achievements w-[100%] h-[100%] flex flex-wrap content-start gap-[1rem] p-[2rem] overflow-y-auto overflow-x-hidden"
-    >
-      <AchievementItem
-        v-for="achievement in achievements"
-        :key="achievement.name"
-        :description="achievement.description"
-        :name="achievement.name"
-        :img="achievement.img"
-      />
+    <div class="achievements">
+      <div
+        class="w-[100%] h-[100%] flex flex-wrap content-start gap-[2rem] p-[2rem] overflow-y-auto overflow-x-hidden"
+      >
+        <AchievementItem
+          v-for="achievement in achievements"
+          :key="achievement.name"
+          :description="achievement.description"
+          :name="achievement.name"
+          :img="achievement.img"
+        />
+      </div>
     </div>
     <div class="name">
       <img

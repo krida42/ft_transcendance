@@ -77,7 +77,7 @@ function deleteConfirmation() {
 async function deleteUsers() {
   showConfirmation.value = false;
   confirmationMessage.value = "Users deleted";
-  const response = await fetch("http://localhost:3001/users", {
+  const response = await fetch(`${process.env.VUE_APP_CUICUI}:3001/users`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -92,10 +92,13 @@ async function deleteUsers() {
 
 async function refreshToken() {
   try {
-    const response = await fetch("http://localhost:3001/auth/refresh", {
-      method: "POST",
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${process.env.VUE_APP_CUICUI}:3001/auth/refresh`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
     const data = await response.json();
     console.log(data);
   } catch (error) {
@@ -105,10 +108,13 @@ async function refreshToken() {
 
 async function logout() {
   // Si les cookies sont vide alors on est déjà déconnecté et on ne peut pas se déconnecter
-  const response = await fetch("http://localhost:3001/auth/logout", {
-    method: "POST",
-    credentials: "include",
-  });
+  const response = await fetch(
+    `${process.env.VUE_APP_CUICUI}:3001/auth/logout`,
+    {
+      method: "POST",
+      credentials: "include",
+    }
+  );
   const data = await response.json();
   console.log(data);
 }

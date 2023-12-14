@@ -55,9 +55,9 @@ export class AuthController {
   @ApiParam({ name: 'token' })
   async logout(@Req() req : Request & { user: any } & { user: any }, @Res({ passthrough: true }) res : Response): Promise<{ message: [number]; user: ResponseUserDto }> {
     await this.AuthService.logout(req.user);
-    res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+    res.header('Access-Control-Allow-Origin', '${process.env.VUE_APP_CUICUI}:8080');
     res.clearCookie('access_token');
-    // return (res as any).redirect('http://localhost:8080/main/home');
+    // return (res as any).redirect('${process.env.VUE_APP_CUICUI}:8080/main/home');
 
     return { message: [1], user: req.user};
   }
@@ -112,8 +112,9 @@ export class AuthController {
     @Req() req: Request & { user: ResponseUserDto },
     @Res() res: Response,
   ) {
-    const { otpAuthUrl } =
-      await this.AuthService.generateTwoFactorSecret(req.user);
+    const { otpAuthUrl } = await this.AuthService.generateTwoFactorSecret(
+      req.user,
+    );
     const qrCodeDataURL = await this.AuthService.generateQrCodeDataURL(
       otpAuthUrl,
     );

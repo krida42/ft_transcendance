@@ -75,14 +75,14 @@ import { state, socket } from "@/socket";
 const mainStore = useMainStore();
 
 axios
-  .patch("http://localhost:3001/users", {
+  .patch(`${process.env.VUE_APP_CUICUI}:3001/users`, {
     pseudo: Math.random().toString(),
   })
   .then((res) => {
     console.log("PATCH res", res);
   });
 
-axios.get("http://localhost:3001/auth/test").then((res) => {
+axios.get(`${process.env.VUE_APP_CUICUI}:3001/auth/test`).then((res) => {
   console.log("res", res);
 });
 

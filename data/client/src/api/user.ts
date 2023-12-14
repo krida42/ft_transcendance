@@ -2,7 +2,7 @@ import axios from "axios";
 import { User } from "../types";
 
 // const host = process.env.VUE_APP_API_URL;
-const host = "http://localhost:3001";
+const host = `${process.env.VUE_APP_CUICUI}:3001`;
 
 export default {
   async fetchUser(userId: string) {

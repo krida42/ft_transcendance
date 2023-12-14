@@ -22,7 +22,7 @@
 import router from "@/router";
 import { ref, onMounted } from "vue";
 
-const host = "http://localhost:3001/auth";
+const host = `${process.env.VUE_APP_CUICUI}:3001/auth`;
 const qrCodeURL = ref("");
 const otpAuthUrl = ref("");
 

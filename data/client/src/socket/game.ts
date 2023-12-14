@@ -5,10 +5,10 @@ import { setOptions } from "@/game/game";
 
 socket.on("got-invite-to-play", (key: string) => {
   console.log("got-invite-to-play event: ", key);
-  if (window.location.href === `http://localhost:8080/pong`) {
+  if (window.location.href === `${process.env.VUE_APP_CUICUI}:8080/pong`) {
     window.location.reload();
   }
-  // window.location.href = `http://localhost:8080/pong`;
+  // window.location.href = `${process.env.VUE_APP_CUICUI}:8080/pong`;
   setOptions({ key });
   router.push("/pong");
   console.log("PONGGGGG: ");

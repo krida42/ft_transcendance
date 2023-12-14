@@ -6,10 +6,10 @@ import router from "@/router";
 
 onBeforeRouteLeave((to, from) => {
   if (to.name === "joinQueue") {
-    window.location.href = "http://localhost:8080/main/join-queue";
+    window.location.href = `${process.env.VUE_APP_CUICUI}:8080/main/join-queue`;
   }
   if (!isMobile() && from.name === "pong") {
-    window.location.href = "http://localhost:8080/main/home";
+    window.location.href = `${process.env.VUE_APP_CUICUI}:8080/main/home`;
   }
 });
 
@@ -21,7 +21,7 @@ const isMobile = () => {
 onBeforeMount(() => {
   if (isMobile()) {
     router.push("/main/nogame");
-    //window.location.href = "http://localhost:8080/main/home";
+    //window.location.href = "${process.env.VUE_APP_CUICUI}:8080/main/home";
   }
 });
 </script>

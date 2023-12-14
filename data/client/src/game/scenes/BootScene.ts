@@ -19,7 +19,7 @@ export default class BootScene extends Scene {
   }
 
   preload() {
-    const socket = io("http://localhost:3001/game", {
+    const socket = io(`${process.env.VUE_APP_CUICUI}:3001/game`, {
       withCredentials: true,
     });
 

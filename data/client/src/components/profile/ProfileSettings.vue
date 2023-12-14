@@ -124,7 +124,7 @@ const editProfile = async () => {
   usersStore.editUser(profile).then(() => {
     mainStore.refreshUserInfo().then(() => {
       emit("closeSettings");
-      window.location.href = "http://localhost:8080/profile";
+      window.location.href = `${process.env.VUE_APP_CUICUI}:8080/profile`;
     });
   });
 };

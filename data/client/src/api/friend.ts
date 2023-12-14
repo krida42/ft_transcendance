@@ -3,7 +3,7 @@ import axios from "axios";
 import { Friend, Id, User } from "@/types";
 
 // const host = process.env.VUE_APP_API_URL;
-const host = "http://localhost:3001";
+const host = `${process.env.VUE_APP_CUICUI}:3001`;
 
 export default {
   async fetchFriendList(): Promise<Friend[]> {

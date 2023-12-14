@@ -37,7 +37,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const corsOptions: CorsOptions = {
-    origin: 'http://localhost:8080',
+    origin: `${process.env.VUE_APP_CUICUI}:8080`,
     allowedHeaders:
       'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -71,12 +71,10 @@ async function bootstrap() {
   app.useGlobalFilters(new CustomExceptionFilter());
 
   const dirPath = `/app/dist/public/`;
-  if (!fs.existsSync(dirPath))
-    fs.mkdirSync(dirPath);
+  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath);
 
-  const idx = dirPath + "index.html";
-  if (!fs.existsSync(idx))
-    fs.writeFileSync(idx, "");
+  const idx = dirPath + 'index.html';
+  if (!fs.existsSync(idx)) fs.writeFileSync(idx, '');
 
   await app.listen(3001);
   console.log(`Application is running on: ${await app.getUrl()}`);

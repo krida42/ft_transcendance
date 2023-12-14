@@ -24,7 +24,7 @@
 <script lang="ts" setup>
 import router from "@/router";
 
-const host = "http://localhost:3001/auth";
+const host = `${process.env.VUE_APP_CUICUI}:3001/auth`;
 
 async function postActivate2FA() {
   const response = await fetch(`${host}/2fa/turn-on`, {

@@ -450,7 +450,7 @@ export class ChannelsController {
       const dirPath = `/app/dist/public/`;
       const fileName = `${chanId}_chan_image.${file.mimetype.split('/')[1]}`;
       // console.log('FILE PATH:', dirPath + fileName);
-      const imageUrl = 'http://localhost:3001/' + fileName;
+      const imageUrl = `${process.env.VUE_APP_CUICUI}:3001/` + fileName;
       // console.log('FILE URL: ', imageUrl);
 
       if (!fs.existsSync(dirPath)) {

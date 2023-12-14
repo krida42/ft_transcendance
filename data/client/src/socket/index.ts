@@ -6,8 +6,8 @@ import { useMainStore } from "@/stores/main";
 const mainStore = useMainStore();
 
 // const host = process.env.VUE_APP_API_URL;
-const host = "http://localhost:3001/social";
-// const hostGame = "http://localhost:3001/game";
+const host = `${process.env.VUE_APP_CUICUI}:3001/social`;
+// const hostGame = "${process.env.VUE_APP_CUICUI}:3001/game";
 export const state = reactive({
   connected: false,
 });
@@ -15,7 +15,7 @@ export const state = reactive({
 // "undefined" means the URL will be computed from the `window.location` object
 const URL = host;
 // const URLGame = hostGame;
-//   process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
+//   process.env.NODE_ENV === "production" ? undefined : "${process.env.VUE_APP_CUICUI}:3000";
 
 export const socket = io(URL, {
   withCredentials: true,

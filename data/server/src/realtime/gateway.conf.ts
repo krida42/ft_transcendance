@@ -1,6 +1,6 @@
 export const WebSocketGatewayOptions = {
   cors: {
-    origin: 'http://localhost:8080',
+    origin: `${process.env.VUE_APP_CUICUI}:8080`,
     methods: ['GET', 'POST'],
     credentials: true,
   },

@@ -49,6 +49,8 @@ export class MessageService {
   //   }
 
   async findForChannel(channelId: string, limit = 50) {
+    await this.channelsUtilsService.findById(channelId);
+
     let messages = await this.messageModel.findAll({
       where: { chanId: channelId },
       limit: limit,
@@ -67,6 +69,8 @@ export class MessageService {
     beforeMsgId: string,
     limit = 50,
   ) {
+    await this.channelsUtilsService.findById(channelId);
+
     const beforeConfidentialId = (
       await this.messageModel.findOne({
         where: { msgId: beforeMsgId },

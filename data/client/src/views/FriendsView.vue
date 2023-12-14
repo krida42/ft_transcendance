@@ -236,7 +236,7 @@ let activeListName = ref(ActiveListName.FRIENDS);
 const activeList = computed(() => {
   switch (activeListName.value) {
     case ActiveListName.FRIENDS:
-      return [...friendStore.DEBUG_friendsStatusRand.values()].filter((v) => {
+      return [...friendStore.friends.values()].filter((v) => {
         switch (statusFilter.value) {
           case StatusFilter.All:
             return true;

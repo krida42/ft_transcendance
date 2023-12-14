@@ -44,9 +44,9 @@ export const useChannelsStore = defineStore({
         });
       });
     },
-    async createChannel(channel: Channel, chanId: string): Promise<Channel> {
+    async createChannel(channel: Channel): Promise<Channel> {
       return channelsApi.createChannel(channel).then((channel) => {
-        this.myChannels.set(chanId, channel);
+        this.myChannels.set(channel.chanId, channel);
         return channel;
       });
     },

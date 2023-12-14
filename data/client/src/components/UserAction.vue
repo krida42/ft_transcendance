@@ -105,6 +105,8 @@ const user = computed(() => {
   return users.get(props.uuid);
 });
 
+console.log(user.value);
+
 (() => {
   // check if Mode is valid
   if (!Object.values(Mode).includes(props.mode)) {

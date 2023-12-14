@@ -84,6 +84,8 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return user public instance.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async find(@Query('pseudo') pseudo: string) {
+    if (!pseudo)
+      throw new HttpException('Missing pseudo', HttpStatus.BAD_REQUEST);
     const { public_id } = await this.usersService.findByPseudo(pseudo);
     const foundUserNotSafe = await this.usersService.findById(public_id);
     return await UsersService.userModelToPublicUserDto(foundUserNotSafe);
@@ -155,8 +157,6 @@ export class UsersController {
     @Param('receiverId', ParseUUIDPipe) receiverId: string,
     @Body() addMessageDto: AddMessageDto,
   ): Promise<AddMessageResponseDto> {
-    // const sender_id = 'a91d18ca-e817-4ee8-9f3d-6dfd31d8ba57';
-    // const receiver_id = '6743cbee-7aa2-4ea2-a909-9b0181db4651';
     return this.messageService.sendMessageToFriend(
       req.user.public_id,
       receiverId,
@@ -175,7 +175,6 @@ export class UsersController {
       userId,
       req.user.public_id,
     );
-    console.log('sendmessage to frind chanId: ', chanId);
     if (!chanId) {
       throw new HttpException('No direct channel', HttpStatus.NOT_FOUND);
     }
@@ -190,10 +189,7 @@ export class UsersController {
 
   @Post('/image')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(
-    @Req() req: ReqU,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
+  uploadFile(@Req() req: ReqU, @UploadedFile() file: Express.Multer.File) {
     console.log('-----');
     console.log(file);
     console.log('-----');

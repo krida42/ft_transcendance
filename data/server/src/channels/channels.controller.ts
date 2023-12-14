@@ -34,6 +34,7 @@ import { AddMessageDto } from 'src/message/dto/addMessage.dto';
 import { MessageService } from 'src/message/message.service';
 import { UploadDto } from './dto/setImage.dto';
 import { join } from 'path';
+import { MessageDto } from 'src/message/dto/message.dto';
 
 @ApiTags('channels v4 (jwt OFF)')
 @Controller('')
@@ -186,7 +187,11 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return await this.channelOpService.addAdmin(req.user.public_id, chanId, userId);
+    return await this.channelOpService.addAdmin(
+      req.user.public_id,
+      chanId,
+      userId,
+    );
   }
 
   @ApiOperation({ summary: 'Delete admin userId' })
@@ -197,7 +202,11 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return await this.channelOpService.delAdmin(req.user.public_id, chanId, userId);
+    return await this.channelOpService.delAdmin(
+      req.user.public_id,
+      chanId,
+      userId,
+    );
   }
 
   // ---------- INVITE
@@ -209,7 +218,11 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return await this.channelOpService.invite(req.user.public_id, chanId, userId);
+    return await this.channelOpService.invite(
+      req.user.public_id,
+      chanId,
+      userId,
+    );
   }
 
   @ApiOperation({ summary: 'Cancel userId invitation to channel' })
@@ -220,7 +233,11 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return await this.channelOpService.uninvite(req.user.public_id, chanId, userId);
+    return await this.channelOpService.uninvite(
+      req.user.public_id,
+      chanId,
+      userId,
+    );
   }
 
   // ---------- BAN
@@ -232,7 +249,11 @@ export class ChannelsController {
     @Param('chanId') chanId: string,
     @Param('userId') userId: string,
   ) {
-    return await this.channelOpService.banUser(req.user.public_id, chanId, userId);
+    return await this.channelOpService.banUser(
+      req.user.public_id,
+      chanId,
+      userId,
+    );
   }
 
   @ApiOperation({ summary: 'Unban userId from channel' })
@@ -407,8 +428,6 @@ export class ChannelsController {
     )
     file: Express.Multer.File,
   ) {
-
-
     // TODO CHECK OWNER with req.user
     console.log('----- FILE -----');
     console.log(file);
@@ -453,5 +472,15 @@ export class ChannelsController {
       chanId,
       addMessageDto,
     );
+  }
+
+  @ApiOperation({ summary: 'Get all messages' })
+  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @Get(':channelId/messages')
+  async getAllMessages(
+    @Param('channelId', ParseUUIDPipe) channelId: string,
+    @Req() req: ReqU,
+  ): Promise<MessageDto[]> {
+    return this.messageService.findForChannel(channelId);
   }
 }

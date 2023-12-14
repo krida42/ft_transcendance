@@ -20,7 +20,12 @@
       <Icon
         size="1.8rem"
         class="bd-blues self-start justify-self-end relative right-[-0.7rem] top-[-0.8rem] cursor-pointer"
-        @click="emits('close')"
+        @click="
+          {
+            emits('close');
+            isErr = false;
+          }
+        "
       >
         <X />
       </Icon>

@@ -22,12 +22,6 @@
         "
       />
     </form>
-    <p
-      @click="() => $router.push('/auth/2FA-QR')"
-      class="text-[1.5rem] cursor-pointer opacity-80 underline decoration-1"
-    >
-      See QR-code again
-    </p>
   </div>
 </template>
 

@@ -152,7 +152,7 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async deleteAllUsers(): Promise<number> {
     console.log('delete all users');
-    return this.usersService.deleteAllUsers();
+    return await this.usersService.deleteAllUsers();
   }
 
   @ApiOperation({ summary: 'Send a message' })
@@ -163,7 +163,7 @@ export class UsersController {
     @Param('receiverId', ParseUUIDPipe) receiverId: string,
     @Body() addMessageDto: AddMessageDto,
   ): Promise<AddMessageResponseDto> {
-    return this.messageService.sendMessageToFriend(
+    return await this.messageService.sendMessageToFriend(
       req.user.public_id,
       receiverId,
       addMessageDto,
@@ -185,7 +185,7 @@ export class UsersController {
       throw new HttpException('No direct channel', HttpStatus.NOT_FOUND);
     }
 
-    return this.messageService.findForChannel(chanId);
+    return await this.messageService.findForChannel(chanId);
   }
 
   @Get('/is2fa')

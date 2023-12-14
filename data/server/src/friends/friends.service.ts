@@ -118,7 +118,7 @@ export class FriendsService {
     }
     pendingFriend.status = FriendStatus.Active;
     await pendingFriend.save();
-    this.createDirectChannel(sender_id, receiver_id);
+    await this.createDirectChannel(sender_id, receiver_id);
     return await this.fetchPublicUserDto(sender_id);
   }
 

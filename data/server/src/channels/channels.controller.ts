@@ -463,7 +463,7 @@ export class ChannelsController {
     @Param('chanId', ParseUUIDPipe) chanId: string,
     @Body() addMessageDto: AddMessageDto,
   ) {
-    return this.messageService.sendMessageToChannel(
+    return await this.messageService.sendMessageToChannel(
       req.user.public_id,
       chanId,
       addMessageDto,
@@ -477,6 +477,6 @@ export class ChannelsController {
     @Param('channelId', ParseUUIDPipe) channelId: string,
     @Req() req: ReqU,
   ): Promise<MessageDto[]> {
-    return this.messageService.findForChannel(channelId);
+    return await this.messageService.findForChannel(channelId);
   }
 }

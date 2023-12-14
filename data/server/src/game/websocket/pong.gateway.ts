@@ -249,14 +249,14 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
         if (!await this.isConnected(userCookie)) {
           this.addUserToMap(userCookie, client);
-          this.randomRoom(client, options);
+          await this.randomRoom(client, options);
 
               // else {
         
                 // if (options?.key)
                 //   this.joinPrivateRoom(client, options);
                 // else if (options?.uuid)
-                //   this.inviteToRoom(client, options);
+                //   await this.inviteToRoom(client, options);
                 // else
               // }
         
@@ -273,7 +273,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   //     if (!userCookie || !options?.key ) return;
   //     const room = this.rooms.find((r) => r.key === options.key);
   //     if (!room) return;
-  //     room.PlayerManager.addPlayer({ user: userCookie, client });
+  //     await room.PlayerManager.addPlayer({ user: userCookie, client });
   //   } catch (error) {
   //     console.error('Error while handling join private room:', error);
   //   }
@@ -303,7 +303,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (!userCookie) return;
       const room = this.findOrCreateRoom(options);
       if (!room) return;
-      room.PlayerManager.addPlayer({ user: userCookie, client });
+      await room.PlayerManager.addPlayer({ user: userCookie, client });
       
       // console.log('random room:', PongRoom.id);
       

@@ -79,7 +79,10 @@ export class FriendsService {
       throw new HttpException('you blocked this user', HttpStatus.CONFLICT);
     }
     if (await this.heBlockYou(sender_id, receiver_id)) {
-      throw new HttpException('this user has blocked you', HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        'this user has blocked you',
+        HttpStatus.FORBIDDEN,
+      );
     }
     try {
       await this.friendsModel.create({
@@ -151,7 +154,8 @@ export class FriendsService {
     }
     await friendship.destroy();
 
-    if (friend_id) await this.friendsGateway.pingUserFriendsStateChanged(friend_id);
+    if (friend_id)
+      await this.friendsGateway.pingUserFriendsStateChanged(friend_id);
 
     return await this.fetchPublicUserDto(friend_id);
   }
@@ -168,8 +172,10 @@ export class FriendsService {
       throw new HttpException('relation not found', HttpStatus.NOT_FOUND);
     }
     await friendship.destroy();
+    await this.deleteDirectChannel(currentId, friend_id);
 
-    if (friend_id) await this.friendsGateway.pingUserFriendsStateChanged(friend_id);
+    if (friend_id)
+      await this.friendsGateway.pingUserFriendsStateChanged(friend_id);
     if (currentId && friend_id) {
       this.friendsGateway.unbindUserFromFriends(currentId, [friend_id]);
       this.friendsGateway.unbindUserFromFriends(friend_id, [currentId]);
@@ -198,6 +204,7 @@ export class FriendsService {
         friendship.receiver_id = receiver_id;
         friendship.status = FriendStatus.Blocked;
         await friendship.save();
+        await this.deleteDirectChannel(sender_id, receiver_id);
       } else {
         await this.friendsModel.create({
           sender_id: sender_id,
@@ -232,11 +239,11 @@ export class FriendsService {
         status: FriendStatus.Blocked,
       },
     });
-    if (!youBlock) throw new HttpException('user not blocked', HttpStatus.NOT_FOUND);
+    if (!youBlock)
+      throw new HttpException('user not blocked', HttpStatus.NOT_FOUND);
     else await youBlock.destroy();
     if (receiver_id)
-
-    await this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
+      await this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
 
     return await this.fetchPublicUserDto(receiver_id);
   }
@@ -483,6 +490,56 @@ export class FriendsService {
     } catch (error) {
       throw new HttpException(
         'createDirectChannel ' + error,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async deleteDirectChannel(user1_id: uuidv4, user2_id: uuidv4) {
+    if ((await this.checkId(user1_id)) === (await this.checkId(user2_id))) {
+      throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
+    }
+
+    try {
+      const usersChan = await this.channelUsersModel.findAll({
+        where: {
+          userStatus: UserStatus.Direct,
+          [Op.or]: [{ userId: user1_id }, { userId: user2_id }],
+        },
+      });
+
+      const channelIds: uuidv4[] = [];
+      let chanId: uuidv4 = null;
+      for (const userChan of usersChan) {
+        if (channelIds.includes(userChan.chanId)) chanId = userChan.chanId;
+        channelIds.push(userChan.chanId);
+      }
+
+      const chan = await Channels.findOne({ where: { chanId: chanId } });
+      if (!chan) {
+        return;
+      }
+
+      const chanUser1 = await this.channelUsersModel.findOne({
+        where: {
+          chanId: chan.chanId,
+          userId: user1_id,
+          userStatus: UserStatus.Direct,
+        },
+      });
+      const chanUser2 = await this.channelUsersModel.findOne({
+        where: {
+          chanId: chan.chanId,
+          userId: user2_id,
+          userStatus: UserStatus.Direct,
+        },
+      });
+      chan.destroy();
+      if (chanUser1) chanUser1.destroy();
+      if (chanUser2) chanUser2.destroy();
+    } catch (error) {
+      throw new HttpException(
+        'deleteDirectChannel ' + error,
         HttpStatus.BAD_REQUEST,
       );
     }

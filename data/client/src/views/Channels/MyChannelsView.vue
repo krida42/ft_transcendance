@@ -19,7 +19,7 @@
             :id="channel.chanId"
             :mode="'my_channels'"
             :name="channel.chanName"
-            :logo="channel?.imgData"
+            :logo="channel?.imgName"
             :is_owner="
               channelsStore.isOwner(channel.chanId, usersStore.currentUser?.id)
             "

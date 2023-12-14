@@ -52,7 +52,7 @@
             :id="channel.chanId"
             :mode="'explore'"
             :name="channel.chanName"
-            :logo="channel?.imgData"
+            :logo="channel?.imgName"
             :nb_users="channel.nbUser"
           />
           <MyChannelItem
@@ -61,7 +61,7 @@
             :id="channel.chanId"
             :mode="'explore'"
             :name="channel.chanName"
-            :logo="channel?.imgData"
+            :logo="channel?.imgName"
             :nb_users="channel.nbUser"
           />
         </ul>

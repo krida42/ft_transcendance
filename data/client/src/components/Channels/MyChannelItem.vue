@@ -5,7 +5,7 @@
     :class="channel.mode === 'my_channels' ? 'my_channels' : 'explore_channels'"
   >
     <img
-      src="@/assets/svg/unknown-img.svg"
+      :src="channel.logo ? channel.logo : '@/assets/svg/unknown-logo.svg'"
       class="unknown-logo w-[2.4rem] aspect-square"
     />
     <img
@@ -53,7 +53,7 @@ const channel = defineProps({
     type: String,
     required: true,
   },
-  logo: FormData,
+  logo: String,
   is_owner: {
     type: Boolean,
     required: false,

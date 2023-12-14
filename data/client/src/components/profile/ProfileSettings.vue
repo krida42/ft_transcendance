@@ -69,6 +69,7 @@ import { useMainStore } from "@/stores/main";
 import { User } from "@/types";
 import user from "@/api/user";
 import axios from "axios";
+import router from "@/router";
 
 const props = defineProps({
   username: {
@@ -111,9 +112,10 @@ const onFileSelected = (e: Event) => {
 
 const editProfile = async () => {
   if (twoFactor.value !== twoFactorInital.value) {
-    if (twoFactor.value)
+    if (twoFactor.value) {
       axios.post(host + "/auth/2fa/turn-on"), { withCredentials: true };
-    else axios.post(host + "/auth/2fa/turn-off"), { withCredentials: true };
+      router.push("/auth/2fa");
+    } else axios.post(host + "/auth/2fa/turn-off"), { withCredentials: true };
   }
   const profile = {
     pseudo: username.value,

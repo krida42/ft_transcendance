@@ -8,16 +8,25 @@ export class PongBall {
   acceleration: number = 0.1;
   previousVelocity!: Matter.Vector;
 
-  constructor(private pongWorld: PongWorld) {
-    this.createBall();
+  constructor(private pongWorld: PongWorld, mode: boolean) {
+    this.createBall(mode);
   }
 
-  createBall() {
+  createBall(mode: boolean) {
     let fX = 0;
     let fY = 0;
+    if (mode == true) {
+      console.log('mode GROSSE BALLE');
+      this.ball = Matter.Bodies.circle(WIDTH / 2, HEIGHT / 2, BALL_RADIUS * 3, {
+        density: 0.01,
+      });
+    } 
+    else {
+      console.log('mode PETITE BALLE');
     this.ball = Matter.Bodies.circle(WIDTH / 2, HEIGHT / 2, BALL_RADIUS, {
       density: 0.01,
     });
+    }
     Matter.World.add(this.pongWorld.world, this.ball);
     randomInt(0, 2) === 0 ? (fX = 1) : (fX = -1);
     randomInt(0, 2) === 0 ? (fY = 1) : (fY = -1);

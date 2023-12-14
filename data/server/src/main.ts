@@ -10,6 +10,7 @@ import cookieParser from 'cookie-parser';
 import { CustomExceptionFilter } from './exceptions/exceptions.middleware';
 import { JwtAuthGuard } from './authentication/guards/jwt.guard';
 import { Jwt2faAuthGuard } from './authentication/guards/2fa.guard';
+import * as fs from 'fs';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -68,6 +69,14 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new CustomExceptionFilter());
+
+  const dirPath = `/app/dist/public/`;
+  if (!fs.existsSync(dirPath))
+    fs.mkdirSync(dirPath);
+
+  const idx = dirPath + "index.html";
+  if (!fs.existsSync(idx))
+    fs.writeFileSync(idx, "");
 
   await app.listen(3001);
   console.log(`Application is running on: ${await app.getUrl()}`);

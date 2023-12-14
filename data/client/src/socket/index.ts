@@ -32,14 +32,16 @@ export const socket = io(URL, {
 
 socket.on("connect", () => {
   state.connected = true;
-  socket.emit("cuicui", { msg: "Hello from client" }, (response: any) => {
-    console.log("cuicui acknowledged: ", response);
-  });
-  console.log("emit status");
-  socket.emit("status", Status.Online, (response: any) => {
-    console.log("status acknowledged: ", response);
-    mainStore.status = response.status;
-  });
+  // socket.emit("cuicui", { msg: "Hello from client" }, (response: any) => {
+  //   console.log("cuicui acknowledged: ", response);
+  // });
+  // console.log("emit status");
+  setInterval(() => {
+    socket.emit("status", Status.Online, (response: any) => {
+      console.log("status acknowledged, this is my status: ", response);
+      mainStore.status = response.status;
+    });
+  }, 1000);
 });
 
 socket.on("disconnect", () => {

@@ -28,10 +28,14 @@ export class Game {
   //save into db
   timeAtEnd: number = 0;
 
+  //mode
+  // mode: boolean = false;
+
   constructor(PongRoom: PongRoom) {
     Game.id++;
     this.pongRoom = PongRoom;
-    this.gameState = GameInit.initGameState();
+    console.log('PongRoom mode:', PongRoom.mode);
+    this.gameState = GameInit.initGameState(this.pongRoom.mode);
     this.setupScoreEvent();
   }
 
@@ -183,7 +187,8 @@ export class Game {
     const time = this.calculateRemainingTime() / 1000;
     this.pongRoom.sendTime(time);
     this.timeAtEnd = TIME_END_GAME / 1000 - time;
-    // console.log('time', time);
+    this.pongRoom.sendScore([this.scorePlayer1, this.scorePlayer2])
+    // console.log('time', time); 
   }
 
   sendGamePaused() {

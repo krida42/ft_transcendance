@@ -21,6 +21,8 @@ import { RoomService } from './room.service';
 import { FriendsGateway } from './friends.gateway';
 import { ChatGateway } from './chat.gateway';
 import { WebSocketGatewayOptions } from './gateway.conf';
+import { FriendsService } from 'src/friends/friends.service';
+import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 
 @WebSocketGateway(WebSocketGatewayOptions)
 export class RealtimeGateway
@@ -32,6 +34,8 @@ export class RealtimeGateway
     private friendsHandler: FriendsGateway,
     @Inject(forwardRef(() => ChatGateway))
     private chatHandler: ChatGateway,
+
+    private readonly friendsService: FriendsService,
   ) {}
 
   @WebSocketServer() server!: Server;
@@ -39,7 +43,7 @@ export class RealtimeGateway
 
   afterInit(server: Server) {}
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     client.data.user = this.getUserWithCookie(client);
     if (!client.data.user) {
       console.log("Socket: Client doesn't have a cookie, disconnecting");
@@ -49,11 +53,33 @@ export class RealtimeGateway
     client.join(
       this.roomService.getUserPersonalRoom(client.data.user.public_id),
     );
+    // client.join(
+    //   this.roomService.getUserFriendsRoom(client.data.user.public_id),
+    // );
 
+    try {
+      const friends: PublicUserDto[] = await this.friendsService.getFriends(
+        client.data.user.public_id,
+      );
+      friends.forEach((friend) => {
+        client.join(this.roomService.getUserFriendsRoom(friend.id));
+      });
+    } catch (error) {
+      console.error('handleConnection getFriends: ', error);
+    }
+
+    // console.log('all my friends: ', friends);
     console.log('Socket: client.data.user.pseudo: ', client.data.user.pseudo);
   }
 
-  handleDisconnect(client: Socket) {}
+  handleDisconnect(client: Socket) {
+    client
+      .to(this.roomService.getUserFriendsRoom(client.data.user.public_id))
+      .emit(
+        'status',
+        new StatusDto(client.data.user.public_id, Status.Offline),
+      );
+  }
 
   getUserWithCookie(socket: Socket): ResponseUserDto | null {
     let cookie = socket.handshake.headers.cookie;

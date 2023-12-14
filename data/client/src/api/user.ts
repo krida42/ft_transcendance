@@ -20,8 +20,15 @@ export default {
       })
       .then((res) => ({ ...res.data, id: res.data.id }));
   },
-  async editUser(user: User) {
+  async editUser(user: any) {
     const res = await axios.patch(`${host}/users`, user);
+    return res.data;
+  },
+
+  async uploadUserAvatar(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await axios.patch(`${host}/users/image`, formData);
     return res.data;
   },
 };

@@ -15,8 +15,8 @@ export const useUsersStore = defineStore({
   getters: {
     users: (state) =>
       new Map<Id, User>([
-        ...useFriendStore().DEBUG_friendsStatusRand,
-        // ...useFriendStore().friends,
+        // ...useFriendStore().DEBUG_friendsStatusRand,
+        ...useFriendStore().friends,
         ...useFriendStore().friendsReceived,
         ...useFriendStore().friendsSent,
         ...useFriendStore().blocked,
@@ -40,9 +40,14 @@ export const useUsersStore = defineStore({
         this.usersMap.set(user.id, user);
       });
     },
-    editUser(user: User) {
+    editUser(user: any) {
       userApi.editUser(user).then((user) => {
         this.usersMap.set(user.id, user);
+      });
+    },
+    uploadUserAvatar(file: File) {
+      userApi.uploadUserAvatar(file).then((fileUrl) => {
+        this.currentUser.avatar = fileUrl;
       });
     },
   },

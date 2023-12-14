@@ -22,8 +22,9 @@ export class PlayerManager {
       player.number = this.players.length;
       
       this.players.push(player);
-      if (!this.isMaxPlayer()) player.client.emit('waiting', true);
-      else this.players.forEach((p) => p.client.emit('waiting', false));
+      //waiting aborted
+      // if (!this.isMaxPlayer()) player.client.emit('waiting', true);
+      // else this.players.forEach((p) => p.client.emit('waiting', false));
 
       // console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
       this.showPlayers();
@@ -115,8 +116,8 @@ export class PlayerManager {
         const index = this.getPlayerIndex(client);
         console.log(`Client disconnected: ${player.user.login}`);
         this.players[index].disconnected = true;
-        await this.endGameIfNoPlayers();
-        this.pauseGameIfNotEnoughPlayers();
+        // await this.endGameIfNoPlayers();
+        // this.pauseGameIfNotEnoughPlayers();
 
         const otherPlayerIndex = this.players.findIndex((p) => p !== player);
         if (
@@ -164,13 +165,10 @@ export class PlayerManager {
       oldPlayer.client = newPlayer.client;
       oldPlayer.disconnected = false;
       console.log(`Client reconnected: ${oldPlayer.user.login}`);
-  
-      const gameState = {
-        score: this.pongRoom.game.gameState.score,
-        time: this.pongRoom.game.gameState.timeAtEnd,
-      }
-      oldPlayer.client.emit('gameState', gameState);
-  
+
+    
+      console.log('SCORE', this.pongRoom.game.gameState.score);
+      
       this.pongRoom.game.resume();  
     } catch (error) {
       console.error('Error reconnecting player:', error);

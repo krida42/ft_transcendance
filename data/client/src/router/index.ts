@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import { useMainStore } from "@/stores/main";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "home",
-    redirect: "/main/home",
+    name: "root",
+    redirect: "/auth/sign-in",
   },
   {
     path: "/about",
@@ -32,6 +33,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "dev",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/DevView.vue"),
+  },
+  {
+    path: "/test",
+    name: "test",
+    component: () => import("../views/AuthTwoFactor.vue"),
   },
   {
     path: "/auth",
@@ -159,6 +165,15 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach(async (to, from) => {
+  const mainStore = useMainStore();
+
+  if (!mainStore.loggedIn && to.matched[0].path !== "/auth") {
+    await mainStore.refreshUserInfo();
+    if (!mainStore.loggedIn) router.push("/auth/sign-in");
+  }
 });
 
 export default router;

@@ -24,7 +24,6 @@ export class FriendsGateway {
     @MessageBody() status: Status,
     @ConnectedSocket() client: Socket,
   ): StatusDto {
-    console.log('status event, status: ', status);
     client.data.status = status;
     client
       .to(this.roomService.getUserFriendsRoom(client.data.user.public_id))

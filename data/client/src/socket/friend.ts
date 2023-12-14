@@ -10,8 +10,12 @@ socket.on("cocorico", (data: any) => {
   console.log("cocorico event: ", data);
 });
 
-socket.on("gotFriendRequest", (data: any) => {
-  console.log("gotFriendRequest event: ", data);
+socket.on("friends-state-ping", (data: any) => {
+  console.log("got friends-state-ping event: ", data);
+});
+
+socket.on("channels-state-ping", (data: any) => {
+  console.log("got channels-state-ping event: ", data);
 });
 
 socket.on("status", (data: any) => {

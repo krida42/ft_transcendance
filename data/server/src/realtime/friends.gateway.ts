@@ -33,9 +33,9 @@ export class FriendsGateway {
     return new StatusDto(client.data.user.public_id, status);
   }
 
-  async pingUserGotFriendRequest(userId: string) {
+  async pingUserFriendsStateChanged(userId: string) {
     const socket = await this.realtimeGateway.findSocketByUserId(userId);
-    socket.emit('gotFriendRequest');
+    socket.emit('friends-state-ping');
   }
 
   async bindUserToFriends(userId: string, friendsId: string[]) {

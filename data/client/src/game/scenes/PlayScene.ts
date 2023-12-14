@@ -62,7 +62,7 @@ export default class PlayScene extends Scene {
   }
 
   displayCircle() {
-    this.add.circle(400, 300, 100, 0xffffff);
+    this.add.circle(400, 300, 100, 0xd8f3dc);
     this.add.circle(400, 300, 80, 0x000000);
     this.add.circle(400, 300, 10, 0xffffff);
   }
@@ -188,6 +188,7 @@ export default class PlayScene extends Scene {
     this.displayPaddle2();
 
     this.socket.on("score", (score: [number, number]) => {
+      console.log("score", score);
       this.score = score;
     });
 
@@ -268,6 +269,8 @@ export default class PlayScene extends Scene {
     } else {
       this.ball.setTexture("smallBall");
     }
+
+    this.ball.setRotation(this.ball.rotation + 0.05);
 
     // display timer
     const minutes = Math.floor(this.timer / 60);

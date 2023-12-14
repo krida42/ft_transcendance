@@ -9,8 +9,6 @@ export class Game {
   accelerationBallInterval!: NodeJS.Timeout;
 
   //game
-  scorePlayer1: number = 0;
-  scorePlayer2: number = 0;
   finished: boolean = false;
   remainingTime: number = 0;
   timeEndGame!: NodeJS.Timeout;
@@ -38,9 +36,13 @@ export class Game {
   }
 
   async setupTimeEndGame(timeEndGame: number = TIME_END_GAME) {
+    console.log('setupTimeEndGame timeEndGame DECLAREWINNER', timeEndGame);
+
     this.timeEndGame = setTimeout(async () => {
       this.running = false;
-      await this.declareWinner();
+      console.log('setupTimeEndGame gameState.score', this.gameState.score);
+      console.log('setupTimeEndGame timeEndGame DECLAREWINNER', timeEndGame);
+      this.declareWinner();
       await this.endGame();
     }, timeEndGame);
   }
@@ -126,17 +128,27 @@ export class Game {
     });
   }
 
-  async updateScore(event: any) {
-    if (event.player === 1) this.scorePlayer1++;
-    else if (event.player === 2) this.scorePlayer2++;
-    const score: [number, number] = [this.scorePlayer1, this.scorePlayer2];
-    this.pongRoom.sendScore(score);
-    console.log('game updateScore', score);
-    this.gameState.score = score;
-
-    if (this.scorePlayer1 >= SCORE_TO_WIN || this.scorePlayer2 >= SCORE_TO_WIN)
-      await this.declareWinner();
-  }
+  updateScore(event: any) {
+    try {
+       if (event.player === 1) this.gameState.score[0]++;
+       else if (event.player === 2) this.gameState.score[1]++;
+       else throw new Error('Invalid player number');
+ 
+       const score: [number, number] = this.gameState.score;
+       console.log('game updateScore', score);
+       console.log('game updateScoreGAMSTATE', this.gameState.score);
+       this.pongRoom.sendScore(this.gameState.score);
+ 
+       if (score[0] >= SCORE_TO_WIN || score[1] >= SCORE_TO_WIN) {
+          console.log("UPthis.scorePlayer1", score[0], "this.scorePlayer2", score[1]);
+          console.log("UPthis.gameState.score", this.gameState.score);
+          this.declareWinner();
+       }
+    } catch (err) {
+       console.error("Declare Winner:", err);
+    }
+ }
+ 
 
   setupIntervals() {
     this.gameInterval = setInterval(() => this.sendStatusGameClient(), 10);
@@ -187,7 +199,7 @@ export class Game {
     const time = this.calculateRemainingTime() / 1000;
     this.pongRoom.sendTime(time);
     this.timeAtEnd = TIME_END_GAME / 1000 - time;
-    this.pongRoom.sendScore([this.scorePlayer1, this.scorePlayer2]);
+    this.pongRoom.sendScore(this.gameState.score);
     this.pongRoom.sendMode(this.pongRoom.mode);
     // console.log('time', time);
   }
@@ -203,10 +215,9 @@ export class Game {
   }
 
   async declareWinner() {
-    console.log('game declareWinner', "scorePlayer1", this.scorePlayer1, "scorePlayer2", this.scorePlayer2);
     console.log('game declareWinner', "gameState.score", this.gameState.score);
-    if (this.scorePlayer1 > this.scorePlayer2) this.declarePlayerWinner(0, 1);
-    else if (this.scorePlayer2 > this.scorePlayer1)
+    if (this.gameState.score[0] > this.gameState.score[1]) this.declarePlayerWinner(0, 1);
+    else if (this.gameState.score[1] > this.gameState.score[0])
       this.declarePlayerWinner(1, 0);
     else this.declareDraw();
     await this.endGame();

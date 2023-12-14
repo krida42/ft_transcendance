@@ -33,12 +33,12 @@ export default {
   },
 
   async getAchievements(userId: string) {
-    const res = await axios.get(`${host}/users/achievements`);
+    const res = await axios.get(`${host}/users/${userId}/achievements`);
     return res.data;
   },
 
   async getHistory(userId: string) {
-    const res = await axios.get(`${host}/users/history`);
+    const res = await axios.get(`${host}/users/${userId}/history`);
     return res.data;
   },
 };

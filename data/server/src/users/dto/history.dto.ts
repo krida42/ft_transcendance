@@ -4,19 +4,19 @@ import { IsNotEmpty } from 'class-validator';
 export class HistoryDto {
   @Expose()
   @IsNotEmpty()
-  opponentLogin: string;
+  nameOp: string;
 
   @Expose()
   @IsNotEmpty()
-  opponentScore: number;
+  scoreOp: number;
 
   @Expose()
   @IsNotEmpty()
-  myScore: number;
+  scoreMe: number;
 
   @Expose()
   @IsNotEmpty()
-  seconds: number;
+  duration: number;
 
   @Expose()
   @IsNotEmpty()
@@ -29,10 +29,10 @@ export class HistoryDto {
     seconds: number,
     date: Date,
   ) {
-    this.opponentLogin = opponentLogin;
-    this.opponentScore = opponentScore;
-    this.myScore = myScore;
-    this.seconds = seconds;
+    this.nameOp = opponentLogin;
+    this.scoreOp = opponentScore;
+    this.scoreMe = myScore;
+    this.duration = seconds;
     this.date = date;
   }
 }

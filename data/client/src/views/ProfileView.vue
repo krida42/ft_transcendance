@@ -69,16 +69,29 @@ import { useUsersStore } from "@/stores/users";
 import { User } from "@/types";
 import axios from "axios";
 import userApi from "@/api/user";
+import { Achievement } from "@/types";
 
 const usersStore = useUsersStore();
 const host = process.env.VUE_APP_API_URL;
 const user = ref<User>(usersStore.currentUser);
-const rank = "beginner";
-const level = 14;
+const ranks = ["beginner", "intermediate", "advanced", "expert"];
+const rank = computed(() => {
+  if (winrate.value <= 25) {
+    return ranks[0];
+  }
+  if (winrate.value <= 50) {
+    return ranks[1];
+  }
+  if (winrate.value <= 75) {
+    return ranks[2];
+  }
+  return ranks[3];
+});
+const level = ref<number>(0);
 const winrate = ref<number>(0);
 const displayWinrate = ref<boolean>(false);
 const matchHistory = ref<Match[]>([]);
-const achievements = ref<string[]>([]);
+const achievements = ref<Achievement[]>([]);
 const username = ref<string>(user.value.pseudo);
 const twoFactor = ref<boolean>(false);
 const isSettings = ref<boolean>(false);
@@ -90,12 +103,29 @@ const mode = computed(() => {
   }
 });
 
+const calcWinrate = () => {
+  const wins = matchHistory.value.filter(
+    (match) => match.scoreMe >= match.scoreOp
+  ).length;
+  const losses = matchHistory.value.filter(
+    (match) => match.scoreMe < match.scoreOp
+  ).length;
+  const total = wins + losses;
+  if (total === 0) {
+    winrate.value = 0;
+  } else {
+    winrate.value = Math.round((wins / total) * 100);
+  }
+  level.value = wins;
+};
+
 const initUser = async () => {
   usersStore.refreshUser(usersStore.currentUser.id);
   user.value = usersStore.currentUser;
   achievements.value = await userApi.getAchievements(usersStore.currentUser.id);
   matchHistory.value = await userApi.getHistory(usersStore.currentUser.id);
-  console.log(matchHistory.value);
+  calcWinrate();
+  displayWinrate.value = true;
   console.log(achievements.value);
 };
 

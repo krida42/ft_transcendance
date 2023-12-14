@@ -135,6 +135,6 @@ function dateToString(date: string) {
 }
 
 const matchDurationString = timeToString(toHoursAndMinutes(match.duration));
-const result = match.scoreMe > match.scoreOp ? "Victory" : "Defeat";
-const isWin = match.scoreMe > match.scoreOp ? true : false;
+const result = match.scoreMe >= match.scoreOp ? "Victory" : "Defeat";
+const isWin = match.scoreMe >= match.scoreOp ? true : false;
 </script>

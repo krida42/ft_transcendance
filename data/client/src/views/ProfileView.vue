@@ -32,7 +32,17 @@
       </ul>
     </div>
     <div class="rank">{{ rank }}</div>
-    <div class="achievements">achievements</div>
+    <div
+      class="achievements w-[100%] h-[100%] flex flex-wrap content-start gap-[1rem] p-[2rem] overflow-y-auto overflow-x-hidden"
+    >
+      <AchievementItem
+        v-for="achievement in achievements"
+        :key="achievement.name"
+        :description="achievement.description"
+        :name="achievement.name"
+        :img="achievement.img"
+      />
+    </div>
     <div class="name">
       <img
         :src="user.avatar"
@@ -70,6 +80,7 @@ import { User } from "@/types";
 import axios from "axios";
 import userApi from "@/api/user";
 import { Achievement } from "@/types";
+import AchievementItem from "@/components/profile/AchievementItem.vue";
 
 const usersStore = useUsersStore();
 const host = process.env.VUE_APP_API_URL;

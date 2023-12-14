@@ -9,13 +9,10 @@ import thudOgg from "@/assets/game/thud.ogg";
 import paddle from "@/assets/game/paddle.svg";
 import io from "socket.io-client";
 import { Socket } from "socket.io-client";
+import { getOptions, Options } from "../game";
 export default class BootScene extends Scene {
   static socket: Socket;
-  options = {
-    uuid: undefined,
-    key: undefined,
-    mode: true,
-  };
+  options: Options;
 
   constructor() {
     super({ key: "BootScene" });
@@ -25,10 +22,11 @@ export default class BootScene extends Scene {
     const socket = io("http://localhost:3001/game", {
       withCredentials: true,
     });
-    //front doit me donner les options
+
+    this.options = getOptions();
+
     socket.on("connect", () => {
-      const options = this.options;
-      socket.emit("options", options);
+      socket.emit("options", this.options);
     });
 
     BootScene.socket = socket;
@@ -37,7 +35,7 @@ export default class BootScene extends Scene {
     this.load.svg("cercle", cercle);
     // this.load.image("ball", ball);
     // this.load.svg("ball", volleyball, { width: 100, height: 100 });
-    if (this.options.mode === true) {
+    if (this.options?.mode === true) {
       // grosse balle
       this.load.svg("ball", pokeball, { width: 100, height: 100 });
     } else {

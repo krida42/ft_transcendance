@@ -1,12 +1,12 @@
 <script setup>
 import PongGame from "@/components/Pong/PongGame";
-// import { onBeforeRouteLeave } from "vue-router";
-// import { socketGame as socket } from "@/socket";
-// onBeforeRouteLeave((to, from) => {
-//   if (to.name !== "PongView") {
-//     socket.destroy();
-//   }
-// });
+import { onBeforeRouteLeave } from "vue-router";
+
+onBeforeRouteLeave((to, from) => {
+  if (to.name === "joinQueue") {
+    window.location.href = "http://localhost:8080/main/join-queue";
+  }
+});
 </script>
 
 <template>

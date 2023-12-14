@@ -174,6 +174,10 @@ router.beforeEach(async (to, from) => {
     await mainStore.refreshUserInfo();
     if (!mainStore.loggedIn) router.push("/auth/sign-in");
   }
+
+  // if (to.name === "joinQueue" && from.name === "pong") {
+  //   return "main/home";
+  // }
 });
 
 export default router;

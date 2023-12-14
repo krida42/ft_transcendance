@@ -51,9 +51,12 @@
 </template>
 
 <script lang="ts" setup>
+import { setOptions } from "@/game/game";
+import router from "@/router";
 import { useFriendStore } from "@/stores/friend";
 import { FriendsTransformer } from "@/utils/friendsTransformer";
 import { computed, ref } from "vue";
+
 const friendStore = useFriendStore();
 const currentPageId = ref(0);
 const username = ref("");
@@ -90,7 +93,11 @@ function resetPageId() {
 }
 
 function inviteFriend(friendId: string) {
-  console.log("Inviting friend", friendId);
+  const options = {
+    uuid: friendId,
+  };
+  setOptions(options);
+  router.push("/pong");
 }
 </script>
 

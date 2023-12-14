@@ -17,6 +17,7 @@ import { ChannelsOpService } from './channels-op.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 import { join } from 'path';
 import { MessageModule } from 'src/message/message.module';
+import { RealtimeModule } from 'src/realtime/realtime.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { MessageModule } from 'src/message/message.module';
     forwardRef(() => FriendsModule),
     forwardRef(() => UsersModule),
     forwardRef(() => MessageModule),
+    RealtimeModule,
   ],
   controllers: [ChannelsController],
   providers: [

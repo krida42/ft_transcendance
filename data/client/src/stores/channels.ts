@@ -39,6 +39,8 @@ export const useChannelsStore = defineStore({
   actions: {
     async refreshChannels(): Promise<void> {
       return channelsApi.fetchMyChannels().then((channels) => {
+        console.log("channels: ", channels);
+        this.myChannels.clear();
         channels.forEach((channel: Channel) => {
           this.myChannels.set(channel.chanId, channel);
         });
@@ -117,59 +119,32 @@ export const useChannelsStore = defineStore({
     },
     async banUser(chanId: Id, userId: Id): Promise<void> {
       return channelsApi.banUser(chanId, userId).then(() => {
-        const channel = this.myChannels.get(chanId);
-        if (channel) {
-          channel.bans.push(
-            channel.members.find((user) => user.id === userId)!
-          );
-          channel.members = channel.members.filter(
-            (user) => user.id !== userId
-          );
-        }
+        this.refreshBans(chanId);
       });
     },
     async unbanUser(chanId: Id, userId: Id): Promise<void> {
       return channelsApi.unbanUser(chanId, userId).then(() => {
-        const channel = this.myChannels.get(chanId);
-        if (channel) {
-          channel.bans = channel.bans.filter((user) => user.id !== userId);
-        }
+        this.refreshBans(chanId);
       });
     },
     async kickUser(chanId: Id, userId: Id): Promise<void> {
       return channelsApi.kickUser(chanId, userId).then(() => {
-        const channel = this.myChannels.get(chanId);
-        if (channel) {
-          channel.members = channel.members.filter(
-            (user) => user.id !== userId
-          );
-        }
+        this.refreshMembers(chanId);
       });
     },
     async addAdmin(chanId: Id, userId: Id): Promise<void> {
       return channelsApi.addAdmin(chanId, userId).then(() => {
-        const channel = this.myChannels.get(chanId);
-        if (channel) {
-          channel.admins.push(
-            channel.members.find((user) => user.id === userId)!
-          );
-        }
+        this.refreshAdmins(chanId);
       });
     },
     async removeAdmin(chanId: Id, userId: Id): Promise<void> {
       return channelsApi.removeAdmin(chanId, userId).then(() => {
-        const channel = this.myChannels.get(chanId);
-        if (channel) {
-          channel.admins = channel.admins.filter((user) => user.id !== userId);
-        }
+        this.refreshAdmins(chanId);
       });
     },
     async inviteUser(chanId: Id, userId: Id): Promise<void> {
       return channelsApi.inviteUser(chanId, userId).then(() => {
-        const channel = this.myChannels.get(chanId);
-        if (channel && channel.invites) {
-          channel.invites.push(userId);
-        }
+        this.refreshInvites(chanId);
       });
     },
 

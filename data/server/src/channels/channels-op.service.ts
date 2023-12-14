@@ -9,6 +9,7 @@ import { UsersService } from '../users/users.service';
 import { ChannelsGetService } from '../channels/channels-get.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 import { FriendsService } from '../friends/friends.service';
+import { ChatGateway } from 'src/realtime/chat.gateway';
 
 // ---------- ADMIN
 // POST addAdmin(currentId, chanId, userId): Promise<PublicUserDto> OK
@@ -40,6 +41,8 @@ export class ChannelsOpService {
 
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
+
+    private readonly chatGatway: ChatGateway,
   ) {}
 
   // ---------- ADMIN
@@ -65,6 +68,8 @@ export class ChannelsOpService {
       let user = await this.utils.getUserInChannel(userId, chanId);
       user.userStatus = UserStatus.Admin;
       await user.save();
+      if (chanId)
+        await this.chatGatway.pingChannelStateChanged(chanId);
       return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
@@ -93,6 +98,8 @@ export class ChannelsOpService {
       let user = await this.utils.getUserInChannel(userId, chanId);
       user.userStatus = UserStatus.User;
       await user.save();
+      if (chanId)
+        await this.chatGatway.pingChannelStateChanged(chanId);
       return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
@@ -127,6 +134,8 @@ export class ChannelsOpService {
         userId: userId,
         userStatus: UserStatus.Invited,
       });
+      if (chanId)
+        await this.chatGatway.pingChannelStateChanged(chanId);
       return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
@@ -151,6 +160,8 @@ export class ChannelsOpService {
     try {
       const user = await this.utils.getInvitedUser(userId, chanId);
       user.destroy();
+      if (chanId)
+        await this.chatGatway.pingChannelStateChanged(chanId);
       return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
@@ -196,6 +207,10 @@ export class ChannelsOpService {
         });
       }
 
+      if (chanId)
+        await this.chatGatway.pingChannelStateChanged(chanId);
+      if (userId && chanId)
+        await this.chatGatway.unbindUserFromChannels(userId, [chanId]);
       return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(ErrorMsg.banUser + error, HttpStatus.BAD_REQUEST);
@@ -217,6 +232,8 @@ export class ChannelsOpService {
     try {
       const user = await this.utils.getBannedUser(userId, chanId);
       user.destroy();
+      if (chanId)
+        await this.chatGatway.pingChannelStateChanged(chanId);
       return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
@@ -259,6 +276,8 @@ export class ChannelsOpService {
         }
       }, min * 60 * 1000);
 
+      if (chanId)
+        await this.chatGatway.pingChannelStateChanged(chanId);
       return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(
@@ -294,6 +313,10 @@ export class ChannelsOpService {
       await user.destroy();
       chan.nbUser--;
       await chan.save();
+      if (chanId)
+        await this.chatGatway.pingChannelStateChanged(chanId);
+      if (userId && chanId)
+        await this.chatGatway.unbindUserFromChannels(userId, [chanId]);
       return await this.utils.fetchPublicUserDto(userId);
     } catch (error) {
       throw new HttpException(

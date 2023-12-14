@@ -89,7 +89,7 @@ export class FriendsService {
       });
 
       if (receiver_id)
-        this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
+        await this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
 
       return await this.fetchPublicUserDto(receiver_id);
     } catch (error) {
@@ -127,7 +127,7 @@ export class FriendsService {
     await pendingFriend.save();
 
     if (sender_id)
-      this.friendsGateway.pingUserFriendsStateChanged(sender_id); // c normal, is not currentId
+      await this.friendsGateway.pingUserFriendsStateChanged(sender_id); // c normal, is not currentId
 
     if (sender_id && receiver_id) {
       this.friendsGateway.bindUserToFriends(sender_id, [receiver_id]);
@@ -151,7 +151,7 @@ export class FriendsService {
     }
     await friendship.destroy();
 
-    if (friend_id) this.friendsGateway.pingUserFriendsStateChanged(friend_id);
+    if (friend_id) await this.friendsGateway.pingUserFriendsStateChanged(friend_id);
 
     return await this.fetchPublicUserDto(friend_id);
   }
@@ -169,7 +169,7 @@ export class FriendsService {
     }
     await friendship.destroy();
 
-    if (friend_id) this.friendsGateway.pingUserFriendsStateChanged(friend_id);
+    if (friend_id) await this.friendsGateway.pingUserFriendsStateChanged(friend_id);
     if (currentId && friend_id) {
       this.friendsGateway.unbindUserFromFriends(currentId, [friend_id]);
       this.friendsGateway.unbindUserFromFriends(friend_id, [currentId]);
@@ -209,7 +209,7 @@ export class FriendsService {
       throw new HttpException('blockFriend ' + error, HttpStatus.BAD_REQUEST);
     }
     if (receiver_id)
-      this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
+      await this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
     if (sender_id && receiver_id) {
       this.friendsGateway.unbindUserFromFriends(sender_id, [receiver_id]);
       this.friendsGateway.unbindUserFromFriends(receiver_id, [sender_id]);
@@ -236,7 +236,7 @@ export class FriendsService {
     else await youBlock.destroy();
     if (receiver_id)
 
-    this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
+    await this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
 
     return await this.fetchPublicUserDto(receiver_id);
   }

@@ -18,10 +18,6 @@ socket.on("friends-state-ping", (data: any) => {
   friendStore.refreshFriendsSent();
 });
 
-socket.on("channels-state-ping", (data: any) => {
-  console.log("got channels-state-ping event: ", data);
-});
-
 socket.on("status", (data: any) => {
   if (friendStore.friends.get(data.userId)) {
     friendStore.updateFriendStatus(data.userId, data.status);

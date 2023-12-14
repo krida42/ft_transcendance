@@ -50,3 +50,12 @@ socket.on("messageChannel", async (data) => {
   };
   chatStore.addMessageToStore(channel.chanId, msg);
 });
+
+socket.on("channels-state-ping", (channelId: string) => {
+  console.log("got channels-state-ping event: ", channelId);
+  channelsStore.refreshAdmins(channelId);
+  channelsStore.refreshBans(channelId);
+  channelsStore.refreshInvites(channelId);
+  channelsStore.refreshMembers(channelId);
+  channelsStore.refreshChannels();
+});

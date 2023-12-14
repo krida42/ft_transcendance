@@ -61,6 +61,10 @@ function openAndRefreshChat(
   chatStore.createChatIfNotExist(chatId, chatName, chatType);
   chatStore.openChat(chatId);
   chatStore.refreshChat(chatId, chatType, null);
+  if (chatType === ChatType.Channel) {
+    channelsStore.refreshChannels();
+    channelsStore.refreshMembers(chatId);
+  }
 }
 </script>
 

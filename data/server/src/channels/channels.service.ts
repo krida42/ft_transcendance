@@ -18,6 +18,7 @@ import { channelDto } from './dto/channel.dto';
 import { FriendsService } from '../friends/friends.service';
 import { ChannelsUtilsService } from './channels-utils.service';
 import { UploadDto } from './dto/setImage.dto';
+import { ChatGateway } from 'src/realtime/chat.gateway';
 
 // POST createChannel(currentId, editChannelDto, setImageDto): Promise<channelDto> OK
 // PATCH updateChannel(currentId, chanId, editChannelDto, setImageDto): Promise<channelDto> OK
@@ -40,6 +41,8 @@ export class ChannelsService {
 
     @InjectModel(ChannelsUsers)
     private readonly channelUsersModel: typeof ChannelsUsers,
+
+    private readonly chatGatway: ChatGateway,
   ) {}
 
   async createChannel(
@@ -48,7 +51,7 @@ export class ChannelsService {
   ): Promise<channelDto> {
     await this.friendsService.checkId(currentId);
 
-    console.log("editChannelDto", editChannelDto);
+    console.log('editChannelDto', editChannelDto);
 
     const chan = await this.channelModel.findOne({
       where: {
@@ -88,6 +91,10 @@ export class ChannelsService {
         userId: currentId,
         userStatus: UserStatus.Owner,
       });
+
+      if (currentId)
+        await this.chatGatway.bindUserToChannels(currentId, [chan.chanId]);
+      await this.chatGatway.pingChannelStateChanged(chan.chanId);
 
       return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
@@ -151,6 +158,7 @@ export class ChannelsService {
       chan.chanType = editChannelDto.chanType;
       chan.chanPassword = pass;
       await chan.save();
+      await this.chatGatway.pingChannelStateChanged(chan.chanId);
       return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException(
@@ -202,6 +210,7 @@ export class ChannelsService {
       // console.log('imgData:', buffer);
       chan.imgData = uploadDto.file.buffer;
       await chan.save();
+      await this.chatGatway.pingChannelStateChanged(chan.chanId);
       return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException('uploadImage: ' + error, HttpStatus.BAD_REQUEST);
@@ -218,7 +227,11 @@ export class ChannelsService {
         where: { chanId: chanId },
       });
       const dto = await this.utils.fetchChannelDto(chan.chanId);
+      const id = chan.chanId;
       await chan.destroy();
+      await this.chatGatway.pingChannelStateChanged(id);
+      if (currentId)
+        await this.chatGatway.unbindUserFromChannels(currentId, [id]);
       return dto;
     } catch (error) {
       throw new HttpException(
@@ -271,6 +284,7 @@ export class ChannelsService {
         await user.save();
         chan.nbUser++;
         await chan.save();
+        await this.chatGatway.pingChannelStateChanged(chan.chanId);
         return await this.utils.fetchChannelDto(chan.chanId);
       } catch (error) {
         throw new HttpException('jc', HttpStatus.BAD_REQUEST);
@@ -285,6 +299,9 @@ export class ChannelsService {
       });
       chan.nbUser++;
       await chan.save();
+      if (currentId)
+        await this.chatGatway.bindUserToChannels(currentId, [chan.chanId]);
+      await this.chatGatway.pingChannelStateChanged(chan.chanId);
       return await this.utils.fetchChannelDto(chan.chanId);
     } catch (error) {
       throw new HttpException(
@@ -324,6 +341,11 @@ export class ChannelsService {
       if (chan.nbUser > 0) {
         const user = await this.utils.getUserInChannel(currentId, chanId);
         user.destroy();
+        await this.chatGatway.pingChannelStateChanged(chan.chanId);
+        if (currentId)
+          await this.chatGatway.unbindUserFromChannels(currentId, [
+            chan.chanId,
+          ]);
       } else {
         await this.deleteChannel(currentId, chanId);
       }

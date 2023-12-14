@@ -130,21 +130,21 @@ let canAddFriend = computed(() => {
 
 const kickUser = () => {
   if (chatStore.currentChat) {
-    channelsStore.kickUser(props.uuid, chatStore.currentChat.id);
+    channelsStore.kickUser(chatStore.currentChat.id, props.uuid);
     emits("close");
   }
 };
 
 const banUser = () => {
   if (chatStore.currentChat) {
-    channelsStore.banUser(props.uuid, chatStore.currentChat.id);
+    channelsStore.banUser(chatStore.currentChat.id, props.uuid);
     emits("close");
   }
 };
 
 const muteUser = () => {
   if (chatStore.currentChat) {
-    channelsApi.muteUser(props.uuid, chatStore.currentChat.id);
+    channelsApi.muteUser(chatStore.currentChat.id, props.uuid);
     emits("close");
   }
 };

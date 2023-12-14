@@ -12,9 +12,10 @@ export class ChatGateway {
     private readonly roomService: RoomService,
   ) {}
 
-  async pingUserChannelsStateChanged(userId: string) {
-    const socket = await this.realtimeGateway.findSocketByUserId(userId);
-    socket.emit('channels-state-ping');
+  async pingChannelStateChanged(channelId: string) {
+    this.realtimeGateway.server
+      .to(channelId)
+      .emit('channels-state-ping', channelId);
   }
 
   async bindUserToChannels(userId: string, channelsId: string[]) {

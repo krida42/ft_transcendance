@@ -1,5 +1,5 @@
 // Game state
-export const SCORE_TO_WIN = 11;
+export const SCORE_TO_WIN = 2;
 export const TIME_END_GAME = 5 * 60 * 1000; // 5 minutes en millisecondes
 export const BEFORE_GAME = 2 * 1000; // 2 secondes en millisecondes
 

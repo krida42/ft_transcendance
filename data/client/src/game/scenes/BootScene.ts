@@ -1,9 +1,7 @@
 import { Scene } from "phaser";
 import sky from "@/assets/game/sky.png";
 import ball from "@/assets/game/ball.png";
-import cercle from "@/assets/game/cercle.svg";
 import pokeball from "@/assets/game/pokeball.svg";
-import volleyball from "@/assets/game/volleyball.svg";
 import thudMp3 from "@/assets/game/thud.mp3";
 import thudOgg from "@/assets/game/thud.ogg";
 import paddle from "@/assets/game/paddle.svg";
@@ -39,13 +37,14 @@ export default class BootScene extends Scene {
     BootScene.socket = socket;
 
     this.load.image("sky", sky);
-    this.load.svg("cercle", cercle);
     // this.load.image("ball", ball);
     // this.load.svg("ball", volleyball, { width: 100, height: 100 });
+
     // grosse balle
     this.load.svg("largeBall", pokeball, { width: 100, height: 100 });
-    // petite balle
     this.load.svg("smallBall", pokeball, { width: 18, height: 18 });
+    // petite balle
+
     this.load.audio("thud", [thudMp3, thudOgg]);
     this.load.svg("paddle", paddle, { width: 100, height: 100 });
   }

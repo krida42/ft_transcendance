@@ -205,7 +205,7 @@ export class PongRoom {
   }
 
   sendMode(mode: boolean) {
-    // console.log('Mode sent to clients:', mode);
+    console.log('Mode sent to clients:', mode);
     try {
       this.players.forEach((player) => {
         player.client.emit('mode', mode);

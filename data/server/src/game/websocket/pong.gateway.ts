@@ -222,7 +222,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('options')
   async handleOptions(client: Socket, options: Options) {
     try {
-      console.log('\n\nOPTIONS gateway', options);
+      console.log('\nOPTIONS gateway', options);
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie) return;
 
@@ -277,6 +277,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (!roomPrivate) return;
       await roomPrivate.PlayerManager.addPlayer({ user: userCookie, client });
 
+      console.log('MAGIC KEY:', roomPrivate.key);
       client.emit('waiting-friend', {
         uuid: options!.uuid,
         key: roomPrivate.key,

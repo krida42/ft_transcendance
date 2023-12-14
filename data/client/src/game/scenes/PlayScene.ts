@@ -28,6 +28,7 @@ export default class PlayScene extends Scene {
   downKey: any;
   leftKey: any;
   rightKey: any;
+  mode = false;
 
   constructor() {
     super({ key: "PlayScene" });
@@ -42,11 +43,20 @@ export default class PlayScene extends Scene {
     this.paddlePosition2 = [0, 0]; // A bien remplacer plus tard
   }
 
-  displayBall() {
+  displaySmallBall() {
     const ball = this.add.image(
       this.ballPosition.x,
       this.ballPosition.y,
-      "smallball"
+      "smallBall"
+    );
+    this.ball = ball;
+  }
+
+  displayLargeBall() {
+    const ball = this.add.image(
+      this.ballPosition.x,
+      this.ballPosition.y,
+      "largeBall"
     );
     this.ball = ball;
   }
@@ -156,12 +166,16 @@ export default class PlayScene extends Scene {
     });
 
     this.displayCircle();
+    this.displaySmallBall();
 
     // receive
     this.socket.on("ball", (ball: any) => {
       this.ballPosition = [ball.x, ball.y];
     });
-    this.displayBall();
+
+    this.socket.on("mode", (mode: boolean) => {
+      this.mode = mode;
+    });
 
     this.socket.on("paddle1", (paddle1: any) => {
       this.paddlePosition1 = [paddle1[0], paddle1[1]];
@@ -179,11 +193,6 @@ export default class PlayScene extends Scene {
 
     this.socket.on("time", (time: any) => {
       this.timer = time;
-    });
-
-    this.socket.on("mode", (mode: boolean) => {
-      if (mode) {
-      }
     });
 
     this.socket.on("pause", () => {
@@ -251,6 +260,13 @@ export default class PlayScene extends Scene {
     }
     if (this.rightKey.isDown) {
       this.socket.emit("moveRight");
+    }
+
+    // display ball
+    if (this.mode) {
+      this.ball.setTexture("largeBall");
+    } else {
+      this.ball.setTexture("smallBall");
     }
 
     // display timer

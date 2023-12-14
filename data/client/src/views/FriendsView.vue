@@ -190,6 +190,12 @@
       </div>
     </div>
   </div>
+  <ErrorPopup
+    v-if="isErr"
+    :statusCode="error.statusCode"
+    :message="error.message"
+    @close="isErr = false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -200,13 +206,17 @@ import UserAction from "@/components/UserAction.vue";
 import { FriendsTransformer } from "@/utils//friendsTransformer";
 import { useFriendStore } from "@/stores/friend";
 import { computed, ref, onMounted, onUnmounted } from "vue";
-
+import ErrorPopup from "@/components/ErrorPopup.vue";
 import { Status } from "@/types";
 import { useUsersStore } from "@/stores/users";
 import userApi from "@/api/user";
+import axios, { AxiosError } from "axios";
 
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();
+
+const error = ref({ statusCode: 0, message: "" });
+const isErr = ref(false);
 
 (() => {
   friendStore.refreshFriendList();
@@ -318,12 +328,28 @@ onUnmounted(() => {
 
 function executeSearchInput(e: KeyboardEvent) {
   if (activeListName.value === ActiveListName.REQUESTS) {
-    userApi.fetchUserByPseudo(searchedUser.value).then((user) => {
-      if (user) {
-        console.log("user send friuend request id:", user);
-        friendStore.sendFriendRequest(user.id);
-      }
-    });
+    userApi
+      .fetchUserByPseudo(searchedUser.value)
+      .then((user) => {
+        if (user) {
+          console.log("user send friuend request id:", user);
+          friendStore.sendFriendRequest(user.id);
+        }
+      })
+      .catch((err: AxiosError | Error) => {
+        isErr.value = true;
+        if (axios.isAxiosError(err)) {
+          if (err.response && err.response.data && err.response.data.message) {
+            if (Array.isArray(err.response.data.message))
+              error.value.message = err.response.data.message[0];
+            else error.value.message = err.response.data.message;
+          }
+          if (err.response && err.response.status)
+            error.value.statusCode = err.response.status;
+        } else {
+          error.value.message = err.message;
+        }
+      });
     searchedUser.value = "";
   }
 }

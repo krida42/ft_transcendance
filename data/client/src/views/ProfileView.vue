@@ -68,6 +68,7 @@ import router from "@/router";
 import { useUsersStore } from "@/stores/users";
 import { User } from "@/types";
 import axios from "axios";
+import userApi from "@/api/user";
 
 const usersStore = useUsersStore();
 const host = process.env.VUE_APP_API_URL;
@@ -77,6 +78,7 @@ const level = 14;
 const winrate = ref<number>(0);
 const displayWinrate = ref<boolean>(false);
 const matchHistory = ref<Match[]>([]);
+const achievements = ref<string[]>([]);
 const username = ref<string>(user.value.pseudo);
 const twoFactor = ref<boolean>(false);
 const isSettings = ref<boolean>(false);
@@ -88,34 +90,17 @@ const mode = computed(() => {
   }
 });
 
-async function getWinrate(userId: Id) {
-  axios
-    .get(host + "/users/" + userId + "/winrate")
-    .then((res) => {
-      winrate.value = res.data.winrate;
-      displayWinrate.value = true;
-    })
-    .catch((err) => console.log(err));
-}
-
-async function getMatchHistory() {
-  axios
-    .get(host + "/users/1/match-history")
-    .then((res) => {
-      matchHistory.value = res.data;
-    })
-    .catch((err) => console.log(err));
-}
-
 const initUser = async () => {
-  await usersStore.refreshUser(usersStore.currentUser.id);
+  usersStore.refreshUser(usersStore.currentUser.id);
   user.value = usersStore.currentUser;
+  achievements.value = await userApi.getAchievements(usersStore.currentUser.id);
+  matchHistory.value = await userApi.getHistory(usersStore.currentUser.id);
+  console.log(matchHistory.value);
+  console.log(achievements.value);
 };
 
 onBeforeMount(() => {
   initUser();
-  getWinrate(1);
-  getMatchHistory();
 });
 
 function button1press() {

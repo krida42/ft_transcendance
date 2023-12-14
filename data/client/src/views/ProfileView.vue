@@ -32,10 +32,20 @@
       </ul>
     </div>
     <div class="rank">{{ rank }}</div>
-    <div class="achievements">achievements</div>
+    <div
+      class="achievements w-[100%] h-[100%] flex flex-wrap content-start gap-[1rem] p-[2rem] overflow-y-auto overflow-x-hidden"
+    >
+      <AchievementItem
+        v-for="achievement in achievements"
+        :key="achievement.name"
+        :description="achievement.description"
+        :name="achievement.name"
+        :img="achievement.img"
+      />
+    </div>
     <div class="name">
       <img
-        :src="avatar"
+        :src="user.avatar"
         class="w-[150px] aspect-square rounded-full break-normal"
       />
       <p class="text-[2.2rem]">{{ username }}</p>
@@ -47,8 +57,8 @@
     />
     <ProfileSettings
       v-if="isSettings"
-      :username="username"
-      :avatar="avatar"
+      :username="user.pseudo"
+      :avatar="user.avatar"
       :twoFactor="twoFactor"
       @closeSettings="() => (isSettings = false)"
     />
@@ -68,17 +78,32 @@ import router from "@/router";
 import { useUsersStore } from "@/stores/users";
 import { User } from "@/types";
 import axios from "axios";
+import userApi from "@/api/user";
+import { Achievement } from "@/types";
+import AchievementItem from "@/components/profile/AchievementItem.vue";
 
 const usersStore = useUsersStore();
 const host = process.env.VUE_APP_API_URL;
 const user = ref<User>(usersStore.currentUser);
-const rank = "beginner";
-const level = 14;
+const ranks = ["beginner", "intermediate", "advanced", "expert"];
+const rank = computed(() => {
+  if (winrate.value <= 25) {
+    return ranks[0];
+  }
+  if (winrate.value <= 50) {
+    return ranks[1];
+  }
+  if (winrate.value <= 75) {
+    return ranks[2];
+  }
+  return ranks[3];
+});
+const level = ref<number>(0);
 const winrate = ref<number>(0);
 const displayWinrate = ref<boolean>(false);
 const matchHistory = ref<Match[]>([]);
+const achievements = ref<Achievement[]>([]);
 const username = ref<string>(user.value.pseudo);
-const avatar = ref<string>(user.value.avatar);
 const twoFactor = ref<boolean>(false);
 const isSettings = ref<boolean>(false);
 const mode = computed(() => {
@@ -89,45 +114,34 @@ const mode = computed(() => {
   }
 });
 
-async function getWinrate(userId: Id) {
-  axios
-    .get(host + "/users/" + userId + "/winrate")
-    .then((res) => {
-      winrate.value = res.data.winrate;
-      displayWinrate.value = true;
-    })
-    .catch((err) => console.log(err));
-}
-
-async function getMatchHistory() {
-  axios
-    .get(host + "/users/1/match-history")
-    .then((res) => {
-      matchHistory.value = res.data;
-    })
-    .catch((err) => console.log(err));
-}
-
-async function getUserInfo() {
-  axios
-    .get(host + "/users/1")
-    .then((res) => {
-      username.value = res.data.pseudo;
-      avatar.value = res.data.avatar;
-    })
-    .catch((err) => console.log(err));
-}
+const calcWinrate = () => {
+  const wins = matchHistory.value.filter(
+    (match) => match.scoreMe >= match.scoreOp
+  ).length;
+  const losses = matchHistory.value.filter(
+    (match) => match.scoreMe < match.scoreOp
+  ).length;
+  const total = wins + losses;
+  if (total === 0) {
+    winrate.value = 0;
+  } else {
+    winrate.value = Math.round((wins / total) * 100);
+  }
+  level.value = wins;
+};
 
 const initUser = async () => {
-  await usersStore.refreshUser(usersStore.currentUser.id);
+  usersStore.refreshUser(usersStore.currentUser.id);
   user.value = usersStore.currentUser;
+  achievements.value = await userApi.getAchievements(usersStore.currentUser.id);
+  matchHistory.value = await userApi.getHistory(usersStore.currentUser.id);
+  calcWinrate();
+  displayWinrate.value = true;
+  console.log(achievements.value);
 };
 
 onBeforeMount(() => {
   initUser();
-  getWinrate(1);
-  getMatchHistory();
-  getUserInfo();
 });
 
 function button1press() {

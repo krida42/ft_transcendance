@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'db/models/user';
 import { CreateUserDto } from './dto/createUser.dto';
 import { uuidv4 } from 'src/types';
-import { UniqueConstraintError } from 'sequelize';
+import { Op, UniqueConstraintError } from 'sequelize';
 import { isUUID } from 'class-validator';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { v4 } from 'uuid';
@@ -16,6 +16,11 @@ import { plainToClass } from 'class-transformer';
 import { ResponseUserDto } from './dto/responseUser.dto';
 import { Express } from 'express';
 import { PublicUserDto } from './dto/publicUser.dto';
+import { AchievementsDto } from './dto/achievements.dto';
+import { Achievements } from 'db/models/achievements';
+import { Games } from 'db/models/games';
+import { UserAchievements } from 'db/models/userAchievements';
+import { HistoryDto } from './dto/history.dto';
 
 export async function responseUser(user: User) {
   const userDto = plainToClass(ResponseUserDto, user, {
@@ -29,6 +34,12 @@ export class UsersService {
   constructor(
     @InjectModel(User)
     private usersModel: typeof User,
+    @InjectModel(Achievements)
+    private readonly achievementsModel: typeof Achievements,
+    @InjectModel(UserAchievements)
+    private readonly userAchModel: typeof UserAchievements,
+    @InjectModel(Games)
+    private readonly gamesModel: typeof Games,
   ) {}
 
   static async userModelToPublicUserDto(user: User) {
@@ -199,8 +210,67 @@ export class UsersService {
         public_id: publicId,
       },
     });
-    if (user?.twoFactorEnable === true)
-      return true;
+    if (user?.twoFactorEnable === true) return true;
     return false;
+  }
+
+  async getAchievements(publicId: uuidv4): Promise<AchievementsDto[]> {
+    const userAchs = await this.userAchModel.findAll({
+      where: { public_id: publicId },
+    });
+    const dtoArray: AchievementsDto[] = [];
+
+    if (!userAchs)
+      return dtoArray;
+
+    const achIds = userAchs.map((userAch) => userAch.achievement_id);
+    console.log('achIds', achIds);
+
+    for (const achId of achIds) {
+      const data = await this.achievementsModel.findOne({
+        where: { id: achId },
+      });
+      if (!data)
+        throw new HttpException(
+          'invalid achievement id',
+          HttpStatus.BAD_REQUEST,
+        );
+
+      let dto = new AchievementsDto(data.name, data.description, data.icon);
+      dtoArray.push(dto);
+    }
+    return dtoArray;
+  }
+
+  async getHistory(publicId: uuidv4): Promise<HistoryDto[]> {
+    const games = await Games.findAll({
+      where: {
+        [Op.or]: [{ player1_id: publicId }, { player2_id: publicId }],
+      },
+    });
+    const dtoArray: HistoryDto[] = [];
+
+    if (!games)
+      return dtoArray;
+
+    for (const game of games) {
+      let opplogin = (await this.findById(game.player1_id)).login;
+      let oppScore = game.score1;
+      let myScore = game.score2;
+      if (game.player1_id == publicId) {
+        opplogin = (await this.findById(game.player2_id)).login;
+        oppScore = game.score2;
+        myScore = game.score1;
+      }
+      let dto = new HistoryDto(
+        opplogin,
+        oppScore,
+        myScore,
+        game.time,
+        game.createdAt,
+      );
+      dtoArray.push(dto);
+    }
+    return dtoArray;
   }
 }

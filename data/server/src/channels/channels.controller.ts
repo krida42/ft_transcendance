@@ -107,6 +107,7 @@ export class ChannelsController {
   // @Get('/channels-joined') OK
   // @Get('/channels-direct') OK
   // @Get('/channels-available') OK
+  // @Get('/channels-invited') OK
   // @Get('/channels-unjoined-protect') OK
   // @Get('/channels-unjoined-private') OK
 
@@ -330,6 +331,15 @@ export class ChannelsController {
     return await this.channelGetService.getUnjoinedChan(
       req.user.public_id,
       ChanType.Public,
+    );
+  }
+
+  @ApiOperation({ summary: 'Get invited channels (sorted)' })
+  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @Get('/channels-invited')
+  async getInvitedChan(@Req() req: ReqU) {
+    return await this.channelGetService.getInvitedChan(
+      req.user.public_id,
     );
   }
 

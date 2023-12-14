@@ -31,4 +31,14 @@ export default {
     const res = await axios.patch(`${host}/users/image`, formData);
     return res.data;
   },
+
+  async getAchievements(userId: string) {
+    const res = await axios.get(`${host}/users/${userId}/achievements`);
+    return res.data;
+  },
+
+  async getHistory(userId: string) {
+    const res = await axios.get(`${host}/users/${userId}/history`);
+    return res.data;
+  },
 };

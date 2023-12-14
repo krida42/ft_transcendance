@@ -13,6 +13,23 @@
   </div>
 </template>
 
+<script setup lang="ts">
+import { defineProps, computed } from "vue";
+
+const props = defineProps({
+  winrate: {
+    type: Number,
+    required: true,
+  },
+});
+
+const cssProps = computed(() => {
+  return {
+    "--pieEndPos": Math.round(440 - (440 * props.winrate) / 100),
+  };
+});
+</script>
+
 <style lang="scss" scoped>
 .winrate-chart {
   --width: 160px;
@@ -97,19 +114,3 @@
   letter-spacing: 1px;
 }
 </style>
-
-<script setup lang="ts">
-import { defineProps, computed } from "vue";
-
-const props = defineProps({
-  winrate: {
-    type: Number,
-    required: true,
-  },
-});
-const cssProps = computed(() => {
-  return {
-    "--pieEndPos": Math.round(440 - (440 * props.winrate) / 100),
-  };
-});
-</script>

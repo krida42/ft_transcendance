@@ -40,13 +40,13 @@ export const useUsersStore = defineStore({
         this.usersMap.set(user.id, user);
       });
     },
-    editUser(user: any) {
-      userApi.editUser(user).then((user) => {
+    async editUser(user: any): Promise<void> {
+      return userApi.editUser(user).then((user) => {
         this.usersMap.set(user.id, user);
       });
     },
-    uploadUserAvatar(file: File) {
-      userApi.uploadUserAvatar(file).then((fileUrl) => {
+    async uploadUserAvatar(file: File): Promise<void> {
+      return userApi.uploadUserAvatar(file).then((fileUrl) => {
         this.currentUser.avatar = fileUrl;
       });
     },

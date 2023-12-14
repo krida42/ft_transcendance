@@ -193,6 +193,16 @@ export class UsersController {
     return await this.usersService.get2fa(req.user.public_id);
   }
 
+  @Get('/:userId/achievements')
+  async getAchievements(@Req() req: ReqU, @Param('userId') userId: uuidv4) {
+    return await this.usersService.getAchievements(userId);
+  }
+
+  @Get('/:userId/history')
+  async getHistory(@Req() req: ReqU, @Param('userId') userId: uuidv4) {
+    return await this.usersService.getHistory(userId);
+  }
+
   // ---------- POST IMG
 
   @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))

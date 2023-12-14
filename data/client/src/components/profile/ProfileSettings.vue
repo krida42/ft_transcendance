@@ -65,6 +65,7 @@
 <script lang="ts" setup>
 import { defineProps, defineEmits, ref } from "vue";
 import { useUsersStore } from "@/stores/users";
+import { useMainStore } from "@/stores/main";
 import { User } from "@/types";
 import user from "@/api/user";
 import axios from "axios";
@@ -93,6 +94,7 @@ const avatar = ref(props.avatar);
 const twoFactor = ref(props.twoFactor);
 const twoFactorInital = ref(props.twoFactor);
 const usersStore = useUsersStore();
+const mainStore = useMainStore();
 const host = process.env.VUE_APP_API_URL;
 
 const onFileSelected = (e: Event) => {
@@ -117,9 +119,12 @@ const editProfile = async () => {
     pseudo: username.value,
   };
   if (file) await usersStore.uploadUserAvatar(file);
-  await usersStore.editUser(profile);
-  await usersStore.refreshUser(usersStore.currentUser.id);
-  emit("closeSettings");
+  usersStore.editUser(profile).then(() => {
+    mainStore.refreshUserInfo().then(() => {
+      emit("closeSettings");
+      window.location.href = "http://localhost:8080/profile";
+    });
+  });
 };
 </script>
 

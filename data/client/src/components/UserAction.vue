@@ -43,14 +43,6 @@
       </button>
 
       <button
-        class="play-btn bg-yellow-hover hover:bg-yellow-700 hover:text-white"
-        @click="myAlert('Comming soon...')"
-        v-if="mode === Mode.FRIEND"
-      >
-        play
-      </button>
-
-      <button
         class="unblock-btn text-red-my hover:bg-red-my hover:text-white hover:border-white"
         @click="unblockUser(uuid)"
         v-if="mode === Mode.BLOCKED"

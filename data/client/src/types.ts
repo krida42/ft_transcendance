@@ -85,6 +85,12 @@ export type Match = {
   date: Date;
 };
 
+export type Achievement = {
+  name: string;
+  description: string;
+  img: string;
+};
+
 export type Channel = {
   chanId: Id;
   ownerId: Id;

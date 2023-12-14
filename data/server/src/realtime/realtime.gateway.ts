@@ -56,22 +56,20 @@ export class RealtimeGateway
     // client.join(
     //   this.roomService.getUserFriendsRoom(client.data.user.public_id),
     // );
-    const friends: PublicUserDto[] = await this.friendsService.getFriends(
-      client.data.user.public_id,
-    );
-    friends.forEach((friend) => {
-      client.join(this.roomService.getUserFriendsRoom(friend.id));
-    });
+    try {
+      const friends: PublicUserDto[] = await this.friendsService.getFriends(
+        client.data.user.public_id,
+      );
+      friends.forEach((friend) => {
+        client.join(this.roomService.getUserFriendsRoom(friend.id));
+      });
+    } catch (error) {
+      console.error('catched le getFriends: ', error);
+    }
 
     // console.log('all my friends: ', friends);
 
     console.log('Socket: client.data.user.pseudo: ', client.data.user.pseudo);
-    client
-      .to(this.roomService.getUserFriendsRoom(client.data.user.public_id))
-      .emit(
-        'status-send-me-back-pls',
-        new StatusDto(client.data.user.public_id, Status.Online),
-      );
   }
 
   handleDisconnect(client: Socket) {

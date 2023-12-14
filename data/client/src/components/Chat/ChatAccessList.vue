@@ -1,6 +1,6 @@
 <template>
   <ul
-    class="nnw-[264px] w-[230px] h-64 bd-red overflow-y-auto rounded-2xl scrollbar-styling flex flex-col-reverse"
+    class="nnw-[264px] w-[230px] h-64 overflow-y-auto rounded-2xl scrollbar-styling flex flex-col-reverse"
   >
     <ChatAccessItem
       v-for="(friend, index) in [...friendStore.friends.values()]"

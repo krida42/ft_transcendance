@@ -138,6 +138,11 @@ const routes: Array<RouteRecordRaw> = [
         name: "waiting",
         component: () => import("../views/PongScreen/WaitingOpponentView.vue"),
       },
+      {
+        path: "nogame",
+        name: "nogame",
+        component: () => import("../views/PongScreen/NoGameView.vue"),
+      },
     ],
   },
 ];

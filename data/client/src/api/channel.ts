@@ -28,6 +28,11 @@ export default {
     return res.data;
   },
 
+  async fetchInvitedChannels() {
+    const res = await axios.get(`${host}/channels-invited`);
+    return res.data;
+  },
+
   async fetchUnjoinedProtectedChannels() {
     const res = await axios.get(`${host}/channels-unjoined-protect`);
     return res.data;

@@ -55,6 +55,15 @@
             :logo="channel?.imgData"
             :nb_users="channel.nbUser"
           />
+          <MyChannelItem
+            v-for="channel in invitesList"
+            :key="channel.chanId"
+            :id="channel.chanId"
+            :mode="'explore'"
+            :name="channel.chanName"
+            :logo="channel?.imgData"
+            :nb_users="channel.nbUser"
+          />
         </ul>
       </div>
     </div>
@@ -85,6 +94,7 @@ const isProtected = ref(false);
 const availableChannelsList = ref<Channel[]>([]);
 const protectedChannelsList = ref<Channel[]>([]);
 const myChannelsList = ref<Channel[]>([]);
+const invitesList = ref<Channel[]>([]);
 const channelsStore = useChannelsStore();
 const isErr = ref(false);
 const error = ref<ErrorPop>({ statusCode: 0, message: "" });
@@ -99,6 +109,9 @@ const fetchChannels = async () => {
   });
   channelsApi.fetchMyChannels().then((res) => {
     myChannelsList.value = res;
+  });
+  channelsApi.fetchInvitedChannels().then((res) => {
+    invitesList.value = res;
   });
 };
 

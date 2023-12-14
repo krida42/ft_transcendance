@@ -28,7 +28,7 @@ export class PongRoom {
   gameSaved: boolean = false;
   //private
   key: uuidv4 = null;
-  
+
   constructor(PongGateway: PongGateway, options?: Options) {
     PongRoom.id++;
     this.pongGateway = PongGateway;
@@ -38,7 +38,7 @@ export class PongRoom {
     if (options?.mode) {
       this.mode = options.mode;
     }
-    console.log("mode ROOM:", this.mode);
+    console.log('mode ROOM:', this.mode);
     this.game = new Game(this);
   }
 
@@ -50,7 +50,7 @@ export class PongRoom {
     if (!this.PlayerManager.isMaxPlayer()) return;
     console.log('Game started id:', Game.id);
     this.started = true;
-    setTimeout(async() => {
+    setTimeout(async () => {
       try {
         await this.game.start();
       } catch (err) {
@@ -58,10 +58,16 @@ export class PongRoom {
       }
     }, BEFORE_GAME);
   }
-  
+
   async save() {
     if (this.gameSaved) return;
-    console.log('Game saved', "score1:", this.game.gameState.score[0], "score2:", this.game.gameState.score[1]);
+    console.log(
+      'Game saved',
+      'score1:',
+      this.game.gameState.score[0],
+      'score2:',
+      this.game.gameState.score[1],
+    );
     const gameSave: GameSave = {
       player1_id: this.players[0].user.public_id,
       player2_id: this.players[1].user.public_id,
@@ -107,13 +113,15 @@ export class PongRoom {
   async closeWithAchievement() {
     try {
       await this.close();
-      const user1 = await User.findOne({ where: { public_id: this.players[0].user.public_id } });
+      const user1 = await User.findOne({
+        where: { public_id: this.players[0].user.public_id },
+      });
       const achievement = new Achievement();
-      if (user1)
-        await achievement.checkAchievements(user1);
-      const user2 = await User.findOne({ where: { public_id: this.players[1].user.public_id } });
-      if (user2)
-        await achievement.checkAchievements(user2);
+      if (user1) await achievement.checkAchievements(user1);
+      const user2 = await User.findOne({
+        where: { public_id: this.players[1].user.public_id },
+      });
+      if (user2) await achievement.checkAchievements(user2);
     } catch (err) {
       console.error(err);
     }
@@ -142,7 +150,7 @@ export class PongRoom {
       console.error(err);
     }
   }
-  
+
   stopMoving(player: number) {
     // console.log('stopMoving', player);
     if (!this.started) return;
@@ -190,6 +198,17 @@ export class PongRoom {
     try {
       this.players.forEach((player) => {
         player.client.emit('time', Math.floor(time));
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  sendMode(mode: boolean) {
+    // console.log('Mode sent to clients:', mode);
+    try {
+      this.players.forEach((player) => {
+        player.client.emit('mode', mode);
       });
     } catch (err) {
       console.error(err);

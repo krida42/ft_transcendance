@@ -46,7 +46,7 @@ export default class PlayScene extends Scene {
     const ball = this.add.image(
       this.ballPosition.x,
       this.ballPosition.y,
-      "ball"
+      "smallball"
     );
     this.ball = ball;
   }
@@ -174,12 +174,16 @@ export default class PlayScene extends Scene {
     this.displayPaddle2();
 
     this.socket.on("score", (score: [number, number]) => {
-      console.log("score", score);
       this.score = score;
     });
 
     this.socket.on("time", (time: any) => {
       this.timer = time;
+    });
+
+    this.socket.on("mode", (mode: boolean) => {
+      if (mode) {
+      }
     });
 
     this.socket.on("pause", () => {

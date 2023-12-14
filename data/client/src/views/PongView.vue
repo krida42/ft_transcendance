@@ -6,6 +6,9 @@ onBeforeRouteLeave((to, from) => {
   if (to.name === "joinQueue") {
     window.location.href = "http://localhost:8080/main/join-queue";
   }
+  if (from.name === "pong") {
+    window.location.href = "http://localhost:8080/main/home";
+  }
 });
 </script>
 

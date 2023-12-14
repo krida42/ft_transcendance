@@ -35,6 +35,7 @@ export class Game {
     Game.id++;
     this.pongRoom = PongRoom;
     console.log('PongRoom mode:', PongRoom.mode);
+    console.log('Game key:', PongRoom?.key);
     this.gameState = GameInit.initGameState(this.pongRoom.mode);
     this.setupScoreEvent();
   }
@@ -101,15 +102,12 @@ export class Game {
   async endGame() {
     this.pongRoom.isGameEnded = true;
     this.running = false;
-    if (this.pongRoom.PlayerManager.isAllPlayersDisconnected())
-    {
-      console.log('WITHOUT SAVE')
+    if (this.pongRoom.PlayerManager.isAllPlayersDisconnected()) {
+      console.log('WITHOUT SAVE');
       this.pongRoom.closeWithoutSave();
-    }
-    else if (this.pongRoom.PlayerManager.disconnectPlayers.size > 0)
+    } else if (this.pongRoom.PlayerManager.disconnectPlayers.size > 0)
       await this.pongRoom.close();
-    else
-      await this.pongRoom.closeWithAchievement();
+    else await this.pongRoom.closeWithAchievement();
     this.end();
   }
 
@@ -133,8 +131,7 @@ export class Game {
     this.pongRoom.sendScore(score);
     this.gameState.score = score;
 
-    if (this.scorePlayer1 >= SCORE_TO_WIN ||
-      this.scorePlayer2 >= SCORE_TO_WIN)
+    if (this.scorePlayer1 >= SCORE_TO_WIN || this.scorePlayer2 >= SCORE_TO_WIN)
       this.declareWinner();
   }
 
@@ -187,8 +184,9 @@ export class Game {
     const time = this.calculateRemainingTime() / 1000;
     this.pongRoom.sendTime(time);
     this.timeAtEnd = TIME_END_GAME / 1000 - time;
-    this.pongRoom.sendScore([this.scorePlayer1, this.scorePlayer2])
-    // console.log('time', time); 
+    this.pongRoom.sendScore([this.scorePlayer1, this.scorePlayer2]);
+    this.pongRoom.sendMode(this.pongRoom.mode);
+    // console.log('time', time);
   }
 
   sendGamePaused() {
@@ -224,10 +222,8 @@ export class Game {
   declarePlayerWinnerForDeconnection(winnerIndex: number) {
     if (winnerIndex >= 0 && winnerIndex < this.pongRoom.players.length) {
       this.pongRoom.players[winnerIndex].client.emit('winner');
-      if (winnerIndex === 0)
-        this.gameState.score = [1, 0];
-      else
-        this.gameState.score = [0, 1];
+      if (winnerIndex === 0) this.gameState.score = [1, 0];
+      else this.gameState.score = [0, 1];
       this.endGame();
     } else {
       console.error('Invalid player index deconnection');

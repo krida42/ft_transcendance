@@ -10,6 +10,8 @@ import paddle from "@/assets/game/paddle.svg";
 import io from "socket.io-client";
 import { Socket } from "socket.io-client";
 import { getOptions, Options } from "../game";
+import { GameWaitingEvent } from "@/types";
+import { socket as socketSocial } from "@/socket/index";
 export default class BootScene extends Scene {
   static socket: Socket;
   options: Options;
@@ -29,19 +31,21 @@ export default class BootScene extends Scene {
       socket.emit("options", this.options);
     });
 
+    socket.on("waiting-friend", (data: GameWaitingEvent) => {
+      console.log("waiting-friend", data);
+      socketSocial.emit("invite-to-play", data);
+    });
+
     BootScene.socket = socket;
 
     this.load.image("sky", sky);
     this.load.svg("cercle", cercle);
     // this.load.image("ball", ball);
     // this.load.svg("ball", volleyball, { width: 100, height: 100 });
-    if (this.options?.mode === true) {
-      // grosse balle
-      this.load.svg("ball", pokeball, { width: 100, height: 100 });
-    } else {
-      // petite balle
-      this.load.svg("ball", pokeball, { width: 18, height: 18 });
-    }
+    // grosse balle
+    this.load.svg("largeBall", pokeball, { width: 100, height: 100 });
+    // petite balle
+    this.load.svg("smallBall", pokeball, { width: 18, height: 18 });
     this.load.audio("thud", [thudMp3, thudOgg]);
     this.load.svg("paddle", paddle, { width: 100, height: 100 });
   }

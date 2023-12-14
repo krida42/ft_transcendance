@@ -13,14 +13,14 @@ export class PlayerManager {
     this.pongRoom = pongRoom;
   }
 
-  async addPlayer(player: Player): Promise<boolean | undefined>{
+  async addPlayer(player: Player): Promise<boolean | undefined> {
     try {
       if (!this.canAddPlayer(player)) {
         console.log('Player cannot be added', player.user.login);
         return false;
       }
       player.number = this.players.length;
-      
+
       this.players.push(player);
       //waiting aborted
       // if (!this.isMaxPlayer()) player.client.emit('waiting', true);
@@ -157,7 +157,7 @@ export class PlayerManager {
       console.error('Error disconnecting player:', error);
     }
   }
-  
+
   async reconnectPlayer(oldPlayer: Player, newPlayer: Player) {
     try {
       clearTimeout(this.disconnectPlayers.get(oldPlayer.client.id));
@@ -166,10 +166,7 @@ export class PlayerManager {
       oldPlayer.disconnected = false;
       console.log(`Client reconnected: ${oldPlayer.user.login}`);
 
-    
-      console.log('SCORE', this.pongRoom.game.gameState.score);
-      
-      this.pongRoom.game.resume();  
+      this.pongRoom.game.resume();
     } catch (error) {
       console.error('Error reconnecting player:', error);
     }

@@ -1,6 +1,18 @@
 // import { socketGame as socket } from "./index";
 import { socket as socket } from "@/socket/index";
 import router from "@/router";
+import { setOptions } from "@/game/game";
+
+socket.on("got-invite-to-play", (key: string) => {
+  console.log("got-invite-to-play event: ", key);
+  if (window.location.href === `http://localhost:8080/pong`) {
+    window.location.reload();
+  }
+  // window.location.href = `http://localhost:8080/pong`;
+  setOptions({ key });
+  router.push("/pong");
+  console.log("PONGGGGG: ");
+});
 
 // socket.on("randomRoom", (data: any) => {
 //   console.log("randomRoom event: ", data);

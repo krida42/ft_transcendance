@@ -10,6 +10,6 @@ export default class ErrorScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.text(10, 10, this.message, { color: "#f00" });
+    this.add.text(260, 300, this.message, { color: "#f00", fontSize: "32px" });
   }
 }

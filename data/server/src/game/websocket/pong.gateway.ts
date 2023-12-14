@@ -47,7 +47,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } catch (error) {
       console.error('Error while finding room for user:', error);
     }
-  } 
+  }
 
   whichRoomForClient(client: Socket): PongRoom | undefined {
     try {
@@ -72,10 +72,8 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (player) {
           player.disconnected = false;
           player.client = client;
-        }
-        else
-          client.emit('alreadyConnected');
-      } 
+        } else client.emit('alreadyConnected');
+      }
       // if (room) {
       //   const addedPlayer = await room.PlayerManager.addPlayer({
       //     user: userCookie,
@@ -91,19 +89,19 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleConnection(client: Socket) {
-    
+    console.log('CONNECTED', client.id);
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     try {
-      console.log("DISCONNECTED", client.id);
+      console.log('DISCONNECTED', client.id);
       const userCookie = this.getUserWithCookie(client);
       if (userCookie) {
         const room: PongRoom | undefined = this.rooms.find((r) =>
           r.PlayerManager.hasPlayer(userCookie.public_id),
         );
         if (room) {
-          room.PlayerManager.removePlayer(client);
+          await room.PlayerManager.removePlayer(client);
           this.usersMap.delete(userCookie.public_id);
           // console.log(`Client disconnected: ${userCookie.login}`);
         }
@@ -114,6 +112,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   addUserToMap(userCookie: ResponseUserDto, client: Socket) {
+    console.log('ADD USER TO MAP');
     try {
       const player = { user: userCookie, client };
       this.usersMap.set(userCookie.public_id, client);
@@ -123,14 +122,16 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   roomNotFull(): PongRoom | undefined {
+    console.log('ROOM NOT FULL');
     try {
       return this.rooms.find((r) => !r.PlayerManager.isFull() && !r.started);
     } catch (error) {
       console.error('Error while finding random room:', error);
     }
   }
-  
+
   findOrCreateRoom(options?: Options): PongRoom | undefined {
+    console.log('FIND OR CREATE ROOM');
     try {
       let room = this.roomNotFull();
       // console.log("Find a room", room?.players.length);
@@ -145,7 +146,19 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  createRoom(options?: Options): PongRoom | undefined {
+    console.log('CREATE ROOM');
+    try {
+      const room = new PongRoom(this, options);
+      this.rooms.push(room);
+      return room;
+    } catch (error) {
+      console.error('Error while creating room:', error);
+    }
+  }
+
   closeRoom(room: PongRoom) {
+    console.log('CLOSE ROOM');
     try {
       const index = this.rooms.findIndex((r) => r === room);
       const players = room.players;
@@ -226,10 +239,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('options')
   async handleOptions(client: Socket, options: Options) {
     try {
-      // console.log("CONNECTED", client.id);
-
-      console.log("OPTIONS gateway", options);
-      
+      console.log('\nOPTIONS gateway', options);
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie) return;
 
@@ -240,73 +250,79 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
         );
 
         if (existingPlayer && existingPlayer.disconnected) {
-          existingRoom.PlayerManager.reconnectPlayer(existingPlayer, {
+          await existingRoom.PlayerManager.reconnectPlayer(existingPlayer, {
             user: userCookie,
             client,
           });
           return;
         }
       }
-        if (!await this.isConnected(userCookie)) {
-          this.addUserToMap(userCookie, client);
-          this.randomRoom(client, options);
+      if (!(await this.isConnected(userCookie))) {
+        this.addUserToMap(userCookie, client);
 
-              // else {
-        
-                // if (options?.key)
-                //   this.joinPrivateRoom(client, options);
-                // else if (options?.uuid)
-                //   this.inviteToRoom(client, options);
-                // else
-              // }
-        
+        // else {
+
+        if (options?.key) await this.joinPrivateRoom(client, options);
+        else if (options?.uuid) await this.inviteToRoom(client, options);
+        else await this.randomRoom(client, options);
+        // else
+        // }
       }
     } catch (error) {
       console.error('Error while handling connection:', error);
     }
   }
-  
 
-  // joinPrivateRoom(client: Socket, options: Options) {
-  //   try {
-  //     const userCookie = this.getUserWithCookie(client);
-  //     if (!userCookie || !options?.key ) return;
-  //     const room = this.rooms.find((r) => r.key === options.key);
-  //     if (!room) return;
-  //     room.PlayerManager.addPlayer({ user: userCookie, client });
-  //   } catch (error) {
-  //     console.error('Error while handling join private room:', error);
-  //   }
-  // }
+  async joinPrivateRoom(client: Socket, options: Options) {
+    console.log('JOIN PRIVATE ROOM');
+    try {
+      const userCookie = this.getUserWithCookie(client);
+      if (!userCookie || !options?.key) return;
+      const room = this.rooms.find((r) => r.key === options.key);
+      if (!room) return;
+      await room.PlayerManager.addPlayer({ user: userCookie, client });
+    } catch (error) {
+      console.error('Error while handling join private room:', error);
+    }
+  }
 
-  // async inviteToRoom(client: Socket, options: Options) {
-  //   try {
-  //     const userCookie = this.getUserWithCookie(client);
-  //     if (!userCookie) return;
-      
-  //     const roomPrivate = this.findOrCreateRoom(options);
-  //     if (!roomPrivate) return;
-      
-  //     // client.emit('waitingFriend=');
+  async inviteToRoom(client: Socket, options: Options) {
+    console.log('INVITE TO ROOM');
+    try {
+      const userCookie = this.getUserWithCookie(client);
+      if (!userCookie) return;
 
-  //     if (!await this.isConnected(userCookie)) {
-  //       this.addUserToMap(userCookie, client);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error while handling inviteSubscribeMessage to room:', error);
-  //   }
-  // }
+      const roomPrivate = this.createRoom(options);
+      if (!roomPrivate) return;
+      await roomPrivate.PlayerManager.addPlayer({ user: userCookie, client });
+
+      console.log('MAGIC KEY:', roomPrivate.key);
+      client.emit('waiting-friend', {
+        uuid: options!.uuid,
+        key: roomPrivate.key,
+      });
+
+      if (!(await this.isConnected(userCookie))) {
+        this.addUserToMap(userCookie, client);
+      }
+    } catch (error) {
+      console.error(
+        'Error while handling inviteSubscribeMessage to room:',
+        error,
+      );
+    }
+  }
 
   async randomRoom(client: Socket, options?: Options) {
+    console.log('RANDOM ROOM');
     try {
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie) return;
       const room = this.findOrCreateRoom(options);
       if (!room) return;
-      room.PlayerManager.addPlayer({ user: userCookie, client });
-      
+      await room.PlayerManager.addPlayer({ user: userCookie, client });
+
       // console.log('random room:', PongRoom.id);
-      
     } catch (error) {
       console.error('Error while handling random room:', error);
     }

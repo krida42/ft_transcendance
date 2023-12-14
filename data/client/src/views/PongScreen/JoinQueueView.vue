@@ -17,8 +17,7 @@ import router from "@/router";
 // import { socket as socket } from "@/socket";
 
 const joinQueue = () => {
-  console.log("Joining queue");
-  // socket.emit("randomRoom");
+  router.push("/pong");
 };
 </script>
 

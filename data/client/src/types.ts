@@ -37,6 +37,13 @@ export const MessageResponseSchema = z.object({
 
 export type MessageResponse = z.infer<typeof MessageResponseSchema>;
 
+export const GameWaitingEventSchema = z.object({
+  uuid: z.string(),
+  key: z.string(),
+});
+
+export type GameWaitingEvent = z.infer<typeof GameWaitingEventSchema>;
+
 export type User = {
   id: Id;
   email?: string;

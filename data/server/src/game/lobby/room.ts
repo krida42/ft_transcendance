@@ -17,7 +17,7 @@ export class PongRoom {
   started = false;
   isGameEnded: boolean = false;
   mode: boolean = false;
-  game: any;
+  game: Game;
   //pause
   startTime: number = 0;
   pauseTime: number = 0;
@@ -28,17 +28,17 @@ export class PongRoom {
   gameSaved: boolean = false;
   //private
   key: uuidv4 = null;
-  
+
   constructor(PongGateway: PongGateway, options?: Options) {
     PongRoom.id++;
     this.pongGateway = PongGateway;
     if (options?.uuid) {
-      this.key = v4() + options.uuid;
+      this.key = v4();
     }
     if (options?.mode) {
       this.mode = options.mode;
     }
-    console.log("mode ROOM:", this.mode);
+    console.log('mode ROOM:', this.mode);
     this.game = new Game(this);
   }
 
@@ -50,18 +50,20 @@ export class PongRoom {
     if (!this.PlayerManager.isMaxPlayer()) return;
     console.log('Game started id:', Game.id);
     this.started = true;
-    setTimeout(async() => {
-      try {
+    setTimeout(async () => {
         await this.game.start();
-      } catch (err) {
-        console.error(err);
-      }
     }, BEFORE_GAME);
   }
-  
+
   async save() {
     if (this.gameSaved) return;
-    console.log('Game saved', "score1:", this.game.gameState.score[0], "score2:", this.game.gameState.score[1]);
+    console.log(
+      'Game saved',
+      'score1:',
+      this.game.gameState.score[0],
+      'score2:',
+      this.game.gameState.score[1],
+    );
     const gameSave: GameSave = {
       player1_id: this.players[0].user.public_id,
       player2_id: this.players[1].user.public_id,
@@ -86,16 +88,17 @@ export class PongRoom {
     }
   }
 
-  resume() {
+  async resume() {
     console.log('Game resumed');
     try {
-      this.game.resume();
+      await this.game.resume();
     } catch (err) {
       console.error(err);
     }
   }
 
   async close() {
+    console.log('Game closed');
     try {
       await this.save();
       this.pongGateway.closeRoom(this);
@@ -105,21 +108,25 @@ export class PongRoom {
   }
 
   async closeWithAchievement() {
+    console.log('Game closed with achievement');
     try {
       await this.close();
-      const user1 = await User.findOne({ where: { public_id: this.players[0].user.public_id } });
+      const user1 = await User.findOne({
+        where: { public_id: this.players[0].user.public_id },
+      });
       const achievement = new Achievement();
-      if (user1)
-        await achievement.checkAchievements(user1);
-      const user2 = await User.findOne({ where: { public_id: this.players[1].user.public_id } });
-      if (user2)
-        await achievement.checkAchievements(user2);
+      if (user1) await achievement.checkAchievements(user1);
+      const user2 = await User.findOne({
+        where: { public_id: this.players[1].user.public_id },
+      });
+      if (user2) await achievement.checkAchievements(user2);
     } catch (err) {
       console.error(err);
     }
   }
 
   closeWithoutSave() {
+    console.log('Game closed without save');
     this.pongGateway.closeRoom(this);
   }
 
@@ -142,7 +149,7 @@ export class PongRoom {
       console.error(err);
     }
   }
-  
+
   stopMoving(player: number) {
     // console.log('stopMoving', player);
     if (!this.started) return;
@@ -190,6 +197,17 @@ export class PongRoom {
     try {
       this.players.forEach((player) => {
         player.client.emit('time', Math.floor(time));
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  sendMode(mode: boolean) {
+    // console.log('Mode sent to clients:', mode);
+    try {
+      this.players.forEach((player) => {
+        player.client.emit('mode', mode);
       });
     } catch (err) {
       console.error(err);

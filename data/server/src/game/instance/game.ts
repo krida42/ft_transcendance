@@ -28,13 +28,11 @@ export class Game {
   //save into db
   timeAtEnd: number = 0;
 
-  //mode
-  // mode: boolean = false;
-
   constructor(PongRoom: PongRoom) {
     Game.id++;
     this.pongRoom = PongRoom;
     console.log('PongRoom mode:', PongRoom.mode);
+    console.log('Game key:', PongRoom?.key);
     this.gameState = GameInit.initGameState(this.pongRoom.mode);
     this.setupScoreEvent();
   }
@@ -42,7 +40,7 @@ export class Game {
   async setupTimeEndGame(timeEndGame: number = TIME_END_GAME) {
     this.timeEndGame = setTimeout(async () => {
       this.running = false;
-      this.declareWinner();
+      await this.declareWinner();
       await this.endGame();
     }, timeEndGame);
   }
@@ -57,6 +55,7 @@ export class Game {
   }
 
   pause() {
+    console.log('game pause')
     if (this.running) {
       this.running = false;
       this.gameState.pongWorld.pause();
@@ -69,12 +68,13 @@ export class Game {
     }
   }
 
-  resume() {
+  async resume() {
+    console.log('game resume')
     this.running = true;
     this.gameState.pongWorld.run();
     this.setupIntervals();
     this.sendGameResumed();
-    this.resumeTime();
+    await this.resumeTime();
   }
 
   calculateRemainingTime() {
@@ -93,27 +93,27 @@ export class Game {
   }
 
   end() {
+    console.log('game end');
     this.finished = true;
     this.clearIntervals();
     this.gameState.pongWorld.end();
   }
 
   async endGame() {
+    console.log('game endGame');
     this.pongRoom.isGameEnded = true;
     this.running = false;
-    if (this.pongRoom.PlayerManager.isAllPlayersDisconnected())
-    {
-      console.log('WITHOUT SAVE')
+    if (this.pongRoom.PlayerManager.isAllPlayersDisconnected()) {
+      console.log('WITHOUT SAVE');
       this.pongRoom.closeWithoutSave();
-    }
-    else if (this.pongRoom.PlayerManager.disconnectPlayers.size > 0)
+    } else if (this.pongRoom.PlayerManager.disconnectPlayers.size > 0)
       await this.pongRoom.close();
-    else
-      await this.pongRoom.closeWithAchievement();
+    else await this.pongRoom.closeWithAchievement();
     this.end();
   }
 
   resetPositions() {
+    console.log('game resetPositions');
     this.gameState.pongBall.resetPosition();
     this.gameState.pongPaddle1.resetPosition();
     this.gameState.pongPaddle2.resetPosition();
@@ -126,20 +126,20 @@ export class Game {
     });
   }
 
-  updateScore(event: any) {
+  async updateScore(event: any) {
     if (event.player === 1) this.scorePlayer1++;
     else if (event.player === 2) this.scorePlayer2++;
     const score: [number, number] = [this.scorePlayer1, this.scorePlayer2];
     this.pongRoom.sendScore(score);
+    console.log('game updateScore', score);
     this.gameState.score = score;
 
-    if (this.scorePlayer1 >= SCORE_TO_WIN ||
-      this.scorePlayer2 >= SCORE_TO_WIN)
-      this.declareWinner();
+    if (this.scorePlayer1 >= SCORE_TO_WIN || this.scorePlayer2 >= SCORE_TO_WIN)
+      await this.declareWinner();
   }
 
   setupIntervals() {
-    this.gameInterval = setInterval(() => this.sendStatusGameClient(), 1);
+    this.gameInterval = setInterval(() => this.sendStatusGameClient(), 10);
     this.timeInterval = setInterval(() => this.sendTimeGame(), 100);
   }
 
@@ -187,27 +187,33 @@ export class Game {
     const time = this.calculateRemainingTime() / 1000;
     this.pongRoom.sendTime(time);
     this.timeAtEnd = TIME_END_GAME / 1000 - time;
-    this.pongRoom.sendScore([this.scorePlayer1, this.scorePlayer2])
-    // console.log('time', time); 
+    this.pongRoom.sendScore([this.scorePlayer1, this.scorePlayer2]);
+    this.pongRoom.sendMode(this.pongRoom.mode);
+    // console.log('time', time);
   }
 
   sendGamePaused() {
+    console.log('game sendGamePaused');
     this.pongRoom.sendGamePaused();
   }
 
   sendGameResumed() {
+    console.log('game sendGameResumed');
     this.pongRoom.sendGameResumed();
   }
 
-  declareWinner() {
+  async declareWinner() {
+    console.log('game declareWinner', "scorePlayer1", this.scorePlayer1, "scorePlayer2", this.scorePlayer2);
+    console.log('game declareWinner', "gameState.score", this.gameState.score);
     if (this.scorePlayer1 > this.scorePlayer2) this.declarePlayerWinner(0, 1);
     else if (this.scorePlayer2 > this.scorePlayer1)
       this.declarePlayerWinner(1, 0);
     else this.declareDraw();
-    this.endGame();
+    await this.endGame();
   }
 
   declarePlayerWinner(winnerIndex: number, loserIndex: number) {
+    console.log('game declarePlayerWinner');
     if (
       winnerIndex >= 0 &&
       winnerIndex < this.pongRoom.players.length &&
@@ -221,20 +227,20 @@ export class Game {
     }
   }
 
-  declarePlayerWinnerForDeconnection(winnerIndex: number) {
+  async declarePlayerWinnerForDeconnection(winnerIndex: number) {
+    console.log('game declarePlayerWinnerForDeconnection');
     if (winnerIndex >= 0 && winnerIndex < this.pongRoom.players.length) {
       this.pongRoom.players[winnerIndex].client.emit('winner');
-      if (winnerIndex === 0)
-        this.gameState.score = [1, 0];
-      else
-        this.gameState.score = [0, 1];
-      this.endGame();
+      if (winnerIndex === 0) this.gameState.score = [1, 0];
+      else this.gameState.score = [0, 1];
+      await this.endGame();
     } else {
       console.error('Invalid player index deconnection');
     }
   }
 
   declareDraw() {
+    console.log('game declareDraw');
     this.pongRoom.players.forEach((player) => player.client.emit('draw'));
   }
 

@@ -13,20 +13,20 @@ export class PlayerManager {
     this.pongRoom = pongRoom;
   }
 
-  async addPlayer(player: Player): Promise<boolean | undefined>{
+  async addPlayer(player: Player): Promise<boolean | undefined> {
     try {
       if (!this.canAddPlayer(player)) {
         console.log('Player cannot be added', player.user.login);
         return false;
       }
       player.number = this.players.length;
-      
+
       this.players.push(player);
       //waiting aborted
       // if (!this.isMaxPlayer()) player.client.emit('waiting', true);
       // else this.players.forEach((p) => p.client.emit('waiting', false));
 
-      // console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
+      console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
       this.showPlayers();
 
       await this.pongRoom.start();
@@ -56,15 +56,16 @@ export class PlayerManager {
     );
   }
 
-  removePlayer(client: Socket) {
+  async removePlayer(client: Socket) {
     try {
+      console.log('PlayerManager removePlayer');
       const player = this.players.find((p) => p.client.id === client.id);
       if (!player) return;
       if (!this.pongRoom.started)
         this.players.splice(this.players.indexOf(player), 1);
       else {
-        this.disconnectPlayer(player);
-        this.removeDisconnectedPlayer(player, client);
+        await this.disconnectPlayer(player);
+        await this.removeDisconnectedPlayer(player, client);
       }
     } catch (error) {
       console.error('Error removing player:', error);
@@ -108,6 +109,7 @@ export class PlayerManager {
 
   async removeDisconnectedPlayer(player: Player, client: Socket) {
     try {
+      console.log('PlayerManager removeDisconnectedPlayer');
       const timeout = setTimeout(async () => {
         if (!this.disconnectPlayers.has(player.client.id)) {
           return; // Sortie de la fonction si le timeout a été annulé
@@ -124,8 +126,8 @@ export class PlayerManager {
           otherPlayerIndex !== -1 &&
           !this.players[otherPlayerIndex].disconnected
         ) {
-          console.log('Other player won');
-          this.pongRoom.game.declarePlayerWinnerForDeconnection(
+          // console.log('Other player won');
+          await this.pongRoom.game.declarePlayerWinnerForDeconnection(
             otherPlayerIndex,
           );
           this.players.splice(index, 1);
@@ -134,7 +136,7 @@ export class PlayerManager {
 
       this.disconnectPlayers.set(player.client.id, timeout);
       if (this.isAllPlayersDisconnected()) {
-        console.log('All players disconnected');
+        // console.log('All players disconnected');
         await this.pongRoom.game.endGame();
       }
     } catch (error) {
@@ -143,6 +145,7 @@ export class PlayerManager {
   }
 
   async disconnectPlayer(player: Player) {
+    console.log('PlayerManager disconnectPlayer');
     try {
       this.pongRoom.pause();
       player.disconnected = true;
@@ -150,15 +153,16 @@ export class PlayerManager {
         `Player ${player.user.login} disconnected from room: ${PongRoom.id}`,
       );
       if (this.isAllPlayersDisconnected()) {
-        console.log('All players disconnected');
+        // console.log('All players disconnected');
         await this.pongRoom.game.endGame();
       }
     } catch (error) {
       console.error('Error disconnecting player:', error);
     }
   }
-  
+
   async reconnectPlayer(oldPlayer: Player, newPlayer: Player) {
+    console.log('PlayerManager reconnectPlayer');
     try {
       clearTimeout(this.disconnectPlayers.get(oldPlayer.client.id));
       this.disconnectPlayers.delete(oldPlayer.client.id);
@@ -166,10 +170,7 @@ export class PlayerManager {
       oldPlayer.disconnected = false;
       console.log(`Client reconnected: ${oldPlayer.user.login}`);
 
-    
-      console.log('SCORE', this.pongRoom.game.gameState.score);
-      
-      this.pongRoom.game.resume();  
+      await this.pongRoom.game.resume();
     } catch (error) {
       console.error('Error reconnecting player:', error);
     }

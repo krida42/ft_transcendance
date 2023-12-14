@@ -107,6 +107,13 @@ export default {
     return res.data;
   },
 
+  async muteUser(channelId: Id, userId: Id) {
+    const res = await axios.post(
+      `${host}/channels/${channelId}/mute/${userId}`
+    );
+    return res.data;
+  },
+
   async addAdmin(channelId: Id, userId: Id) {
     const res = await axios.post(
       `${host}/channels/${channelId}/admin/${userId}`

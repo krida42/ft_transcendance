@@ -34,8 +34,8 @@ export class Game {
   constructor(PongRoom: PongRoom) {
     Game.id++;
     this.pongRoom = PongRoom;
-    console.log('PongRoom mode:', PongRoom.mode);
-    console.log('Game key:', PongRoom?.key);
+    // console.log('PongRoom mode:', PongRoom.mode);
+    // console.log('Game key:', PongRoom?.key);
     this.gameState = GameInit.initGameState(this.pongRoom.mode);
     this.setupScoreEvent();
   }
@@ -43,7 +43,7 @@ export class Game {
   async setupTimeEndGame(timeEndGame: number = TIME_END_GAME) {
     this.timeEndGame = setTimeout(async () => {
       this.running = false;
-      this.declareWinner();
+      await this.declareWinner();
       await this.endGame();
     }, timeEndGame);
   }
@@ -70,12 +70,12 @@ export class Game {
     }
   }
 
-  resume() {
+  async resume() {
     this.running = true;
     this.gameState.pongWorld.run();
     this.setupIntervals();
     this.sendGameResumed();
-    this.resumeTime();
+    await this.resumeTime();
   }
 
   calculateRemainingTime() {
@@ -118,13 +118,13 @@ export class Game {
   }
 
   setupScoreEvent() {
-    Matter.Events.on(this.gameState.pongWorld.engine, 'score', (event) => {
-      this.updateScore(event);
+    Matter.Events.on(this.gameState.pongWorld.engine, 'score', async (event) => {
+      await this.updateScore(event);
       this.resetPositions();
     });
   }
 
-  updateScore(event: any) {
+  async updateScore(event: any) {
     if (event.player === 1) this.scorePlayer1++;
     else if (event.player === 2) this.scorePlayer2++;
     const score: [number, number] = [this.scorePlayer1, this.scorePlayer2];
@@ -132,7 +132,7 @@ export class Game {
     this.gameState.score = score;
 
     if (this.scorePlayer1 >= SCORE_TO_WIN || this.scorePlayer2 >= SCORE_TO_WIN)
-      this.declareWinner();
+      await this.declareWinner();
   }
 
   setupIntervals() {
@@ -197,12 +197,12 @@ export class Game {
     this.pongRoom.sendGameResumed();
   }
 
-  declareWinner() {
+  async declareWinner() {
     if (this.scorePlayer1 > this.scorePlayer2) this.declarePlayerWinner(0, 1);
     else if (this.scorePlayer2 > this.scorePlayer1)
       this.declarePlayerWinner(1, 0);
     else this.declareDraw();
-    this.endGame();
+    await this.endGame();
   }
 
   declarePlayerWinner(winnerIndex: number, loserIndex: number) {
@@ -219,12 +219,12 @@ export class Game {
     }
   }
 
-  declarePlayerWinnerForDeconnection(winnerIndex: number) {
+  async declarePlayerWinnerForDeconnection(winnerIndex: number) {
     if (winnerIndex >= 0 && winnerIndex < this.pongRoom.players.length) {
       this.pongRoom.players[winnerIndex].client.emit('winner');
       if (winnerIndex === 0) this.gameState.score = [1, 0];
       else this.gameState.score = [0, 1];
-      this.endGame();
+      await this.endGame();
     } else {
       console.error('Invalid player index deconnection');
     }

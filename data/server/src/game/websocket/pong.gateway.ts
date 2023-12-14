@@ -88,9 +88,11 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  async handleConnection(client: Socket) {}
+  async handleConnection(client: Socket) {
+    console.log('CONNECTED', client.id);
+  }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     try {
       console.log('DISCONNECTED', client.id);
       const userCookie = this.getUserWithCookie(client);
@@ -99,7 +101,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
           r.PlayerManager.hasPlayer(userCookie.public_id),
         );
         if (room) {
-          room.PlayerManager.removePlayer(client);
+          await room.PlayerManager.removePlayer(client);
           this.usersMap.delete(userCookie.public_id);
           // console.log(`Client disconnected: ${userCookie.login}`);
         }
@@ -243,7 +245,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
         );
 
         if (existingPlayer && existingPlayer.disconnected) {
-          existingRoom.PlayerManager.reconnectPlayer(existingPlayer, {
+          await existingRoom.PlayerManager.reconnectPlayer(existingPlayer, {
             user: userCookie,
             client,
           });

@@ -92,10 +92,10 @@ export class PongRoom {
     }
   }
 
-  resume() {
+  async resume() {
     console.log('Game resumed');
     try {
-      this.game.resume();
+      await this.game.resume();
     } catch (err) {
       console.error(err);
     }

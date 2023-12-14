@@ -56,15 +56,15 @@ export class PlayerManager {
     );
   }
 
-  removePlayer(client: Socket) {
+  async removePlayer(client: Socket) {
     try {
       const player = this.players.find((p) => p.client.id === client.id);
       if (!player) return;
       if (!this.pongRoom.started)
         this.players.splice(this.players.indexOf(player), 1);
       else {
-        this.disconnectPlayer(player);
-        this.removeDisconnectedPlayer(player, client);
+        await this.disconnectPlayer(player);
+        await this.removeDisconnectedPlayer(player, client);
       }
     } catch (error) {
       console.error('Error removing player:', error);
@@ -116,16 +116,16 @@ export class PlayerManager {
         const index = this.getPlayerIndex(client);
         console.log(`Client disconnected: ${player.user.login}`);
         this.players[index].disconnected = true;
-        // await this.endGameIfNoPlayers();
-        // this.pauseGameIfNotEnoughPlayers();
+        await this.endGameIfNoPlayers();
+        this.pauseGameIfNotEnoughPlayers();
 
         const otherPlayerIndex = this.players.findIndex((p) => p !== player);
         if (
           otherPlayerIndex !== -1 &&
           !this.players[otherPlayerIndex].disconnected
         ) {
-          console.log('Other player won');
-          this.pongRoom.game.declarePlayerWinnerForDeconnection(
+          // console.log('Other player won');
+          await this.pongRoom.game.declarePlayerWinnerForDeconnection(
             otherPlayerIndex,
           );
           this.players.splice(index, 1);
@@ -134,7 +134,7 @@ export class PlayerManager {
 
       this.disconnectPlayers.set(player.client.id, timeout);
       if (this.isAllPlayersDisconnected()) {
-        console.log('All players disconnected');
+        // console.log('All players disconnected');
         await this.pongRoom.game.endGame();
       }
     } catch (error) {
@@ -150,7 +150,7 @@ export class PlayerManager {
         `Player ${player.user.login} disconnected from room: ${PongRoom.id}`,
       );
       if (this.isAllPlayersDisconnected()) {
-        console.log('All players disconnected');
+        // console.log('All players disconnected');
         await this.pongRoom.game.endGame();
       }
     } catch (error) {
@@ -166,7 +166,7 @@ export class PlayerManager {
       oldPlayer.disconnected = false;
       console.log(`Client reconnected: ${oldPlayer.user.login}`);
 
-      this.pongRoom.game.resume();
+      await this.pongRoom.game.resume();
     } catch (error) {
       console.error('Error reconnecting player:', error);
     }

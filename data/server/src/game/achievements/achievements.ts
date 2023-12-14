@@ -37,14 +37,14 @@ export class Achievement {
   async unlock(user: User, achievement: Achievements): Promise<boolean> {
     try {
       if (await this.isUnlock(user, achievement)) {
-        console.log('Achievement already unlocked for user:', user.public_id, 'achievement:', achievement.name);
+        // console.log('Achievement already unlocked for user:', user.public_id, 'achievement:', achievement.name);
         return true;
       }
       await UserAchievements.create({
         public_id: user.public_id,
         achievement_id: achievement.id,
       });
-      console.log('Achievement saved for user:', user.public_id, 'achievement:', achievement.name);
+      // console.log('Achievement saved for user:', user.public_id, 'achievement:', achievement.name);
       return true;
     } catch (err) {
       console.log(err);

@@ -129,18 +129,12 @@ export default {
   },
 
   async uploadChannelLogo(channelId: Id, file: File) {
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await axios.post(
-        `${host}/channels/${channelId}/image`,
-        formData
-      );
-      console.log("CHANNEL LOGO server response:", res.data);
-      return res.data;
-    } catch (error) {
-      console.error("CHANNEL LOGO error:", error);
-      throw error;
-    }
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await axios.post(
+      `${host}/channels/${channelId}/image`,
+      formData
+    );
+    return res.data;
   },
 };

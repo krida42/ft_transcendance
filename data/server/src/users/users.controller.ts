@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseFilePipeBuilder,
   ParseUUIDPipe,
   Patch,
   Post,
@@ -32,6 +33,8 @@ import { UpdateUserDto } from './dto/updateUser.dto';
 import { DeveloperGuard } from './dev.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
+import * as fs from 'fs';
+
 import { ReqU, uuidv4 } from 'src/types';
 import { AddMessageDto } from 'src/message/dto/addMessage.dto';
 import { MessageService } from 'src/message/message.service';
@@ -42,6 +45,7 @@ import { PublicUserDto } from './dto/publicUser.dto';
 import { isUUID } from 'class-validator';
 import { InvalidUUIDException } from 'src/exceptions/exceptions';
 import { ChannelsUtilsService } from 'src/channels/channels-utils.service';
+import { InjectModel } from '@nestjs/sequelize';
 
 @ApiBearerAuth()
 @Controller('users')
@@ -50,6 +54,8 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly messageService: MessageService,
     private readonly channelsUtilsService: ChannelsUtilsService,
+    @InjectModel(User)
+    private usersModel: typeof User,
   ) {}
 
   @Get(':id')
@@ -84,6 +90,7 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return user public instance.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async find(@Query('pseudo') pseudo: string) {
+    if (!pseudo) throw new HttpException('lol', HttpStatus.BAD_REQUEST);
     const { public_id } = await this.usersService.findByPseudo(pseudo);
     const foundUserNotSafe = await this.usersService.findById(public_id);
     return await UsersService.userModelToPublicUserDto(foundUserNotSafe);
@@ -188,16 +195,58 @@ export class UsersController {
     return await this.usersService.get2fa(req.user.public_id);
   }
 
-  @Post('/image')
+  // ---------- POST IMG
+
+  @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
+  @Patch('/image')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(
+  async uploadFile(
     @Req() req: ReqU,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: 'image',
+        })
+        .addMaxSizeValidator({
+          maxSize: 15 * 1024 * 1024,
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
   ) {
-    console.log('-----');
-    console.log(file);
-    console.log('-----');
-    console.log('publicId: ', req.user.public_id);
-    // TODO return user img url
+    await this.usersService.findById(req.user.public_id);
+
+    // console.log('----- FILE -----');
+    // console.log(file);
+    // console.log('----- END FILE -----');
+
+    try {
+      const dirPath = `/app/dist/public/`;
+      const fileName = `${req.user.public_id}_user_image.${
+        file.mimetype.split('/')[1]
+      }`;
+      // console.log('FILE PATH:', dirPath + fileName);
+      const imageUrl = 'http://localhost:3001/' + fileName;
+      // console.log('FILE URL: ', imageUrl);
+
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath);
+      }
+      fs.writeFileSync(dirPath + fileName, file.buffer, { flag: 'w' });
+
+      // user.avatar = imageUrl;
+      // await user.save();
+
+      const retUpdateNotSafe = await this.usersModel.update(
+        { avatar: imageUrl },
+        { where: { public_id: req.user.public_id }, individualHooks: true },
+      );
+
+      return { message: 'File uploaded successfully', imageUrl };
+    } catch (error) {
+      throw new HttpException('UploadImage' + error, HttpStatus.BAD_REQUEST);
+    }
   }
 }

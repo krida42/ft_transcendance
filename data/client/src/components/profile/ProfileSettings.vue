@@ -111,11 +111,10 @@ const editProfile = async () => {
     if (twoFactor.value) axios.post("2fa/turn-on"), { withCredentials: true };
     else axios.post("2fa/turn-off"), { withCredentials: true };
   }
-  const profile: User = {
-    id: usersStore.currentUser.id,
+  const profile = {
     pseudo: username.value,
-    avatar: avatar.value,
   };
+  if (file) await usersStore.uploadUserAvatar(file);
   await usersStore.editUser(profile);
   await usersStore.refreshUser(usersStore.currentUser.id);
   emit("closeSettings");

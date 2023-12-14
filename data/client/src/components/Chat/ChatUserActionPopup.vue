@@ -20,7 +20,12 @@
       <Icon
         size="1.8rem"
         class="bd-blues self-start justify-self-end relative right-[-0.7rem] top-[-0.8rem] cursor-pointer"
-        @click="emits('close')"
+        @click="
+          {
+            emits('close');
+            isErr = false;
+          }
+        "
       >
         <X />
       </Icon>
@@ -75,6 +80,7 @@
       <button class="px-4 mr" @click="banUser">BAN</button>
       <button class="" @click="muteUser">MUTE 10M</button>
     </div>
+    <p v-if="isErr" class="mt-[1rem]">{{ error.message }}</p>
   </div>
 </template>
 
@@ -91,6 +97,8 @@ import { User } from "@/types";
 import channelsApi from "@/api/channel";
 import { ChatType } from "@/types";
 import { setOptions } from "@/game/game";
+import { ErrorPop } from "@/types";
+import axios, { AxiosError } from "axios";
 
 const props = defineProps({
   test: {
@@ -116,6 +124,11 @@ const { sendFriendRequest, blockUser, unblockUser } = friendStore;
 const channelsStore = useChannelsStore();
 const chatStore = useChatStore();
 const chatType = ref(chatStore?.currentChat?.chatType);
+const isErr = ref(false);
+const error = ref<ErrorPop>({
+  statusCode: 0,
+  message: "",
+});
 
 const user = computed(() => {
   return usersStore.users.get(props.uuid);
@@ -131,22 +144,67 @@ let canAddFriend = computed(() => {
 
 const kickUser = () => {
   if (chatStore.currentChat) {
-    channelsStore.kickUser(chatStore.currentChat.id, props.uuid);
-    emits("close");
+    channelsStore
+      .kickUser(chatStore.currentChat.id, props.uuid)
+      .then(() => emits("close"))
+      .catch((err: AxiosError | Error) => {
+        isErr.value = true;
+        if (axios.isAxiosError(err)) {
+          if (err.response && err.response.data && err.response.data.message) {
+            if (Array.isArray(err.response.data.message))
+              error.value.message = err.response.data.message[0];
+            else error.value.message = err.response.data.message;
+          }
+          if (err.response && err.response.status)
+            error.value.statusCode = err.response.status;
+        } else {
+          error.value.message = err.message;
+        }
+      });
   }
 };
 
 const banUser = () => {
   if (chatStore.currentChat) {
-    channelsStore.banUser(chatStore.currentChat.id, props.uuid);
-    emits("close");
+    channelsStore
+      .banUser(chatStore.currentChat.id, props.uuid)
+      .then(() => emits("close"))
+      .catch((err: AxiosError | Error) => {
+        isErr.value = true;
+        if (axios.isAxiosError(err)) {
+          if (err.response && err.response.data && err.response.data.message) {
+            if (Array.isArray(err.response.data.message))
+              error.value.message = err.response.data.message[0];
+            else error.value.message = err.response.data.message;
+          }
+          if (err.response && err.response.status)
+            error.value.statusCode = err.response.status;
+        } else {
+          error.value.message = err.message;
+        }
+      });
   }
 };
 
 const muteUser = () => {
   if (chatStore.currentChat) {
-    channelsApi.muteUser(chatStore.currentChat.id, props.uuid);
-    emits("close");
+    channelsApi
+      .muteUser(chatStore.currentChat.id, props.uuid)
+      .then(() => emits("close"))
+      .catch((err: AxiosError | Error) => {
+        isErr.value = true;
+        if (axios.isAxiosError(err)) {
+          if (err.response && err.response.data && err.response.data.message) {
+            if (Array.isArray(err.response.data.message))
+              error.value.message = err.response.data.message[0];
+            else error.value.message = err.response.data.message;
+          }
+          if (err.response && err.response.status)
+            error.value.statusCode = err.response.status;
+        } else {
+          error.value.message = err.message;
+        }
+      });
   }
 };
 

@@ -57,6 +57,7 @@ defineProps({
 const sendFriendRequest = async () => {
   isSent.value = true;
   await friendStore.refreshFriendList();
+  await friendStore.refreshFriendsSent();
   const myId = userStore.currentUser.id;
   userApi
     .fetchUserByPseudo(username.value)
@@ -64,6 +65,11 @@ const sendFriendRequest = async () => {
       if (user.id === myId) {
         isValidUsername.value = false;
         loginMessage.value = "You can't add yourself";
+        return;
+      }
+      if (friendStore.friendsSent.has(user.id)) {
+        isValidUsername.value = false;
+        loginMessage.value = "Friend request already sent";
         return;
       }
       friendStore.friends.forEach((friend) => {

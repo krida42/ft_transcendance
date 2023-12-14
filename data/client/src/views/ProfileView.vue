@@ -117,6 +117,10 @@ const mode = computed(() => {
 });
 const isFriend = ref<boolean>(false);
 
+// router.beforeResolve((to) => {
+//   if (to.matched[0].path !== "/auth") isSettings.value = true;
+// });
+
 const calcWinrate = () => {
   const wins = matchHistory.value.filter(
     (match) => match.scoreMe >= match.scoreOp

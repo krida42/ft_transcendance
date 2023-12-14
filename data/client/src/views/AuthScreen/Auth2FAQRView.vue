@@ -10,7 +10,6 @@
     <div
       class="w-[100%] flex justify-evenly text-[1.5rem] opacity-60 underline decoration-1"
     >
-      <p @click="postDeactivate2FA" class="cursor-pointer">Later</p>
       <p @click="() => $router.push('/auth/2FA-code')" class="cursor-pointer">
         Next
       </p>

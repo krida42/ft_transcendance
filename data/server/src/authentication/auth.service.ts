@@ -41,7 +41,7 @@ export class AuthService {
   async redirectSignIn(user: ResponseUserDto, res: any): Promise<Response> {
     if ((await this.isTwoFactorEnable(user.public_id)) !== null) {
       if ((await this.isTwoFactorEnable(user.public_id)) === false)
-        return res.redirect(`${process.env.VUE_APP_CUICUI}:8080/main/home`);
+        return res.redirect(`${process.env.VUE_APP_CUICUI}:8080/profile`);
       if (await this.hasTwoFactorSecret(user.public_id))
         return res.redirect(`${process.env.VUE_APP_CUICUI}:8080/auth/2FA-code`);
       return res.redirect(`${process.env.VUE_APP_CUICUI}:8080/auth/2FA-QR`);

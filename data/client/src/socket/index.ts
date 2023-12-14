@@ -38,7 +38,7 @@ socket.on("connect", () => {
   // console.log("emit status");
   setInterval(() => {
     socket.emit("status", Status.Online, (response: any) => {
-      console.log("status acknowledged, this is my status: ", response);
+      // console.log("status acknowledged, this is my status: ", response);
       mainStore.status = response.status;
     });
   }, 1000);

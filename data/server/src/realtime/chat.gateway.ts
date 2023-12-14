@@ -12,21 +12,19 @@ export class ChatGateway {
     private readonly roomService: RoomService,
   ) {}
 
-  async bindUserToChannels(userId: string, channels: any[]) {
-    throw new Error('Method not implemented.');
+  async bindUserToChannels(userId: string, channelsId: string[]) {
     const socket = await this.realtimeGateway.findSocketByUserId(userId);
 
-    channels.forEach((channel) => {
-      socket.join(channel.id);
+    channelsId.forEach((channelId) => {
+      socket.join(channelId);
     });
   }
 
-  async unbindUserFromChannels(userId: string, channels: any[]) {
-    throw new Error('Method not implemented.');
+  async unbindUserFromChannels(userId: string, channelsId: string[]) {
     const socket = await this.realtimeGateway.findSocketByUserId(userId);
 
-    channels.forEach((channel) => {
-      socket.leave(channel.id);
+    channelsId.forEach((channelId) => {
+      socket.leave(channelId);
     });
   }
 
@@ -48,8 +46,8 @@ export class ChatGateway {
     channelId: string,
     message: unknown,
   ) {
-    throw new Error('Method not implemented.');
+    // throw new Error('Method not implemented.');
     const socket = await this.realtimeGateway.findSocketByUserId(fromUserId);
-    socket.to(channelId).emit('message', message);
+    socket.to(channelId).emit('messageChannel', message);
   }
 }

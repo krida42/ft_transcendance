@@ -312,19 +312,16 @@ enum ChatType {
 }
 
 async function sendMessage() {
-  console.log(inputMessage.value, "hey");
-  if (inputMessage.value === "/r") {
-    console.log("refreshing");
-    chatStore.refreshChat("marine", ChatType.Direct, null);
-  } else if (inputMessage.value === "/ra4") {
-    console.log("refreshing");
-    chatStore.refreshChat("marine", ChatType.Direct, "a4");
-  } else if (inputMessage.value === "/s") {
-    console.log("refreshing randome");
-    chatStore.refreshChat("someone", ChatType.Direct, null);
-  } else {
+  console.log(inputMessage.value);
+  if (!chatStore.currentChat) throw new Error("no current chat");
+  if (!inputMessage.value) return;
+  else {
     chatStore
-      .sendMessage(chatStore.openedChatId, ChatType.Direct, inputMessage.value)
+      .sendMessage(
+        chatStore.openedChatId,
+        chatStore.currentChat!.chatType,
+        inputMessage.value
+      )
       .then(() => {
         scrollToBottom();
       });
@@ -343,32 +340,31 @@ function scrollToBottom() {
 }
 
 let smootherScroll = ref(true);
-
+/*eslint-disableee */
 function handleScroll(event: Event) {
-  void event;
-  // console.log("coiucou");
-  if (!main.value) return;
-  if (main.value.scrollTop === 0) {
-    console.log("scrolling to top");
-    const previousHeight = main.value.scrollHeight;
-
-    chatStore.loadMoreMessages().then(() => {
-      smootherScroll.value = false;
-      nextTick(() => {
-        requestAnimationFrame(() => {
-          setTimeout(() => {
-            if (!main.value) return;
-            const currentHeight = main.value.scrollHeight;
-            const heightDifference = currentHeight - previousHeight;
-            main.value.scrollTop += heightDifference;
-            smootherScroll.value = true;
-          }, 50);
-        });
-      });
-    });
-  }
+  // void event;
+  // // console.log("coiucou");
+  // if (!main.value) return;
+  // if (main.value.scrollTop === 0) {
+  //   console.log("scrolling to top");
+  //   const previousHeight = main.value.scrollHeight;
+  //   chatStore.loadMoreMessages().then(() => {
+  //     smootherScroll.value = false;
+  //     nextTick(() => {
+  //       requestAnimationFrame(() => {
+  //         setTimeout(() => {
+  //           if (!main.value) return;
+  //           const currentHeight = main.value.scrollHeight;
+  //           const heightDifference = currentHeight - previousHeight;
+  //           main.value.scrollTop += heightDifference;
+  //           smootherScroll.value = true;
+  //         }, 50);
+  //       });
+  //     });
+  //   });
+  // }
 }
-
+/*eslint-enableeee */
 // let isChatUserActionPopedUp = ref(false);
 
 let chatUserActionPopup = reactive({

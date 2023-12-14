@@ -43,10 +43,25 @@ export class MessageDto {
   })
   readonly createdAt: Date;
 
-  constructor(content: string, msgId: string, userId: string, createdAt: Date) {
+  @IsUUID()
+  @ApiProperty({
+    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+    required: false,
+    description: 'The id of the channel in database',
+  })
+  readonly channelId?: string;
+
+  constructor(
+    content: string,
+    msgId: string,
+    userId: string,
+    createdAt: Date,
+    channelId?: string,
+  ) {
     this.content = content;
     this.msgId = msgId;
     this.userId = userId;
     this.createdAt = createdAt;
+    this.channelId = channelId;
   }
 }

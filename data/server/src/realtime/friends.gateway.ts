@@ -10,6 +10,7 @@ import { Status, StatusDto } from './dto/status.dto';
 import { RoomService } from './room.service';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { WebSocketGatewayOptions } from './gateway.conf';
+import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 
 @WebSocketGateway(WebSocketGatewayOptions)
 export class FriendsGateway {
@@ -37,29 +38,17 @@ export class FriendsGateway {
     socket.emit('gotFriendRequest');
   }
 
-  async bindUserToFriends(userId: string, friends: any[]) {
-    console.warn(
-      'A VOIR avec sylvain',
-      'bindUserToChannels: channels: ',
-      friends,
-    );
-    throw new Error('Method not implemented.');
+  async bindUserToFriends(userId: string, friendsId: string[]) {
     const socket = await this.realtimeGateway.findSocketByUserId(userId);
-    friends.forEach((friend) => {
-      socket.join(this.roomService.getUserFriendsRoom(friend.public_id));
+    friendsId.forEach((friendId) => {
+      socket.join(this.roomService.getUserFriendsRoom(friendId));
     });
   }
 
-  async unbindUserFromFriends(userId: string, friends: any[]) {
-    console.warn(
-      'A VOIR avec sylvain',
-      'bindUserToChannels: channels: ',
-      friends,
-    );
-    throw new Error('Method not implemented');
+  async unbindUserFromFriends(userId: string, friendsId: string[]) {
     const socket = await this.realtimeGateway.findSocketByUserId(userId);
-    friends.forEach((friend) => {
-      socket.leave(this.roomService.getUserFriendsRoom(friend.public_id));
+    friendsId.forEach((friendId) => {
+      socket.leave(this.roomService.getUserFriendsRoom(friendId));
     });
   }
 

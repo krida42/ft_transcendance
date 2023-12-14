@@ -30,8 +30,9 @@ export type MyUserResponse = z.infer<typeof UserResponseSchema>;
 export const MessageResponseSchema = z.object({
   msgId: z.string(),
   content: z.string(),
-  createdAt: z.date(),
+  createdAt: z.string(),
   userId: z.string(),
+  channelId: z.string().optional(),
 });
 
 export type MessageResponse = z.infer<typeof MessageResponseSchema>;

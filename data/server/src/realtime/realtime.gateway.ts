@@ -23,6 +23,7 @@ import { ChatGateway } from './chat.gateway';
 import { WebSocketGatewayOptions } from './gateway.conf';
 import { FriendsService } from 'src/friends/friends.service';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
+import { ChannelsGetService } from 'src/channels/channels-get.service';
 
 @WebSocketGateway(WebSocketGatewayOptions)
 export class RealtimeGateway
@@ -31,11 +32,12 @@ export class RealtimeGateway
   constructor(
     private readonly roomService: RoomService,
     @Inject(forwardRef(() => FriendsGateway))
-    private friendsHandler: FriendsGateway,
+    private friendsGateway: FriendsGateway,
     @Inject(forwardRef(() => ChatGateway))
-    private chatHandler: ChatGateway,
+    private chatGateway: ChatGateway,
 
     private readonly friendsService: FriendsService,
+    private readonly channelsGetService: ChannelsGetService,
   ) {}
 
   @WebSocketServer() server!: Server;
@@ -58,12 +60,25 @@ export class RealtimeGateway
     // );
 
     try {
-      const friends: PublicUserDto[] = await this.friendsService.getFriends(
+      const friends = await this.friendsService.getFriends(
         client.data.user.public_id,
       );
-      friends.forEach((friend) => {
-        client.join(this.roomService.getUserFriendsRoom(friend.id));
-      });
+      await this.friendsGateway.bindUserToFriends(
+        client.data.user.public_id,
+        friends.map((friend) => friend.id),
+      );
+
+      const channels = await this.channelsGetService.getJoinedChan(
+        client.data.user.public_id,
+      );
+      console.log(
+        'channels: ',
+        channels.map((channel) => channel.chanName),
+      );
+      await this.chatGateway.bindUserToChannels(
+        client.data.user.public_id,
+        channels.map((channel) => channel.chanId),
+      );
     } catch (error) {
       console.error('handleConnection getFriends: ', error);
     }

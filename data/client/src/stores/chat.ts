@@ -36,10 +36,14 @@ export const useChatStore = defineStore({
       this.openedChatId = chatId;
     },
     addMessageToStore(chatId: Id, message: Message) {
+      const usersStore = useUsersStore();
       // this.createChatIfNotExist(chatId, "someone", ChatType.Direct);
       const chat = this.chats.get(chatId);
       if (!chat) throw new Error("chat not found");
       chat?.messages.set(message.msgId, message);
+      if (!usersStore.users.has(message.userId)) {
+        usersStore.refreshUser(message.userId);
+      }
       // console.log("pushing message to chat: ", message);
     },
     updateMsgAck(

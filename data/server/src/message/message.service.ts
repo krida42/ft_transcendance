@@ -48,22 +48,24 @@ export class MessageService {
   //     }
   //   }
 
-  async findForChannel(channelId: string, limit = 50) {
+  async findForChannel(channelId: string) {
     await this.channelsUtilsService.findById(channelId);
 
     let messages = await this.messageModel.findAll({
       where: { chanId: channelId },
-      limit: limit,
+      // limit: limit,
     });
 
-    console.log('messages: ', messages);
+    // console.log('messages: ', messages);
+    console.log('messages.length: ', messages.length);
+    messages.forEach((msg) => console.log('msg: ', msg.content));
     let messagesDto = messages.map(
       (msg) =>
         new MessageDto(msg.content, msg.msgId, msg.userId, msg.createdAt),
     );
     return messagesDto;
   }
-
+  /*
   async findForChannelBeforeMsgId(
     channelId: string,
     beforeMsgId: string,
@@ -96,6 +98,8 @@ export class MessageService {
 
     return messagesDto;
   }
+  */
+
   private async insertMessage(
     senderId: string,
     channelId: string,
@@ -117,6 +121,7 @@ export class MessageService {
         retMsg.msgId,
         retMsg.userId,
         retMsg.createdAt,
+        retMsg.chanId,
       );
     } catch (error) {
       if (error instanceof HttpException) throw error;

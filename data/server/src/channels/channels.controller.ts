@@ -35,6 +35,7 @@ import { MessageService } from 'src/message/message.service';
 import { UploadDto } from './dto/setImage.dto';
 import { join } from 'path';
 import { MessageDto } from 'src/message/dto/message.dto';
+import { isUUID } from 'class-validator';
 
 @ApiTags('channels v4 (jwt OFF)')
 @Controller('')
@@ -472,11 +473,12 @@ export class ChannelsController {
 
   @ApiOperation({ summary: 'Get all messages' })
   @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))
-  @Get(':channelId/messages')
+  @Get('/channels/:channelId/messages')
   async getAllMessages(
     @Param('channelId', ParseUUIDPipe) channelId: string,
     @Req() req: ReqU,
   ): Promise<MessageDto[]> {
+    console.log('getAllMessages for channels: ', channelId);
     return this.messageService.findForChannel(channelId);
   }
 }

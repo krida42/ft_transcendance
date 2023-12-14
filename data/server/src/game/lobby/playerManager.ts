@@ -22,8 +22,9 @@ export class PlayerManager {
       player.number = this.players.length;
       
       this.players.push(player);
-      if (!this.isMaxPlayer()) player.client.emit('waiting', true);
-      else this.players.forEach((p) => p.client.emit('waiting', false));
+      //waiting aborted
+      // if (!this.isMaxPlayer()) player.client.emit('waiting', true);
+      // else this.players.forEach((p) => p.client.emit('waiting', false));
 
       // console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
       this.showPlayers();

@@ -302,10 +302,6 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
       
       // console.log('random room:', PongRoom.id);
       
-      if (!room.PlayerManager.isFull())
-        client.emit('waiting');
-      else
-        room?.players.forEach((player) => player.client.emit('play'));
     } catch (error) {
       console.error('Error while handling random room:', error);
     }

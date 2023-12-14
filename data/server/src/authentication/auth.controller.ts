@@ -12,6 +12,7 @@ import { AuthService } from './auth.service';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Public } from './guards/public.decorator';
+import { ResponseUserDto } from 'src/users/dto/responseUser.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -86,7 +87,7 @@ export class AuthController {
   }
 
   @Post('2fa/turn-off')
-  @UseGuards(AuthGuard('jwt'))
+  @Public()
   async turnOffTwoFactorAuth(
     @Req() req: Request & { user: any },
     @Res() res: Response,
@@ -103,9 +104,10 @@ export class AuthController {
   }
 
   @Post('2fa/setup')
+  @Public()
   @UseGuards(AuthGuard('jwt'))
   async setupTwoFactorAuth(
-    @Req() req: Request & { user: any },
+    @Req() req: Request & { user: ResponseUserDto },
     @Res() res: Response,
   ) {
     const { otpAuthUrl } =
@@ -117,6 +119,7 @@ export class AuthController {
   }
 
   @Post('2fa/authenticate')
+  @Public()
   @UseGuards(AuthGuard('jwt'))
   async authenticate(
     @Req() req: Request & { user: any },

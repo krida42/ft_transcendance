@@ -34,6 +34,11 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "about" */ "../views/DevView.vue"),
   },
   {
+    path: "/test",
+    name: "test",
+    component: () => import("../views/AuthTwoFactor.vue"),
+  },
+  {
     path: "/auth",
     name: "auth",
     component: () => import("../views/AuthScreen/AuthMainView.vue"),

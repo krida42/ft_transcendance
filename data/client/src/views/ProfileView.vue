@@ -35,7 +35,7 @@
     <div class="achievements">achievements</div>
     <div class="name">
       <img
-        :src="avatar"
+        :src="user.avatar"
         class="w-[150px] aspect-square rounded-full break-normal"
       />
       <p class="text-[2.2rem]">{{ username }}</p>
@@ -47,8 +47,8 @@
     />
     <ProfileSettings
       v-if="isSettings"
-      :username="username"
-      :avatar="avatar"
+      :username="user.pseudo"
+      :avatar="user.avatar"
       :twoFactor="twoFactor"
       @closeSettings="() => (isSettings = false)"
     />
@@ -78,7 +78,6 @@ const winrate = ref<number>(0);
 const displayWinrate = ref<boolean>(false);
 const matchHistory = ref<Match[]>([]);
 const username = ref<string>(user.value.pseudo);
-const avatar = ref<string>(user.value.avatar);
 const twoFactor = ref<boolean>(false);
 const isSettings = ref<boolean>(false);
 const mode = computed(() => {
@@ -108,16 +107,6 @@ async function getMatchHistory() {
     .catch((err) => console.log(err));
 }
 
-async function getUserInfo() {
-  axios
-    .get(host + "/users/1")
-    .then((res) => {
-      username.value = res.data.pseudo;
-      avatar.value = res.data.avatar;
-    })
-    .catch((err) => console.log(err));
-}
-
 const initUser = async () => {
   await usersStore.refreshUser(usersStore.currentUser.id);
   user.value = usersStore.currentUser;
@@ -127,7 +116,6 @@ onBeforeMount(() => {
   initUser();
   getWinrate(1);
   getMatchHistory();
-  getUserInfo();
 });
 
 function button1press() {

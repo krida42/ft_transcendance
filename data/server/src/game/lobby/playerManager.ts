@@ -58,6 +58,7 @@ export class PlayerManager {
 
   async removePlayer(client: Socket) {
     try {
+      console.log('PlayerManager removePlayer');
       const player = this.players.find((p) => p.client.id === client.id);
       if (!player) return;
       if (!this.pongRoom.started)
@@ -108,6 +109,7 @@ export class PlayerManager {
 
   async removeDisconnectedPlayer(player: Player, client: Socket) {
     try {
+      console.log('PlayerManager removeDisconnectedPlayer');
       const timeout = setTimeout(async () => {
         if (!this.disconnectPlayers.has(player.client.id)) {
           return; // Sortie de la fonction si le timeout a été annulé
@@ -116,8 +118,8 @@ export class PlayerManager {
         const index = this.getPlayerIndex(client);
         console.log(`Client disconnected: ${player.user.login}`);
         this.players[index].disconnected = true;
-        await this.endGameIfNoPlayers();
-        this.pauseGameIfNotEnoughPlayers();
+        // await this.endGameIfNoPlayers();
+        // this.pauseGameIfNotEnoughPlayers();
 
         const otherPlayerIndex = this.players.findIndex((p) => p !== player);
         if (
@@ -143,6 +145,7 @@ export class PlayerManager {
   }
 
   async disconnectPlayer(player: Player) {
+    console.log('PlayerManager disconnectPlayer');
     try {
       this.pongRoom.pause();
       player.disconnected = true;
@@ -159,6 +162,7 @@ export class PlayerManager {
   }
 
   async reconnectPlayer(oldPlayer: Player, newPlayer: Player) {
+    console.log('PlayerManager reconnectPlayer');
     try {
       clearTimeout(this.disconnectPlayers.get(oldPlayer.client.id));
       this.disconnectPlayers.delete(oldPlayer.client.id);

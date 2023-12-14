@@ -112,6 +112,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   addUserToMap(userCookie: ResponseUserDto, client: Socket) {
+    console.log('ADD USER TO MAP');
     try {
       const player = { user: userCookie, client };
       this.usersMap.set(userCookie.public_id, client);
@@ -121,6 +122,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   roomNotFull(): PongRoom | undefined {
+    console.log('ROOM NOT FULL');
     try {
       return this.rooms.find((r) => !r.PlayerManager.isFull() && !r.started);
     } catch (error) {
@@ -129,6 +131,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   findOrCreateRoom(options?: Options): PongRoom | undefined {
+    console.log('FIND OR CREATE ROOM');
     try {
       let room = this.roomNotFull();
       // console.log("Find a room", room?.players.length);
@@ -144,6 +147,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   createRoom(options?: Options): PongRoom | undefined {
+    console.log('CREATE ROOM');
     try {
       const room = new PongRoom(this, options);
       this.rooms.push(room);
@@ -154,6 +158,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   closeRoom(room: PongRoom) {
+    console.log('CLOSE ROOM');
     try {
       const index = this.rooms.findIndex((r) => r === room);
       const players = room.players;
@@ -269,6 +274,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async joinPrivateRoom(client: Socket, options: Options) {
+    console.log('JOIN PRIVATE ROOM');
     try {
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie || !options?.key) return;
@@ -281,6 +287,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async inviteToRoom(client: Socket, options: Options) {
+    console.log('INVITE TO ROOM');
     try {
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie) return;
@@ -307,6 +314,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async randomRoom(client: Socket, options?: Options) {
+    console.log('RANDOM ROOM');
     try {
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie) return;

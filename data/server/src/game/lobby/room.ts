@@ -17,7 +17,7 @@ export class PongRoom {
   started = false;
   isGameEnded: boolean = false;
   mode: boolean = false;
-  game: any;
+  game: Game;
   //pause
   startTime: number = 0;
   pauseTime: number = 0;
@@ -51,11 +51,7 @@ export class PongRoom {
     console.log('Game started id:', Game.id);
     this.started = true;
     setTimeout(async () => {
-      try {
         await this.game.start();
-      } catch (err) {
-        console.error(err);
-      }
     }, BEFORE_GAME);
   }
 
@@ -102,6 +98,7 @@ export class PongRoom {
   }
 
   async close() {
+    console.log('Game closed');
     try {
       await this.save();
       this.pongGateway.closeRoom(this);
@@ -111,6 +108,7 @@ export class PongRoom {
   }
 
   async closeWithAchievement() {
+    console.log('Game closed with achievement');
     try {
       await this.close();
       const user1 = await User.findOne({
@@ -128,6 +126,7 @@ export class PongRoom {
   }
 
   closeWithoutSave() {
+    console.log('Game closed without save');
     this.pongGateway.closeRoom(this);
   }
 

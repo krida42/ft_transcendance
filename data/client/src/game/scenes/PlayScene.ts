@@ -90,7 +90,7 @@ export default class PlayScene extends Scene {
     // this.add.image(400, 300, "sky");
 
     // timer
-    this.timer = 0; // Définissez le timer à 0 par défaut
+    this.timer = 0;
     this.timerText = this.add.text(380, 10, "Time: 0", {
       font: "20px Arial",
       color: "#ffffff",

@@ -14,9 +14,10 @@ export class PongRoom {
   pongGateway: PongGateway;
   static id: number = 0;
 
-  game: Game = new Game(this);
   started = false;
   isGameEnded: boolean = false;
+  mode: boolean = false;
+  game: any;
   //pause
   startTime: number = 0;
   pauseTime: number = 0;
@@ -24,7 +25,7 @@ export class PongRoom {
   //players
   PlayerManager: PlayerManager = new PlayerManager(this);
   //save
-  gameSaved:boolean = false;
+  gameSaved: boolean = false;
   //private
   key: uuidv4 = null;
   
@@ -34,6 +35,11 @@ export class PongRoom {
     if (options?.uuid) {
       this.key = v4() + options.uuid;
     }
+    if (options?.mode) {
+      this.mode = options.mode;
+    }
+    console.log("mode ROOM:", this.mode);
+    this.game = new Game(this);
   }
 
   get players(): Player[] {
@@ -170,7 +176,6 @@ export class PongRoom {
   }
 
   sendScore(score: [number, number]) {
-    console.log('Score sent to clients:', score);
     try {
       this.players.forEach((player) => {
         player.client.emit('score', score);

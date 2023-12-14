@@ -34,10 +34,6 @@ export default class PlayScene extends Scene {
   }
 
   preload() {
-    const options = {
-      uuid: undefined,
-      key: undefined,
-    };
     // socket.emit("connectToRoom", options.uuid, options.key);
     this.socket = BootScene.socket;
 
@@ -53,6 +49,12 @@ export default class PlayScene extends Scene {
       "ball"
     );
     this.ball = ball;
+  }
+
+  displayCircle() {
+    this.add.circle(400, 300, 100, 0xffffff);
+    this.add.circle(400, 300, 80, 0x000000);
+    this.add.circle(400, 300, 10, 0xffffff);
   }
 
   displayPaddle1() {
@@ -75,27 +77,27 @@ export default class PlayScene extends Scene {
 
   create() {
     // background
-    this.add.image(400, 300, "sky");
+    // this.add.image(400, 300, "sky");
 
     // timer
     this.timer = 0; // Définissez le timer à 0 par défaut
-    this.timerText = this.add.text(400, 10, "Time: 0", {
-      font: "16px Arial",
+    this.timerText = this.add.text(380, 10, "Time: 0", {
+      font: "20px Arial",
       color: "#ffffff",
     });
 
     //score
     this.score = [0, 0];
-    this.scoreText = this.add.text(400, 30, "", {
-      font: "16px Arial",
+    this.scoreText = this.add.text(380, 30, "", {
+      font: "20px Arial",
       color: "#ffffff",
     });
 
     // pause
     this.pause = false;
-    this.pauseText = this.add.text(400, 300, "", {
-      font: "16px Arial",
-      color: "#ffffff",
+    this.pauseText = this.add.text(356, 320, "", {
+      font: "32px Arial",
+      color: "#c92020",
     });
 
     // screen-split
@@ -103,7 +105,7 @@ export default class PlayScene extends Scene {
     const screenHeight = this.cameras.main.height;
     const screenWidth = this.cameras.main.width;
     const dashSize = 10;
-    const gapSize = 5;
+    const gapSize = 0;
 
     for (let y = 0; y < screenHeight; y += dashSize + gapSize) {
       graphics.lineBetween(screenWidth / 2, y, screenWidth / 2, y + dashSize);
@@ -153,6 +155,8 @@ export default class PlayScene extends Scene {
       this.socket.emit("stopMoving");
     });
 
+    this.displayCircle();
+
     // receive
     this.socket.on("ball", (ball: any) => {
       this.ballPosition = [ball.x, ball.y];
@@ -169,17 +173,13 @@ export default class PlayScene extends Scene {
     });
     this.displayPaddle2();
 
-    this.socket.on("score", (score: any) => {
+    this.socket.on("score", (score: [number, number]) => {
+      console.log("score", score);
       this.score = score;
     });
 
     this.socket.on("time", (time: any) => {
       this.timer = time;
-    });
-
-    this.socket.on("gameState", (gameState: any) => {
-      this.timer = gameState.time;
-      this.score = gameState.score;
     });
 
     this.socket.on("pause", () => {
@@ -262,6 +262,10 @@ export default class PlayScene extends Scene {
     // display pause
     if (this.pauseText) {
       this.pauseText.setText(this.pause ? "Pause" : "");
+    }
+
+    if (this.pauseText && this.pause) {
+      this.children.bringToTop(this.pauseText);
     }
   }
 }

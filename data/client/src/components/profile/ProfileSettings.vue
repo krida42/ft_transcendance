@@ -110,8 +110,8 @@ const onFileSelected = (e: Event) => {
 const editProfile = async () => {
   if (twoFactor.value !== twoFactorInital.value) {
     if (twoFactor.value)
-      axios.post(host + "/2fa/turn-on"), { withCredentials: true };
-    else axios.post(host + "/2fa/turn-off"), { withCredentials: true };
+      axios.post(host + "/auth/2fa/turn-on"), { withCredentials: true };
+    else axios.post(host + "/auth/2fa/turn-off"), { withCredentials: true };
   }
   const profile = {
     pseudo: username.value,

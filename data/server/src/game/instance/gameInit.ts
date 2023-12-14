@@ -9,14 +9,14 @@ export class GameInit {
   static id: number = 0;
   static pongGateway: PongGateway;
 
-  static initGameState(): GameState {
+  static initGameState(mode: boolean): GameState {
     const pongWorldInstance = new PongWorld();
 
     const newGameState: GameState = {
       scoreToWin: SCORE_TO_WIN,
       score: [0, 0],
       pongWorld: pongWorldInstance,
-      pongBall: new PongBall(pongWorldInstance),
+      pongBall: new PongBall(pongWorldInstance, mode),
       pongPaddle1: new PongPaddle(pongWorldInstance, 1),
       pongPaddle2: new PongPaddle(pongWorldInstance, 2),
       timeAtEnd: 0,

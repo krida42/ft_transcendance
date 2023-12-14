@@ -37,14 +37,15 @@
 import { ref } from "vue";
 import { defineProps } from "vue";
 import { useFriendStore } from "@/stores/friend";
+import { useUsersStore } from "@/stores/users";
 import userApi from "@/api/user";
-import router from "@/router";
 
 const username = ref("");
 const loginMessage = ref("");
 const isSent = ref(false);
 const isValidUsername = ref(false);
 const friendStore = useFriendStore();
+const userStore = useUsersStore();
 
 defineProps({
   mode: {
@@ -56,9 +57,22 @@ defineProps({
 const sendFriendRequest = async () => {
   isSent.value = true;
   await friendStore.refreshFriendList();
+  const myId = userStore.currentUser.id;
   userApi
     .fetchUserByPseudo(username.value)
     .then((user) => {
+      if (user.id === myId) {
+        isValidUsername.value = false;
+        loginMessage.value = "You can't add yourself";
+        return;
+      }
+      friendStore.friends.forEach((friend) => {
+        if (friend.id === user.id) {
+          isValidUsername.value = false;
+          loginMessage.value = "User already in your friend list";
+          return;
+        }
+      });
       isValidUsername.value = true;
       loginMessage.value = "Friend request sent";
       friendStore.sendFriendRequest(user.id);

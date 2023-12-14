@@ -112,7 +112,7 @@ function toggleChatAccess() {
 .arcade {
   --border-ratio: 70%;
   background-color: $green-dark;
-  min-height: 45rem;
+  min-height: 50rem;
   max-height: 60rem;
   position: relative;
   display: flex;
@@ -210,7 +210,7 @@ function toggleChatAccess() {
 //   }
 // }
 
-@media (max-width: 640px) {
+@media (max-width: 1000px) {
   .home {
     grid-template-columns: 0 1fr 0;
   }

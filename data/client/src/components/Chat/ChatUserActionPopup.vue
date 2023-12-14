@@ -49,6 +49,7 @@
       </button>
       <button
         class="border-[1px] border-white text-gray-400 hover:bg-gray-500 hover:text-gray-200"
+        @click="invitePlay(user?.id)"
       >
         Play
       </button>
@@ -85,11 +86,11 @@ import { useFriendStore } from "@/stores/friend";
 import { useUsersStore } from "@/stores/users";
 import { useChannelsStore } from "@/stores/channels";
 import { useChatStore } from "@/stores/chat";
-import friend from "@/api/friend";
 import router from "@/router";
 import { User } from "@/types";
 import channelsApi from "@/api/channel";
 import { ChatType } from "@/types";
+import { setOptions } from "@/game/game";
 
 const props = defineProps({
   test: {
@@ -147,6 +148,15 @@ const muteUser = () => {
     channelsApi.muteUser(chatStore.currentChat.id, props.uuid);
     emits("close");
   }
+};
+
+const invitePlay = (userId: string | undefined) => {
+  if (!userId) return;
+  const options = {
+    uuid: userId,
+  };
+  setOptions(options);
+  router.push("/pong");
 };
 </script>
 

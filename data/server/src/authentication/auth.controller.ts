@@ -72,6 +72,7 @@ export class AuthController {
   // }
 
   @Post('2fa/turn-on')
+  @UseGuards(AuthGuard('jwt'))
   async turnOnTwoFactorAuth(
     @Req() req: Request & { user: any },
     @Res() res: Response,
@@ -88,6 +89,7 @@ export class AuthController {
 
   @Post('2fa/turn-off')
   @Public()
+  @UseGuards(AuthGuard('jwt'))
   async turnOffTwoFactorAuth(
     @Req() req: Request & { user: any },
     @Res() res: Response,

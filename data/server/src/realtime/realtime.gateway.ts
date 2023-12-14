@@ -72,10 +72,10 @@ export class RealtimeGateway
       const channels = await this.channelsGetService.getJoinedChan(
         client.data.user.public_id,
       );
-      console.log(
-        'channels: ',
-        channels.map((channel) => channel.chanName),
-      );
+      // console.log(
+      //   'channels: ',
+      //   channels.map((channel) => channel.chanName),
+      // );
       await this.chatGateway.bindUserToChannels(
         client.data.user.public_id,
         channels.map((channel) => channel.chanId),
@@ -122,7 +122,7 @@ export class RealtimeGateway
     const socket = await this.server
       .in(this.roomService.getUserPersonalRoom(userId))
       .fetchSockets();
-    console.log('taille de fetchSockets: ', socket.length);
+    // console.log('taille de fetchSockets: ', socket.length);
     // console.log('socket heyhey: ', socket[0].data);
     if (!socket[0]) throw new Error('findSocketByUserId: Socket not found');
     return socket[0] as unknown as Socket;

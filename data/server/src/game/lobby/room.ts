@@ -33,7 +33,7 @@ export class PongRoom {
     PongRoom.id++;
     this.pongGateway = PongGateway;
     if (options?.uuid) {
-      this.key = v4() + options.uuid;
+      this.key = v4();
     }
     if (options?.mode) {
       this.mode = options.mode;
@@ -205,7 +205,7 @@ export class PongRoom {
   }
 
   sendMode(mode: boolean) {
-    console.log('Mode sent to clients:', mode);
+    // console.log('Mode sent to clients:', mode);
     try {
       this.players.forEach((player) => {
         player.client.emit('mode', mode);

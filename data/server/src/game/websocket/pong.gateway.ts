@@ -141,6 +141,16 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
+  createRoom(options?: Options): PongRoom | undefined {
+    try {
+      const room = new PongRoom(this, options);
+      this.rooms.push(room);
+      return room;
+    } catch (error) {
+      console.error('Error while creating room:', error);
+    }
+  }
+
   closeRoom(room: PongRoom) {
     try {
       const index = this.rooms.findIndex((r) => r === room);
@@ -273,7 +283,7 @@ export class PongGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const userCookie = this.getUserWithCookie(client);
       if (!userCookie) return;
 
-      const roomPrivate = this.findOrCreateRoom(options);
+      const roomPrivate = this.createRoom(options);
       if (!roomPrivate) return;
       await roomPrivate.PlayerManager.addPlayer({ user: userCookie, client });
 

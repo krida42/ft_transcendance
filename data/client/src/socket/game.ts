@@ -5,9 +5,13 @@ import { setOptions } from "@/game/game";
 
 socket.on("got-invite-to-play", (key: string) => {
   console.log("got-invite-to-play event: ", key);
-  //   window.prompt("Vous avez reçu une invitation à jouer", key);
+  if (window.location.href === `http://localhost:8080/pong`) {
+    window.location.reload();
+  }
+  // window.location.href = `http://localhost:8080/pong`;
   setOptions({ key });
   router.push("/pong");
+  console.log("PONGGGGG: ");
 });
 
 // socket.on("randomRoom", (data: any) => {

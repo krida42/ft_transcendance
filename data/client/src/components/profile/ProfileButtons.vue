@@ -2,7 +2,11 @@
   <div class="buttons">
     <button @click="$emit('button1')">
       {{
-        mode === profileModes.myProfile ? "Settings" : "Add as friend"
+        mode === profileModes.myProfile
+          ? "Settings"
+          : isFriend
+          ? "Remove friend"
+          : "Add as friend"
       }}</button
     ><button @click="$emit('button2')">
       {{ mode === profileModes.myProfile ? "Logout" : "Block" }}
@@ -18,6 +22,10 @@ defineProps({
   mode: {
     type: String as PropType<profileModes>,
     required: true,
+  },
+  isFriend: {
+    type: Boolean,
+    required: false,
   },
 });
 </script>

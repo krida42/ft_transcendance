@@ -54,6 +54,7 @@
     </div>
     <ProfileButttons
       :mode="mode"
+      :isFriend="isFriend"
       @button1="button1press"
       @button2="button2press"
     />
@@ -78,12 +79,14 @@ import { Match, Id } from "@/types";
 import { profileModes } from "@/types";
 import router from "@/router";
 import { useUsersStore } from "@/stores/users";
+import { useFriendStore } from "@/stores/friend";
 import { User } from "@/types";
 import userApi from "@/api/user";
 import { Achievement } from "@/types";
 import AchievementItem from "@/components/profile/AchievementItem.vue";
 
 const usersStore = useUsersStore();
+const friendStore = useFriendStore();
 const user = ref<User>(usersStore.currentUser);
 const ranks = ["beginner", "intermediate", "advanced", "expert"];
 const rank = computed(() => {
@@ -112,6 +115,7 @@ const mode = computed(() => {
     return profileModes.myProfile;
   }
 });
+const isFriend = ref<boolean>(false);
 
 const calcWinrate = () => {
   const wins = matchHistory.value.filter(
@@ -137,6 +141,8 @@ const initUser = async () => {
     matchHistory.value = await userApi.getHistory(userId);
     calcWinrate();
     displayWinrate.value = true;
+    await friendStore.refreshFriendList();
+    isFriend.value = friendStore.friendsMap.get(userId) !== undefined;
     return;
   }
   usersStore.refreshUser(usersStore.currentUser.id);
@@ -145,7 +151,6 @@ const initUser = async () => {
   matchHistory.value = await userApi.getHistory(usersStore.currentUser.id);
   calcWinrate();
   displayWinrate.value = true;
-  console.log(achievements.value);
 };
 
 onBeforeMount(() => {
@@ -156,7 +161,13 @@ function button1press() {
   if (mode.value === profileModes.myProfile) {
     isSettings.value = true;
   } else {
-    console.log("add as friend");
+    if (isFriend.value) {
+      friendStore.deleteFriend(user.value.id);
+      router.push("/friends");
+      return;
+    }
+    friendStore.sendFriendRequest(user.value.id);
+    router.push("/friends");
   }
 }
 
@@ -164,7 +175,8 @@ function button2press() {
   if (mode.value === profileModes.myProfile) {
     console.log("logout");
   } else {
-    console.log("block");
+    friendStore.blockUser(user.value.id);
+    router.push("/main/home");
   }
 }
 </script>

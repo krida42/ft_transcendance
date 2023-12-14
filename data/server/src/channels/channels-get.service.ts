@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 
@@ -33,7 +33,9 @@ import { ChannelsUtilsService } from './channels-utils.service';
 @Injectable()
 export class ChannelsGetService {
   constructor(
+    @Inject(forwardRef(() => FriendsService))
     private readonly friendsService: FriendsService,
+    @Inject(forwardRef(() => ChannelsUtilsService))
     private readonly utils: ChannelsUtilsService,
     @InjectModel(Channels)
     private readonly channelModel: typeof Channels,

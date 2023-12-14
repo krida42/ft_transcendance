@@ -35,8 +35,9 @@ export class RealtimeGateway
     private friendsGateway: FriendsGateway,
     @Inject(forwardRef(() => ChatGateway))
     private chatGateway: ChatGateway,
-
+    @Inject(forwardRef(() => FriendsService))
     private readonly friendsService: FriendsService,
+    @Inject(forwardRef(() => ChannelsGetService))
     private readonly channelsGetService: ChannelsGetService,
   ) {}
 

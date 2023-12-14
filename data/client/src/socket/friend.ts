@@ -12,6 +12,10 @@ socket.on("cocorico", (data: any) => {
 
 socket.on("friends-state-ping", (data: any) => {
   console.log("got friends-state-ping event: ", data);
+  friendStore.refreshBlocked();
+  friendStore.refreshFriendList();
+  friendStore.refreshFriendsReceived();
+  friendStore.refreshFriendsSent();
 });
 
 socket.on("channels-state-ping", (data: any) => {

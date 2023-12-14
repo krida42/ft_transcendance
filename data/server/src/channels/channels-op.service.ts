@@ -53,10 +53,10 @@ export class ChannelsOpService {
     await this.utils.checkOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
-      throw new HttpException('user not in channel', HttpStatus.OK);
+      throw new HttpException('user not in channel', HttpStatus.NOT_FOUND);
 
     if (await this.utils.userIs(UserStatus.Admin, userId, chanId))
-      throw new HttpException('is already admin', HttpStatus.OK);
+      throw new HttpException('is already admin', HttpStatus.BAD_REQUEST);
 
     if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
       throw new HttpException('owner cannot be admin', HttpStatus.FORBIDDEN);
@@ -84,10 +84,10 @@ export class ChannelsOpService {
     await this.utils.checkOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
-      throw new HttpException('user not in channel', HttpStatus.OK);
+      throw new HttpException('user not in channel', HttpStatus.NOT_FOUND);
 
     if (false == (await this.utils.userIs(UserStatus.Admin, userId, chanId)))
-      throw new HttpException('user not admin', HttpStatus.OK);
+      throw new HttpException('user not admin', HttpStatus.FORBIDDEN);
 
     try {
       let user = await this.utils.getUserInChannel(userId, chanId);
@@ -113,10 +113,10 @@ export class ChannelsOpService {
     await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (await this.utils.userIsInChannel(userId, chanId))
-      throw new HttpException('already in channel', HttpStatus.OK);
+      throw new HttpException('already in channel', HttpStatus.BAD_REQUEST);
 
     if (await this.utils.userIs(UserStatus.Invited, userId, chanId))
-      throw new HttpException('user already invited', HttpStatus.OK);
+      throw new HttpException('user already invited', HttpStatus.BAD_REQUEST);
 
     if (await this.utils.userIs(UserStatus.Banned, userId, chanId))
       throw new HttpException('user banned', HttpStatus.FORBIDDEN);
@@ -146,7 +146,7 @@ export class ChannelsOpService {
     await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIs(UserStatus.Invited, userId, chanId)))
-      throw new HttpException('user not invited', HttpStatus.OK);
+      throw new HttpException('user not invited', HttpStatus.NOT_FOUND);
 
     try {
       const user = await this.utils.getInvitedUser(userId, chanId);
@@ -171,7 +171,7 @@ export class ChannelsOpService {
     await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (await this.utils.userIs(UserStatus.Banned, userId, chanId))
-      throw new HttpException('user already banned', HttpStatus.OK);
+      throw new HttpException('user already banned', HttpStatus.BAD_REQUEST);
 
     if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
       throw new HttpException('owner cannot be banned', HttpStatus.FORBIDDEN);
@@ -212,7 +212,7 @@ export class ChannelsOpService {
     await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIs(UserStatus.Banned, userId, chanId)))
-      throw new HttpException('user not banned', HttpStatus.OK);
+      throw new HttpException('user not banned', HttpStatus.NOT_FOUND);
 
     try {
       const user = await this.utils.getBannedUser(userId, chanId);
@@ -279,7 +279,7 @@ export class ChannelsOpService {
     await this.utils.checkAdminOrOwner(currentId, chanId);
 
     if (false == (await this.utils.userIsInChannel(userId, chanId)))
-      throw new HttpException('user not in channel', HttpStatus.OK);
+      throw new HttpException('user not in channel', HttpStatus.NOT_FOUND);
 
     if (await this.utils.userIs(UserStatus.Owner, userId, chanId))
       throw new HttpException('owner cannot be kicked', HttpStatus.FORBIDDEN);

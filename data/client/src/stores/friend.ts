@@ -40,6 +40,7 @@ export const useFriendStore = defineStore({
     },
     async refreshFriendList(): Promise<void> {
       return friendApi.fetchFriendList().then((friends) => {
+        this.friendsMap.clear();
         friends.forEach((friend: Friend) => {
           friend.status = Status.Offline;
           this.friendsMap.set(friend.id, friend);
@@ -48,6 +49,7 @@ export const useFriendStore = defineStore({
     },
     async refreshFriendsReceived(): Promise<void> {
       return friendApi.fetchFriendsReceived().then((friends) => {
+        this.friendsReceivedMap.clear();
         friends.forEach((friend: Friend) => {
           this.friendsReceivedMap.set(friend.id, friend);
         });
@@ -55,6 +57,7 @@ export const useFriendStore = defineStore({
     },
     async refreshFriendsSent(): Promise<void> {
       return friendApi.fetchFriendsSent().then((friends) => {
+        this.friendsSentMap.clear();
         friends.forEach((friend: Friend) => {
           this.friendsSentMap.set(friend.id, friend);
         });
@@ -62,6 +65,7 @@ export const useFriendStore = defineStore({
     },
     async refreshBlocked(): Promise<void> {
       return friendApi.fetchBlocked().then((users) => {
+        this.blockedMap.clear();
         users.forEach((user: User) => {
           this.blockedMap.set(user.id, user);
         });

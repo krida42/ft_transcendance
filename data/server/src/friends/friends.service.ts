@@ -17,6 +17,7 @@ import { UsersService } from '../users/users.service';
 import { PublicUserDto } from 'src/users/dto/publicUser.dto';
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
+import { FriendsGateway } from 'src/realtime/friends.gateway';
 
 enum FriendStatus {
   Pending = 'Pending',
@@ -52,6 +53,8 @@ enum FriendStatus {
 @Injectable()
 export class FriendsService {
   constructor(
+    @Inject(forwardRef(() => FriendsGateway))
+    private readonly friendsGateway: FriendsGateway,
     @InjectModel(Friends)
     private readonly friendsModel: typeof Friends,
     @Inject(UsersService)
@@ -67,17 +70,16 @@ export class FriendsService {
     receiver_id: uuidv4,
   ): Promise<PublicUserDto> {
     if ((await this.checkId(sender_id)) === (await this.checkId(receiver_id))) {
-      throw new HttpException('same uuidv4', HttpStatus.OK);
+      throw new HttpException('same uuidv4', HttpStatus.CONFLICT);
     }
     if (await this.friendExists(sender_id, receiver_id)) {
-      throw new HttpException('already added', HttpStatus.OK);
+      throw new HttpException('already added', HttpStatus.BAD_REQUEST);
     }
     if (await this.youBlockIt(sender_id, receiver_id)) {
       throw new HttpException('you blocked this user', HttpStatus.CONFLICT);
     }
     if (await this.heBlockYou(sender_id, receiver_id)) {
-      // TEMP
-      throw new HttpException('this user has blocked you', HttpStatus.OK);
+      throw new HttpException('this user has blocked you', HttpStatus.FORBIDDEN);
     }
     try {
       await this.friendsModel.create({
@@ -85,6 +87,10 @@ export class FriendsService {
         receiver_id: receiver_id,
         status: FriendStatus.Pending,
       });
+
+      if (receiver_id)
+        this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
+
       return await this.fetchPublicUserDto(receiver_id);
     } catch (error) {
       throw new HttpException(
@@ -116,8 +122,18 @@ export class FriendsService {
     if (pendingFriend.status === FriendStatus.Blocked) {
       throw new HttpException('user is blocked', HttpStatus.CONFLICT);
     }
+
     pendingFriend.status = FriendStatus.Active;
     await pendingFriend.save();
+
+    if (sender_id)
+      this.friendsGateway.pingUserFriendsStateChanged(sender_id); // c normal, is not currentId
+
+    if (sender_id && receiver_id) {
+      this.friendsGateway.bindUserToFriends(sender_id, [receiver_id]);
+      this.friendsGateway.bindUserToFriends(receiver_id, [sender_id]);
+    }
+
     this.createDirectChannel(sender_id, receiver_id);
     return await this.fetchPublicUserDto(sender_id);
   }
@@ -134,6 +150,9 @@ export class FriendsService {
       throw new HttpException('relation not found', HttpStatus.NOT_FOUND);
     }
     await friendship.destroy();
+
+    if (friend_id) this.friendsGateway.pingUserFriendsStateChanged(friend_id);
+
     return await this.fetchPublicUserDto(friend_id);
   }
 
@@ -149,6 +168,13 @@ export class FriendsService {
       throw new HttpException('relation not found', HttpStatus.NOT_FOUND);
     }
     await friendship.destroy();
+
+    if (friend_id) this.friendsGateway.pingUserFriendsStateChanged(friend_id);
+    if (currentId && friend_id) {
+      this.friendsGateway.unbindUserFromFriends(currentId, [friend_id]);
+      this.friendsGateway.unbindUserFromFriends(friend_id, [currentId]);
+    }
+
     return await this.fetchPublicUserDto(friend_id);
   }
 
@@ -163,7 +189,7 @@ export class FriendsService {
     }
     if (await this.youBlockIt(sender_id, receiver_id))
       if (await this.youBlockIt(sender_id, receiver_id))
-        throw new HttpException('user already blocked', HttpStatus.OK);
+        throw new HttpException('user already blocked', HttpStatus.BAD_REQUEST);
 
     try {
       let friendship = await this.getFriendship(sender_id, receiver_id);
@@ -182,6 +208,13 @@ export class FriendsService {
     } catch (error) {
       throw new HttpException('blockFriend ' + error, HttpStatus.BAD_REQUEST);
     }
+    if (receiver_id)
+      this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
+    if (sender_id && receiver_id) {
+      this.friendsGateway.unbindUserFromFriends(sender_id, [receiver_id]);
+      this.friendsGateway.unbindUserFromFriends(receiver_id, [sender_id]);
+    }
+
     return await this.fetchPublicUserDto(receiver_id);
   }
 
@@ -199,9 +232,12 @@ export class FriendsService {
         status: FriendStatus.Blocked,
       },
     });
-    if (!youBlock)
-      throw new HttpException('user not blocked', HttpStatus.OK);
+    if (!youBlock) throw new HttpException('user not blocked', HttpStatus.NOT_FOUND);
     else await youBlock.destroy();
+    if (receiver_id)
+
+    this.friendsGateway.pingUserFriendsStateChanged(receiver_id);
+
     return await this.fetchPublicUserDto(receiver_id);
   }
 

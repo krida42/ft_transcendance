@@ -10,11 +10,13 @@ import { UsersModule } from 'src/users/users.module';
 
 import { Channels } from 'db/models/channels';
 import { ChannelsUsers } from 'db/models/channelsUsers';
+import { RealtimeModule } from 'src/realtime/realtime.module';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([Friends, User, Channels, ChannelsUsers]),
     forwardRef(() => UsersModule),
+    forwardRef(() => RealtimeModule),
   ],
   controllers: [FriendsController],
   providers: [FriendsService],

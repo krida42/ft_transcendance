@@ -377,7 +377,8 @@ let chatUserActionPopup = reactive({
 });
 
 function openChatUserActionPopup(userId: string) {
-  chatUserActionPopup.userId = userId;
+  if (userId !== usersStore.currentUser?.id)
+    chatUserActionPopup.userId = userId;
 }
 
 function closeChatUserActionPopup() {

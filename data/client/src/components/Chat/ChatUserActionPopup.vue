@@ -64,7 +64,7 @@
     <div class="admin-btns gap-x-5 gap-y-3 grid grid-cols-3 mt-4" v-if="admin">
       <button class="px-4" @click="kickUser">KICK</button>
       <button class="px-4 mr" @click="banUser">BAN</button>
-      <button class="col-start-1" @click="muteUser">MUTE 10M</button>
+      <button class="" @click="muteUser">MUTE 10M</button>
     </div>
   </div>
 </template>

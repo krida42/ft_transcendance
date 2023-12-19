@@ -9,8 +9,7 @@
 </template>
 <script lang="ts" setup>
 import router from "@/router";
-import { setOptions, Options } from "@/game/game";
-// import { socket as socket } from "@/socket";
+import { setOptions } from "@/game/game";
 
 const small = () => {
   const options = {

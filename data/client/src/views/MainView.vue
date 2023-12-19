@@ -9,6 +9,11 @@
         svgName="heart-menu.svg"
         @click="() => $router.push('/friends')"
       />
+      <img
+        @click="() => $router.push('/main/friend-add')"
+        src="../assets/svg/create.svg"
+        class="absolute bottom-[100px] left-[20px] w-[1.5rem] aspect-square"
+      />
     </div>
     <div class="arcade">
       <div class="arcade_border border_l"></div>
@@ -44,7 +49,6 @@
       <div class="bd-resd mb-[30px] mr-[30px]">
         <div class="bd-redd relative" v-show="chatAccessOpened">
           <ChatAccessList class="relative z-10 right-[2rem]" />
-
           <ChatMsgList
             class="left-[-420px] top-[-230px]"
             v-show="chatStore.openedChatId !== ''"
@@ -131,6 +135,12 @@ function toggleChatAccess() {
 }
 
 .right img:hover {
+  cursor: pointer;
+  border-radius: 15px;
+  background-color: $yellow-hover;
+}
+
+.left img:hover {
   cursor: pointer;
   border-radius: 15px;
   background-color: $yellow-hover;

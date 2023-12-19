@@ -1,13 +1,9 @@
 <template>
   <div class="pong-screen flex flex-col justify-center p-[1rem] gap-[2.5rem]">
-    <p class="leading-tight">
-      You are about to <br />
-      join a queue. <br />
-      Continue?
-    </p>
+    <p class="leading-tight">Choose a game mode</p>
     <div class="buttons-yes-no flex justify-evenly">
-      <button @click="joinQueue">YES</button>
-      <button @click="router.push('/main/home')">NO</button>
+      <button @click="joinQueue">Small Ball</button>
+      <button @click="router.push('/main/home')">Big Ball</button>
     </div>
   </div>
 </template>
@@ -17,7 +13,7 @@ import router from "@/router";
 // import { socket as socket } from "@/socket";
 
 const joinQueue = () => {
-  router.push("/main/game-mode");
+  router.push("/pong");
 };
 </script>
 

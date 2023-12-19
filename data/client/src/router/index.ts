@@ -134,6 +134,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/PongScreen/JoinQueueView.vue"),
       },
       {
+        path: "game-mode",
+        name: "gameMode",
+        component: () => import("../views/PongScreen/GameModeView.vue"),
+      },
+      {
         path: "waiting",
         name: "waiting",
         component: () => import("../views/PongScreen/WaitingOpponentView.vue"),

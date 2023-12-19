@@ -73,8 +73,6 @@
 import { defineProps, defineEmits, ref } from "vue";
 import { useUsersStore } from "@/stores/users";
 import { useMainStore } from "@/stores/main";
-import { User } from "@/types";
-import user from "@/api/user";
 import router from "@/router";
 import { ErrorPop } from "@/types";
 import ErrorPopup from "@/components/ErrorPopup.vue";
@@ -124,9 +122,10 @@ const onFileSelected = (e: Event) => {
 const editProfile = async () => {
   if (twoFactor.value !== twoFactorInital.value) {
     if (twoFactor.value) {
-      axios.post(host + "/auth/2fa/turn-on"), { withCredentials: true };
-      router.push("/auth/2fa");
-    } else axios.post(host + "/auth/2fa/turn-off"), { withCredentials: true };
+      await axios.post(host + "/auth/2fa/turn-on"), { withCredentials: true };
+      router.push("/auth/2FA-QR");
+    } else
+      await axios.post(host + "/auth/2fa/turn-off"), { withCredentials: true };
   }
   const profile = {
     pseudo: username.value,
@@ -136,8 +135,10 @@ const editProfile = async () => {
     .editUser(profile)
     .then(() => {
       mainStore.refreshUserInfo().then(() => {
-        emit("closeSettings");
-        window.location.href = `${process.env.VUE_APP_CUICUI}:8080/profile`;
+        if (twoFactor.value === twoFactorInital.value || !twoFactor.value) {
+          emit("closeSettings");
+          window.location.href = `${process.env.VUE_APP_CUICUI}:8080/profile`;
+        }
       });
     })
     .catch((err: AxiosError | Error) => {

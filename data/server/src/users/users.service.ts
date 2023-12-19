@@ -224,7 +224,7 @@ export class UsersService {
       return dtoArray;
 
     const achIds = userAchs.map((userAch) => userAch.achievement_id);
-    console.log('achIds', achIds);
+    // console.log('achIds', achIds);
 
     for (const achId of achIds) {
       const data = await this.achievementsModel.findOne({

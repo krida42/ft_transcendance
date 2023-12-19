@@ -32,7 +32,7 @@ function launch(containerId: any) {
 let options: Options = {
   uuid: undefined,
   key: undefined,
-  mode: true,
+  mode: false,
 };
 
 export const setOptions = (optionsP?: Options) => {

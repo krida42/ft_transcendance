@@ -85,7 +85,7 @@ export class RealtimeGateway
     }
 
     // console.log('all my friends: ', friends);
-    console.log('Socket: client.data.user.pseudo: ', client.data.user.pseudo);
+    // console.log('Socket: client.data.user.pseudo: ', client.data.user.pseudo);
   }
 
   handleDisconnect(client: Socket) {

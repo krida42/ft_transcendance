@@ -38,17 +38,8 @@ export class Game {
   }
 
   async setupTimeEndGame(timeEndGame: number = TIME_END_GAME) {
-
-    // // console.log('setupTimeEndGame timeEndGame DECLAREWINNER', timeEndGame);
-
-
-    const date = new Date();
-    // console.log(" \n DAte.now \n", date);
     this.timeEndGame = setTimeout(async () => {
       this.running = false;
-      // console.log("\n Date.next \n", date);
-      // // console.log('setupTimeEndGame gameState.score', this.gameState.score);
-      // // console.log('setupTimeEndGame timeEndGame DECLAREWINNER', timeEndGame);
       await this.declareWinner();
       await this.endGame();
     }, timeEndGame);

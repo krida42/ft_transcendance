@@ -109,6 +109,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/MainView.vue"),
     children: [
       {
+        path: "welcome",
+        name: "welcome",
+        component: () => import("../views/PongScreen/WelcomeView.vue"),
+      },
+      {
         path: "home",
         name: "home",
         component: () => import("../views/PongScreen/HomeView.vue"),

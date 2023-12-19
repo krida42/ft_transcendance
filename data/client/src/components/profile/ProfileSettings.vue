@@ -60,6 +60,13 @@
       </button>
     </form>
   </div>
+  <ErrorPopup
+    v-if="isErr"
+    :statusCode="error.statusCode"
+    :message="error.message"
+    :overlay="false"
+    @close="isErr = false"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -68,8 +75,10 @@ import { useUsersStore } from "@/stores/users";
 import { useMainStore } from "@/stores/main";
 import { User } from "@/types";
 import user from "@/api/user";
-import axios from "axios";
 import router from "@/router";
+import { ErrorPop } from "@/types";
+import ErrorPopup from "@/components/ErrorPopup.vue";
+import axios, { AxiosError } from "axios";
 
 const props = defineProps({
   username: {
@@ -97,6 +106,8 @@ const twoFactorInital = ref(props.twoFactor);
 const usersStore = useUsersStore();
 const mainStore = useMainStore();
 const host = process.env.VUE_APP_API_URL;
+const error = ref({} as ErrorPop);
+const isErr = ref(false);
 
 const onFileSelected = (e: Event) => {
   if (e) e.preventDefault();
@@ -121,12 +132,28 @@ const editProfile = async () => {
     pseudo: username.value,
   };
   if (file) await usersStore.uploadUserAvatar(file);
-  usersStore.editUser(profile).then(() => {
-    mainStore.refreshUserInfo().then(() => {
-      emit("closeSettings");
-      window.location.href = `${process.env.VUE_APP_CUICUI}:8080/profile`;
+  usersStore
+    .editUser(profile)
+    .then(() => {
+      mainStore.refreshUserInfo().then(() => {
+        emit("closeSettings");
+        window.location.href = `${process.env.VUE_APP_CUICUI}:8080/profile`;
+      });
+    })
+    .catch((err: AxiosError | Error) => {
+      isErr.value = true;
+      if (axios.isAxiosError(err)) {
+        if (err.response && err.response.data && err.response.data.message) {
+          if (Array.isArray(err.response.data.message))
+            error.value.message = err.response.data.message[0];
+          else error.value.message = err.response.data.message;
+        }
+        if (err.response && err.response.status)
+          error.value.statusCode = err.response.status;
+      } else {
+        error.value.message = err.message;
+      }
     });
-  });
 };
 </script>
 

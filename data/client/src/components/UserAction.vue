@@ -71,7 +71,6 @@ const {
   unblockUser,
   cancelFriendRequest,
 } = useFriendStore();
-const { users } = usersStore;
 
 const Mode = {
   FRIEND: "friend",
@@ -94,10 +93,10 @@ const props = defineProps({
 
 // console.log(Object.values(Status));
 const user = computed(() => {
-  return users.get(props.uuid);
+  return usersStore.users.get(props.uuid);
 });
 
-console.log(user.value);
+// console.log(user.value);
 
 (() => {
   // check if Mode is valid

@@ -23,7 +23,7 @@ export const useMainStore = defineStore({
       pseudo: "",
       avatar: "",
     },
-    status: Status.Offline,
+    status: Status.Online,
   }),
   getters: {},
   actions: {

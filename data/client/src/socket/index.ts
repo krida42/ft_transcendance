@@ -30,14 +30,16 @@ export const socket = io(URL, {
 //   transports: ["websocket"],
 // });
 
+let intervalId: number | null = null;
+
 socket.on("connect", () => {
   state.connected = true;
   // socket.emit("cuicui", { msg: "Hello from client" }, (response: any) => {
   //   console.log("cuicui acknowledged: ", response);
   // });
   // console.log("emit status");
-  setInterval(() => {
-    socket.emit("status", Status.Online, (response: any) => {
+  intervalId = setInterval(() => {
+    socket.emit("status", mainStore.status, (response: any) => {
       // console.log("status acknowledged, this is my status: ", response);
       mainStore.status = response.status;
     });
@@ -46,6 +48,7 @@ socket.on("connect", () => {
 
 socket.on("disconnect", () => {
   state.connected = false;
+  if (intervalId) clearInterval(intervalId);
 });
 //Pour les effet de bord
 import("./friend");

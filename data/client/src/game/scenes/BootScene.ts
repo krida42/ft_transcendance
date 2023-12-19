@@ -10,6 +10,10 @@ import { Socket } from "socket.io-client";
 import { getOptions, Options } from "../game";
 import { GameWaitingEvent } from "@/types";
 import { socket as socketSocial } from "@/socket/index";
+import { useMainStore } from "@/stores/main";
+import { Status } from "@/types";
+
+const mainStore = useMainStore();
 export default class BootScene extends Scene {
   static socket: Socket;
   options: Options;
@@ -27,6 +31,11 @@ export default class BootScene extends Scene {
 
     socket.on("connect", () => {
       socket.emit("options", this.options);
+      mainStore.status = Status.InGame;
+    });
+
+    socket.on("disconnect", () => {
+      mainStore.status = Status.Online;
     });
 
     socket.on("waiting-friend", (data: GameWaitingEvent) => {

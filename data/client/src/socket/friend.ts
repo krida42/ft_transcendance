@@ -2,9 +2,11 @@ import { socket } from "./index";
 import { useFriendStore } from "@/stores/friend";
 import { useMainStore } from "@/stores/main";
 import { Status } from "@/types";
+import { useUsersStore } from "@/stores/users";
 
 const friendStore = useFriendStore();
 const mainStore = useMainStore();
+const usersStore = useUsersStore();
 
 socket.on("cocorico", (data: any) => {
   console.log("cocorico event: ", data);

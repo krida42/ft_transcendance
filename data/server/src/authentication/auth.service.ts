@@ -91,6 +91,12 @@ export class AuthService {
     };
   }
 
+  async isTwoFactorAuthEnabled(user: ResponseUserDto): Promise<boolean> {
+    if ((await this.isTwoFactorEnable(user.public_id)) === null || 
+      (await this.isTwoFactorEnable(user.public_id)) === false) return false;
+    return (await this.isTwoFactorEnable(user.public_id)) === true;
+  }
+
   async setTwoFactorSecret(secret: string, public_id: uuidv4) {
     await this.UsersService.updateUser(public_id, {
       twoFactorSecret: secret,

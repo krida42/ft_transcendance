@@ -70,7 +70,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref, onMounted } from "vue";
 import { useUsersStore } from "@/stores/users";
 import { useMainStore } from "@/stores/main";
 import router from "@/router";
@@ -107,7 +107,12 @@ const host = process.env.VUE_APP_API_URL;
 const error = ref({} as ErrorPop);
 const isErr = ref(false);
 
+onMounted(() => {
+  console.log("2FA VALUE: ", props.twoFactor);
+});
+
 const onFileSelected = (e: Event) => {
+  console.log("2FA VALUE: ", props.twoFactor);
   if (e) e.preventDefault();
   files = (e.target as HTMLInputElement).files;
   if (!files || !files[0]) return;
@@ -124,8 +129,9 @@ const editProfile = async () => {
     if (twoFactor.value) {
       await axios.post(host + "/auth/2fa/turn-on"), { withCredentials: true };
       router.push("/auth/2FA-QR");
-    } else
+    } else {
       await axios.post(host + "/auth/2fa/turn-off"), { withCredentials: true };
+    }
   }
   const profile = {
     pseudo: username.value,

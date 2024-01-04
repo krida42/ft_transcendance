@@ -84,6 +84,9 @@ import { User } from "@/types";
 import userApi from "@/api/user";
 import { Achievement } from "@/types";
 import AchievementItem from "@/components/profile/AchievementItem.vue";
+import axios from "axios";
+
+const host = `${process.env.VUE_APP_CUICUI}:3001`;
 
 const usersStore = useUsersStore();
 const friendStore = useFriendStore();
@@ -145,6 +148,9 @@ const initUser = async () => {
     isFriend.value = friendStore.friendsMap.get(userId) !== undefined;
     return;
   }
+  let res = await axios.get("http://localhost:3001/auth/2fa/is-enabled");
+  twoFactor.value = res.data.isTwoFactorAuthEnabled;
+  console.log("2FA VALUE: ", twoFactor.value);
   usersStore.refreshUser(usersStore.currentUser.id);
   user.value = usersStore.currentUser;
   achievements.value = await userApi.getAchievements(usersStore.currentUser.id);

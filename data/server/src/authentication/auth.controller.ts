@@ -71,7 +71,6 @@ export class AuthController {
   //   return (res as any).status(HttpStatus.OK);
   // }
 
-
   @Get('2fa/is-enabled')
   @Public()
   @UseGuards(AuthGuard('jwt'))
@@ -79,7 +78,7 @@ export class AuthController {
     @Req() req: Request & { user: any },
     @Res() res: Response,
   ) {
-    const isTwoFactorAuthEnabled = await this.AuthService.isTwoFactorAuthEnabled(
+    const isTwoFactorAuthEnabled = await this.AuthService.isTwoFactorEnable(
       req.user.public_id,
     );
     return (res as any).status(200).json({ isTwoFactorAuthEnabled });

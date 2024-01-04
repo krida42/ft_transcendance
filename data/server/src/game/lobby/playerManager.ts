@@ -23,7 +23,7 @@ export class PlayerManager {
 
       this.players.push(player);
 
-      // console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
+      console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
       this.showPlayers();
 
       await this.pongRoom.start();

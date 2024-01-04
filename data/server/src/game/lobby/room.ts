@@ -9,7 +9,6 @@ import { Achievement } from '../achievements/achievements';
 import { User } from 'db/models/user';
 import { v4 } from 'uuid';
 import { uuidv4 } from 'src/types';
-import { send } from 'process';
 export class PongRoom {
   //game
   pongGateway: PongGateway;
@@ -49,10 +48,10 @@ export class PongRoom {
   async start() {
     if (!this.PlayerManager.isMaxPlayer())
     {
-      this.sendWaiting(true);
+      // this.sendWaiting(true);
       return;
     }
-    this.sendWaiting(false);
+    // this.sendWaiting(false);
     console.log('Game started id:', Game.id);
     this.started = true;
     setTimeout(async () => {
@@ -225,23 +224,23 @@ export class PongRoom {
     }
   }
 
-  sendWaiting(isWaiting: boolean) {
-    console.log('Waiting sent to clients', isWaiting);
-    try {
-      if (isWaiting) {
-        this.players.forEach((player) => {
-          player.client.emit('waiting', true);
-        });
-      }
-      else {
-        this.players.forEach((player) => {
-          player.client.emit('waiting', false);
-        });
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  // sendWaiting(isWaiting: boolean) {
+  //   console.log('Waiting sent to clients', isWaiting);
+  //   try {
+  //     if (isWaiting) {
+  //       this.players.forEach((player) => {
+  //         player.client.emit('waiting', true);
+  //       });
+  //     }
+  //     else {
+  //       this.players.forEach((player) => {
+  //         player.client.emit('waiting', false);
+  //       });
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }
 
   sendGamePaused() {
     console.log('Game paused sent to clients');

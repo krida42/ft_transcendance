@@ -133,6 +133,7 @@ function clickPokeL() {
     pokeball_l.value = pokeClickedSvg;
     pokeball_r.value = pokeSvg;
   } else {
+    mode.value = "big";
     pokeball_l.value = pokeSvg;
     pokeball_r.value = pokeClickedSvg;
   }
@@ -144,6 +145,7 @@ function clickPokeR() {
     pokeball_r.value = pokeClickedSvg;
     pokeball_l.value = pokeSvg;
   } else {
+    mode.value = "small";
     pokeball_r.value = pokeSvg;
     pokeball_l.value = pokeClickedSvg;
   }

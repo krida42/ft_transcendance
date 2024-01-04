@@ -9,9 +9,10 @@ socket.on("got-invite-to-play", (key: string) => {
     window.location.reload();
   }
   // window.location.href = `${process.env.VUE_APP_CUICUI}:8080/pong`;
+  console.log(key);
   setOptions({ key });
-  router.push("/pong");
   console.log("PONGGGGG: ");
+  router.push("/pong");
 });
 
 // socket.on("randomRoom", (data: any) => {

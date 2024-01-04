@@ -1,6 +1,6 @@
 #!/bin/sh
 
-npm install
+npm clean-install
 
 # npm run build
 

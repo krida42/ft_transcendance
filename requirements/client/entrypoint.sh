@@ -1,5 +1,5 @@
 #!/bin/sh
 
-npm install
+npm clean-install
 
 exec npm run serve

@@ -31,6 +31,7 @@ export default class BootScene extends Scene {
     this.options = getOptions();
 
     socket.on("connect", () => {
+      console.log("options a envoyer au connect:", this.options);
       socket.emit("options", this.options);
       mainStore.status = Status.InGame;
     });
@@ -40,7 +41,7 @@ export default class BootScene extends Scene {
     });
 
     socket.on("waiting-friend", (data: GameWaitingEvent) => {
-      console.log("waiting-friend", data);
+      console.log("waiting-friend, data:", data);
       socketSocial.emit("invite-to-play", data);
     });
 

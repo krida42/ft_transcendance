@@ -39,7 +39,17 @@ export const setOptions = (optionsP?: Options) => {
   options = optionsP;
 };
 
-export const getOptions = () => options;
+export const getOptions = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const key_from_url = urlParams.get("key");
+  if (!options) {
+    options = {};
+  }
+  if (!options.key && key_from_url) {
+    options.key = key_from_url;
+  }
+  return options;
+};
 
 export default launch;
 export { launch };

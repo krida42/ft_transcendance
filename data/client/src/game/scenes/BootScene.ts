@@ -17,6 +17,7 @@ const mainStore = useMainStore();
 export default class BootScene extends Scene {
   static socket: Socket;
   options: Options;
+  isWaiting = false;
 
   constructor() {
     super({ key: "BootScene" });

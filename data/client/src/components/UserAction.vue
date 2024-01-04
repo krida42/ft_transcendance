@@ -1,6 +1,9 @@
 <template>
   <div class="user-action w-[8rem] h-[5srem] bd-redd">
-    <div class="avatar w-[5rem] h-[5rem] mx-auto rounded-full overflow-hidden">
+    <div
+      @click="router.push(`/profile/${props.uuid}`)"
+      class="avatar w-[5rem] h-[5rem] mx-auto rounded-full overflow-hidden cursor-pointer"
+    >
       <img :src="user?.avatar" alt="user image" />
     </div>
     <div class="user-info text-xl font-medium">
@@ -60,6 +63,7 @@ import { useUsersStore } from "@/stores/users";
 import { useFriendStore } from "@/stores/friend";
 import { computed } from "vue";
 import { defineProps } from "vue";
+import router from "@/router";
 
 import { Status } from "@/types";
 

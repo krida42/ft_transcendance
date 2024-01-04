@@ -47,7 +47,7 @@ async function postCompareCode() {
       }),
     });
     if (response.ok) {
-      await router.push("/main/home");
+      await router.push("/main/welcome");
     } else {
       isValidCode.value = false;
     }

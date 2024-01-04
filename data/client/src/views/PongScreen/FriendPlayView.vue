@@ -38,15 +38,27 @@
         src="@/assets/svg/right-arrow.svg"
       />
     </div>
-    <input
-      v-model="username"
-      placeholder="search a friend..."
-      type="text"
-      minlength="3"
-      maxlength="15"
-      class="bg-black text-[1.5rem] border-2 border-[#828287] mx-[8rem] pl-[1rem]"
-      @keydown="resetPageId"
-    />
+    <div class="flex justify-center">
+      <img
+        :src="pokeball_l"
+        @click="clickPokeL"
+        class="w-[1.5rem] cursor-pointer"
+      />
+      <input
+        v-model="username"
+        placeholder="search a friend..."
+        type="text"
+        minlength="3"
+        maxlength="15"
+        class="bg-black text-[1.5rem] border-2 border-[#828287] mx-[2rem] pl-[1rem]"
+        @keydown="resetPageId"
+      />
+      <img
+        :src="pokeball_r"
+        @click="clickPokeR"
+        class="w-[2.3rem] cursor-pointer"
+      />
+    </div>
   </div>
 </template>
 
@@ -56,10 +68,15 @@ import router from "@/router";
 import { useFriendStore } from "@/stores/friend";
 import { FriendsTransformer } from "@/utils/friendsTransformer";
 import { computed, ref } from "vue";
+import pokeSvg from "@/assets/svg/pokeball.svg";
+import pokeClickedSvg from "@/assets/svg/pokeball-clicked.svg";
 
 const friendStore = useFriendStore();
 const currentPageId = ref(0);
 const username = ref("");
+const pokeball_l = ref(pokeClickedSvg);
+const pokeball_r = ref(pokeSvg);
+const mode = ref("small");
 
 (() => {
   friendStore.refreshFriendList();
@@ -93,11 +110,45 @@ function resetPageId() {
 }
 
 function inviteFriend(friendId: string) {
-  const options = {
-    uuid: friendId,
-  };
-  setOptions(options);
-  router.push("/pong");
+  if (mode.value === "small") {
+    const options = {
+      mode: false,
+      uuid: friendId,
+    };
+    setOptions(options);
+    router.push("/pong");
+  } else {
+    const options = {
+      mode: true,
+      uuid: friendId,
+    };
+    setOptions(options);
+    router.push("/pong");
+  }
+}
+
+function clickPokeL() {
+  if (pokeball_l.value === pokeSvg) {
+    mode.value = "small";
+    pokeball_l.value = pokeClickedSvg;
+    pokeball_r.value = pokeSvg;
+  } else {
+    mode.value = "big";
+    pokeball_l.value = pokeSvg;
+    pokeball_r.value = pokeClickedSvg;
+  }
+}
+
+function clickPokeR() {
+  if (pokeball_r.value === pokeSvg) {
+    mode.value = "big";
+    pokeball_r.value = pokeClickedSvg;
+    pokeball_l.value = pokeSvg;
+  } else {
+    mode.value = "small";
+    pokeball_r.value = pokeSvg;
+    pokeball_l.value = pokeClickedSvg;
+  }
 }
 </script>
 

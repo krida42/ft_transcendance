@@ -1,5 +1,8 @@
 <template>
-  <div class="grey-overlay absolute top-0 left-0 w-[100%] h-[100%] z-10">
+  <div
+    :class="$props.overlay ? 'grey-overlay' : ''"
+    class="absolute top-0 left-0 w-[100%] h-[100%] z-10"
+  >
     <div
       class="error-popup absolute top-[50%] left-[50%] ml-[-18%] mt-[-18%] w-[36%] h-[36%] bg-green-bg opacity-90 z-100 flex flex-col justify-center items-center gap-[15%] rounded-[15px] p-[1rem]"
     >
@@ -26,6 +29,11 @@ defineProps({
   message: {
     type: String,
     required: true,
+  },
+  overlay: {
+    type: Boolean,
+    required: false,
+    default: true,
   },
 });
 

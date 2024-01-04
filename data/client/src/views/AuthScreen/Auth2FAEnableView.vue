@@ -40,7 +40,7 @@ async function postDeactivate2FA() {
     method: "POST",
     credentials: "include",
   });
-  const route = await router.push("/profile");
+  const route = await router.push("/main/welcome");
   Promise.all([response, route]);
 }
 </script>

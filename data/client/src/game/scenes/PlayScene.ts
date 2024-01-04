@@ -23,6 +23,8 @@ export default class PlayScene extends Scene {
   pause: any;
   pauseText!: Phaser.GameObjects.Text;
 
+  isWaiting = true;
+
   //input
   upKey: any;
   downKey: any;
@@ -188,7 +190,7 @@ export default class PlayScene extends Scene {
     this.displayPaddle2();
 
     this.socket.on("score", (score: [number, number]) => {
-      console.log("score", score);
+      // console.log("score", score);
       this.score = score;
     });
 
@@ -222,19 +224,20 @@ export default class PlayScene extends Scene {
       });
     });
 
+    this.socket.on("waiting", (isWaiting: boolean) => {
+      if (isWaiting === false) {
+        this.scene.start("PlayScene");
+        this.scene.stop("WaitingScene");
+      } else {
+        this.scene.start("WaitingScene");
+        this.scene.stop("PlayScene");
+      }
+    });
+
     this.socket.on("alreadyConnected", () => {
       this.scene.start("ErrorScene", {
         message: "Vous êtes déjà connecté à une partie.",
       });
-    });
-
-    this.socket.on("waiting", (isWaiting: boolean) => {
-      if (isWaiting === true) {
-        this.scene.start("WaitingScene");
-      } else if (isWaiting === false) {
-        this.scene.start("PlayScene");
-        this.scene.stop("WaitingScene");
-      }
     });
   }
 

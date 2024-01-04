@@ -13,6 +13,7 @@ import { socket as socketSocial } from "@/socket/index";
 export default class BootScene extends Scene {
   static socket: Socket;
   options: Options;
+  isWaiting = false;
 
   constructor() {
     super({ key: "BootScene" });

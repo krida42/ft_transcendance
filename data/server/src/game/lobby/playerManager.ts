@@ -22,9 +22,6 @@ export class PlayerManager {
       player.number = this.players.length;
 
       this.players.push(player);
-      //waiting aborted
-      // if (!this.isMaxPlayer()) player.client.emit('waiting', true);
-      // else this.players.forEach((p) => p.client.emit('waiting', false));
 
       // console.log(`Player ${player.user.login} added to room: ${PongRoom.id}`);
       this.showPlayers();
@@ -58,7 +55,6 @@ export class PlayerManager {
 
   async removePlayer(client: Socket) {
     try {
-      console.log('PlayerManager removePlayer');
       const player = this.players.find((p) => p.client.id === client.id);
       if (!player) return;
       if (!this.pongRoom.started)
@@ -109,8 +105,7 @@ export class PlayerManager {
 
   async removeDisconnectedPlayer(player: Player, client: Socket) {
     try {
-      console.log('PlayerManager removeDisconnectedPlayer');
-      const timeout = setTimeout(async () => {
+        const timeout = setTimeout(async () => {
         if (!this.disconnectPlayers.has(player.client.id)) {
           return; // Sortie de la fonction si le timeout a été annulé
         }

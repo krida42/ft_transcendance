@@ -41,7 +41,14 @@
           'text-gray-400': !canAddFriend,
           'border-gray-400': !canAddFriend,
         }"
-        @click="canAddFriend ? sendFriendRequest(user!.id) : null"
+        @click="
+          canAddFriend
+            ? sendFriendRequest(user!.id).catch((err) => {
+                isErr = true;
+                error.message = err.message;
+              })
+            : null
+        "
         :disabled="!canAddFriend"
       >
         {{

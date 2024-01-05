@@ -80,7 +80,10 @@ const sendFriendRequest = async () => {
       }
       isValidUsername.value = true;
       loginMessage.value = "Friend request sent";
-      friendStore.sendFriendRequest(user.id);
+      friendStore.sendFriendRequest(user.id).catch((err) => {
+        isValidUsername.value = false;
+        loginMessage.value = "Error while sending friend request";
+      });
     })
     .catch((err) => {
       isValidUsername.value = false;

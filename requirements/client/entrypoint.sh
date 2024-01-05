@@ -2,8 +2,8 @@
 
 npm install
 
-# npm run build
+npm run build
 
-# exec npx serve -s -l 8080 dist/
+exec npx serve -s -l 8080 dist/
 
-exec npm run serve
+# exec npm run serve

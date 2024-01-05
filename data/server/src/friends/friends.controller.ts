@@ -98,7 +98,6 @@ export class FriendsController {
   }
 
   // ADD / CANCEL
-  // console.log('req.user.login:', req.user.login); FIXME
 
   @ApiOperation({ summary: 'Add a friend' })
   @UseGuards(AuthGuard('jwt'), AuthGuard('jwt-2fa'))

@@ -62,8 +62,6 @@ export class UsersService {
 
   async findAll() {
     const users = await User.findAll({});
-    // console.log(users.every((user) => user instanceof User));
-    // console.log('All users:', JSON.stringify(users, null, 2));
     return users;
   }
 
@@ -132,40 +130,34 @@ export class UsersService {
       const createUserDto = await this.userDataToCreateUserDto(userData);
       return await this.createUser(createUserDto);
     }
-    // else
-    // console.log('find :', user.dataValues);
     return await responseUser(user);
   }
 
-  /*
-  private handleUniqueConstraintError(error: unknown) {
-    if (error instanceof UniqueConstraintError) {
-      const fieldNotUnique = Object.keys(error.fields)[0];
-      throw new UniqueConstraintException(fieldNotUnique);
-    }
-    console.log(error);
-  }
-  */
-
   async createUser(createUserDto: CreateUserDto) {
+    if (createUserDto.pseudo && createUserDto.pseudo.includes(' ')) {
+      throw new HttpException('Le login ne doit pas contenir d\'espace', HttpStatus.BAD_REQUEST);
+    }
+
     try {
       const user = await this.usersModel.create({
         public_id: v4(),
         ...createUserDto,
       });
       const resUser = await responseUser(user);
-      // console.log('create :', responseUser);
       return resUser;
     } catch (error) {
       console.error(error);
       throw new HttpException('', HttpStatus.CONFLICT);
-      // this.handleUniqueConstraintError(error);
     }
   }
 
-  // ): Promise<{ message: [number]; user: ResponseUserDto}> {
   async updateUser(id: uuidv4, updateUserDto: UpdateUserDto) {
     if (!isUUID(id)) throw new InvalidUUIDException();
+
+    if (updateUserDto.pseudo && updateUserDto.pseudo.includes(' ')) {
+      throw new HttpException('Le login ne doit pas contenir d\'espace', HttpStatus.BAD_REQUEST);
+    }
+
     try {
       const retUpdateNotSafe = await this.usersModel.update(
         { ...updateUserDto },

@@ -41,15 +41,6 @@ services:
     networks:
       mynet:
         ipv4_address: '172.18.0.42'
-  # redis:
-  #   image: redis:7-bookworm
-  #   ports:
-  #     - "6666:6379"
-  #   volumes:
-  #     - redis_data:/data
-  #   networks:
-  #     mynet:
-  #       ipv4_address: '172.18.0.44'
 
 networks:
   mynet:

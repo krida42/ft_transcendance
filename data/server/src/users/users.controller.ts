@@ -105,7 +105,6 @@ export class UsersController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async create(@Body() createUserDto: CreateUserDto) {
-    console.log('create user - - - - - - ');
     return await this.usersService.createUser(createUserDto);
   }
 
@@ -123,7 +122,6 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @Req() req: Request & { user: any },
   ): Promise<Array<boolean | null> | Array<boolean | ResponseUserDto>> {
-    console.log('update user, req.user.public_id:', req.user.public_id);
     return await this.usersService.updateUser(
       req.user.public_id,
       updateUserDto,
@@ -151,7 +149,6 @@ export class UsersController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async deleteAllUsers(): Promise<number> {
-    console.log('delete all users');
     return this.usersService.deleteAllUsers();
   }
 
@@ -226,26 +223,16 @@ export class UsersController {
   ) {
     await this.usersService.findById(req.user.public_id);
 
-    // console.log('----- FILE -----');
-    // console.log(file);
-    // console.log('----- END FILE -----');
-
     try {
       const dirPath = `/app/dist/public/`;
       const fileName = `${req.user.public_id}_user_image.${
         file.mimetype.split('/')[1]
       }`;
-      // console.log('FILE PATH:', dirPath + fileName);
       const imageUrl = `${process.env.VUE_APP_CUICUI}:3001/` + fileName;
-      // console.log('FILE URL: ', imageUrl);
-
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath);
       }
       fs.writeFileSync(dirPath + fileName, file.buffer, { flag: 'w' });
-
-      // user.avatar = imageUrl;
-      // await user.save();
 
       const retUpdateNotSafe = await this.usersModel.update(
         { avatar: imageUrl },

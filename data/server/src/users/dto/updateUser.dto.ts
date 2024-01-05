@@ -6,6 +6,7 @@ import {
   IsEmail,
   IsOptional,
   isPhoneNumber,
+  IsAlphanumeric,
 } from 'class-validator';
 
 export class UpdateUserDto {
@@ -19,6 +20,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   @Length(3, 20)
+  @IsAlphanumeric('en-US', { message: 'Invalid characters in login' })
   @ApiProperty({
     example: 'Johnette Doe',
     required: false,

@@ -311,21 +311,33 @@ enum ChatType {
   Channel = "channel",
 }
 
+let cooldown = ref(false);
+
 async function sendMessage() {
   console.log(inputMessage.value);
   if (!chatStore.currentChat) throw new Error("no current chat");
   if (!inputMessage.value) return;
-  else {
-    chatStore
-      .sendMessage(
-        chatStore.openedChatId,
-        chatStore.currentChat!.chatType,
-        inputMessage.value
-      )
-      .then(() => {
-        scrollToBottom();
-      });
+  if (cooldown.value === true) {
+    return;
   }
+  if (inputMessage.value.length > 150) {
+    inputMessage.value = "Abuse pas, 150 caractères max !";
+    return;
+  }
+  chatStore
+    .sendMessage(
+      chatStore.openedChatId,
+      chatStore.currentChat!.chatType,
+      inputMessage.value
+    )
+    .then(() => {
+      scrollToBottom();
+      cooldown.value = true;
+      setTimeout(() => {
+        cooldown.value = false;
+      }, 500);
+    });
+
   inputMessage.value = "";
 }
 

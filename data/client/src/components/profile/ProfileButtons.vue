@@ -9,7 +9,7 @@
           : "Add as friend"
       }}</button
     ><button @click="$emit('button2')">
-      {{ mode === profileModes.myProfile ? "Logout" : "Block" }}
+      {{ mode === profileModes.myProfile ? "Close" : "Block" }}
     </button>
   </div>
 </template>

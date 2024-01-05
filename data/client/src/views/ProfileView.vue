@@ -179,7 +179,7 @@ function button1press() {
 
 function button2press() {
   if (mode.value === profileModes.myProfile) {
-    console.log("logout");
+    router.push("/main/home");
   } else {
     friendStore.blockUser(user.value.id);
     router.push("/main/home");

@@ -290,6 +290,7 @@ export class ChannelsService {
       throw new HttpException('not in channel', HttpStatus.NOT_FOUND);
 
     try {
+      console.log('quit channel');
       if (await this.utils.userIs(UserStatus.Owner, currentId, chanId)) {
         const oldestNonOwner = await this.channelUsersModel.findOne({
           where: {
@@ -298,10 +299,14 @@ export class ChannelsService {
           },
           order: [['createdAt', 'ASC']],
         });
+
         if (oldestNonOwner) {
+          console.log('new owner ', oldestNonOwner);
           oldestNonOwner.userStatus = UserStatus.Owner;
           await oldestNonOwner.save();
-        }
+          chan.ownerId = oldestNonOwner.userId;
+          await chan.save();
+        } else console.log('not oldestNonOwner');
       }
 
       chan.nbUser--;

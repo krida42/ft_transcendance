@@ -226,10 +226,18 @@ const createForm = async () => {
 
   channel
     .createChannel(newChannel)
-    .then((chan) => {
+    .then((chan) => async () => {
       if (chan) {
         channel.refreshInvites(chan.chanId);
-        if (file) channel.uploadChannelLogo(chan.chanId, file);
+        try {
+          if (file) await channel.uploadChannelLogo(chan.chanId, file);
+        } catch (err) {
+          console.log("Erreurrrrr ", err);
+          for (const userId of usersInvited.value) {
+            channel.inviteUser(chan.chanId, userId);
+          }
+          router.push("/channels/my-channels");
+        }
         for (const userId of usersInvited.value) {
           channel.inviteUser(chan.chanId, userId);
         }
@@ -262,9 +270,16 @@ const editForm = async () => {
 
   channel
     .editChannel(newChannel, channelId.value)
-    .then((chan) => {
+    .then((chan) => async () => {
       if (chan) {
-        if (file) channel.uploadChannelLogo(chan.chanId, file);
+        try {
+          if (file) await channel.uploadChannelLogo(chan.chanId, file);
+        } catch (err) {
+          for (const userId of usersInvited.value) {
+            channel.inviteUser(chan.chanId, userId);
+          }
+          router.push("/channels/my-channels");
+        }
         for (const userId of usersInvited.value) {
           channel.inviteUser(chan.chanId, userId);
         }

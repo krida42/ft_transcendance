@@ -332,8 +332,30 @@ function executeSearchInput(e: KeyboardEvent) {
       .fetchUserByPseudo(searchedUser.value)
       .then((user) => {
         if (user) {
-          console.log("user send friuend request id:", user);
-          friendStore.sendFriendRequest(user.id);
+          console.log("user send friend request id:", user);
+          friendStore
+            .sendFriendRequest(user.id)
+            .then(() => {
+              console.log("friend request sent");
+            })
+            .catch((err: AxiosError | Error) => {
+              isErr.value = true;
+              if (axios.isAxiosError(err)) {
+                if (
+                  err.response &&
+                  err.response.data &&
+                  err.response.data.message
+                ) {
+                  if (Array.isArray(err.response.data.message))
+                    error.value.message = err.response.data.message[0];
+                  else error.value.message = err.response.data.message;
+                }
+                if (err.response && err.response.status)
+                  error.value.statusCode = err.response.status;
+              } else {
+                error.value.message = err.message;
+              }
+            });
         }
       })
       .catch((err: AxiosError | Error) => {

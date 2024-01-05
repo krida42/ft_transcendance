@@ -136,7 +136,22 @@ const editProfile = async () => {
   const profile = {
     pseudo: username.value,
   };
-  if (file) await usersStore.uploadUserAvatar(file);
+  try {
+    if (file) await usersStore.uploadUserAvatar(file);
+  } catch (err: AxiosError | Error) {
+    isErr.value = true;
+    if (axios.isAxiosError(err)) {
+      if (err.response && err.response.data && err.response.data.message) {
+        if (Array.isArray(err.response.data.message))
+          error.value.message = err.response.data.message[0];
+        else error.value.message = err.response.data.message;
+      }
+      if (err.response && err.response.status)
+        error.value.statusCode = err.response.status;
+    } else {
+      error.value.message = err.message;
+    }
+  }
   usersStore
     .editUser(profile)
     .then(() => {

@@ -5,6 +5,9 @@ import {
   IsEmail,
   IsOptional,
   isPhoneNumber,
+  IsAlphanumeric,
+  MinLength,
+  MaxLength
 } from 'class-validator';
 import { Is } from 'sequelize-typescript';
 
@@ -25,6 +28,9 @@ export class CreateUserDto {
   email: string;
 
   @IsNotEmpty()
+  @MinLength(3, { message: 'Login is too short (min 3 characters)' })
+  @MaxLength(20, { message: 'Login name is too long (max 20 characters)' })
+  @IsAlphanumeric('en-US', { message: 'Invalid characters in login' })
   @ApiProperty({
     example: 'JDoe',
     required: true,
@@ -32,7 +38,9 @@ export class CreateUserDto {
   login: string;
 
   @IsNotEmpty()
-  @Length(3, 20)
+  @MinLength(3, { message: 'pseudo is too short (min 3 characters)' })
+  @MaxLength(20, { message: 'pseudo name is too long (max 20 characters)' })
+  @IsAlphanumeric('en-US', { message: 'Invalid characters in pseudo' })
   @ApiProperty({
     example: 'John Doe',
     required: true,

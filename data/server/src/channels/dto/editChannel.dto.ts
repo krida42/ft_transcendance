@@ -22,8 +22,6 @@ export class EditChannelDto {
   chanType!: string;
 
   @IsNotEmpty()
-  // @MinLength(6, { message: 'Channel password is too short (min 6 characters)' })
-  // @MaxLength(128, { message: 'Channel password is too long (max 128 characters)'})
   @ApiProperty({
     example: 'pass',
     description: 'channel password',

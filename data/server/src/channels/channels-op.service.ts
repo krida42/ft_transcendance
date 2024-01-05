@@ -267,7 +267,7 @@ export class ChannelsOpService {
       user.userStatus = UserStatus.Muted;
       await user.save();
 
-      const min = 1; // 10 MIN
+      const min = 10; // 10 MIN
       setTimeout(async () => {
         if (await this.utils.userIsInChannel(userId, chanId)) {
           user = await this.utils.getUserInChannel(userId, chanId);

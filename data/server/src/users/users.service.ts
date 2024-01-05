@@ -134,6 +134,10 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto) {
+    if (createUserDto.pseudo && createUserDto.pseudo.includes(' ')) {
+      throw new HttpException('Le login ne doit pas contenir d\'espace', HttpStatus.BAD_REQUEST);
+    }
+
     try {
       const user = await this.usersModel.create({
         public_id: v4(),
@@ -149,6 +153,11 @@ export class UsersService {
 
   async updateUser(id: uuidv4, updateUserDto: UpdateUserDto) {
     if (!isUUID(id)) throw new InvalidUUIDException();
+
+    if (updateUserDto.pseudo && updateUserDto.pseudo.includes(' ')) {
+      throw new HttpException('Le login ne doit pas contenir d\'espace', HttpStatus.BAD_REQUEST);
+    }
+
     try {
       const retUpdateNotSafe = await this.usersModel.update(
         { ...updateUserDto },

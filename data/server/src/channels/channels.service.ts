@@ -168,7 +168,6 @@ export class ChannelsService {
 
   // ---------- PATCH IMAGE
 
-  // 413 payload too large /!\
   async uploadImage(
     currentId: uuidv4,
     chanId: uuidv4,

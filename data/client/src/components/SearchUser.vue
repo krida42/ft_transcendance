@@ -57,6 +57,7 @@ defineProps({
 const sendFriendRequest = async () => {
   isSent.value = true;
   await friendStore.refreshFriendList();
+  console.log(friendStore.friends);
   await friendStore.refreshFriendsSent();
   const myId = userStore.currentUser.id;
   userApi
@@ -72,13 +73,11 @@ const sendFriendRequest = async () => {
         loginMessage.value = "Friend request already sent";
         return;
       }
-      friendStore.friends.forEach((friend) => {
-        if (friend.id === user.id) {
-          isValidUsername.value = false;
-          loginMessage.value = "User already in your friend list";
-          return;
-        }
-      });
+      if (friendStore.friends.has(user.id)) {
+        isValidUsername.value = false;
+        loginMessage.value = "User already in your friend list";
+        return;
+      }
       isValidUsername.value = true;
       loginMessage.value = "Friend request sent";
       friendStore.sendFriendRequest(user.id);

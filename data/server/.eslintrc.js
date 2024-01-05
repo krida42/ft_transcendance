@@ -32,6 +32,6 @@ module.exports = {
         checksVoidReturn: false,
       },
     ],
-    "no-floating-promise/no-floating-promise": 2,
+    'no-floating-promise/no-floating-promise': 2,
   },
 };

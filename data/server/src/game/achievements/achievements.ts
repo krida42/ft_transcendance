@@ -278,15 +278,4 @@ export class Achievement {
       console.log(err);
     }
   }
-
-  // async checkManHunter(user1: User | null, user2: User | null): Promise<void> {
-  //   if (!user1 || !user2) return;
-  //   if (await this.friendsService.isFriendship(user1.public_id, user2.public_id)) {
-  //     const achievement = await Achievements.findOne({ where: { name: 'Manhunter' } });
-  //     if (achievement) {
-  //       await this.unlock(user1, achievement);
-  //       await this.unlock(user2, achievement);
-  //     }
-  //   }
-  // }
 }

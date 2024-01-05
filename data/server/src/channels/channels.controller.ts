@@ -442,16 +442,10 @@ export class ChannelsController {
     await this.utils.checkId(chanId);
     await this.utils.checkOwner(req.user.public_id, chanId);
     let chan = await this.utils.findById(chanId);
-    // console.log('----- FILE -----');
-    // console.log(file);
-    // console.log('----- END FILE -----');
-
     try {
       const dirPath = `/app/dist/public/`;
       const fileName = `${chanId}_chan_image.${file.mimetype.split('/')[1]}`;
-      // console.log('FILE PATH:', dirPath + fileName);
       const imageUrl = `${process.env.VUE_APP_CUICUI}:3001/` + fileName;
-      // console.log('FILE URL: ', imageUrl);
 
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath);
@@ -499,7 +493,6 @@ export class ChannelsController {
     @Param('channelId', ParseUUIDPipe) channelId: string,
     @Req() req: ReqU,
   ): Promise<MessageDto[]> {
-    console.log('getAllMessages for channels: ', channelId);
     const blockedIds = (
       await this.friendsService.getBlocked(req.user.public_id)
     ).map((blocked) => blocked.id);

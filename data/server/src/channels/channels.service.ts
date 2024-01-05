@@ -51,8 +51,6 @@ export class ChannelsService {
   ): Promise<channelDto> {
     await this.friendsService.checkId(currentId);
 
-    console.log('editChannelDto', editChannelDto);
-
     const chan = await this.channelModel.findOne({
       where: {
         chanName: editChannelDto.chanName,
@@ -180,34 +178,7 @@ export class ChannelsService {
     let chan = await this.utils.findById(chanId);
     await this.utils.checkOwner(currentId, chanId);
 
-    /* if ! buffer
-    if (!file) {
-      console.log('>>> !file');
-      return await this.utils.fetchChannelDto(chan.chanId);
-    }
-    */
-
-    /*
-    console.log('file:', file);
-    const fileType = await import('file-type');
-    const imageType = await fileType.fileTypeFromBuffer(file.buffer);
-
-    if (!imageType || !imageType.mime.startsWith('image/')) {
-      throw new HttpException('invalid image', HttpStatus.BAD_REQUEST);
-    }
-
-    */
-
     try {
-      console.log('-----');
-      console.log(uploadDto.file.buffer);
-      console.log('-----');
-      console.log(uploadDto);
-      // const { originalname, mimetype, buffer } = file;
-
-      // console.log('imgName:', originalname);
-      // console.log('imgType:', mimetype);
-      // console.log('imgData:', buffer);
       chan.imgData = uploadDto.file.buffer;
       await chan.save();
       await this.chatGatway.pingChannelStateChanged(chan.chanId);

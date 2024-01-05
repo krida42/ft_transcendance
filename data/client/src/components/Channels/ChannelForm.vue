@@ -226,21 +226,28 @@ const createForm = async () => {
 
   channel
     .createChannel(newChannel)
-    .then((chan) => async () => {
+    .then((chan) => {
       if (chan) {
         channel.refreshInvites(chan.chanId);
-        try {
-          if (file) await channel.uploadChannelLogo(chan.chanId, file);
-        } catch (err) {
-          console.log("Erreurrrrr ", err);
-          for (const userId of usersInvited.value) {
-            channel.inviteUser(chan.chanId, userId);
-          }
-          router.push("/channels/my-channels");
+        if (file) {
+          channel
+            .uploadChannelLogo(chan.chanId, file)
+            .then(() => {
+              for (const userId of usersInvited.value) {
+                channel.inviteUser(chan.chanId, userId);
+              }
+              router.push("/channels/my-channels");
+            })
+            .catch(() => {
+              for (const userId of usersInvited.value) {
+                channel.inviteUser(chan.chanId, userId);
+              }
+              router.push("/channels/my-channels");
+            });
         }
-        for (const userId of usersInvited.value) {
-          channel.inviteUser(chan.chanId, userId);
-        }
+      }
+      for (const userId of usersInvited.value) {
+        channel.inviteUser(chan.chanId, userId);
       }
       router.push("/channels/my-channels");
     })
@@ -270,21 +277,29 @@ const editForm = async () => {
 
   channel
     .editChannel(newChannel, channelId.value)
-    .then((chan) => async () => {
+    .then((chan) => {
       if (chan) {
-        try {
-          if (file) await channel.uploadChannelLogo(chan.chanId, file);
-        } catch (err) {
-          for (const userId of usersInvited.value) {
-            channel.inviteUser(chan.chanId, userId);
-          }
-          router.push("/channels/my-channels");
+        if (file) {
+          channel
+            .uploadChannelLogo(chan.chanId, file)
+            .then(() => {
+              for (const userId of usersInvited.value) {
+                channel.inviteUser(chan.chanId, userId);
+              }
+              router.push("/channels/my-channels");
+            })
+            .catch(() => {
+              for (const userId of usersInvited.value) {
+                channel.inviteUser(chan.chanId, userId);
+              }
+              router.push("/channels/my-channels");
+            });
         }
         for (const userId of usersInvited.value) {
           channel.inviteUser(chan.chanId, userId);
         }
+        router.push("/channels/my-channels");
       }
-      router.push("/channels/my-channels");
     })
     .catch((err: AxiosError | Error) => {
       isErr.value = true;
